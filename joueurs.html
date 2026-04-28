@@ -637,6 +637,7 @@
           <div class="auth-subtitle">Accède à ta fiche, ton inventaire et tes notes</div>
 
           <div class="auth-error" id="auth-error"></div>
+          <div id="firebase-status" style="font-size:0.72rem;color:var(--text-muted);margin-bottom:0.5rem;min-height:1.2em;"></div>
 
           <!-- Connexion -->
           <div id="mode-login">
@@ -1044,6 +1045,21 @@ const firebaseConfig = {
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
+
+/* ── Diagnostic visible ──────────────────────────────────── */
+function setStatus(msg, color) {
+  const el = document.getElementById('firebase-status');
+  if (el) { el.textContent = msg; el.style.color = color || 'var(--text-muted)'; }
+}
+setStatus('⏳ Connexion à Firebase…');
+// Vérifie si Firebase Auth répond dans les 5s
+const authCheck = new Promise(res => {
+  const unsub = onAuthStateChanged(auth, user => { unsub(); res(user); });
+});
+Promise.race([
+  authCheck.then(() => setStatus('✅ Firebase prêt', '#6abf69')),
+  new Promise((_, r) => setTimeout(() => r('timeout'), 5000))
+]).catch(() => setStatus('❌ Firebase inaccessible — vérifie ta connexion ou la Console Firebase', '#e07070'));
 
 /* ── Constantes ──────────────────────────────────────────── */
 const FAKE_DOMAIN = '@kaleysur.wiki';
@@ -1872,6 +1888,7 @@ function openAdminView(p) {
 bindListeners();
 
 onAuthStateChanged(auth, async user => {
+  setStatus(''); // efface le statut de diagnostic
   if (user) {
     await openDashboard(user);
   } else {
