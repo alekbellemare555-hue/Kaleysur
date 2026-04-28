@@ -387,6 +387,39 @@
     .avatar-option:hover { border-color: var(--gold-dark); }
     .avatar-option.selected { border-color: var(--gold); background: rgba(201,162,39,0.1); }
 
+    /* ── Sélecteur de personnage ────────────────────────────── */
+    .char-selector-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 0.85rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .char-selector-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      flex-shrink: 0;
+    }
+    .char-selector-select {
+      flex: 1;
+      min-width: 140px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) - 2px);
+      color: var(--gold);
+      font-family: var(--font-title);
+      font-size: 0.88rem;
+      padding: 0.35rem 0.6rem;
+      cursor: pointer;
+    }
+    .char-selector-select:focus { outline: none; border-color: var(--gold-dark); }
+
     /* ── Admin ──────────────────────────────────────────────── */
     .admin-grid {
       display: grid;
@@ -663,6 +696,14 @@
           <span class="autosave-badge" id="autosave-badge"></span>
           <button class="btn btn-sm" id="btn-logout">Déconnexion</button>
         </div>
+      </div>
+
+      <!-- Sélecteur de personnage -->
+      <div class="char-selector-bar">
+        <span class="char-selector-label">Personnage</span>
+        <select class="char-selector-select" id="char-select"></select>
+        <button class="btn btn-sm btn-gold" id="btn-new-char">+ Nouveau</button>
+        <button class="btn btn-sm btn-danger" id="btn-del-char" title="Supprimer ce personnage">🗑</button>
       </div>
 
       <div class="tabs">
@@ -988,7 +1029,7 @@
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updatePassword } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js';
-import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js';
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js';
 
 /* ── Config Firebase ─────────────────────────────────────── */
 const firebaseConfig = {
@@ -1073,9 +1114,32 @@ function emptyCharacter() {
     traits:'',ideaux:'',liens:'',defauts:'',apparence:'',historique:''
   };
 }
-function emptyData(username) {
-  return { username, avatar: '⚔', character: emptyCharacter(), inventory: { items:[], currency:{pp:0,gp:0,ep:0,sp:0,cp:0} }, notes: '' };
+
+function newCharId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,6);
 }
+
+function emptyCharSlot(name) {
+  return { name: name||'Nouveau personnage', character: emptyCharacter(), inventory: { items:[], currency:{pp:0,gp:0,ep:0,sp:0,cp:0} }, notes: '' };
+}
+
+function emptyData(username) {
+  const id = newCharId();
+  return {
+    username, avatar: '⚔',
+    activeCharId: id,
+    characters: { [id]: emptyCharSlot('Personnage 1') }
+  };
+}
+
+// Raccourcis vers le personnage actif
+function activeSlot() {
+  if (!playerData || !playerData.activeCharId) return null;
+  return (playerData.characters || {})[playerData.activeCharId] || null;
+}
+function C() { const s = activeSlot(); return s ? s.character : {}; }
+function INV() { const s = activeSlot(); return s ? s.inventory : { items:[], currency:{pp:0,gp:0,ep:0,sp:0,cp:0} }; }
+function NOTES() { const s = activeSlot(); return s ? (s.notes||'') : ''; }
 
 /* ── Firestore ───────────────────────────────────────────── */
 async function loadData(uid) {
@@ -1171,6 +1235,15 @@ async function openDashboard(user) {
     playerData = emptyData(username);
     await saveData(user.uid, playerData);
   }
+  // Migration : ancien format avec playerData.character → nouveau format multi-personnages
+  if (playerData.character && !playerData.characters) {
+    const id = newCharId();
+    const name = playerData.character.characterName || 'Personnage 1';
+    playerData.characters = { [id]: { name, character: playerData.character, inventory: playerData.inventory || {items:[],currency:{pp:0,gp:0,ep:0,sp:0,cp:0}}, notes: playerData.notes || '' } };
+    playerData.activeCharId = id;
+    delete playerData.character; delete playerData.inventory; delete playerData.notes;
+    await saveData(user.uid, playerData);
+  }
   showScreen('screen-dashboard');
   renderDashboard();
   // Afficher onglet admin si DM
@@ -1183,9 +1256,9 @@ async function openDashboard(user) {
 }
 
 function renderDashboard() {
-  const { username, avatar, character: c } = playerData;
-  document.getElementById('dash-avatar').textContent = avatar;
-  document.getElementById('dash-player-name').textContent = username;
+  document.getElementById('dash-avatar').textContent = playerData.avatar;
+  document.getElementById('dash-player-name').textContent = playerData.username;
+  renderCharSelector();
   updateCharSummary();
   updateProfBonusDisplay();
   fillCharacterFields();
@@ -1199,12 +1272,67 @@ function renderDashboard() {
   fillExhaustion();
   renderInventory();
   fillCurrency();
-  document.getElementById('notes-editor').value = playerData.notes || '';
+  document.getElementById('notes-editor').value = NOTES();
   renderAvatarPicker();
 }
 
+function renderCharSelector() {
+  const sel = document.getElementById('char-select');
+  sel.innerHTML = '';
+  const chars = playerData.characters || {};
+  Object.entries(chars).forEach(([id, slot]) => {
+    const opt = document.createElement('option');
+    opt.value = id;
+    opt.textContent = slot.name || 'Sans nom';
+    opt.selected = id === playerData.activeCharId;
+    sel.appendChild(opt);
+  });
+}
+
+function switchToChar(id) {
+  if (!playerData.characters[id]) return;
+  playerData.activeCharId = id;
+  updateCharSummary();
+  updateProfBonusDisplay();
+  fillCharacterFields();
+  renderAbilityGrid();
+  renderSavesGrid();
+  renderSkillsGrid();
+  renderSpellSlots();
+  renderAttacks();
+  renderMasteries();
+  fillDeathSaves();
+  fillExhaustion();
+  renderInventory();
+  fillCurrency();
+  document.getElementById('notes-editor').value = NOTES();
+  triggerSave();
+}
+
+function createNewChar() {
+  const name = prompt('Nom de ce personnage :', 'Nouveau personnage');
+  if (!name) return;
+  const id = newCharId();
+  playerData.characters[id] = emptyCharSlot(name);
+  playerData.activeCharId = id;
+  renderCharSelector();
+  switchToChar(id);
+}
+
+function deleteCurrentChar() {
+  const chars = playerData.characters || {};
+  const ids = Object.keys(chars);
+  if (ids.length <= 1) { alert('Tu dois garder au moins un personnage.'); return; }
+  const slot = activeSlot();
+  if (!confirm(`Supprimer "${slot ? slot.name : 'ce personnage'}" ? Cette action est irréversible.`)) return;
+  delete playerData.characters[playerData.activeCharId];
+  playerData.activeCharId = Object.keys(playerData.characters)[0];
+  renderCharSelector();
+  switchToChar(playerData.activeCharId);
+}
+
 function updateCharSummary() {
-  const c = playerData.character;
+  const c = C();
   const parts = [];
   if (c.characterName) parts.push(c.characterName);
   if (c.classe) parts.push(c.classe + (c.niveau ? ' niv.' + c.niveau : ''));
@@ -1212,12 +1340,12 @@ function updateCharSummary() {
   document.getElementById('dash-char-summary').textContent = parts.join(' · ') || 'Aucun personnage';
 }
 function updateProfBonusDisplay() {
-  document.getElementById('prof-bonus-display').textContent = '+' + pb(playerData.character.niveau);
+  document.getElementById('prof-bonus-display').textContent = '+' + pb(C().niveau||1);
 }
 
 /* ── Fiche ───────────────────────────────────────────────── */
 function fillCharacterFields() {
-  const c = playerData.character;
+  const c = C();
   document.querySelectorAll('[data-field]').forEach(el => {
     const f = el.dataset.field;
     if (!(f in c)) return;
@@ -1229,7 +1357,7 @@ function renderAbilityGrid() {
   const grid = document.getElementById('ability-grid');
   grid.innerHTML = '';
   ABILITIES.forEach(ab => {
-    const score = abilScore(playerData.character, ab.key);
+    const score = abilScore(C(), ab.key);
     const box = document.createElement('div');
     box.className = 'ability-box';
     box.innerHTML = `<span class="ability-name">${ab.label}</span>
@@ -1237,8 +1365,8 @@ function renderAbilityGrid() {
       <span class="ability-mod">${fmtMod(mod(score))}</span>`;
     grid.appendChild(box);
     box.querySelector('input').addEventListener('input', function() {
-      playerData.character[ab.key] = parseInt(this.value) || 10;
-      box.querySelector('.ability-mod').textContent = fmtMod(mod(playerData.character[ab.key]));
+      C()[ab.key] = parseInt(this.value) || 10;
+      box.querySelector('.ability-mod').textContent = fmtMod(mod(C()[ab.key]));
       renderSavesGrid(); renderSkillsGrid();
       triggerSave();
     });
@@ -1249,17 +1377,16 @@ function renderSavesGrid() {
   const grid = document.getElementById('saves-grid');
   grid.innerHTML = '';
   ABILITIES.forEach(ab => {
-    const c = playerData.character;
     const svKey = 'sv' + ab.key.charAt(0).toUpperCase() + ab.key.slice(1);
     const row = document.createElement('div'); row.className = 'save-row';
-    const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = !!c[svKey]; cb.dataset.sv = ab.key;
-    const bonusSpan = document.createElement('span'); bonusSpan.className = 'save-bonus'; bonusSpan.textContent = fmtMod(saveBonus(c, ab.key));
+    const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = !!C()[svKey]; cb.dataset.sv = ab.key;
+    const bonusSpan = document.createElement('span'); bonusSpan.className = 'save-bonus'; bonusSpan.textContent = fmtMod(saveBonus(C(), ab.key));
     const label = document.createElement('span'); label.textContent = ab.label;
     row.append(cb, bonusSpan, label);
     grid.appendChild(row);
     cb.addEventListener('change', () => {
-      playerData.character[svKey] = cb.checked;
-      bonusSpan.textContent = fmtMod(saveBonus(playerData.character, ab.key));
+      C()[svKey] = cb.checked;
+      bonusSpan.textContent = fmtMod(saveBonus(C(), ab.key));
       triggerSave();
     });
   });
@@ -1269,21 +1396,20 @@ function renderSkillsGrid() {
   const grid = document.getElementById('skills-grid');
   grid.innerHTML = '';
   SKILLS.forEach(sk => {
-    const c = playerData.character;
-    const level = c[sk.key] || '';
+    const level = C()[sk.key] || '';
     const row = document.createElement('div'); row.className = 'skill-row';
     const pip = document.createElement('div'); pip.className = 'skill-prof'; pip.dataset.level = level;
-    const bonusSpan = document.createElement('span'); bonusSpan.className = 'skill-bonus'; bonusSpan.textContent = fmtMod(skillBonus(c, sk));
+    const bonusSpan = document.createElement('span'); bonusSpan.className = 'skill-bonus'; bonusSpan.textContent = fmtMod(skillBonus(C(), sk));
     const nameSpan = document.createElement('span'); nameSpan.textContent = sk.label;
     const attrSpan = document.createElement('span'); attrSpan.className = 'skill-attr'; attrSpan.textContent = sk.attr.toUpperCase();
     row.append(pip, bonusSpan, nameSpan, attrSpan);
     grid.appendChild(row);
     pip.addEventListener('click', () => {
-      const cur = playerData.character[sk.key] || '';
+      const cur = C()[sk.key] || '';
       const next = cur === '' ? 'p' : cur === 'p' ? 'e' : '';
-      playerData.character[sk.key] = next;
+      C()[sk.key] = next;
       pip.dataset.level = next;
-      bonusSpan.textContent = fmtMod(skillBonus(playerData.character, sk));
+      bonusSpan.textContent = fmtMod(skillBonus(C(), sk));
       triggerSave();
     });
   });
@@ -1303,9 +1429,9 @@ function renderSpellSlots() {
     grid.appendChild(box);
     [['used',usedInp],['max',maxInp]].forEach(([tp,inp]) => {
       inp.addEventListener('input', () => {
-        if (!playerData.character.emplacements) playerData.character.emplacements = {};
-        if (!playerData.character.emplacements[i]) playerData.character.emplacements[i] = {max:0,used:0};
-        playerData.character.emplacements[i][tp] = parseInt(inp.value)||0;
+        if (!C().emplacements) C().emplacements = {};
+        if (!C().emplacements[i]) C().emplacements[i] = {max:0,used:0};
+        C().emplacements[i][tp] = parseInt(inp.value)||0;
         triggerSave();
       });
     });
@@ -1315,7 +1441,7 @@ function renderSpellSlots() {
 function renderAttacks() {
   const tbody = document.getElementById('attacks-tbody');
   tbody.innerHTML = '';
-  (playerData.character.attaques || []).forEach((atk, idx) => {
+  (C().attaques || []).forEach((atk, idx) => {
     const tr = document.createElement('tr');
     ['nom','bonus','degats','type','maitrise'].forEach(f => {
       const td = document.createElement('td');
@@ -1323,36 +1449,36 @@ function renderAttacks() {
       inp.value = atk[f]||'';
       inp.placeholder = {nom:'Épée longue',bonus:'+5',degats:'1d8+3',type:'Tranchant',maitrise:'Cleave'}[f]||'';
       td.appendChild(inp); tr.appendChild(td);
-      inp.addEventListener('input', () => { playerData.character.attaques[idx][f] = inp.value; triggerSave(); });
+      inp.addEventListener('input', () => { C().attaques[idx][f] = inp.value; triggerSave(); });
     });
     const delTd = document.createElement('td');
     const delBtn = document.createElement('button'); delBtn.className='del-btn'; delBtn.textContent='✕';
-    delBtn.addEventListener('click', () => { playerData.character.attaques.splice(idx,1); renderAttacks(); triggerSave(); });
+    delBtn.addEventListener('click', () => { C().attaques.splice(idx,1); renderAttacks(); triggerSave(); });
     delTd.appendChild(delBtn); tr.appendChild(delTd);
     tbody.appendChild(tr);
   });
 }
 
 function renderMasteries() {
-  const sel = playerData.character.maitrisesArmes || [];
+  const sel = C().maitrisesArmes || [];
   document.querySelectorAll('.mastery-tag').forEach(tag => tag.classList.toggle('selected', sel.includes(tag.dataset.mastery)));
 }
 
 function fillDeathSaves() {
-  const s = playerData.character.mortSucces || 0;
-  const f = playerData.character.mortEchecs || 0;
+  const s = C().mortSucces || 0;
+  const f = C().mortEchecs || 0;
   document.querySelectorAll('.death-check[data-death="success"]').forEach(el => el.classList.toggle('success-checked', parseInt(el.dataset.idx) < s));
   document.querySelectorAll('.death-check[data-death="fail"]').forEach(el => el.classList.toggle('fail-checked', parseInt(el.dataset.idx) < f));
 }
 
 function fillExhaustion() {
-  const lv = playerData.character.epuisement || 0;
+  const lv = C().epuisement || 0;
   document.querySelectorAll('.exhaustion-pip').forEach(pip => pip.classList.toggle('active', parseInt(pip.dataset.lv) <= lv));
 }
 
 /* ── Inventaire ──────────────────────────────────────────── */
 function renderInventory() {
-  const items = playerData.inventory.items || [];
+  const items = INV().items || [];
   const filter = (document.getElementById('items-search').value||'').toLowerCase();
   const filtered = filter ? items.filter(it => (it.name||'').toLowerCase().includes(filter)) : items;
   const list = document.getElementById('items-list');
@@ -1368,23 +1494,23 @@ function renderInventory() {
     const delBtn = Object.assign(document.createElement('button'), {className:'item-del',textContent:'✕'});
     row.append(qtyInp, nameInp, notesInp, weightInp, delBtn);
     list.appendChild(row);
-    const update = () => { items[realIdx].qty=parseInt(qtyInp.value)||0; items[realIdx].name=nameInp.value; items[realIdx].notes=notesInp.value; items[realIdx].weight=weightInp.value; updateEncumbrance(); triggerSave(); };
+    const update = () => { INV().items[realIdx].qty=parseInt(qtyInp.value)||0; INV().items[realIdx].name=nameInp.value; INV().items[realIdx].notes=notesInp.value; INV().items[realIdx].weight=weightInp.value; updateEncumbrance(); triggerSave(); };
     [qtyInp,nameInp,notesInp,weightInp].forEach(el => el.addEventListener('input', update));
-    delBtn.addEventListener('click', () => { items.splice(realIdx,1); renderInventory(); triggerSave(); });
+    delBtn.addEventListener('click', () => { INV().items.splice(realIdx,1); renderInventory(); triggerSave(); });
   });
   updateEncumbrance();
 }
 
 function updateEncumbrance() {
-  const items = playerData.inventory.items || [];
+  const items = INV().items || [];
   let total = 0, hasW = false;
   items.forEach(it => { const w=parseFloat(it.weight); if(!isNaN(w)){total+=w*(parseInt(it.qty)||1);hasW=true;} });
   const info = document.getElementById('encumbrance-info');
-  info.textContent = hasW ? `Poids total : ${total.toFixed(1)} lb · Capacité max : ${abilScore(playerData.character,'for')*15} lb` : '';
+  info.textContent = hasW ? `Poids total : ${total.toFixed(1)} lb · Capacité max : ${abilScore(C(),'for')*15} lb` : '';
 }
 
 function fillCurrency() {
-  const cur = playerData.inventory.currency || {};
+  const cur = INV().currency || {};
   ['pp','gp','ep','sp','cp'].forEach(c => { const inp=document.querySelector(`[data-currency="${c}"]`); if(inp) inp.value=cur[c]||0; });
 }
 
@@ -1444,13 +1570,26 @@ function bindListeners() {
     if (btn.dataset.tab === 'admin') renderAdminPanel();
   }));
 
+  // Sélecteur de personnage
+  document.getElementById('char-select').addEventListener('change', e => {
+    if (!playerData) return;
+    switchToChar(e.target.value);
+  });
+  document.getElementById('btn-new-char').addEventListener('click', () => { if(playerData) createNewChar(); });
+  document.getElementById('btn-del-char').addEventListener('click', () => { if(playerData) deleteCurrentChar(); });
+
   // Champs fiche — délégation
   document.getElementById('tab-personnage').addEventListener('input', e => {
     const el = e.target; const f = el.dataset.field;
     if (!f || !playerData) return;
-    if (el.type === 'checkbox') playerData.character[f] = el.checked;
-    else if (el.type === 'number') playerData.character[f] = parseInt(el.value)||0;
-    else playerData.character[f] = el.value;
+    if (el.type === 'checkbox') C()[f] = el.checked;
+    else if (el.type === 'number') C()[f] = parseInt(el.value)||0;
+    else C()[f] = el.value;
+    // Mettre à jour le nom du perso dans le sélecteur si on change characterName
+    if (f === 'characterName') {
+      activeSlot().name = el.value || 'Sans nom';
+      renderCharSelector();
+    }
     if (f === 'niveau') { updateProfBonusDisplay(); renderSavesGrid(); renderSkillsGrid(); }
     updateCharSummary();
     triggerSave();
@@ -1459,7 +1598,7 @@ function bindListeners() {
   // Monnaie
   document.querySelectorAll('[data-currency]').forEach(inp => inp.addEventListener('input', () => {
     if (!playerData) return;
-    playerData.inventory.currency[inp.dataset.currency] = parseInt(inp.value)||0;
+    INV().currency[inp.dataset.currency] = parseInt(inp.value)||0;
     triggerSave();
   }));
 
@@ -1467,7 +1606,7 @@ function bindListeners() {
   document.getElementById('items-search').addEventListener('input', () => { if(playerData) renderInventory(); });
   document.getElementById('btn-add-item').addEventListener('click', () => {
     if (!playerData) return;
-    playerData.inventory.items.push({qty:1,name:'',notes:'',weight:''});
+    INV().items.push({qty:1,name:'',notes:'',weight:''});
     renderInventory();
     const rows = document.querySelectorAll('.item-row');
     if (rows.length) rows[rows.length-1].querySelector('.item-name')?.focus();
@@ -1477,7 +1616,7 @@ function bindListeners() {
   // Attaques
   document.getElementById('btn-add-attack').addEventListener('click', () => {
     if (!playerData) return;
-    playerData.character.attaques.push({nom:'',bonus:'',degats:'',type:'',maitrise:''});
+    C().attaques.push({nom:'',bonus:'',degats:'',type:'',maitrise:''});
     renderAttacks(); triggerSave();
   });
 
@@ -1485,10 +1624,10 @@ function bindListeners() {
   document.querySelectorAll('.mastery-tag').forEach(tag => tag.addEventListener('click', () => {
     if (!playerData) return;
     const m = tag.dataset.mastery;
-    const arr = playerData.character.maitrisesArmes || [];
+    const arr = C().maitrisesArmes || [];
     const idx = arr.indexOf(m);
     idx === -1 ? arr.push(m) : arr.splice(idx,1);
-    playerData.character.maitrisesArmes = arr;
+    C().maitrisesArmes = arr;
     tag.classList.toggle('selected', arr.includes(m));
     triggerSave();
   }));
@@ -1498,8 +1637,8 @@ function bindListeners() {
     if (!playerData) return;
     const type = el.dataset.death, idx = parseInt(el.dataset.idx);
     const field = type === 'success' ? 'mortSucces' : 'mortEchecs';
-    const cur = playerData.character[field] || 0;
-    playerData.character[field] = cur === idx+1 ? idx : idx+1;
+    const cur = C()[field] || 0;
+    C()[field] = cur === idx+1 ? idx : idx+1;
     fillDeathSaves(); triggerSave();
   }));
 
@@ -1507,14 +1646,14 @@ function bindListeners() {
   document.querySelectorAll('.exhaustion-pip').forEach(pip => pip.addEventListener('click', () => {
     if (!playerData) return;
     const lv = parseInt(pip.dataset.lv);
-    playerData.character.epuisement = playerData.character.epuisement === lv ? lv-1 : lv;
+    C().epuisement = C().epuisement === lv ? lv-1 : lv;
     fillExhaustion(); triggerSave();
   }));
 
   // Notes
   document.getElementById('notes-editor').addEventListener('input', function() {
     if (!playerData) return;
-    playerData.notes = this.value; triggerSave();
+    activeSlot().notes = this.value; triggerSave();
   });
 
   // Changer mot de passe
@@ -1544,13 +1683,15 @@ function bindListeners() {
   // Admin — actualiser
   document.getElementById('btn-admin-refresh').addEventListener('click', renderAdminPanel);
 
-  // Effacer données
+  // Effacer données du personnage actif
   document.getElementById('btn-clear-data').addEventListener('click', async () => {
-    if (!confirm('Effacer toutes tes données de jeu? Cette action est irréversible.')) return;
+    if (!confirm('Effacer les données de jeu de ce personnage ? Cette action est irréversible.')) return;
     if (!currentUser || !playerData) return;
-    playerData.character = emptyCharacter();
-    playerData.inventory = {items:[],currency:{pp:0,gp:0,ep:0,sp:0,cp:0}};
-    playerData.notes = '';
+    const slot = activeSlot();
+    if (!slot) return;
+    slot.character = emptyCharacter();
+    slot.inventory = {items:[],currency:{pp:0,gp:0,ep:0,sp:0,cp:0}};
+    slot.notes = '';
     await saveData(currentUser.uid, playerData);
     renderDashboard();
   });
