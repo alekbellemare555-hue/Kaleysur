@@ -1232,7 +1232,8 @@ function triggerSave() {
       badge.classList.add('saved');
       setTimeout(() => badge.classList.remove('saved'), 2000);
     } catch(e) {
-      badge.textContent = '⚠ Erreur de sauvegarde';
+      badge.textContent = '⚠ Erreur de sauvegarde : ' + (e.message || e);
+      badge.style.color = '#e07070';
     }
   }, 800);
 }
@@ -1285,9 +1286,10 @@ async function doRegister() {
   const btn = document.getElementById('btn-register');
   btn.disabled = true; btn.innerHTML = '<span class="auth-spinner"></span>Création…';
   try {
-    const cred = await withTimeout(createUserWithEmailAndPassword(auth, toEmail(username), password), 10000);
-    const data = emptyData(username);
-    await saveData(cred.user.uid, data);
+    // On crée juste le compte — openDashboard (via onAuthStateChanged) s'occupera de créer la fiche
+    await withTimeout(createUserWithEmailAndPassword(auth, toEmail(username), password), 10000);
+    // Stocker le pseudo pour que openDashboard puisse l'utiliser
+    window._pendingUsername = username;
   } catch(e) {
     btn.disabled = false; btn.textContent = 'Créer le compte';
     if (e.message === 'timeout') {
@@ -1322,9 +1324,17 @@ async function openDashboard(user) {
     return;
   }
   if (!playerData) {
-    const username = user.email.replace(FAKE_DOMAIN, '');
+    const username = window._pendingUsername || user.email.replace(FAKE_DOMAIN, '');
+    window._pendingUsername = null;
     playerData = emptyData(username);
-    try { await saveData(user.uid, playerData); } catch(e) { /* ignore */ }
+    try {
+      await saveData(user.uid, playerData);
+    } catch(e) {
+      await signOut(auth);
+      showScreen('screen-auth');
+      showAuthError('Compte créé mais impossible de sauvegarder la fiche : ' + (e.message || e));
+      return;
+    }
   }
   // Migration : ancien format avec playerData.character → nouveau format multi-personnages
   if (playerData.character && !playerData.characters) {
