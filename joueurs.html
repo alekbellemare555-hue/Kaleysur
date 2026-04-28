@@ -1167,11 +1167,11 @@ function NOTES() { const s = activeSlot(); return s ? (s.notes||'') : ''; }
 
 /* ── Firestore ───────────────────────────────────────────── */
 async function loadData(uid) {
-  const snap = await getDoc(doc(db, 'users', uid));
+  const snap = await withTimeout(getDoc(doc(db, 'users', uid)), 10000);
   return snap.exists() ? snap.data() : null;
 }
 async function saveData(uid, data) {
-  await setDoc(doc(db, 'users', uid), data);
+  await withTimeout(setDoc(doc(db, 'users', uid), data), 10000);
 }
 
 /* ── Autosave ────────────────────────────────────────────── */
@@ -1261,11 +1261,19 @@ async function doRegister() {
 /* ── Dashboard ───────────────────────────────────────────── */
 async function openDashboard(user) {
   currentUser = user;
-  playerData = await loadData(user.uid);
+  try {
+    playerData = await loadData(user.uid);
+  } catch(e) {
+    // Firestore inaccessible — déconnecte et affiche erreur
+    await signOut(auth);
+    showScreen('screen-auth');
+    showAuthError('Impossible de charger ta fiche (Firestore inaccessible). Vérifie que la base de données Firestore est créée dans la Console Firebase.');
+    return;
+  }
   if (!playerData) {
     const username = user.email.replace(FAKE_DOMAIN, '');
     playerData = emptyData(username);
-    await saveData(user.uid, playerData);
+    try { await saveData(user.uid, playerData); } catch(e) { /* ignore */ }
   }
   // Migration : ancien format avec playerData.character → nouveau format multi-personnages
   if (playerData.character && !playerData.characters) {
