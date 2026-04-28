@@ -1267,7 +1267,14 @@ async function openDashboard(user) {
     // Firestore inaccessible — déconnecte et affiche erreur
     await signOut(auth);
     showScreen('screen-auth');
-    showAuthError('Impossible de charger ta fiche (Firestore inaccessible). Vérifie que la base de données Firestore est créée dans la Console Firebase.');
+    const code = e.code || e.message || 'inconnu';
+    if (code.includes('permission-denied') || code.includes('PERMISSION_DENIED')) {
+      showAuthError('Accès refusé par Firestore (permission-denied). Publie les règles dans Firebase Console → Firestore → Règles.');
+    } else if (code === 'timeout') {
+      showAuthError('Firestore ne répond pas. Vérifie que la base de données est créée dans Firebase Console.');
+    } else {
+      showAuthError('Erreur Firestore : ' + code);
+    }
     return;
   }
   if (!playerData) {
