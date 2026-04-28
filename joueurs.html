@@ -1074,6 +1074,14 @@ const SKILLS = [
   {key:'perspicacite',label:'Perspicacité',attr:'sag'}
 ];
 
+/* ── Timeout helper ──────────────────────────────────────── */
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
+  ]);
+}
+
 /* ── État ────────────────────────────────────────────────── */
 let currentUser = null;
 let playerData  = null;
@@ -1190,13 +1198,17 @@ async function doLogin() {
   const btn = document.getElementById('btn-login');
   btn.disabled = true; btn.innerHTML = '<span class="auth-spinner"></span>Connexion…';
   try {
-    await signInWithEmailAndPassword(auth, toEmail(username), password);
+    await withTimeout(signInWithEmailAndPassword(auth, toEmail(username), password), 10000);
   } catch(e) {
     btn.disabled = false; btn.textContent = 'Se connecter';
-    if (e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found') {
+    if (e.message === 'timeout') {
+      showAuthError('Connexion impossible — vérifie ta connexion internet ou que Firebase est bien configuré.');
+    } else if (e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found') {
       showAuthError('Pseudo ou mot de passe incorrect.');
+    } else if (e.code === 'auth/operation-not-allowed') {
+      showAuthError('Connexion par email/mot de passe désactivée dans Firebase Console.');
     } else {
-      showAuthError('Erreur : ' + e.message);
+      showAuthError('Erreur (' + (e.code || e.message) + ')');
     }
   }
 }
@@ -1213,15 +1225,19 @@ async function doRegister() {
   const btn = document.getElementById('btn-register');
   btn.disabled = true; btn.innerHTML = '<span class="auth-spinner"></span>Création…';
   try {
-    const cred = await createUserWithEmailAndPassword(auth, toEmail(username), password);
+    const cred = await withTimeout(createUserWithEmailAndPassword(auth, toEmail(username), password), 10000);
     const data = emptyData(username);
     await saveData(cred.user.uid, data);
   } catch(e) {
     btn.disabled = false; btn.textContent = 'Créer le compte';
-    if (e.code === 'auth/email-already-in-use') {
+    if (e.message === 'timeout') {
+      showAuthError('Connexion impossible — vérifie ta connexion internet ou que Firebase est bien configuré.');
+    } else if (e.code === 'auth/email-already-in-use') {
       showAuthError('Ce pseudo est déjà pris. Choisis-en un autre.');
+    } else if (e.code === 'auth/operation-not-allowed') {
+      showAuthError('Connexion par email/mot de passe désactivée dans Firebase Console.');
     } else {
-      showAuthError('Erreur : ' + e.message);
+      showAuthError('Erreur (' + (e.code || e.message) + ')');
     }
   }
 }
