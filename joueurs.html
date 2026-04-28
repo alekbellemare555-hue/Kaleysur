@@ -386,6 +386,140 @@
     .avatar-option:hover { border-color: var(--gold-dark); }
     .avatar-option.selected { border-color: var(--gold); background: rgba(201,162,39,0.1); }
 
+    /* ── Admin ──────────────────────────────────────────────── */
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .admin-player-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1rem;
+      cursor: pointer;
+      transition: all var(--transition);
+      text-align: center;
+    }
+    .admin-player-card:hover {
+      border-color: var(--gold-dark);
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px var(--glow-gold);
+    }
+    .admin-player-avatar {
+      font-size: 2rem;
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--bg-secondary);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 0.75rem;
+      transition: border-color var(--transition);
+    }
+    .admin-player-card:hover .admin-player-avatar { border-color: var(--gold-dark); }
+    .admin-player-username {
+      font-family: var(--font-title);
+      color: var(--gold);
+      font-size: 1rem;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    .admin-player-info {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* Modal admin fiche */
+    .admin-modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.8);
+      z-index: 300;
+      display: none;
+      overflow-y: auto;
+      padding: 2rem 1rem;
+    }
+    .admin-modal-overlay.open { display: block; }
+    .admin-modal {
+      background: var(--bg-deep);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      position: relative;
+    }
+    .admin-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .admin-modal-title {
+      font-family: var(--font-title);
+      color: var(--gold);
+      font-size: 1.3rem;
+    }
+    .admin-modal-close {
+      background: none; border: 1px solid var(--border);
+      border-radius: var(--radius); color: var(--text-muted);
+      cursor: pointer; font-size: 1.1rem; padding: 0.3rem 0.65rem;
+      transition: all var(--transition);
+    }
+    .admin-modal-close:hover { border-color: var(--gold-dark); color: var(--gold); }
+    .admin-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+    }
+    .admin-stat-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.6rem 0.75rem;
+      text-align: center;
+    }
+    .admin-stat-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; display: block; margin-bottom: 0.2rem; }
+    .admin-stat-value { font-family: var(--font-title); font-size: 1.1rem; color: var(--gold); display: block; }
+    .admin-section-title {
+      font-family: var(--font-title); font-size: 0.72rem; letter-spacing: 0.12em;
+      color: var(--gold-dark); text-transform: uppercase;
+      border-bottom: 1px solid var(--border); padding-bottom: 0.4rem;
+      margin: 1rem 0 0.75rem;
+    }
+    .admin-skills-list {
+      display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.75rem;
+    }
+    .admin-skill-tag {
+      font-size: 0.75rem; padding: 0.2rem 0.55rem; border-radius: 12px;
+      border: 1px solid var(--border); color: var(--text-muted);
+    }
+    .admin-skill-tag.prof { border-color: var(--gold-dark); color: var(--gold); background: rgba(201,162,39,0.1); }
+    .admin-skill-tag.expert { border-color: var(--gold); color: var(--gold); background: rgba(201,162,39,0.2); }
+    .admin-notes-box {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1rem; font-size: 0.88rem;
+      color: var(--text-secondary); white-space: pre-wrap; line-height: 1.7;
+      max-height: 200px; overflow-y: auto;
+    }
+    .admin-items-list {
+      display: flex; flex-direction: column; gap: 0.3rem;
+    }
+    .admin-item-row {
+      display: flex; gap: 0.75rem; align-items: center;
+      font-size: 0.82rem; color: var(--text-secondary);
+      padding: 0.3rem 0.5rem;
+      background: var(--bg-card); border-radius: calc(var(--radius) - 2px);
+    }
+    .admin-item-qty { color: var(--gold); font-family: var(--font-title); min-width: 20px; }
+    .admin-empty { color: var(--text-muted); font-style: italic; font-size: 0.85rem; padding: 0.5rem 0; }
+    .admin-refresh-btn { }
+
     /* ── Autosave ───────────────────────────────────────────── */
     .autosave-badge { font-size: 0.72rem; color: var(--text-muted); font-style: italic; transition: color 0.4s; }
     .autosave-badge.saved { color: #6aba6a; }
@@ -535,6 +669,7 @@
         <button class="tab-btn" data-tab="inventaire">🎒 Inventaire</button>
         <button class="tab-btn" data-tab="notes">📜 Notes</button>
         <button class="tab-btn" data-tab="parametres">⚙ Paramètres</button>
+        <button class="tab-btn" data-tab="admin" id="tab-btn-admin" style="display:none;color:#c97a7a;">👁 Admin</button>
       </div>
 
       <!-- ── Personnage ── -->
@@ -785,9 +920,65 @@
         </div>
       </div>
 
+      <!-- ── Admin ── -->
+      <div class="tab-panel" id="tab-admin">
+        <div class="sheet-section">
+          <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
+            <span>Tous les joueurs</span>
+            <button class="btn btn-sm admin-refresh-btn" id="btn-admin-refresh">↺ Actualiser</button>
+          </div>
+          <div id="admin-loading" style="color:var(--text-muted);font-style:italic;padding:1rem 0;">Chargement…</div>
+          <div class="admin-grid" id="admin-grid"></div>
+        </div>
+      </div>
+
     </div><!-- /screen-dashboard -->
 
   </main>
+</div>
+
+<!-- ▸ Modal fiche joueur (vue admin) -->
+<div class="admin-modal-overlay" id="admin-modal">
+  <div class="admin-modal">
+    <div class="admin-modal-header">
+      <div style="display:flex;align-items:center;gap:0.75rem;">
+        <div class="dashboard-avatar" id="admin-view-avatar">⚔</div>
+        <div>
+          <div class="admin-modal-title" id="admin-view-name">—</div>
+          <div style="font-size:0.82rem;color:var(--text-muted);font-style:italic;" id="admin-view-char">—</div>
+        </div>
+      </div>
+      <button class="admin-modal-close" id="admin-modal-close">✕ Fermer</button>
+    </div>
+
+    <!-- Stats de combat rapides -->
+    <div class="admin-stat-grid" id="admin-stat-grid"></div>
+
+    <!-- Caractéristiques -->
+    <div class="admin-section-title">Caractéristiques</div>
+    <div class="admin-stat-grid" id="admin-ability-grid"></div>
+
+    <!-- Jets de sauvegarde -->
+    <div class="admin-section-title">Jets de Sauvegarde</div>
+    <div class="admin-stat-grid" id="admin-saves-grid"></div>
+
+    <!-- Compétences maîtrisées -->
+    <div class="admin-section-title">Compétences</div>
+    <div class="admin-skills-list" id="admin-skills-list"></div>
+
+    <!-- Attaques -->
+    <div class="admin-section-title">Attaques</div>
+    <div id="admin-attacks-list"></div>
+
+    <!-- Inventaire -->
+    <div class="admin-section-title">Inventaire</div>
+    <div id="admin-currency-display" style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.5rem;"></div>
+    <div class="admin-items-list" id="admin-items-list"></div>
+
+    <!-- Notes -->
+    <div class="admin-section-title">Notes du joueur</div>
+    <div class="admin-notes-box" id="admin-notes-box"></div>
+  </div>
 </div>
 
 <script src="js/wiki.js"></script>
@@ -796,7 +987,7 @@
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updatePassword } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js';
-import { getFirestore, doc, getDoc, setDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js';
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js';
 
 /* ── Config Firebase ─────────────────────────────────────── */
 const firebaseConfig = {
@@ -981,6 +1172,13 @@ async function openDashboard(user) {
   }
   showScreen('screen-dashboard');
   renderDashboard();
+  // Afficher onglet admin si DM
+  const adminTabBtn = document.getElementById('tab-btn-admin');
+  if (isAdmin()) {
+    adminTabBtn.style.display = '';
+  } else {
+    adminTabBtn.style.display = 'none';
+  }
 }
 
 function renderDashboard() {
@@ -1242,6 +1440,7 @@ function bindListeners() {
   document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b===btn));
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id==='tab-'+btn.dataset.tab));
+    if (btn.dataset.tab === 'admin') renderAdminPanel();
   }));
 
   // Champs fiche — délégation
@@ -1332,6 +1531,18 @@ function bindListeners() {
     }
   });
 
+  // Admin — fermer modal
+  document.getElementById('admin-modal-close').addEventListener('click', () => {
+    document.getElementById('admin-modal').classList.remove('open');
+  });
+  document.getElementById('admin-modal').addEventListener('click', e => {
+    if (e.target === document.getElementById('admin-modal'))
+      document.getElementById('admin-modal').classList.remove('open');
+  });
+
+  // Admin — actualiser
+  document.getElementById('btn-admin-refresh').addEventListener('click', renderAdminPanel);
+
   // Effacer données
   document.getElementById('btn-clear-data').addEventListener('click', async () => {
     if (!confirm('Effacer toutes tes données de jeu? Cette action est irréversible.')) return;
@@ -1342,6 +1553,161 @@ function bindListeners() {
     await saveData(currentUser.uid, playerData);
     renderDashboard();
   });
+}
+
+/* ── Admin ───────────────────────────────────────────────── */
+const ADMIN_USERNAME = 'dm'; // pseudo admin (en minuscules)
+
+function isAdmin() {
+  return playerData && playerData.username && playerData.username.toLowerCase() === ADMIN_USERNAME;
+}
+
+async function loadAllPlayers() {
+  const snap = await getDocs(collection(db, 'users'));
+  return snap.docs.map(d => ({ uid: d.id, ...d.data() }));
+}
+
+async function renderAdminPanel() {
+  const grid = document.getElementById('admin-grid');
+  const loading = document.getElementById('admin-loading');
+  grid.innerHTML = ''; loading.style.display = '';
+  try {
+    const players = await loadAllPlayers();
+    loading.style.display = 'none';
+    const others = players.filter(p => (p.username||'').toLowerCase() !== ADMIN_USERNAME);
+    if (others.length === 0) {
+      grid.innerHTML = '<div class="admin-empty">Aucun joueur inscrit pour le moment.</div>';
+      return;
+    }
+    others.forEach(p => {
+      const c = p.character || {};
+      const card = document.createElement('div');
+      card.className = 'admin-player-card';
+      const charLine = [c.characterName, c.classe ? c.classe + (c.niveau ? ' niv.'+c.niveau : '') : '', c.species].filter(Boolean).join(' · ') || 'Aucun personnage';
+      card.innerHTML = `
+        <div class="admin-player-avatar">${p.avatar || '⚔'}</div>
+        <span class="admin-player-username">${escHtml(p.username || '?')}</span>
+        <span class="admin-player-info">${escHtml(charLine)}</span>`;
+      card.addEventListener('click', () => openAdminView(p));
+      grid.appendChild(card);
+    });
+  } catch(e) {
+    loading.textContent = '⚠ Erreur de chargement. Vérifie les règles Firestore.';
+  }
+}
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function openAdminView(p) {
+  const c = p.character || {};
+  const inv = p.inventory || {};
+
+  document.getElementById('admin-view-avatar').textContent = p.avatar || '⚔';
+  document.getElementById('admin-view-name').textContent = p.username || '?';
+  const charLine = [c.characterName, c.classe ? c.classe+(c.niveau?' niv.'+c.niveau:'') : '', c.species].filter(Boolean).join(' · ') || 'Aucun personnage';
+  document.getElementById('admin-view-char').textContent = charLine;
+
+  // Stats rapides
+  const statGrid = document.getElementById('admin-stat-grid');
+  statGrid.innerHTML = '';
+  const stats = [
+    {label:'Niveau', value: c.niveau||1},
+    {label:'CA', value: c.ca||10},
+    {label:'PV', value: `${c.pvActuel||0}/${c.pvMax||0}`},
+    {label:'Vitesse', value: (c.vitesse||30)+' pi'},
+    {label:'Initiative', value: fmtMod(c.initiative||0)},
+    {label:'Épuisement', value: c.epuisement||0},
+    {label:'XP', value: c.xp||0},
+    {label:'Background', value: c.background||'—'},
+  ];
+  stats.forEach(s => {
+    const box = document.createElement('div'); box.className = 'admin-stat-box';
+    box.innerHTML = `<span class="admin-stat-label">${s.label}</span><span class="admin-stat-value">${escHtml(String(s.value))}</span>`;
+    statGrid.appendChild(box);
+  });
+
+  // Caractéristiques
+  const abilGrid = document.getElementById('admin-ability-grid');
+  abilGrid.innerHTML = '';
+  ABILITIES.forEach(ab => {
+    const score = parseInt(c[ab.key])||10;
+    const box = document.createElement('div'); box.className = 'admin-stat-box';
+    box.innerHTML = `<span class="admin-stat-label">${ab.label}</span><span class="admin-stat-value">${score}</span><span style="font-size:0.75rem;color:var(--text-muted);">${fmtMod(mod(score))}</span>`;
+    abilGrid.appendChild(box);
+  });
+
+  // Jets de sauvegarde
+  const savesGrid = document.getElementById('admin-saves-grid');
+  savesGrid.innerHTML = '';
+  ABILITIES.forEach(ab => {
+    const bonus = saveBonus(c, ab.key);
+    const svKey = 'sv' + ab.key.charAt(0).toUpperCase() + ab.key.slice(1);
+    const hasSv = !!c[svKey];
+    const box = document.createElement('div'); box.className = 'admin-stat-box';
+    box.innerHTML = `<span class="admin-stat-label">${ab.label}</span><span class="admin-stat-value" style="${hasSv?'color:var(--gold)':''}">${fmtMod(bonus)}</span>`;
+    abilGrid.appendChild(box);
+    savesGrid.appendChild(box);
+  });
+
+  // Compétences
+  const skillsList = document.getElementById('admin-skills-list');
+  skillsList.innerHTML = '';
+  SKILLS.forEach(sk => {
+    const lv = c[sk.key];
+    if (!lv) return;
+    const tag = document.createElement('span');
+    tag.className = 'admin-skill-tag ' + (lv === 'e' ? 'expert' : 'prof');
+    tag.textContent = sk.label + ' ' + fmtMod(skillBonus(c, sk)) + (lv==='e'?' ★':'');
+    skillsList.appendChild(tag);
+  });
+  if (!skillsList.children.length) skillsList.innerHTML = '<span class="admin-empty">Aucune maîtrise</span>';
+
+  // Attaques
+  const atkList = document.getElementById('admin-attacks-list');
+  atkList.innerHTML = '';
+  const attacks = c.attaques || [];
+  if (attacks.length === 0) {
+    atkList.innerHTML = '<div class="admin-empty">Aucune attaque</div>';
+  } else {
+    attacks.forEach(atk => {
+      const row = document.createElement('div'); row.className = 'admin-item-row';
+      row.innerHTML = `<strong style="color:var(--gold);min-width:120px;">${escHtml(atk.nom||'—')}</strong> <span>${escHtml(atk.bonus||'')}</span> <span>${escHtml(atk.degats||'')}</span> <span style="color:var(--text-muted);">${escHtml(atk.type||'')} ${escHtml(atk.maitrise||'')}</span>`;
+      atkList.appendChild(row);
+    });
+  }
+
+  // Monnaie
+  const cur = inv.currency || {};
+  const parts = [];
+  if (cur.pp) parts.push(cur.pp+' PP');
+  if (cur.gp) parts.push(cur.gp+' PO');
+  if (cur.ep) parts.push(cur.ep+' PE');
+  if (cur.sp) parts.push(cur.sp+' PA');
+  if (cur.cp) parts.push(cur.cp+' PC');
+  document.getElementById('admin-currency-display').textContent = parts.length ? parts.join(' · ') : 'Aucune monnaie';
+
+  // Inventaire
+  const itemsList = document.getElementById('admin-items-list');
+  itemsList.innerHTML = '';
+  const items = inv.items || [];
+  if (items.length === 0) {
+    itemsList.innerHTML = '<div class="admin-empty">Inventaire vide</div>';
+  } else {
+    items.forEach(it => {
+      const row = document.createElement('div'); row.className = 'admin-item-row';
+      row.innerHTML = `<span class="admin-item-qty">×${it.qty||1}</span> <span>${escHtml(it.name||'?')}</span> ${it.notes?`<span style="color:var(--text-muted);font-style:italic;">${escHtml(it.notes)}</span>`:''}`;
+      itemsList.appendChild(row);
+    });
+  }
+
+  // Notes
+  const notesBox = document.getElementById('admin-notes-box');
+  notesBox.textContent = p.notes || '(aucune note)';
+
+  document.getElementById('admin-modal').classList.add('open');
+  document.getElementById('admin-modal').scrollTop = 0;
 }
 
 /* ── Init ────────────────────────────────────────────────── */
