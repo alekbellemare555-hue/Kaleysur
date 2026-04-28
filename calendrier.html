@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendrier — Kaleysur Wiki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ── Calendar layout ── */
+    .cal-header {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .cal-current-day {
+      flex: 1;
+    }
+    .cal-current-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      margin-bottom: .2rem;
+    }
+    .cal-current-date {
+      font-family: var(--font-title);
+      font-size: 1.5rem;
+      color: var(--gold);
+    }
+    .cal-current-sub {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      margin-top: .15rem;
+    }
+    .year-group {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .year-group label { font-size: .75rem; color: var(--text-muted); }
+    .year-input {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      color: var(--gold);
+      font-family: var(--font-title);
+      font-size: 1rem;
+      padding: .25rem .6rem;
+      border-radius: 4px;
+      width: 100px;
+      text-align: center;
+    }
+    .year-era {
+      font-size: .75rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Moon phases ── */
+    .moons-bar {
+      display: flex;
+      gap: 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: .75rem 1.25rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .moon-item {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      flex: 1;
+      min-width: 140px;
+    }
+    .moon-icon { font-size: 1.4rem; line-height: 1; }
+    .moon-name { font-size: .72rem; color: var(--text-muted); }
+    .moon-phase-name { font-size: .78rem; font-weight: 600; }
+    .moon-cycle { font-size: .68rem; color: var(--text-muted); }
+    .moon-blanche .moon-phase-name { color: #c0ccd8; }
+    .moon-bleue   .moon-phase-name { color: #6090d0; }
+    .moon-rouge   .moon-phase-name { color: #d06060; }
+
+    /* Phase progress bar */
+    .moon-bar-wrap { flex: 1; height: 4px; background: #2a2010; border-radius: 2px; overflow: hidden; }
+    .moon-bar-fill { height: 100%; border-radius: 2px; }
+    .moon-blanche .moon-bar-fill { background: #c0ccd8; }
+    .moon-bleue   .moon-bar-fill { background: #6090d0; }
+    .moon-rouge   .moon-bar-fill { background: #d06060; }
+
+    /* ── Month navigation ── */
+    .month-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: .75rem;
+      gap: 1rem;
+    }
+    .month-nav-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--gold);
+      font-family: var(--font-title);
+      padding: .4rem .9rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: .85rem;
+      transition: all .2s;
+    }
+    .month-nav-btn:hover { background: var(--bg-card-hover); border-color: var(--gold-dark); }
+    .month-nav-btn:disabled { opacity: .3; cursor: default; }
+    .month-title-wrap { text-align: center; flex: 1; }
+    .month-name {
+      font-family: var(--font-title);
+      font-size: 1.3rem;
+      color: var(--gold);
+    }
+    .month-meta {
+      font-size: .72rem;
+      color: var(--text-muted);
+      margin-top: .1rem;
+    }
+    .season-badge {
+      display: inline-block;
+      padding: .1rem .5rem;
+      border-radius: 10px;
+      font-size: .65rem;
+      font-weight: 600;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      margin-left: .4rem;
+    }
+    .saison-hiver   { background: #1a2a4a; color: #8aaad0; border: 1px solid #2a3a6a; }
+    .saison-ete     { background: #3a2a00; color: #d0a020; border: 1px solid #6a4a00; }
+    .saison-automne { background: #3a1a00; color: #d06020; border: 1px solid #6a2a00; }
+
+    /* ── Calendar grid ── */
+    .cal-grid-wrap {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+    }
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+    }
+
+    /* Weekday headers */
+    .cal-weekday {
+      padding: .45rem .2rem;
+      text-align: center;
+      font-size: .65rem;
+      font-family: var(--font-ui);
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    .wd-blanche { color: #b0bcc8; background: rgba(176,188,200,.06); }
+    .wd-bleue   { color: #6090c0; background: rgba(96,144,192,.06); }
+    .wd-rouge   { color: #c06060; background: rgba(192,96,96,.06); }
+
+    /* Day cells */
+    .cal-day {
+      min-height: 52px;
+      padding: .3rem .35rem;
+      border-right: 1px solid rgba(255,255,255,.04);
+      border-bottom: 1px solid rgba(255,255,255,.04);
+      cursor: pointer;
+      transition: background .15s;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: .15rem;
+    }
+    .cal-day:hover { background: rgba(201,162,39,.08); }
+    .cal-day.empty { background: rgba(0,0,0,.15); cursor: default; }
+    .cal-day.today {
+      background: rgba(201,162,39,.15) !important;
+      box-shadow: inset 0 0 0 1.5px var(--gold);
+    }
+    .cal-day.has-event::after {
+      content: '';
+      position: absolute;
+      bottom: 3px; right: 3px;
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--gold);
+    }
+    .cal-day.special { background: rgba(201,162,39,.05); }
+    .cal-day.special .day-num { color: var(--gold); }
+
+    .day-num {
+      font-family: var(--font-title);
+      font-size: .78rem;
+      color: var(--text-secondary);
+      line-height: 1;
+    }
+    .day-badge {
+      font-size: .55rem;
+      padding: .05rem .25rem;
+      border-radius: 3px;
+      background: rgba(201,162,39,.2);
+      color: var(--gold);
+      line-height: 1.3;
+      align-self: flex-start;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+    .today-marker {
+      position: absolute;
+      top: 2px; left: 2px;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 6px var(--gold);
+    }
+
+    /* ── Mini year overview ── */
+    .year-overview {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .75rem;
+      margin-bottom: 1.25rem;
+    }
+    .mini-month {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: .6rem;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .mini-month:hover { border-color: var(--gold-dark); background: var(--bg-card-hover); }
+    .mini-month.active-month { border-color: var(--gold); }
+    .mini-month-name {
+      font-family: var(--font-title);
+      font-size: .72rem;
+      color: var(--gold);
+      margin-bottom: .25rem;
+    }
+    .mini-month-meta { font-size: .62rem; color: var(--text-muted); }
+
+    /* ── Modal ── */
+    .modal-backdrop {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.75);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      width: 380px;
+      max-width: 95vw;
+      box-shadow: 0 20px 60px rgba(0,0,0,.8);
+    }
+    .modal h2 {
+      font-family: var(--font-title);
+      color: var(--gold);
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      padding-bottom: .5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-label { font-size: .75rem; color: var(--text-muted); margin-bottom: .2rem; }
+    .modal-input {
+      width: 100%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      padding: .4rem .6rem;
+      border-radius: 4px;
+      font-size: .85rem;
+      font-family: inherit;
+      resize: vertical;
+    }
+    .modal-input:focus { outline: none; border-color: var(--gold-dark); }
+    .modal-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .35rem;
+      margin: .5rem 0;
+    }
+    .tag-btn {
+      padding: .2rem .55rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      font-size: .68rem;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .tag-btn:hover, .tag-btn.active { background: rgba(201,162,39,.15); border-color: var(--gold-dark); color: var(--gold); }
+    .modal-actions {
+      display: flex;
+      gap: .5rem;
+      margin-top: 1rem;
+    }
+    .modal-btn {
+      flex: 1;
+      padding: .45rem;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      font-family: var(--font-title);
+      font-size: .75rem;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .modal-btn-primary {
+      background: rgba(201,162,39,.15);
+      border-color: var(--gold-dark);
+      color: var(--gold);
+    }
+    .modal-btn-primary:hover { background: rgba(201,162,39,.25); }
+    .modal-btn-secondary {
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+    }
+    .modal-btn-secondary:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+    .modal-btn-danger {
+      background: rgba(180,40,40,.1);
+      border-color: #6a2020;
+      color: #d06060;
+    }
+    .modal-btn-danger:hover { background: rgba(180,40,40,.2); }
+    .modal-set-today-btn {
+      width: 100%;
+      padding: .5rem;
+      border-radius: 4px;
+      border: 1px solid var(--gold-dark);
+      background: rgba(201,162,39,.2);
+      color: var(--gold);
+      font-family: var(--font-title);
+      font-size: .8rem;
+      cursor: pointer;
+      margin-bottom: .75rem;
+      transition: all .15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .4rem;
+    }
+    .modal-set-today-btn:hover { background: rgba(201,162,39,.3); }
+    .modal-set-today-btn.is-today { background: rgba(201,162,39,.3); border-color: var(--gold); }
+
+    /* Events list */
+    .events-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+    .events-section h3 {
+      font-family: var(--font-title);
+      font-size: .8rem;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: .75rem;
+    }
+    .event-item {
+      display: flex;
+      align-items: flex-start;
+      gap: .6rem;
+      padding: .4rem 0;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+      cursor: pointer;
+    }
+    .event-item:last-child { border-bottom: none; }
+    .event-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      flex-shrink: 0;
+      margin-top: .35rem;
+    }
+    .event-date { font-size: .7rem; color: var(--text-muted); white-space: nowrap; }
+    .event-note { font-size: .78rem; color: var(--text-primary); }
+    .event-tag {
+      font-size: .6rem;
+      padding: .05rem .3rem;
+      border-radius: 8px;
+      background: rgba(201,162,39,.15);
+      color: var(--gold);
+    }
+    .no-events { font-size: .8rem; color: var(--text-muted); font-style: italic; }
+  </style>
+</head>
+<body>
+<nav class="top-nav">
+  <a href="index.html" class="nav-brand"><span class="nav-brand-icon">⚜</span><span class="nav-brand-text">Kaleysur</span></a>
+  <div class="nav-right">
+    <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="search-input" type="text" placeholder="Rechercher…" autocomplete="off"><div class="search-results" id="search-results"></div></div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-section"><div class="sidebar-section-title">Navigation</div>
+    <a href="index.html" class="sidebar-link"><span class="icon">🏠</span> Accueil</a>
+    <a href="chronologie.html" class="sidebar-link"><span class="icon">📜</span> Chronologie</a>
+    <a href="carte.html" class="sidebar-link"><span class="icon">🗺️</span> Carte du Monde</a>
+    <a href="calendrier.html" class="sidebar-link"><span class="icon">📅</span> Calendrier</a>
+    <a href="joueurs.html" class="sidebar-link"><span class="icon">🎲</span> Joueurs</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Astoryem</div>
+    <a href="astoryem/astoryem.html" class="sidebar-link"><span class="icon">🌐</span> Astoryem</a>
+    <a href="astoryem/feymundi.html" class="sidebar-link sidebar-sublink"><span class="icon">🏰</span> Feymundi</a>
+    <a href="astoryem/waterflow.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Waterflow</a>
+    <a href="astoryem/ville-tempete.html" class="sidebar-link sidebar-sublink"><span class="icon">⚡</span> Ville Tempête</a>
+    <a href="astoryem/arcanumbra.html" class="sidebar-link sidebar-sublink"><span class="icon">⌛</span> Arcanumbra</a>
+    <a href="astoryem/cite-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌑</span> Cité des Ombres</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Ayakan</div>
+    <a href="ayakan/ayakan.html" class="sidebar-link"><span class="icon">🌐</span> Ayakan</a>
+    <div class="sidebar-region-label">Grand Plateau</div>
+    <a href="ayakan/comhan-de-na.html" class="sidebar-link sidebar-sublink"><span class="icon">⚙️</span> Comhan De Na</a>
+    <a href="ayakan/grand-plateau.html" class="sidebar-link sidebar-sublink"><span class="icon">⚒️</span> Grand Plateau</a>
+    <a href="ayakan/ouestvir.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Ouestvir</a>
+    <div class="sidebar-region-label">Régions</div>
+        <a href="ayakan/creve-glace.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Crève Glace</a>
+    <a href="ayakan/varask.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Varask</a>
+    <a href="ayakan/mornea.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Mornea</a>
+    <a href="ayakan/thyrne.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">♨️</span> Thyrne</a>
+    <a href="ayakan/selvend.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛒</span> Selvend</a>
+    <a href="ayakan/frayakin.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Frayakin</a>
+    <a href="ayakan/solcara.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌟</span> Solcara</a>
+    <a href="ayakan/pyrael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔶</span> Pyraël</a>
+    <a href="ayakan/leth.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Leth</a>
+    <a href="ayakan/faran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Faran</a>
+    <a href="ayakan/chaines-verre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎶</span> Chaînes de Verre</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Musiyav</div>
+    <a href="musiyav/musiyav.html" class="sidebar-link"><span class="icon">🌐</span> Musiyav</a>
+    <div class="sidebar-region-label">Nord</div>
+    <a href="musiyav/terres-gelees.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Terres Gelées</a>
+    <a href="musiyav/munabenn.html" class="sidebar-link sidebar-sublink"><span class="icon">⛏️</span> Munabenn</a>
+    <a href="musiyav/ellirhom.html" class="sidebar-link sidebar-sublink"><span class="icon">🍃</span> Éllirhom</a>
+    <div class="sidebar-region-label">Centre</div>
+    <a href="musiyav/murblan.html" class="sidebar-link sidebar-sublink"><span class="icon">⚖️</span> Murblan</a>
+    <a href="musiyav/caudherra.html" class="sidebar-link sidebar-sublink"><span class="icon">🐘</span> Caudherra</a>
+    <a href="musiyav/brastelma.html" class="sidebar-link sidebar-sublink"><span class="icon">🌿</span> Brastelma</a>
+    <a href="musiyav/solgirne.html" class="sidebar-link sidebar-sublink"><span class="icon">🌾</span> Solgirne</a>
+    <a href="musiyav/cairondel.html" class="sidebar-link sidebar-sublink"><span class="icon">🗿</span> Cairondel</a>
+    <div class="sidebar-region-label">Sud</div>
+    <a href="musiyav/xamaris.html" class="sidebar-link sidebar-sublink"><span class="icon">🚫</span> Xamaris</a>
+    <a href="musiyav/terres-pieuses.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Terres Pieuses</a>
+    <a href="musiyav/auranthil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌲</span> Auranthil</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Personnages & Lore</div>
+    <a href="lore/personnages.html" class="sidebar-link"><span class="icon">🧙</span> Personnages</a>
+    <a href="lore/dieux.html" class="sidebar-link"><span class="icon">✨</span> Dieux & Trinités</a>
+    <a href="lore/organisations.html" class="sidebar-link"><span class="icon">⚔️</span> Organisations</a>
+  </div>
+</aside>
+
+<div class="page-wrapper">
+  <main class="main-content">
+    <nav class="breadcrumb">
+      <a href="index.html">Accueil</a><span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Calendrier de Kaleysur</span>
+    </nav>
+
+    <div class="page-header">
+      <div class="page-category">Référence · Temps</div>
+      <h1 class="page-title">📅 Calendrier de Kaleysur</h1>
+      <p class="page-subtitle">333 jours · 9 mois · Semaine de 9 jours · 3 lunes. Cliquez sur un jour pour le marquer ou y ajouter une note de session.</p>
+    </div>
+
+    <!-- Current day header -->
+    <div class="cal-header">
+      <div class="cal-current-day">
+        <div class="cal-current-label">📍 Jour actuel des joueurs</div>
+        <div class="cal-current-date" id="display-date">—</div>
+        <div class="cal-current-sub" id="display-sub">—</div>
+      </div>
+      <div class="year-group">
+        <label>Année EdT</label>
+        <input class="year-input" type="number" id="year-input" value="1" min="0" max="9999">
+        <span class="year-era">EdT</span>
+      </div>
+    </div>
+
+    <!-- Moon phases -->
+    <div class="moons-bar">
+      <div class="moon-item moon-blanche">
+        <div class="moon-icon" id="moon-blanche-icon">🌕</div>
+        <div>
+          <div class="moon-name">Lune Blanche · cycle 29j</div>
+          <div class="moon-phase-name" id="moon-blanche-phase">—</div>
+          <div class="moon-cycle" id="moon-blanche-day">—</div>
+        </div>
+        <div style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:.2rem;">
+          <div class="moon-bar-wrap"><div class="moon-bar-fill" id="moon-blanche-bar" style="width:0%"></div></div>
+        </div>
+      </div>
+      <div style="width:1px; background:var(--border)"></div>
+      <div class="moon-item moon-bleue">
+        <div class="moon-icon" id="moon-bleue-icon">🌕</div>
+        <div>
+          <div class="moon-name">Lune Bleue · cycle 41j</div>
+          <div class="moon-phase-name" id="moon-bleue-phase">—</div>
+          <div class="moon-cycle" id="moon-bleue-day">—</div>
+        </div>
+        <div style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:.2rem;">
+          <div class="moon-bar-wrap"><div class="moon-bar-fill" id="moon-bleue-bar" style="width:0%"></div></div>
+        </div>
+      </div>
+      <div style="width:1px; background:var(--border)"></div>
+      <div class="moon-item moon-rouge">
+        <div class="moon-icon" id="moon-rouge-icon">🌕</div>
+        <div>
+          <div class="moon-name">Lune Rouge · cycle 18j</div>
+          <div class="moon-phase-name" id="moon-rouge-phase">—</div>
+          <div class="moon-cycle" id="moon-rouge-day">—</div>
+        </div>
+        <div style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:.2rem;">
+          <div class="moon-bar-wrap"><div class="moon-bar-fill" id="moon-rouge-bar" style="width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Month nav -->
+    <div class="month-nav">
+      <button class="month-nav-btn" id="btn-prev">◀ Précédent</button>
+      <div class="month-title-wrap">
+        <div class="month-name" id="month-title">—</div>
+        <div class="month-meta" id="month-meta">—</div>
+      </div>
+      <button class="month-nav-btn" id="btn-next">Suivant ▶</button>
+    </div>
+
+    <!-- Calendar grid -->
+    <div class="cal-grid-wrap">
+      <div class="cal-grid" id="cal-grid">
+        <!-- Weekday headers -->
+        <div class="cal-weekday wd-blanche">Precia</div>
+        <div class="cal-weekday wd-blanche">Secia</div>
+        <div class="cal-weekday wd-blanche">Trecia</div>
+        <div class="cal-weekday wd-bleue">Pregael</div>
+        <div class="cal-weekday wd-bleue">Segael</div>
+        <div class="cal-weekday wd-bleue">Trigael</div>
+        <div class="cal-weekday wd-rouge">Presgard</div>
+        <div class="cal-weekday wd-rouge">Deusgard</div>
+        <div class="cal-weekday wd-rouge">Trisgard</div>
+      </div>
+    </div>
+
+    <!-- Year overview -->
+    <h2 style="font-family:var(--font-title);font-size:.85rem;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.75rem;margin-top:1.5rem;">Vue d'ensemble de l'Année</h2>
+    <div class="year-overview" id="year-overview"></div>
+
+    <!-- Events list -->
+    <div class="events-section">
+      <h3>📌 Événements & Notes de Session</h3>
+      <div id="events-list"><p class="no-events">Aucun événement noté. Cliquez sur un jour pour ajouter une note.</p></div>
+    </div>
+
+  </main>
+</div>
+<footer><span>⚜ Kaleysur Wiki</span><span style="color:var(--text-muted)">Wiki de campagne D&D</span></footer>
+
+<!-- Day modal -->
+<div class="modal-backdrop" id="modal-backdrop" onclick="closeModalIfBackdrop(event)">
+  <div class="modal">
+    <h2 id="modal-title">Jour</h2>
+    <button class="modal-set-today-btn" id="modal-set-today" onclick="setAsToday()">
+      <span>📍</span> <span id="modal-today-text">Marquer comme jour actuel des joueurs</span>
+    </button>
+    <div class="modal-label">Note de session</div>
+    <textarea class="modal-input" id="modal-note" rows="3" placeholder="Que s'est-il passé ce jour ? (combat, voyage, repos…)"></textarea>
+    <div class="modal-label" style="margin-top:.5rem">Étiquette</div>
+    <div class="modal-tags" id="modal-tags">
+      <button class="tag-btn" data-tag="">Aucune</button>
+      <button class="tag-btn" data-tag="session">Session</button>
+      <button class="tag-btn" data-tag="combat">Combat</button>
+      <button class="tag-btn" data-tag="voyage">Voyage</button>
+      <button class="tag-btn" data-tag="repos">Repos</button>
+      <button class="tag-btn" data-tag="evenement">Événement</button>
+      <button class="tag-btn" data-tag="révélation">Révélation</button>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-primary" onclick="saveModal()">💾 Enregistrer</button>
+      <button class="modal-btn modal-btn-danger" onclick="deleteEvent()">🗑 Supprimer</button>
+      <button class="modal-btn modal-btn-secondary" onclick="closeModal()">✕ Annuler</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/wiki.js"></script>
+<script>
+// ════════════════════════════════════════════════════════
+//  CALENDAR DATA
+// ════════════════════════════════════════════════════════
+const MONTHS = [
+  { name: 'Réolta',   days: 41, saison: 'hiver',   icon: '🌙', trinite: 'Trinité des Lunes',      color: '#1a2a4a' },
+  { name: 'Togail',   days: 37, saison: 'hiver',   icon: '🪨', trinite: 'Trinité des Maçons',     color: '#1e2a3a' },
+  { name: 'Amrean',   days: 37, saison: 'hiver',   icon: '⌛', trinite: 'Trinité du Temps',       color: '#1a2040' },
+  { name: 'Brònair',  days: 37, saison: 'ete',     icon: '💛', trinite: 'Trinité des Émotions',   color: '#3a2800' },
+  { name: 'Féasach',  days: 35, saison: 'ete',     icon: '🌿', trinite: 'Trinité de la Nature',   color: '#1e3010' },
+  { name: 'Soillse',  days: 31, saison: 'ete',     icon: '☀️', trinite: 'Trinité de la Lumière',  color: '#3a2a00' },
+  { name: 'Cogadhán', days: 38, saison: 'automne', icon: '⚔️', trinite: 'Trinité des Conflits',   color: '#3a1000' },
+  { name: 'Fiadhra',  days: 38, saison: 'automne', icon: '🐺', trinite: 'Trinité du Bestial',     color: '#2a1a00' },
+  { name: 'Sealbh',   days: 39, saison: 'automne', icon: '🗄️', trinite: 'Trinité des Fondements', color: '#201a10' },
+];
+
+const WEEK_DAYS = [
+  { name: 'Precia',   group: 'blanche' },
+  { name: 'Secia',    group: 'blanche' },
+  { name: 'Trecia',   group: 'blanche' },
+  { name: 'Pregael',  group: 'bleue'   },
+  { name: 'Segael',   group: 'bleue'   },
+  { name: 'Trigael',  group: 'bleue'   },
+  { name: 'Presgard', group: 'rouge'   },
+  { name: 'Deusgard', group: 'rouge'   },
+  { name: 'Trisgard', group: 'rouge'   },
+];
+
+const MOONS = [
+  { id: 'blanche', name: 'Lune Blanche', cycle: 29 },
+  { id: 'bleue',   name: 'Lune Bleue',   cycle: 41 },
+  { id: 'rouge',   name: 'Lune Rouge',   cycle: 18 },
+];
+
+// Special days: absolute day number → label
+const SPECIAL_DAYS = {
+  190: { label: '☀️ Zénith', desc: 'Zénith de l\'Année — 3 Soillse. Jour sacré dans tout Kaleysur.' },
+};
+
+// Month start offsets (0-indexed weekday)
+// Computed from cumulative days: offset = (cumDaysBefore) % 9
+const MONTH_STARTS = (() => {
+  let cum = 0;
+  return MONTHS.map(m => {
+    const offset = cum % 9;
+    cum += m.days;
+    return offset;
+  });
+})();
+
+// Absolute day number: first day of each month
+const MONTH_FIRST_DAY = (() => {
+  let d = 1;
+  return MONTHS.map(m => { const s = d; d += m.days; return s; });
+})();
+
+// ════════════════════════════════════════════════════════
+//  STATE  (persisted in localStorage)
+// ════════════════════════════════════════════════════════
+const STORAGE_KEY = 'kaleysur-calendrier';
+
+function loadState() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+  } catch { return {}; }
+}
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+const saved = loadState();
+const state = {
+  currentDay:  saved.currentDay  ?? 1,
+  currentYear: saved.currentYear ?? 1,
+  events:      saved.events      ?? {},  // key: "Y-D" → { note, tag }
+};
+
+let viewMonth = 0; // 0-8
+
+// ════════════════════════════════════════════════════════
+//  HELPERS
+// ════════════════════════════════════════════════════════
+function monthOfDay(absDay) {
+  let cum = 0;
+  for (let i = 0; i < MONTHS.length; i++) {
+    cum += MONTHS[i].days;
+    if (absDay <= cum) return i;
+  }
+  return MONTHS.length - 1;
+}
+function dayInMonth(absDay, mIdx) {
+  return absDay - MONTH_FIRST_DAY[mIdx] + 1;
+}
+function weekdayOf(absDay) { return (absDay - 1) % 9; } // 0-indexed
+function weekdayName(absDay) { return WEEK_DAYS[weekdayOf(absDay)].name; }
+
+function eventKey(year, absDay) { return `${year}-${absDay}`; }
+
+function moonPhase(absDay, cycle) {
+  // 0 = new, 0.5 = full
+  return ((absDay - 1) % cycle) / cycle;
+}
+function moonEmoji(phase) {
+  const p = phase;
+  if (p < 0.0625) return '🌑';
+  if (p < 0.1875) return '🌒';
+  if (p < 0.3125) return '🌓';
+  if (p < 0.4375) return '🌔';
+  if (p < 0.5625) return '🌕';
+  if (p < 0.6875) return '🌖';
+  if (p < 0.8125) return '🌗';
+  if (p < 0.9375) return '🌘';
+  return '🌑';
+}
+function moonPhaseName(phase) {
+  const p = phase;
+  if (p < 0.0625 || p >= 0.9375) return 'Nouvelle lune';
+  if (p < 0.25) return 'Croissant';
+  if (p < 0.4375) return 'Premier quartier';
+  if (p < 0.5625) return 'Pleine lune';
+  if (p < 0.75) return 'Dernier quartier';
+  return 'Décroissant';
+}
+
+function formatDate(absDay, year) {
+  const mIdx = monthOfDay(absDay);
+  const dim   = dayInMonth(absDay, mIdx);
+  const m     = MONTHS[mIdx];
+  return `${dim} ${m.name} — An ${year} EdT`;
+}
+
+function saison(mIdx) {
+  return { hiver:'Hiver', ete:'Été', automne:'Automne' }[MONTHS[mIdx].saison];
+}
+
+// ════════════════════════════════════════════════════════
+//  RENDER
+// ════════════════════════════════════════════════════════
+function render() {
+  renderHeader();
+  renderMoons();
+  renderMonth();
+  renderYearOverview();
+  renderEvents();
+}
+
+function renderHeader() {
+  const d = state.currentDay;
+  const y = state.currentYear;
+  const mIdx = monthOfDay(d);
+  const m = MONTHS[mIdx];
+  document.getElementById('display-date').textContent = formatDate(d, y);
+  document.getElementById('display-sub').textContent =
+    `${weekdayName(d)} · ${saison(mIdx)} · ${m.trinite} ${m.icon}`;
+  document.getElementById('year-input').value = y;
+}
+
+function renderMoons() {
+  const d = state.currentDay;
+  MOONS.forEach(moon => {
+    const phase = moonPhase(d, moon.cycle);
+    const dayInCycle = ((d - 1) % moon.cycle) + 1;
+    document.getElementById(`moon-${moon.id}-icon`).textContent = moonEmoji(phase);
+    document.getElementById(`moon-${moon.id}-phase`).textContent = moonPhaseName(phase);
+    document.getElementById(`moon-${moon.id}-day`).textContent = `Jour ${dayInCycle} / ${moon.cycle}`;
+    document.getElementById(`moon-${moon.id}-bar`).style.width = Math.round(phase * 100) + '%';
+  });
+}
+
+function renderMonth() {
+  const m = MONTHS[viewMonth];
+  const offset = MONTH_STARTS[viewMonth];
+  const firstAbsDay = MONTH_FIRST_DAY[viewMonth];
+  const y = state.currentYear;
+
+  // Title
+  document.getElementById('month-title').innerHTML =
+    `${m.icon} ${m.name} <span class="season-badge saison-${m.saison}">${saison(viewMonth)}</span>`;
+  document.getElementById('month-meta').textContent =
+    `${m.days} jours · ${m.trinite} · Jours ${firstAbsDay}–${firstAbsDay + m.days - 1}`;
+
+  // Prev/next
+  document.getElementById('btn-prev').disabled = viewMonth === 0;
+  document.getElementById('btn-next').disabled = viewMonth === 8;
+
+  // Grid: remove old day cells
+  const grid = document.getElementById('cal-grid');
+  // Remove all day cells (keep weekday headers = first 9 children)
+  while (grid.children.length > 9) grid.removeChild(grid.lastChild);
+
+  // Add blank cells for offset
+  for (let i = 0; i < offset; i++) {
+    const blank = document.createElement('div');
+    blank.className = 'cal-day empty';
+    grid.appendChild(blank);
+  }
+
+  // Add day cells
+  for (let d = 1; d <= m.days; d++) {
+    const absDay = firstAbsDay + d - 1;
+    const key = eventKey(y, absDay);
+    const ev = state.events[key];
+    const isToday = absDay === state.currentDay;
+    const isSpecial = !!SPECIAL_DAYS[absDay];
+
+    const cell = document.createElement('div');
+    cell.className = 'cal-day' +
+      (isToday ? ' today' : '') +
+      (ev ? ' has-event' : '') +
+      (isSpecial ? ' special' : '');
+    cell.dataset.absDay = absDay;
+    cell.title = isSpecial ? SPECIAL_DAYS[absDay].desc : '';
+
+    if (isToday) {
+      const marker = document.createElement('div');
+      marker.className = 'today-marker';
+      cell.appendChild(marker);
+    }
+
+    const num = document.createElement('div');
+    num.className = 'day-num';
+    num.textContent = d;
+    cell.appendChild(num);
+
+    if (isSpecial && SPECIAL_DAYS[absDay]) {
+      const badge = document.createElement('div');
+      badge.className = 'day-badge';
+      badge.textContent = SPECIAL_DAYS[absDay].label;
+      cell.appendChild(badge);
+    }
+    if (ev && ev.note) {
+      const badge = document.createElement('div');
+      badge.className = 'day-badge';
+      badge.textContent = ev.tag ? `[${ev.tag}] ${ev.note}` : ev.note;
+      badge.style.opacity = '.85';
+      cell.appendChild(badge);
+    }
+
+    cell.addEventListener('click', () => openModal(absDay));
+    grid.appendChild(cell);
+  }
+}
+
+function renderYearOverview() {
+  const ov = document.getElementById('year-overview');
+  ov.innerHTML = '';
+  MONTHS.forEach((m, i) => {
+    const div = document.createElement('div');
+    div.className = 'mini-month' + (i === viewMonth ? ' active-month' : '');
+    const fd = MONTH_FIRST_DAY[i];
+    const ld = fd + m.days - 1;
+    const isCurrentMonth = state.currentDay >= fd && state.currentDay <= ld;
+    div.innerHTML = `
+      <div class="mini-month-name">${m.icon} ${m.name}${isCurrentMonth ? ' <span style="color:var(--gold);font-size:.6rem">◀ ici</span>' : ''}</div>
+      <div class="mini-month-meta">${m.days} jours · ${saison(i)} · J.${fd}–${ld}</div>
+    `;
+    div.addEventListener('click', () => { viewMonth = i; render(); });
+    ov.appendChild(div);
+  });
+}
+
+function renderEvents() {
+  const list = document.getElementById('events-list');
+  const y = state.currentYear;
+  const entries = Object.entries(state.events)
+    .filter(([k, v]) => k.startsWith(y + '-') && v.note)
+    .map(([k, v]) => ({ absDay: parseInt(k.split('-')[1]), ...v }))
+    .sort((a, b) => a.absDay - b.absDay);
+
+  if (!entries.length) {
+    list.innerHTML = '<p class="no-events">Aucun événement noté. Cliquez sur un jour pour ajouter une note.</p>';
+    return;
+  }
+
+  list.innerHTML = entries.map(ev => {
+    const mIdx = monthOfDay(ev.absDay);
+    const dim  = dayInMonth(ev.absDay, mIdx);
+    const m    = MONTHS[mIdx];
+    return `
+      <div class="event-item" onclick="openModal(${ev.absDay})" title="Cliquer pour modifier">
+        <div class="event-dot"></div>
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap">
+            <span class="event-date">${dim} ${m.name}</span>
+            ${ev.tag ? `<span class="event-tag">${ev.tag}</span>` : ''}
+          </div>
+          <div class="event-note">${ev.note}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════════
+//  MODAL
+// ════════════════════════════════════════════════════════
+let modalDay = null;
+
+function openModal(absDay) {
+  modalDay = absDay;
+  const mIdx = monthOfDay(absDay);
+  const dim  = dayInMonth(absDay, mIdx);
+  const m    = MONTHS[mIdx];
+  const y    = state.currentYear;
+  const key  = eventKey(y, absDay);
+  const ev   = state.events[key] || {};
+  const isToday = absDay === state.currentDay;
+  const special = SPECIAL_DAYS[absDay];
+
+  document.getElementById('modal-title').innerHTML =
+    `${dim} ${m.name} ${m.icon} — ${weekdayName(absDay)}` +
+    (special ? `<br><small style="color:var(--gold);font-size:.7rem">${special.label}</small>` : '');
+
+  const todayBtn = document.getElementById('modal-set-today');
+  const todayText = document.getElementById('modal-today-text');
+  todayBtn.className = 'modal-set-today-btn' + (isToday ? ' is-today' : '');
+  todayText.textContent = isToday
+    ? '✓ Jour actuel des joueurs'
+    : 'Marquer comme jour actuel des joueurs';
+
+  document.getElementById('modal-note').value = ev.note || '';
+
+  // Tags
+  document.querySelectorAll('.tag-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tag === (ev.tag || ''));
+  });
+
+  document.getElementById('modal-backdrop').classList.add('open');
+  document.getElementById('modal-note').focus();
+}
+
+function closeModal() {
+  document.getElementById('modal-backdrop').classList.remove('open');
+  modalDay = null;
+}
+
+function closeModalIfBackdrop(e) {
+  if (e.target === document.getElementById('modal-backdrop')) closeModal();
+}
+
+function setAsToday() {
+  if (!modalDay) return;
+  state.currentDay = modalDay;
+  // Jump to that month
+  viewMonth = monthOfDay(modalDay);
+  saveState();
+  render();
+  // Update the button
+  const todayBtn = document.getElementById('modal-set-today');
+  todayBtn.className = 'modal-set-today-btn is-today';
+  document.getElementById('modal-today-text').textContent = '✓ Jour actuel des joueurs';
+}
+
+function saveModal() {
+  if (!modalDay) return;
+  const note = document.getElementById('modal-note').value.trim();
+  const tag  = document.querySelector('.tag-btn.active')?.dataset.tag || '';
+  const key  = eventKey(state.currentYear, modalDay);
+
+  if (note) {
+    state.events[key] = { note, tag };
+  } else {
+    delete state.events[key];
+  }
+  saveState();
+  render();
+  closeModal();
+}
+
+function deleteEvent() {
+  if (!modalDay) return;
+  const key = eventKey(state.currentYear, modalDay);
+  delete state.events[key];
+  saveState();
+  render();
+  closeModal();
+}
+
+// ════════════════════════════════════════════════════════
+//  INIT & EVENTS
+// ════════════════════════════════════════════════════════
+document.getElementById('btn-prev').addEventListener('click', () => { if (viewMonth > 0) { viewMonth--; render(); } });
+document.getElementById('btn-next').addEventListener('click', () => { if (viewMonth < 8) { viewMonth++; render(); } });
+
+document.getElementById('year-input').addEventListener('change', () => {
+  state.currentYear = parseInt(document.getElementById('year-input').value) || 1;
+  saveState();
+  render();
+});
+
+document.querySelectorAll('.tag-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if (document.getElementById('modal-backdrop').classList.contains('open')) return;
+  if (e.key === 'ArrowLeft'  && viewMonth > 0) { viewMonth--; render(); }
+  if (e.key === 'ArrowRight' && viewMonth < 8) { viewMonth++; render(); }
+});
+
+// Start on current month
+viewMonth = monthOfDay(state.currentDay);
+render();
+</script>
+</body>
+</html>

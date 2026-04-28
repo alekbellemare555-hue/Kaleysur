@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comhan De Na — Kaleysur Wiki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<nav class="top-nav">
+  <a href="../index.html" class="nav-brand"><span class="nav-brand-icon">⚜</span><span class="nav-brand-text">Kaleysur</span></a>
+  <div class="nav-right">
+    <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="search-input" type="text" placeholder="Rechercher…" autocomplete="off"><div class="search-results" id="search-results"></div></div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-section"><div class="sidebar-section-title">Navigation</div>
+    <a href="../index.html" class="sidebar-link"><span class="icon">🏠</span> Accueil</a>
+    <a href="../chronologie.html" class="sidebar-link"><span class="icon">📜</span> Chronologie</a>
+    <a href="../carte.html" class="sidebar-link"><span class="icon">🗺️</span> Carte du Monde</a>
+    <a href="../calendrier.html" class="sidebar-link"><span class="icon">📅</span> Calendrier</a>
+    <a href="../joueurs.html" class="sidebar-link"><span class="icon">🎲</span> Joueurs</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Astoryem</div>
+    <a href="../astoryem/astoryem.html" class="sidebar-link"><span class="icon">🌐</span> Astoryem</a>
+    <a href="../astoryem/feymundi.html" class="sidebar-link sidebar-sublink"><span class="icon">🏰</span> Feymundi</a>
+    <a href="../astoryem/waterflow.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Waterflow</a>
+    <a href="../astoryem/ville-tempete.html" class="sidebar-link sidebar-sublink"><span class="icon">⚡</span> Ville Tempête</a>
+    <a href="../astoryem/arcanumbra.html" class="sidebar-link sidebar-sublink"><span class="icon">⌛</span> Arcanumbra</a>
+    <a href="../astoryem/cite-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌑</span> Cité des Ombres</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Ayakan</div>
+    <a href="ayakan.html" class="sidebar-link"><span class="icon">🌐</span> Ayakan</a>
+    <div class="sidebar-region-label">Grand Plateau</div>
+    <a href="comhan-de-na.html" class="sidebar-link sidebar-sublink"><span class="icon">⚙️</span> Comhan De Na</a>
+    <a href="grand-plateau.html" class="sidebar-link sidebar-sublink"><span class="icon">⚒️</span> Grand Plateau</a>
+    <a href="armalak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Armalak</a>
+    <a href="fios.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔬</span> Fios</a>
+    <a href="indelair.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚗️</span> Indelair</a>
+    <a href="lukd-oigrid.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Lukd Oigrid</a>
+    <a href="lukd-naek.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🪡</span> Lukd Naek</a>
+    <a href="lukd-tagil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏗️</span> Lukd Tagil</a>
+    <a href="lukd-trenay.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐎</span> Lukd Trenay</a>
+    <a href="lukd-tuanak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Lukd Tuanak</a>
+    <a href="creidak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🕊️</span> Creidak</a>
+    <a href="curcodak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎪</span> Curcodak</a>
+    <div class="sidebar-region-label">Ouestvir</div>
+    <a href="ouestvir.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Ouestvir</a>
+    <a href="yokoki.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Yokoki</a>
+    <a href="laryok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Laryok</a>
+    <a href="yoklar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Yoklar</a>
+    <a href="kasvir.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Kasvir</a>
+    <a href="rusvar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Rusvar</a>
+    <a href="sordas.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔔</span> Sordas</a>
+    <a href="sunkur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Sunkur</a>
+    <a href="portlune.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Portlune</a>
+    <a href="kayadur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Kayadur</a>
+    <a href="zodory.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Zodory</a>
+    <a href="kolandur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Kolandur</a>
+    <a href="staurdur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Staurdur</a>
+    <div class="sidebar-region-label">Régions</div>
+        <a href="creve-glace.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Crève Glace</a>
+    <a href="varask.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Varask</a>
+    <a href="mornea.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Mornea</a>
+    <a href="thyrne.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">♨️</span> Thyrne</a>
+    <a href="selvend.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛒</span> Selvend</a>
+    <a href="frayakin.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Frayakin</a>
+    <a href="solcara.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌟</span> Solcara</a>
+    <a href="pyrael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔶</span> Pyraël</a>
+    <a href="leth.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Leth</a>
+    <a href="faran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Faran</a>
+    <a href="chaines-verre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎶</span> Chaînes de Verre</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Musiyav</div>
+    <a href="../musiyav/musiyav.html" class="sidebar-link"><span class="icon">🌐</span> Musiyav</a>
+    <div class="sidebar-region-label">Nord</div>
+    <a href="../musiyav/terres-gelees.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Terres Gelées</a>
+    <a href="../musiyav/munabenn.html" class="sidebar-link sidebar-sublink"><span class="icon">⛏️</span> Munabenn</a>
+    <a href="../musiyav/creastail.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚡</span> Creastail</a>
+    <a href="../musiyav/stasmoc.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Stasmoc</a>
+    <a href="../musiyav/clagrayn.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Clagrayn</a>
+    <a href="../musiyav/fedhidom.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌑</span> Fedhidom</a>
+    <a href="../musiyav/cricrosal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Cricrosal</a>
+    <a href="../musiyav/ellirhom.html" class="sidebar-link sidebar-sublink"><span class="icon">🍃</span> Éllirhom</a>
+    <div class="sidebar-region-label">Centre</div>
+    <a href="../musiyav/murblan.html" class="sidebar-link sidebar-sublink"><span class="icon">⚖️</span> Murblan</a>
+    <a href="../musiyav/bekai-keal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Bekai Keal</a>
+    <a href="../musiyav/thylkarok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎨</span> Thylkarok</a>
+    <a href="../musiyav/carroval.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🗿</span> Carroval</a>
+    <a href="../musiyav/caudherra.html" class="sidebar-link sidebar-sublink"><span class="icon">🐘</span> Caudherra</a>
+    <a href="../musiyav/saldromil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎵</span> Saldromil</a>
+    <a href="../musiyav/kandor-zei.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Kandor-Zeï</a>
+    <a href="../musiyav/mirsha-lu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐘</span> Mirsha Lû</a>
+    <a href="../musiyav/ukar-tal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📜</span> Ukar Tal</a>
+    <a href="../musiyav/brastelma.html" class="sidebar-link sidebar-sublink"><span class="icon">🌿</span> Brastelma</a>
+    <a href="../musiyav/xalatlal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐆</span> Xalatlal</a>
+    <a href="../musiyav/tochion.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Tochion</a>
+    <a href="../musiyav/yabalta.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Yabalta</a>
+    <a href="../musiyav/solgirne.html" class="sidebar-link sidebar-sublink"><span class="icon">🌾</span> Solgirne</a>
+    <a href="../musiyav/varnestal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Varnestal</a>
+    <a href="../musiyav/linvelar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌲</span> Linvelar</a>
+    <a href="../musiyav/eldmire.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐟</span> Eldmire</a>
+    <a href="../musiyav/cairondel.html" class="sidebar-link sidebar-sublink"><span class="icon">🗿</span> Cairondel</a>
+    <a href="../musiyav/gravantempe.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏔️</span> Gravantempe</a>
+    <a href="../musiyav/treufloran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Treufloran</a>
+    <a href="../musiyav/valtendre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Valtendre</a>
+    <div class="sidebar-region-label">Ouest</div>
+    <a href="../musiyav/valacorra.html" class="sidebar-link sidebar-sublink"><span class="icon">⚜️</span> Valacorra</a>
+    <a href="../musiyav/aunthrevin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Aunthrevin</a>
+    <a href="../musiyav/vendrolis.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Vendrolis</a>
+    <a href="../musiyav/darn-merath.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Darn Merath</a>
+    <a href="../musiyav/dusalain.html" class="sidebar-link sidebar-sublink"><span class="icon">🏜️</span> Dusalain</a>
+    <a href="../musiyav/sarathiil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Sarathiil</a>
+    <a href="../musiyav/akalima.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Akalima</a>
+    <a href="../musiyav/yndarev.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Yndarev</a>
+    <a href="../musiyav/sillu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Sillu</a>
+    <div class="sidebar-region-label">Sud</div>
+    <a href="../musiyav/xamaris.html" class="sidebar-link sidebar-sublink"><span class="icon">🚫</span> Xamaris</a>
+    <a href="../musiyav/xakaril.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Xakaril</a>
+    <a href="../musiyav/marolzhad.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚖️</span> Marolzhad</a>
+    <a href="../musiyav/dorvenkar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚒️</span> Dorvenkar</a>
+    <a href="../musiyav/naskarrem.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Naskarrem</a>
+    <a href="../musiyav/khaelbar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Khaëlbar</a>
+    <a href="../musiyav/tol-vekrah.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📖</span> Tol Vekrah</a>
+    <a href="../musiyav/krelsum.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🧱</span> Krelsum</a>
+    <a href="../musiyav/falstrein.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Falstrein</a>
+    <a href="../musiyav/terres-pieuses.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Terres Pieuses</a>
+    <a href="../musiyav/templum-triarii.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛪</span> Templum Triarii</a>
+    <a href="../musiyav/forge-vivante.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Forge Vivante</a>
+    <a href="../musiyav/isvarun.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌅</span> Isvarun</a>
+    <a href="../musiyav/callafhar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Callafhar</a>
+    <a href="../musiyav/auranthil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌲</span> Auranthil</a>
+    <a href="../musiyav/elvar-tyl.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌳</span> Elvarë Tyl</a>
+    <a href="../musiyav/lunemiral.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌙</span> Lunemiral</a>
+    <a href="../musiyav/miriathael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Mirithaël</a>
+    <a href="../musiyav/faelorrin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Faelorrin</a>
+    <div class="sidebar-region-label">Est</div>
+    <a href="../musiyav/terres-sauvages.html" class="sidebar-link sidebar-sublink"><span class="icon">🌋</span> Terres Sauvages</a>
+    <a href="../musiyav/kaelyth.html" class="sidebar-link sidebar-sublink"><span class="icon">⚔️</span> Viremarche</a>
+    <a href="../musiyav/briseneige.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Briseneige</a>
+    <div class="sidebar-region-label">Terres Isolées</div>
+    <a href="../musiyav/tinneas.html" class="sidebar-link sidebar-sublink"><span class="icon">🦴</span> Tinneas A'Bhàis</a>
+    <a href="../musiyav/shurakai.html" class="sidebar-link sidebar-sublink"><span class="icon">🌫️</span> Shurakai</a>
+    <a href="../musiyav/narkun.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Narkûn</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Régions Éloignées</div>
+    <a href="../musiyav/anneau-dieux.html" class="sidebar-link"><span class="icon">⚫</span> Anneau des Dieux</a>
+    <a href="../musiyav/archipel-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌙</span> Archipel des Ombres</a>
+    <a href="../musiyav/darnobscur.html" class="sidebar-link sidebar-sublink"><span class="icon">🩸</span> Darnobscur</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Personnages & Lore</div>
+    <a href="../lore/personnages.html" class="sidebar-link"><span class="icon">🧙</span> Personnages</a>
+    <a href="../lore/journal-arzi.html" class="sidebar-link sidebar-sublink"><span class="icon">📖</span> Journal d'Arzi</a>
+    <a href="../lore/organisations.html" class="sidebar-link"><span class="icon">⚔️</span> Organisations</a>
+    <a href="../lore/dieux.html" class="sidebar-link"><span class="icon">✨</span> Dieux & Trinités</a>
+  </div>
+</aside>
+
+<div class="page-wrapper">
+  <main class="main-content">
+    <nav class="breadcrumb">
+      <a href="../index.html">Accueil</a><span class="breadcrumb-sep">›</span>
+      <a href="ayakan.html">Ayakan</a><span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Comhan De Na</span>
+    </nav>
+
+    <div class="page-header">
+      <div class="page-category">Cité-Guilde · Grand Plateau · Ayakan</div>
+      <h1 class="page-title">⚔️ Comhan De Na</h1>
+      <p class="page-subtitle">Le Cœur Battant du Grand Plateau — Cité de la technomagie, des guildes et du mérite.</p>
+    </div>
+
+    <div class="infobox">
+      <div class="infobox-title">Comhan De Na</div>
+      <div class="infobox-image">⚔️</div>
+      <table class="infobox-table">
+        <tr><td>Type</td><td>Cité-guilde / capitale industrielle</td></tr>
+        <tr><td>Région</td><td>Grand Plateau, <a href="ayakan.html">Ayakan</a></td></tr>
+        <tr><td>Gouvernement</td><td>Conseil des Guildes (élu annuellement)</td></tr>
+        <tr><td>Guildes majeures</td><td>10 guildes mères</td></tr>
+        <tr><td>Monnaie</td><td>Trinar</td></tr>
+        <tr><td>Particularité</td><td>Méritocratie stricte, technomagie omniprésente</td></tr>
+      </table>
+    </div>
+
+    <div class="toc" id="auto-toc"><div class="toc-title">Table des matières</div></div>
+
+    <h2 id="presentation">La Cité-Guilde</h2>
+    <p>Comhan De Na est un réseau urbain unique en Kaleysur : chaque quartier thématique est géré par une guilde mère. Il n'y a pas de roi. Un Conseil des Guildes, élu annuellement par les dirigeants des dix guildes majeures, est responsable de la loi, de la politique extérieure et des grands projets.</p>
+    <p>Le Grand Plateau fonctionne selon une stricte méritocratie : la compétence visible et la contribution utile sont récompensées. La pauvreté y est rare ; les personnes sans guilde vivent en marge et sont regardées avec méfiance, à moins qu'elles ne prouvent rapidement leur valeur. <em>« Je peux »</em> vaut mieux que <em>« je sais »</em> — une preuve courte, un essai propre, un résultat net.</p>
+    <blockquote>« L'air embaume la cire chaude, l'huile propre et le cuivre tiède. Des wagons luisants glissent vers des ascenseurs qui disparaissent dans la pierre. »</blockquote>
+
+    <h2 id="guildes">Les Dix Guildes Majeures</h2>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-icon">⚔️</span>
+        <div class="card-name" style="color:var(--gold)">Armalak</div>
+        <div class="card-desc">Défense et sécurité. Fournit les cohortes de gardes permanentes, les armures technomagiques et valide l'aptitude au combat des cristaux d'atelier.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">📚</span>
+        <div class="card-name" style="color:var(--gold)">Fios</div>
+        <div class="card-desc">Savoirs et recherche. Maintient les Galeries de Codification et gère les standards techniques de toute la cité.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">⚗️</span>
+        <div class="card-name" style="color:var(--gold)">Indelair</div>
+        <div class="card-desc">Application technomagique. Développe et intègre les cristaux d'ancrage, d'impulsion, de mémoire et de canalisation dans les appareils civils et militaires.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">⛏️</span>
+        <div class="card-name" style="color:var(--gold)">Lukd Oigrid</div>
+        <div class="card-desc">Mines et métallurgie. Approvisionne la cité en métaux rares et en cristaux bruts depuis les tunnels souterrains et les gisements du Plateau.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🔨</span>
+        <div class="card-name" style="color:var(--gold)">Lukd Naek</div>
+        <div class="card-desc">Artisanat d'excellence. Produit les pièces certifiées et les composants de haute précision disponibles à la Couronne des Halles.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🏗️</span>
+        <div class="card-name" style="color:var(--gold)">Lukd Tagil</div>
+        <div class="card-desc">Bâtisseurs et génie civil. Responsables de la verrière, des rails souterrains, des ascenseurs et de toute infrastructure urbaine.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🦎</span>
+        <div class="card-name" style="color:var(--gold)">Lukd Trenay</div>
+        <div class="card-desc">Créatures et symbioses. Étudie et exploite les symbioses entre créatures vivantes et appareils technomagiques dans les conservatoires spécialisés.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🌾</span>
+        <div class="card-name" style="color:var(--gold)">Lukd Tuanak</div>
+        <div class="card-desc">Agriculture et gastronomie. Fournit les légumes, pains et repas collectifs servis dans les cantines régulières de la Couronne des Halles.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🕯️</span>
+        <div class="card-name" style="color:var(--gold)">Creidak</div>
+        <div class="card-desc">Spiritualités et rites. Veille à ce que la ferveur religieuse ne dicte jamais un contrat. Maintient le Concordat du Verre entre la foi et la technique.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🎭</span>
+        <div class="card-name" style="color:var(--gold)">Curcodak</div>
+        <div class="card-desc">Divertissement et jeux. Organise les célébrations publiques, les démonstrations de la Place du Mérite et maintient l'équilibre social par la fête.</div>
+      </div>
+    </div>
+
+    <h2 id="lieux">Les Lieux qui Font Battre le Cœur</h2>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-icon">🏛️</span>
+        <div class="card-name" style="color:var(--gold)">Verrière des Cent Sièges</div>
+        <div class="card-desc">Grande halle de pierre et de verre, lieu de réunion annuel du Conseil des Guildes. La lumière y est parfaite pour lire les sceaux sans ombre. Quand un vote est pris, la ville entière retient son souffle un instant.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🎪</span>
+        <div class="card-name" style="color:var(--gold)">Place du Mérite</div>
+        <div class="card-desc">Esplanade des essais publics. Armures technomagiques, pompes, charnières et protocoles y sont testés devant les citoyens. Le jury évalue utilité, sûreté et reproductibilité. Le soir, les acclamations s'apparentent à une fête.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🚂</span>
+        <div class="card-name" style="color:var(--gold)">Anneaux d'Ancrage</div>
+        <div class="card-desc">Port souterrain à plusieurs niveaux accueillant trains blindés, lorries et barges de service. Des quais élévateurs montent directement vers les halls d'essai. Le métal y roule comme un fleuve domestiqué.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">📐</span>
+        <div class="card-name" style="color:var(--gold)">Galeries de Codification</div>
+        <div class="card-desc">Couloirs tempérés abritant plans et standards. Chaque norme possède son identité, sa date et sa lignée d'essais. On y circule en silence, avec le respect dû à une bibliothèque pensante.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🛒</span>
+        <div class="card-name" style="color:var(--gold)">Couronne des Halles</div>
+        <div class="card-desc">Marchés couverts, cantines régulières et stands de pièces certifiées. On y mange simplement et bien. On y trouve la vis exacte, la sangle fiable et le joint parfait.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🎓</span>
+        <div class="card-name" style="color:var(--gold)">Mail des Apprentissages</div>
+        <div class="card-desc">Complexe regroupant ateliers-écoles, salles de dessin et chambres d'essai silencieuses. Les apprentis alternent ateliers, codification et garde publique. Un bon geste y vaut plus qu'un long discours.</div>
+      </div>
+    </div>
+
+    <h2 id="technomagie">La Technomagie en Action</h2>
+    <p>Les cristaux d'atelier sont omniprésents à Comhan De Na et remplissent quatre fonctions essentielles : l'<em>ancrage</em> (sceller et stabiliser), l'<em>impulsion</em> (alimenter moteurs, pompes et rails), la <em>mémoire</em> (enregistrer mesures et procédures), et la <em>canalisation</em> (focaliser l'énergie dans armures ou bancs d'essai).</p>
+    <p>Chaque cristal doit recevoir une triple signature dans les Salles de Résonance : le Maître d'atelier garantit la conformité, l'Officier Armalak valide l'aptitude au combat, et le Notaire du Mérite assure la traçabilité.</p>
+
+    <h3>Les Armures Technomagiques d'Armalak</h3>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-icon">👁️</span>
+        <div class="card-name" style="color:var(--gold)">Visières de Verre</div>
+        <div class="card-desc">Affichent en temps réel les mesures de flux magique, température des cristaux et alertes de sécurité.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🛡️</span>
+        <div class="card-name" style="color:var(--gold)">Épaulières d'Ancrage</div>
+        <div class="card-desc">Projettent un rempart de force arcanique en cas d'impact. Certifiées pour résister à trois charges d'envoûtement.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🤜</span>
+        <div class="card-name" style="color:var(--gold)">Gantelets d'Impulsion</div>
+        <div class="card-desc">Fournissent énergie de frappe augmentée et recul contrôlé. Aussi utilisés pour les travaux de génie civil à forte charge.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">📋</span>
+        <div class="card-name" style="color:var(--gold)">Plastrons de Mémoire</div>
+        <div class="card-desc">Enregistrent chaque action du porteur lors d'une mission. Preuve légale devant les Tribunaux du Mérite en cas de litige.</div>
+      </div>
+    </div>
+
+    <h2 id="gouvernance">Gouvernance et Droit</h2>
+    <p>Le Conseil des Guildes établit un calendrier d'objectifs, un budget de sécurité et une liste de normes à réviser. En cas d'urgence, un collège restreint se réunit chaque semaine. Les Tribunaux du Mérite comparent promesses et résultats — ordonnant la réparation, l'amélioration ou le retrait des produits du marché.</p>
+    <p>Le Concordat du Verre assure la neutralité rituelle des ateliers. La Trinité des Fondements et la Trinité de la Lumière dominent la liturgie civique ; la Trinité lunaire est respectée sans être majeure. Creidak veille à ce que la ferveur ne dicte jamais un contrat.</p>
+    <p>Le code social est simple : on signe de sa guilde sur la manche, la boîte à outils, la plainte déposée — le sigle dit qui vous êtes et qui répond de vous.</p>
+
+  </main>
+</div>
+<footer><span>⚜ Kaleysur Wiki</span><span style="color: var(--text-muted)">Wiki de campagne D&D</span></footer>
+<script src="../js/wiki.js"></script>
+</body>
+</html>

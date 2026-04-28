@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frayakin — Kaleysur Wiki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<nav class="top-nav">
+  <a href="../index.html" class="nav-brand"><span class="nav-brand-icon">⚜</span><span class="nav-brand-text">Kaleysur</span></a>
+  <div class="nav-right">
+    <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="search-input" type="text" placeholder="Rechercher…" autocomplete="off"><div class="search-results" id="search-results"></div></div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-section"><div class="sidebar-section-title">Navigation</div>
+    <a href="../index.html" class="sidebar-link"><span class="icon">🏠</span> Accueil</a>
+    <a href="../chronologie.html" class="sidebar-link"><span class="icon">📜</span> Chronologie</a>
+    <a href="../carte.html" class="sidebar-link"><span class="icon">🗺️</span> Carte du Monde</a>
+    <a href="../calendrier.html" class="sidebar-link"><span class="icon">📅</span> Calendrier</a>
+    <a href="../joueurs.html" class="sidebar-link"><span class="icon">🎲</span> Joueurs</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Astoryem</div>
+    <a href="../astoryem/astoryem.html" class="sidebar-link"><span class="icon">🌐</span> Astoryem</a>
+    <a href="../astoryem/feymundi.html" class="sidebar-link sidebar-sublink"><span class="icon">🏰</span> Feymundi</a>
+    <a href="../astoryem/waterflow.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Waterflow</a>
+    <a href="../astoryem/ville-tempete.html" class="sidebar-link sidebar-sublink"><span class="icon">⚡</span> Ville Tempête</a>
+    <a href="../astoryem/arcanumbra.html" class="sidebar-link sidebar-sublink"><span class="icon">⌛</span> Arcanumbra</a>
+    <a href="../astoryem/cite-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌑</span> Cité des Ombres</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Ayakan</div>
+    <a href="ayakan.html" class="sidebar-link"><span class="icon">🌐</span> Ayakan</a>
+    <div class="sidebar-region-label">Grand Plateau</div>
+    <a href="comhan-de-na.html" class="sidebar-link sidebar-sublink"><span class="icon">⚙️</span> Comhan De Na</a>
+    <a href="grand-plateau.html" class="sidebar-link sidebar-sublink"><span class="icon">⚒️</span> Grand Plateau</a>
+    <a href="armalak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Armalak</a>
+    <a href="fios.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔬</span> Fios</a>
+    <a href="indelair.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚗️</span> Indelair</a>
+    <a href="lukd-oigrid.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Lukd Oigrid</a>
+    <a href="lukd-naek.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🪡</span> Lukd Naek</a>
+    <a href="lukd-tagil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏗️</span> Lukd Tagil</a>
+    <a href="lukd-trenay.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐎</span> Lukd Trenay</a>
+    <a href="lukd-tuanak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Lukd Tuanak</a>
+    <a href="creidak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🕊️</span> Creidak</a>
+    <a href="curcodak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎪</span> Curcodak</a>
+    <div class="sidebar-region-label">Ouestvir</div>
+    <a href="ouestvir.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Ouestvir</a>
+    <a href="yokoki.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Yokoki</a>
+    <a href="laryok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Laryok</a>
+    <a href="yoklar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Yoklar</a>
+    <a href="kasvir.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Kasvir</a>
+    <a href="rusvar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Rusvar</a>
+    <a href="sordas.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔔</span> Sordas</a>
+    <a href="sunkur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Sunkur</a>
+    <a href="portlune.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Portlune</a>
+    <a href="kayadur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Kayadur</a>
+    <a href="zodory.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Zodory</a>
+    <a href="kolandur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Kolandur</a>
+    <a href="staurdur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Staurdur</a>
+    <div class="sidebar-region-label">Régions</div>
+        <a href="creve-glace.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Crève Glace</a>
+    <a href="varask.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Varask</a>
+    <a href="mornea.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Mornea</a>
+    <a href="thyrne.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">♨️</span> Thyrne</a>
+    <a href="selvend.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛒</span> Selvend</a>
+    <a href="frayakin.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Frayakin</a>
+    <a href="solcara.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌟</span> Solcara</a>
+    <a href="pyrael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔶</span> Pyraël</a>
+    <a href="leth.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Leth</a>
+    <a href="faran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Faran</a>
+    <a href="chaines-verre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎶</span> Chaînes de Verre</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Musiyav</div>
+    <a href="../musiyav/musiyav.html" class="sidebar-link"><span class="icon">🌐</span> Musiyav</a>
+    <div class="sidebar-region-label">Nord</div>
+    <a href="../musiyav/terres-gelees.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Terres Gelées</a>
+    <a href="../musiyav/munabenn.html" class="sidebar-link sidebar-sublink"><span class="icon">⛏️</span> Munabenn</a>
+    <a href="../musiyav/creastail.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚡</span> Creastail</a>
+    <a href="../musiyav/stasmoc.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Stasmoc</a>
+    <a href="../musiyav/clagrayn.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Clagrayn</a>
+    <a href="../musiyav/fedhidom.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌑</span> Fedhidom</a>
+    <a href="../musiyav/cricrosal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Cricrosal</a>
+    <a href="../musiyav/ellirhom.html" class="sidebar-link sidebar-sublink"><span class="icon">🍃</span> Éllirhom</a>
+    <div class="sidebar-region-label">Centre</div>
+    <a href="../musiyav/murblan.html" class="sidebar-link sidebar-sublink"><span class="icon">⚖️</span> Murblan</a>
+    <a href="../musiyav/bekai-keal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Bekai Keal</a>
+    <a href="../musiyav/thylkarok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎨</span> Thylkarok</a>
+    <a href="../musiyav/carroval.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🗿</span> Carroval</a>
+    <a href="../musiyav/caudherra.html" class="sidebar-link sidebar-sublink"><span class="icon">🐘</span> Caudherra</a>
+    <a href="../musiyav/saldromil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎵</span> Saldromil</a>
+    <a href="../musiyav/kandor-zei.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Kandor-Zeï</a>
+    <a href="../musiyav/mirsha-lu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐘</span> Mirsha Lû</a>
+    <a href="../musiyav/ukar-tal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📜</span> Ukar Tal</a>
+    <a href="../musiyav/brastelma.html" class="sidebar-link sidebar-sublink"><span class="icon">🌿</span> Brastelma</a>
+    <a href="../musiyav/xalatlal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐆</span> Xalatlal</a>
+    <a href="../musiyav/tochion.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Tochion</a>
+    <a href="../musiyav/yabalta.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Yabalta</a>
+    <a href="../musiyav/solgirne.html" class="sidebar-link sidebar-sublink"><span class="icon">🌾</span> Solgirne</a>
+    <a href="../musiyav/varnestal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Varnestal</a>
+    <a href="../musiyav/linvelar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌲</span> Linvelar</a>
+    <a href="../musiyav/eldmire.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐟</span> Eldmire</a>
+    <a href="../musiyav/cairondel.html" class="sidebar-link sidebar-sublink"><span class="icon">🗿</span> Cairondel</a>
+    <a href="../musiyav/gravantempe.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏔️</span> Gravantempe</a>
+    <a href="../musiyav/treufloran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Treufloran</a>
+    <a href="../musiyav/valtendre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Valtendre</a>
+    <div class="sidebar-region-label">Ouest</div>
+    <a href="../musiyav/valacorra.html" class="sidebar-link sidebar-sublink"><span class="icon">⚜️</span> Valacorra</a>
+    <a href="../musiyav/aunthrevin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Aunthrevin</a>
+    <a href="../musiyav/vendrolis.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Vendrolis</a>
+    <a href="../musiyav/darn-merath.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Darn Merath</a>
+    <a href="../musiyav/dusalain.html" class="sidebar-link sidebar-sublink"><span class="icon">🏜️</span> Dusalain</a>
+    <a href="../musiyav/sarathiil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Sarathiil</a>
+    <a href="../musiyav/akalima.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Akalima</a>
+    <a href="../musiyav/yndarev.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Yndarev</a>
+    <a href="../musiyav/sillu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Sillu</a>
+    <div class="sidebar-region-label">Sud</div>
+    <a href="../musiyav/xamaris.html" class="sidebar-link sidebar-sublink"><span class="icon">🚫</span> Xamaris</a>
+    <a href="../musiyav/xakaril.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Xakaril</a>
+    <a href="../musiyav/marolzhad.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚖️</span> Marolzhad</a>
+    <a href="../musiyav/dorvenkar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚒️</span> Dorvenkar</a>
+    <a href="../musiyav/naskarrem.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Naskarrem</a>
+    <a href="../musiyav/khaelbar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Khaëlbar</a>
+    <a href="../musiyav/tol-vekrah.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📖</span> Tol Vekrah</a>
+    <a href="../musiyav/krelsum.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🧱</span> Krelsum</a>
+    <a href="../musiyav/falstrein.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Falstrein</a>
+    <a href="../musiyav/terres-pieuses.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Terres Pieuses</a>
+    <a href="../musiyav/templum-triarii.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛪</span> Templum Triarii</a>
+    <a href="../musiyav/forge-vivante.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Forge Vivante</a>
+    <a href="../musiyav/isvarun.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌅</span> Isvarun</a>
+    <a href="../musiyav/callafhar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Callafhar</a>
+    <a href="../musiyav/auranthil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌲</span> Auranthil</a>
+    <a href="../musiyav/elvar-tyl.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌳</span> Elvarë Tyl</a>
+    <a href="../musiyav/lunemiral.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌙</span> Lunemiral</a>
+    <a href="../musiyav/miriathael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Mirithaël</a>
+    <a href="../musiyav/faelorrin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Faelorrin</a>
+    <div class="sidebar-region-label">Est</div>
+    <a href="../musiyav/terres-sauvages.html" class="sidebar-link sidebar-sublink"><span class="icon">🌋</span> Terres Sauvages</a>
+    <a href="../musiyav/kaelyth.html" class="sidebar-link sidebar-sublink"><span class="icon">⚔️</span> Viremarche</a>
+    <a href="../musiyav/briseneige.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Briseneige</a>
+    <div class="sidebar-region-label">Terres Isolées</div>
+    <a href="../musiyav/tinneas.html" class="sidebar-link sidebar-sublink"><span class="icon">🦴</span> Tinneas A'Bhàis</a>
+    <a href="../musiyav/shurakai.html" class="sidebar-link sidebar-sublink"><span class="icon">🌫️</span> Shurakai</a>
+    <a href="../musiyav/narkun.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Narkûn</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Régions Éloignées</div>
+    <a href="../musiyav/anneau-dieux.html" class="sidebar-link"><span class="icon">⚫</span> Anneau des Dieux</a>
+    <a href="../musiyav/archipel-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌙</span> Archipel des Ombres</a>
+    <a href="../musiyav/darnobscur.html" class="sidebar-link sidebar-sublink"><span class="icon">🩸</span> Darnobscur</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Personnages & Lore</div>
+    <a href="../lore/personnages.html" class="sidebar-link"><span class="icon">🧙</span> Personnages</a>
+    <a href="../lore/journal-arzi.html" class="sidebar-link sidebar-sublink"><span class="icon">📖</span> Journal d'Arzi</a>
+    <a href="../lore/organisations.html" class="sidebar-link"><span class="icon">⚔️</span> Organisations</a>
+    <a href="../lore/dieux.html" class="sidebar-link"><span class="icon">✨</span> Dieux & Trinités</a>
+  </div>
+</aside>
+
+<div class="page-wrapper">
+  <main class="main-content">
+    <nav class="breadcrumb">
+      <a href="../index.html">Accueil</a><span class="breadcrumb-sep">›</span>
+      <a href="ayakan.html">Ayakan</a><span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Frayakin</span>
+    </nav>
+
+    <div class="page-header">
+      <div class="page-category">Théocratie · Ayakan</div>
+      <h1 class="page-title">🔥 Frayakin</h1>
+      <p class="page-subtitle">« La flamme purifie, puis elle réchauffe. »</p>
+    </div>
+
+    <div class="infobox">
+      <div class="infobox-title">Frayakin</div>
+      <div class="infobox-image">🔥</div>
+      <table class="infobox-table">
+        <tr><td>Type</td><td>Théocratie</td></tr>
+        <tr><td>Gouvernance</td><td>Ordre du Soleil Radiant — Synode Ardent</td></tr>
+        <tr><td>Divinité</td><td>Silitiama (Archfée déchue fusionnée au Phoenix)</td></tr>
+        <tr><td>Capitale</td><td>Solcara</td></tr>
+        <tr><td>Armée</td><td>Légions du Phoenix</td></tr>
+        <tr><td>Villes</td><td>Solcara, Pyraël, Sainte Oasis de Leth, Faran</td></tr>
+      </table>
+    </div>
+
+    <section class="content-section">
+      <h2>Présentation Générale</h2>
+      <p>
+        Frayakin est une théocratie ardente gouvernée par l'<strong>Ordre du Soleil Radiant</strong>. <strong>Silitiama</strong> — une Archfée déchue fusionnée au Phoenix — est l'unique puissance reconnue. Les temples brûlent jour et nuit, les hérétiques sont purifiés, et toute magie non autorisée est traquée sans merci.
+      </p>
+      <p>
+        Le dogme est absolu : <em>une seule flamme est légitime</em>. La parole de Silitiama fait loi. Toute autre ferveur est considérée comme une erreur, une rivalité, ou un mensonge. Mais la théocratie n'est pas que contrainte — l'hospitalité est conditionnelle mais réelle, et la flamme réchauffe autant qu'elle purifie.
+      </p>
+      <p>
+        Premières impressions de Frayakin : un air chaud imprégné d'encens, des processions de lampes créant des avenues de lumière, des fontaines peu profondes et des ombres allongées. Un chœur s'élève, le marché retient son souffle, puis reprend son activité.
+      </p>
+    </section>
+
+    <section class="content-section">
+      <h2>Institutions et Ordres</h2>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">⚜️</div>
+          <div class="card-name">Ordre du Soleil Radiant</div>
+          <div class="card-desc">Cœur du pouvoir religieux et civil. Le Synode Ardent dirige les rites, les lois, la diplomatie et l'armée. Le Trône de Braise à Solcara reçoit les oracles de Silitiama.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">⚖️</div>
+          <div class="card-name">Cour des Cendres</div>
+          <div class="card-desc">Tribunal sacré pour les serments non tenus, les abus de ferveur et les profanations. Les réparations incluent des actes publics, des services réels et la surveillance des lampes.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🕵️</div>
+          <div class="card-name">Main du Zénith</div>
+          <div class="card-desc">Le bras discret de l'Ordre, chargé des enquêtes, de l'infiltration et du démantèlement des cercles magiques non autorisés. La miséricorde est possible pour ceux qui se présentent d'eux-mêmes.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">⚔️</div>
+          <div class="card-name">Légions du Phoenix</div>
+          <div class="card-desc">L'armée régulière protégeant routes, sanctuaires, citernes et frontières. À Faran, elles tiennent la ligne contre les froids de Crève Glace.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🪔</div>
+          <div class="card-name">Maison des Lampes</div>
+          <div class="card-desc">Administration des huiles, mèches et verres, assurant une flamme publique à chaque carrefour et dans chaque hall de la théocratie.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>Loi Sacrée et Rites</h2>
+      <p>
+        Le <strong>Livre de l'Huile et de la Cendre</strong> est le code sacré régissant les rites, les peines, les exemptions, les preuves et les actions en temps de crise. Toute incantation sans permis liturgique est un crime sacrilège.
+      </p>
+      <p>
+        Les rites fondamentaux : le <strong>Serment de Lampe</strong> (on allume, on promet, on éteint — si la fumée reste claire, le serment est reçu), la <strong>Brûlure de Vérité</strong> (une lueur posée sur la paume qui rougit si la parole est mensongère), et l'<strong>Aumône d'Eau</strong> (citerne libre d'accès pour les personnes en route ou en pénitence).
+      </p>
+      <p>
+        Les miracles autorisés sont codifiés : éclairer sans brûler, réchauffer sans consumer, apaiser sans endormir, dévoiler le mensonge sans humilier. Tout miracle est consigné dans un registre public. La formation du clergé se fait par noviciat, compagnonnage et rite — jamais par l'enseignement profane.
+      </p>
+    </section>
+
+    <section class="content-section">
+      <h2>Villes et Sites</h2>
+
+      <h3 id="solcara">🌟 Solcara — La Capitale Temple</h3>
+      <p>
+        Cœur incandescent de l'Ordre du Soleil Radiant. La <strong>Basilique du Zénith</strong> domine des esplanades de pierre claire, tandis que le <strong>Trône de Braise</strong> accueille les oracles de Silitiama. Les <strong>Sept Tours de Feu</strong> — phares rituels dont la lueur est visible à des lieues à la ronde — ponctuent le paysage de Solcara.
+      </p>
+      <p>
+        La ville vit au rythme des rites : allumage des lampes à l'aube, audiences de la Brûlure de Vérité en matinée, grande procession de lumière le soir. La nuit, Solcara murmure en lumière sur les dalles — les lampes basses brûlent lentes et sûres jusqu'à l'aube.
+      </p>
+
+      <h3 id="pyrael">🔶 Pyraël — La Cité des Verrières</h3>
+      <p>
+        Cité de la production du verre sacré de Frayakin. Des fours solaires à ciel ouvert — alimentés par des miroirs ajustables captant la lumière du soleil — transforment le sable en <strong>plaques de mémoire</strong>, en hublots pour les tours et en miroirs rituels. La Cour des Cendres y tient ses grands procès publics dans une nef imposante.
+      </p>
+      <p>
+        La Procession des miroirs — une file de plaques sous bonne garde qui traverse la ville pour rejoindre Solcara — rythme la vie de Pyraël. Le Chœur des Lampes assure un chant rituel qui stabilise les flammes durant les tempêtes de chaleur.
+      </p>
+
+      <h3 id="leth">💧 Sainte Oasis de Leth — La Ville d'Accueil</h3>
+      <p>
+        Bâtie en terrasses autour d'une nappe d'eau limpide, Leth est un lieu sacré de pèlerinage réputé pour ses maisons d'hospitalité et ses retraites spirituelles. Tous les pèlerins passent par Leth avant de monter à Solcara. Une sensation de fraîcheur émane des eaux peu profondes, mêlée aux effluves de menthe broyée.
+      </p>
+      <p>
+        Les <strong>Sœurs de l'Oasis</strong> gardent les citernes et les rites d'accueil. Les <strong>Médiatrices de Leth</strong> — prêtresses expertes en paroles concises — facilitent la communication et la réconciliation. Le Chemin de l'Ascension, rampe pavée éclairée de lampes basses, mène de Leth à Solcara.
+      </p>
+
+      <h3 id="faran">🏰 Citadelle de Faran — La Frontière de Braise</h3>
+      <p>
+        Fort de roche rouge protégeant le passage contre les vents glacials de Crève Glace. Ses remparts possèdent des foyers intégrés, des marches sèches et des créneaux chauffés. La <strong>Salle des Veilles</strong> présente une carte vivante des routes de braise et des rafales du nord.
+      </p>
+      <p>
+        Les Légions du Phoenix y apprennent à résister au souffle de glace. Les ateliers de dégivrage forment les équipes pour rouvrir les cols gelés. Face aux raids de Crève Glace, la doctrine est de défendre les couloirs, d'évacuer rapidement et de contre-attaquer une fois les positions sécurisées.
+      </p>
+
+      <h3 id="chaines-verre">🎶 Chaînes de Verre</h3>
+      <p>
+        Falaises vitrifiées qui chantent au vent. Leur timbre vacille lorsqu'un mensonge grave est prononcé à proximité. Des oratoires y sont creusés dans la roche pour les retraites de parole et les examens de conscience.
+      </p>
+    </section>
+
+    <section class="content-section">
+      <h2>Relations Extérieures</h2>
+      <p>
+        Avec le <strong>Grand Plateau</strong> au sud, Frayakin prêche à ses portes. Le Plateau oppose ses normes et sa neutralité d'atelier — la pression persiste, mais les escarmouches restent rares. Avec <strong>Crève Glace</strong> à l'est, c'est un conflit d'éléments : les routes de braise maintiennent la logistique chaude face aux vents coupants, et Faran est la clé de cette défense. Envers les provinces d'<strong>Ouestvir</strong>, un respect tiède pour la parole polie de Zodory, mais une méfiance envers les Ombres de Kayadur.
+      </p>
+    </section>
+
+    <section class="content-section">
+      <h2>Une Journée sous le Zénith</h2>
+      <p>
+        <strong>Aube</strong> : allumage des lampes, lecture du Livre de l'Huile et de la Cendre. Les marchés ouvrent, la Maison des Lampes vérifie les niveaux. <strong>Milieu de matinée</strong> : audiences brèves, brûlures de vérité, serments de lampe, permissions accordées ou retirées. <strong>Midi</strong> : repos à l'ombre, pain plat, eau claire, dattes, courts chœurs dans les cours.
+      </p>
+      <p>
+        <strong>Après-midi</strong> : patrouilles des Légions, processions de réparation, la Main du Zénith glisse dans les ruelles. <strong>Soir</strong> : grande procession de lumière, la Cour des Cendres lit trois sentences et exige un service public, les tours à feu s'allument. <strong>Nuit</strong> : les plaques de mémoire sont rangées, les lampes basses continuent de brûler, lentes et sûres.
+      </p>
+    </section>
+
+  </main>
+</div>
+<script src="../js/wiki.js"></script>
+</body>
+</html>

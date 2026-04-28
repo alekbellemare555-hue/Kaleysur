@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thyrne — Kaleysur Wiki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<nav class="top-nav">
+  <a href="../index.html" class="nav-brand"><span class="nav-brand-icon">⚜</span><span class="nav-brand-text">Kaleysur</span></a>
+  <div class="nav-right">
+    <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="search-input" type="text" placeholder="Rechercher…" autocomplete="off"><div class="search-results" id="search-results"></div></div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-section"><div class="sidebar-section-title">Navigation</div>
+    <a href="../index.html" class="sidebar-link"><span class="icon">🏠</span> Accueil</a>
+    <a href="../chronologie.html" class="sidebar-link"><span class="icon">📜</span> Chronologie</a>
+    <a href="../carte.html" class="sidebar-link"><span class="icon">🗺️</span> Carte du Monde</a>
+    <a href="../calendrier.html" class="sidebar-link"><span class="icon">📅</span> Calendrier</a>
+    <a href="../joueurs.html" class="sidebar-link"><span class="icon">🎲</span> Joueurs</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Astoryem</div>
+    <a href="../astoryem/astoryem.html" class="sidebar-link"><span class="icon">🌐</span> Astoryem</a>
+    <a href="../astoryem/feymundi.html" class="sidebar-link sidebar-sublink"><span class="icon">🏰</span> Feymundi</a>
+    <a href="../astoryem/waterflow.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Waterflow</a>
+    <a href="../astoryem/ville-tempete.html" class="sidebar-link sidebar-sublink"><span class="icon">⚡</span> Ville Tempête</a>
+    <a href="../astoryem/arcanumbra.html" class="sidebar-link sidebar-sublink"><span class="icon">⌛</span> Arcanumbra</a>
+    <a href="../astoryem/cite-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌑</span> Cité des Ombres</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Ayakan</div>
+    <a href="ayakan.html" class="sidebar-link"><span class="icon">🌐</span> Ayakan</a>
+    <div class="sidebar-region-label">Grand Plateau</div>
+    <a href="comhan-de-na.html" class="sidebar-link sidebar-sublink"><span class="icon">⚙️</span> Comhan De Na</a>
+    <a href="grand-plateau.html" class="sidebar-link sidebar-sublink"><span class="icon">⚒️</span> Grand Plateau</a>
+    <a href="armalak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Armalak</a>
+    <a href="fios.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔬</span> Fios</a>
+    <a href="indelair.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚗️</span> Indelair</a>
+    <a href="lukd-oigrid.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Lukd Oigrid</a>
+    <a href="lukd-naek.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🪡</span> Lukd Naek</a>
+    <a href="lukd-tagil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏗️</span> Lukd Tagil</a>
+    <a href="lukd-trenay.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐎</span> Lukd Trenay</a>
+    <a href="lukd-tuanak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Lukd Tuanak</a>
+    <a href="creidak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🕊️</span> Creidak</a>
+    <a href="curcodak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎪</span> Curcodak</a>
+    <div class="sidebar-region-label">Ouestvir</div>
+    <a href="ouestvir.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Ouestvir</a>
+    <a href="yokoki.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Yokoki</a>
+    <a href="laryok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Laryok</a>
+    <a href="yoklar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Yoklar</a>
+    <a href="kasvir.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Kasvir</a>
+    <a href="rusvar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Rusvar</a>
+    <a href="sordas.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔔</span> Sordas</a>
+    <a href="sunkur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Sunkur</a>
+    <a href="portlune.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Portlune</a>
+    <a href="kayadur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Kayadur</a>
+    <a href="zodory.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Zodory</a>
+    <a href="kolandur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Kolandur</a>
+    <a href="staurdur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Staurdur</a>
+    <div class="sidebar-region-label">Régions</div>
+    <a href="creve-glace.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Crève Glace</a>
+    <a href="varask.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Varask</a>
+    <a href="mornea.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Mornea</a>
+    <a href="thyrne.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">♨️</span> Thyrne</a>
+    <a href="selvend.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛒</span> Selvend</a>
+    <a href="frayakin.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Frayakin</a>
+    <a href="solcara.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌟</span> Solcara</a>
+    <a href="pyrael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔶</span> Pyraël</a>
+    <a href="leth.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Leth</a>
+    <a href="faran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Faran</a>
+    <a href="chaines-verre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎶</span> Chaînes de Verre</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Musiyav</div>
+    <a href="../musiyav/musiyav.html" class="sidebar-link"><span class="icon">🌐</span> Musiyav</a>
+    <div class="sidebar-region-label">Nord</div>
+    <a href="../musiyav/terres-gelees.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Terres Gelées</a>
+    <a href="../musiyav/munabenn.html" class="sidebar-link sidebar-sublink"><span class="icon">⛏️</span> Munabenn</a>
+    <a href="../musiyav/creastail.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚡</span> Creastail</a>
+    <a href="../musiyav/stasmoc.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Stasmoc</a>
+    <a href="../musiyav/clagrayn.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Clagrayn</a>
+    <a href="../musiyav/fedhidom.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌑</span> Fedhidom</a>
+    <a href="../musiyav/cricrosal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Cricrosal</a>
+    <a href="../musiyav/ellirhom.html" class="sidebar-link sidebar-sublink"><span class="icon">🍃</span> Éllirhom</a>
+    <div class="sidebar-region-label">Centre</div>
+    <a href="../musiyav/murblan.html" class="sidebar-link sidebar-sublink"><span class="icon">⚖️</span> Murblan</a>
+    <a href="../musiyav/bekai-keal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Bekai Keal</a>
+    <a href="../musiyav/thylkarok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎨</span> Thylkarok</a>
+    <a href="../musiyav/carroval.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🗿</span> Carroval</a>
+    <a href="../musiyav/caudherra.html" class="sidebar-link sidebar-sublink"><span class="icon">🐘</span> Caudherra</a>
+    <a href="../musiyav/saldromil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎵</span> Saldromil</a>
+    <a href="../musiyav/kandor-zei.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Kandor-Zeï</a>
+    <a href="../musiyav/mirsha-lu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐘</span> Mirsha Lû</a>
+    <a href="../musiyav/ukar-tal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📜</span> Ukar Tal</a>
+    <a href="../musiyav/brastelma.html" class="sidebar-link sidebar-sublink"><span class="icon">🌿</span> Brastelma</a>
+    <a href="../musiyav/xalatlal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐆</span> Xalatlal</a>
+    <a href="../musiyav/tochion.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Tochion</a>
+    <a href="../musiyav/yabalta.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Yabalta</a>
+    <a href="../musiyav/solgirne.html" class="sidebar-link sidebar-sublink"><span class="icon">🌾</span> Solgirne</a>
+    <a href="../musiyav/varnestal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Varnestal</a>
+    <a href="../musiyav/linvelar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌲</span> Linvelar</a>
+    <a href="../musiyav/eldmire.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐟</span> Eldmire</a>
+    <a href="../musiyav/cairondel.html" class="sidebar-link sidebar-sublink"><span class="icon">🗿</span> Cairondel</a>
+    <a href="../musiyav/gravantempe.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏔️</span> Gravantempe</a>
+    <a href="../musiyav/treufloran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Treufloran</a>
+    <a href="../musiyav/valtendre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Valtendre</a>
+    <div class="sidebar-region-label">Ouest</div>
+    <a href="../musiyav/valacorra.html" class="sidebar-link sidebar-sublink"><span class="icon">⚜️</span> Valacorra</a>
+    <a href="../musiyav/aunthrevin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Aunthrevin</a>
+    <a href="../musiyav/vendrolis.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Vendrolis</a>
+    <a href="../musiyav/darn-merath.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Darn Merath</a>
+    <a href="../musiyav/dusalain.html" class="sidebar-link sidebar-sublink"><span class="icon">🏜️</span> Dusalain</a>
+    <a href="../musiyav/sarathiil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Sarathiil</a>
+    <a href="../musiyav/akalima.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Akalima</a>
+    <a href="../musiyav/yndarev.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Yndarev</a>
+    <a href="../musiyav/sillu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Sillu</a>
+    <div class="sidebar-region-label">Sud</div>
+    <a href="../musiyav/xamaris.html" class="sidebar-link sidebar-sublink"><span class="icon">🚫</span> Xamaris</a>
+    <a href="../musiyav/xakaril.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Xakaril</a>
+    <a href="../musiyav/marolzhad.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚖️</span> Marolzhad</a>
+    <a href="../musiyav/dorvenkar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚒️</span> Dorvenkar</a>
+    <a href="../musiyav/naskarrem.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Naskarrem</a>
+    <a href="../musiyav/khaelbar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Khaëlbar</a>
+    <a href="../musiyav/tol-vekrah.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📖</span> Tol Vekrah</a>
+    <a href="../musiyav/krelsum.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🧱</span> Krelsum</a>
+    <a href="../musiyav/falstrein.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Falstrein</a>
+    <a href="../musiyav/terres-pieuses.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Terres Pieuses</a>
+    <a href="../musiyav/templum-triarii.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛪</span> Templum Triarii</a>
+    <a href="../musiyav/forge-vivante.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Forge Vivante</a>
+    <a href="../musiyav/isvarun.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌅</span> Isvarun</a>
+    <a href="../musiyav/callafhar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Callafhar</a>
+    <a href="../musiyav/auranthil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌲</span> Auranthil</a>
+    <a href="../musiyav/elvar-tyl.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌳</span> Elvarë Tyl</a>
+    <a href="../musiyav/lunemiral.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌙</span> Lunemiral</a>
+    <a href="../musiyav/miriathael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Mirithaël</a>
+    <a href="../musiyav/faelorrin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Faelorrin</a>
+    <div class="sidebar-region-label">Est</div>
+    <a href="../musiyav/terres-sauvages.html" class="sidebar-link sidebar-sublink"><span class="icon">🌋</span> Terres Sauvages</a>
+    <a href="../musiyav/kaelyth.html" class="sidebar-link sidebar-sublink"><span class="icon">⚔️</span> Viremarche</a>
+    <a href="../musiyav/briseneige.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Briseneige</a>
+    <div class="sidebar-region-label">Terres Isolées</div>
+    <a href="../musiyav/tinneas.html" class="sidebar-link sidebar-sublink"><span class="icon">🦴</span> Tinneas A'Bhàis</a>
+    <a href="../musiyav/shurakai.html" class="sidebar-link sidebar-sublink"><span class="icon">🌫️</span> Shurakai</a>
+    <a href="../musiyav/narkun.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Narkûn</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Régions Éloignées</div>
+    <a href="../musiyav/anneau-dieux.html" class="sidebar-link"><span class="icon">⚫</span> Anneau des Dieux</a>
+    <a href="../musiyav/archipel-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌙</span> Archipel des Ombres</a>
+    <a href="../musiyav/darnobscur.html" class="sidebar-link sidebar-sublink"><span class="icon">🩸</span> Darnobscur</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Personnages & Lore</div>
+    <a href="../lore/personnages.html" class="sidebar-link"><span class="icon">🧙</span> Personnages</a>
+    <a href="../lore/journal-arzi.html" class="sidebar-link sidebar-sublink"><span class="icon">📖</span> Journal d'Arzi</a>
+    <a href="../lore/organisations.html" class="sidebar-link"><span class="icon">⚔️</span> Organisations</a>
+    <a href="../lore/dieux.html" class="sidebar-link"><span class="icon">✨</span> Dieux & Trinités</a>
+  </div>
+</aside>
+
+<div class="page-wrapper">
+  <main class="main-content">
+    <nav class="breadcrumb">
+      <a href="../index.html">Accueil</a><span class="breadcrumb-sep">›</span><a href="ayakan.html">Ayakan</a><span class="breadcrumb-sep">›</span><a href="creve-glace.html">Crève Glace</a><span class="breadcrumb-sep">›</span><span class="breadcrumb-current">Thyrne</span>
+    </nav>
+
+    <div class="page-header">
+      <div class="page-category">Ville de soin · Crève Glace · Ayakan</div>
+      <h1 class="page-title">♨️ Thyrne</h1>
+      <p class="page-subtitle">La Ville Thermale — chaleur et guérison au cœur du Grand Nord</p>
+    </div>
+
+    <div class="infobox">
+      <div class="infobox-title">Thyrne</div>
+      <div class="infobox-image">♨️</div>
+      <table class="infobox-table">
+        <tr><td>Type</td><td>Ville thermale et de guérison</td></tr><tr><td>Région</td><td>Crève Glace</td></tr><tr><td>Rôle</td><td>Soins du gel, convalescence, repos des expéditions</td></tr><tr><td>Spécialité</td><td>Médecine thermale, mousses et lichens arctiques médicinaux</td></tr><tr><td>Ambiance</td><td>Vapeur, silence, chaleur douce</td></tr><tr><td>Lien</td><td>Refuge pour tous les voyageurs du Nord</td></tr>
+      </table>
+    </div>
+
+    <section class="content-section">
+      <h2>Présentation Générale</h2>
+      <p>
+        Thyrne soigne par les sources chaudes. Construite autour d'un réseau exceptionnel de puits géothermiques, c'est la ville où l'on vient guérir du gel, des engelures et des fièvres du Nord. Ses guérisseurs pratiquent une médecine qui associe les vertus des eaux chaudes à des préparations à base de mousses et de lichens arctiques.
+      </p>
+      <p>
+        L'air de Thyrne est perpétuellement chargé de vapeur. Les bâtiments semblent flotter dans un brouillard tiède, et les rues pavées sont légèrement chaudes sous les pieds — les conduites géothermiques courent juste sous la surface. On entre à Thyrne en tremblant de froid. On en repart réchauffé, reposé et guéri.
+      </p>
+      <p>
+        Thyrne est également un lieu de repos pour ceux qui traversent Crève Glace — une halte de chaleur et de silence avant de repartir vers le froid.
+      </p>
+    </section>
+
+    <section class="content-section">
+      <h2>Les Puits Géothermiques</h2>
+      <p>
+        Le secret de Thyrne réside dans son sous-sol exceptionnel. Cinq grands puits naturels, complétés par une douzaine de forages plus récents, alimentent la ville en eau chaude à des températures précises — certains puits sont trop chauds pour le bain direct et servent au chauffage, d'autres maintiennent une température idéale pour les soins.
+      </p>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">🌡️</div>
+          <div class="card-name">Puits de la Guérison</div>
+          <div class="card-desc">Le plus célèbre des cinq grands puits. Ses eaux à 38°C contiennent des minéraux qui dissolvent les cristaux de gel dans les tissus et accélèrent la régénération des extrémités atteintes d'engelures.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">💨</div>
+          <div class="card-name">Chambres de Vapeur</div>
+          <div class="card-desc">Salles creusées dans la roche où la vapeur des puits les plus chauds est canalisée. Utilisées pour traiter les fièvres du Nord — une transpiration contrôlée qui chasse l'hypothermie profonde.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🌿</div>
+          <div class="card-name">Jardins de Mousse</div>
+          <div class="card-desc">Terrasses intérieures chauffées où poussent les mousses et lichens médicinaux récoltés sur les parois rocheuses. Les guérisseurs y cultivent leurs ingrédients en toute saison.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🛁</div>
+          <div class="card-name">Les Bains Collectifs</div>
+          <div class="card-desc">Vastes bassins ouverts à tous les voyageurs sans distinction. La règle est simple : silence obligatoire, pas de disputes dans les eaux. Les bains sont un lieu de neutralité absolue.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>Les Guérisseurs de Thyrne</h2>
+      <p>
+        Les guérisseurs de Thyrne forment une confrérie ouverte — pas de secret de guilde, pas de hiérarchie rigide. Leur savoir se transmet par observation et pratique. Un apprenti passe deux ans à apprendre les plantes, deux ans à pratiquer les bains thérapeutiques et deux ans à assister dans les chambres de soin avant d'être considéré comme autonome.
+      </p>
+      <p>
+        Leur spécialité absolue est le traitement du <strong>gel profond</strong> — l'état dans lequel les membres sont gelés jusqu'à l'os et risquent la nécrose. La technique de Thyrne, qui combine bains progressifs, applications de lichens et massages précis, est la plus efficace connue dans tout le Nord. Des patients sont envoyés depuis <a href="varask.html">Varask</a>, depuis <a href="mornea.html">Mornea</a> et même depuis <a href="../musiyav/terres-gelees.html">les Terres Gelées de Musiyav</a>.
+      </p>
+    </section>
+
+    <section class="content-section">
+      <h2>Lieux Emblématiques</h2>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">🏥</div>
+          <div class="card-name">La Maison des Soins Longs</div>
+          <div class="card-desc">Pour les convalescences prolongées. Chambres simples, lumière douce, repas chauds apportés trois fois par jour. Aucun bruit fort n'est toléré dans ce bâtiment.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📚</div>
+          <div class="card-name">La Bibliothèque des Mousses</div>
+          <div class="card-desc">Collection de plusieurs centaines de spécimens séchés, classés par propriété, avec les protocoles de préparation associés. Unique en son genre dans tout Crève Glace.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🍵</div>
+          <div class="card-name">La Salle des Infusions</div>
+          <div class="card-desc">Espace public où les voyageurs de passage reçoivent gratuitement une infusion chaude préparée selon leurs symptômes. Premier point de contact avec les guérisseurs.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>Règles et Coutumes</h2>
+      <p>
+        À Thyrne, trois règles sont absolues. La première : <strong>toute personne blessée ou malade est accueillie sans condition</strong>, quelle que soit son origine, ses dettes ou ses crimes passés. Les portes de Thyrne ne se ferment jamais pour les blessés. La deuxième : <strong>le paiement n'est jamais exigé d'avance</strong> — on paie ce qu'on peut, quand on peut, selon ses moyens. La troisième : <strong>les bains sont neutres</strong> — aucune querelle ne peut être réglée dans les eaux thermales.
+      </p>
+      <p>
+        Ces règles font de Thyrne l'un des seuls endroits de Crève Glace où des personnes autrement ennemies peuvent se retrouver côte à côte sans incident. C'est une neutralité pratique, non idéologique — Thyrne ne prêche pas la paix, elle la rend simplement plus commode.
+      </p>
+    </section>
+
+  </main>
+</div>
+
+<script src="../js/wiki.js"></script>
+</body>
+</html>

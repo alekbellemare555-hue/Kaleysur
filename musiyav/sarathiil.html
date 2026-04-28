@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sarathiil — Kaleysur Wiki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<nav class="top-nav">
+  <a href="../index.html" class="nav-brand"><span class="nav-brand-icon">⚜</span><span class="nav-brand-text">Kaleysur</span></a>
+  <div class="nav-right">
+    <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="search-input" type="text" placeholder="Rechercher…" autocomplete="off"><div class="search-results" id="search-results"></div></div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-section"><div class="sidebar-section-title">Navigation</div>
+    <a href="../index.html" class="sidebar-link"><span class="icon">🏠</span> Accueil</a>
+    <a href="../chronologie.html" class="sidebar-link"><span class="icon">📜</span> Chronologie</a>
+    <a href="../carte.html" class="sidebar-link"><span class="icon">🗺️</span> Carte du Monde</a>
+    <a href="../calendrier.html" class="sidebar-link"><span class="icon">📅</span> Calendrier</a>
+    <a href="../joueurs.html" class="sidebar-link"><span class="icon">🎲</span> Joueurs</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Astoryem</div>
+    <a href="../astoryem/astoryem.html" class="sidebar-link"><span class="icon">🌐</span> Astoryem</a>
+    <a href="../astoryem/feymundi.html" class="sidebar-link sidebar-sublink"><span class="icon">🏰</span> Feymundi</a>
+    <a href="../astoryem/waterflow.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Waterflow</a>
+    <a href="../astoryem/ville-tempete.html" class="sidebar-link sidebar-sublink"><span class="icon">⚡</span> Ville Tempête</a>
+    <a href="../astoryem/arcanumbra.html" class="sidebar-link sidebar-sublink"><span class="icon">⌛</span> Arcanumbra</a>
+    <a href="../astoryem/cite-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌑</span> Cité des Ombres</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Ayakan</div>
+    <a href="../ayakan/ayakan.html" class="sidebar-link"><span class="icon">🌐</span> Ayakan</a>
+    <div class="sidebar-region-label">Grand Plateau</div>
+    <a href="../ayakan/comhan-de-na.html" class="sidebar-link sidebar-sublink"><span class="icon">⚙️</span> Comhan De Na</a>
+    <a href="../ayakan/grand-plateau.html" class="sidebar-link sidebar-sublink"><span class="icon">⚒️</span> Grand Plateau</a>
+    <a href="../ayakan/armalak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Armalak</a>
+    <a href="../ayakan/fios.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔬</span> Fios</a>
+    <a href="../ayakan/indelair.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚗️</span> Indelair</a>
+    <a href="../ayakan/lukd-oigrid.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Lukd Oigrid</a>
+    <a href="../ayakan/lukd-naek.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🪡</span> Lukd Naek</a>
+    <a href="../ayakan/lukd-tagil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏗️</span> Lukd Tagil</a>
+    <a href="../ayakan/lukd-trenay.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐎</span> Lukd Trenay</a>
+    <a href="../ayakan/lukd-tuanak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Lukd Tuanak</a>
+    <a href="../ayakan/creidak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🕊️</span> Creidak</a>
+    <a href="../ayakan/curcodak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎪</span> Curcodak</a>
+    <div class="sidebar-region-label">Ouestvir</div>
+    <a href="../ayakan/ouestvir.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Ouestvir</a>
+    <a href="../ayakan/yokoki.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Yokoki</a>
+    <a href="../ayakan/laryok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Laryok</a>
+    <a href="../ayakan/yoklar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Yoklar</a>
+    <a href="../ayakan/kasvir.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Kasvir</a>
+    <a href="../ayakan/rusvar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Rusvar</a>
+    <a href="../ayakan/sordas.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔔</span> Sordas</a>
+    <a href="../ayakan/sunkur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Sunkur</a>
+    <a href="../ayakan/portlune.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Portlune</a>
+    <a href="../ayakan/kayadur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Kayadur</a>
+    <a href="../ayakan/zodory.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Zodory</a>
+    <a href="../ayakan/kolandur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Kolandur</a>
+    <a href="../ayakan/staurdur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Staurdur</a>
+    <div class="sidebar-region-label">Régions</div>
+        <a href="../ayakan/creve-glace.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Crève Glace</a>
+    <a href="../ayakan/varask.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Varask</a>
+    <a href="../ayakan/mornea.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Mornea</a>
+    <a href="../ayakan/thyrne.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">♨️</span> Thyrne</a>
+    <a href="../ayakan/selvend.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛒</span> Selvend</a>
+    <a href="../ayakan/frayakin.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Frayakin</a>
+    <a href="../ayakan/solcara.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌟</span> Solcara</a>
+    <a href="../ayakan/pyrael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔶</span> Pyraël</a>
+    <a href="../ayakan/leth.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Leth</a>
+    <a href="../ayakan/faran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Faran</a>
+    <a href="../ayakan/chaines-verre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎶</span> Chaînes de Verre</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Musiyav</div>
+    <a href="musiyav.html" class="sidebar-link"><span class="icon">🌐</span> Musiyav</a>
+    <div class="sidebar-region-label">Nord</div>
+    <a href="terres-gelees.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Terres Gelées</a>
+    <a href="munabenn.html" class="sidebar-link sidebar-sublink"><span class="icon">⛏️</span> Munabenn</a>
+    <a href="creastail.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚡</span> Creastail</a>
+    <a href="stasmoc.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Stasmoc</a>
+    <a href="clagrayn.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Clagrayn</a>
+    <a href="fedhidom.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌑</span> Fedhidom</a>
+    <a href="cricrosal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Cricrosal</a>
+    <a href="ellirhom.html" class="sidebar-link sidebar-sublink"><span class="icon">🍃</span> Éllirhom</a>
+    <div class="sidebar-region-label">Centre</div>
+    <a href="murblan.html" class="sidebar-link sidebar-sublink"><span class="icon">⚖️</span> Murblan</a>
+    <a href="bekai-keal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Bekai Keal</a>
+    <a href="thylkarok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎨</span> Thylkarok</a>
+    <a href="carroval.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🗿</span> Carroval</a>
+    <a href="caudherra.html" class="sidebar-link sidebar-sublink"><span class="icon">🐘</span> Caudherra</a>
+    <a href="saldromil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎵</span> Saldromil</a>
+    <a href="kandor-zei.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Kandor-Zeï</a>
+    <a href="mirsha-lu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐘</span> Mirsha Lû</a>
+    <a href="ukar-tal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📜</span> Ukar Tal</a>
+    <a href="brastelma.html" class="sidebar-link sidebar-sublink"><span class="icon">🌿</span> Brastelma</a>
+    <a href="xalatlal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐆</span> Xalatlal</a>
+    <a href="tochion.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Tochion</a>
+    <a href="yabalta.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Yabalta</a>
+    <a href="solgirne.html" class="sidebar-link sidebar-sublink"><span class="icon">🌾</span> Solgirne</a>
+    <a href="varnestal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Varnestal</a>
+    <a href="linvelar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌲</span> Linvelar</a>
+    <a href="eldmire.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐟</span> Eldmire</a>
+    <a href="cairondel.html" class="sidebar-link sidebar-sublink"><span class="icon">🗿</span> Cairondel</a>
+    <a href="gravantempe.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏔️</span> Gravantempe</a>
+    <a href="treufloran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Treufloran</a>
+    <a href="valtendre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Valtendre</a>
+    <div class="sidebar-region-label">Ouest</div>
+    <a href="valacorra.html" class="sidebar-link sidebar-sublink"><span class="icon">⚜️</span> Valacorra</a>
+    <a href="aunthrevin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Aunthrevin</a>
+    <a href="vendrolis.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Vendrolis</a>
+    <a href="darn-merath.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Darn Merath</a>
+    <a href="dusalain.html" class="sidebar-link sidebar-sublink"><span class="icon">🏜️</span> Dusalain</a>
+    <a href="sarathiil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Sarathiil</a>
+    <a href="akalima.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Akalima</a>
+    <a href="yndarev.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Yndarev</a>
+    <a href="sillu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Sillu</a>
+    <div class="sidebar-region-label">Sud</div>
+    <a href="xamaris.html" class="sidebar-link sidebar-sublink"><span class="icon">🚫</span> Xamaris</a>
+    <a href="xakaril.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Xakaril</a>
+    <a href="marolzhad.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚖️</span> Marolzhad</a>
+    <a href="dorvenkar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚒️</span> Dorvenkar</a>
+    <a href="naskarrem.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Naskarrem</a>
+    <a href="khaelbar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Khaëlbar</a>
+    <a href="tol-vekrah.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📖</span> Tol Vekrah</a>
+    <a href="krelsum.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🧱</span> Krelsum</a>
+    <a href="falstrein.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Falstrein</a>
+    <a href="terres-pieuses.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Terres Pieuses</a>
+    <a href="templum-triarii.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛪</span> Templum Triarii</a>
+    <a href="forge-vivante.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Forge Vivante</a>
+    <a href="isvarun.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌅</span> Isvarun</a>
+    <a href="callafhar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Callafhar</a>
+    <a href="auranthil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌲</span> Auranthil</a>
+    <a href="elvar-tyl.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌳</span> Elvarë Tyl</a>
+    <a href="lunemiral.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌙</span> Lunemiral</a>
+    <a href="miriathael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Mirithaël</a>
+    <a href="faelorrin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Faelorrin</a>
+    <div class="sidebar-region-label">Est</div>
+    <a href="terres-sauvages.html" class="sidebar-link sidebar-sublink"><span class="icon">🌋</span> Terres Sauvages</a>
+    <a href="kaelyth.html" class="sidebar-link sidebar-sublink"><span class="icon">⚔️</span> Viremarche</a>
+    <a href="briseneige.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Briseneige</a>
+    <div class="sidebar-region-label">Terres Isolées</div>
+    <a href="tinneas.html" class="sidebar-link sidebar-sublink"><span class="icon">🦴</span> Tinneas A'Bhàis</a>
+    <a href="shurakai.html" class="sidebar-link sidebar-sublink"><span class="icon">🌫️</span> Shurakai</a>
+    <a href="narkun.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Narkûn</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Régions Éloignées</div>
+    <a href="anneau-dieux.html" class="sidebar-link"><span class="icon">⚫</span> Anneau des Dieux</a>
+    <a href="archipel-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌙</span> Archipel des Ombres</a>
+    <a href="darnobscur.html" class="sidebar-link sidebar-sublink"><span class="icon">🩸</span> Darnobscur</a>
+    <a href="iles-hagruk.html" class="sidebar-link sidebar-sublink"><span class="icon">⚔️</span> Îles Hagruk</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Personnages & Lore</div>
+    <a href="../lore/personnages.html" class="sidebar-link"><span class="icon">🧙</span> Personnages</a>
+    <a href="../lore/journal-arzi.html" class="sidebar-link sidebar-sublink"><span class="icon">📖</span> Journal d'Arzi</a>
+    <a href="../lore/organisations.html" class="sidebar-link"><span class="icon">⚔️</span> Organisations</a>
+    <a href="../lore/dieux.html" class="sidebar-link"><span class="icon">✨</span> Dieux & Trinités</a>
+  </div>
+</aside>
+
+<div class="page-wrapper">
+  <main class="main-content">
+    <nav class="breadcrumb">
+      <a href="../index.html">Accueil</a><span class="breadcrumb-sep">›</span>
+      <a href="musiyav.html">Musiyav</a><span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Sarathiil</span>
+    </nav>
+
+    <div class="page-header">
+      <div class="page-category">Région côtière · Nord-Ouest de Musiyav</div>
+      <h1 class="page-title">🌊 Sarathiil — Le Calme Sous le Vent</h1>
+      <p class="page-subtitle">« C'est là que les grandes nations jettent l'ancre pour respirer. Et que les simples gens jettent leurs filets pour vivre. »<br>— Proverbe d'Akalima</p>
+    </div>
+
+    <div class="infobox">
+      <div class="infobox-title">Sarathiil</div>
+      <div class="infobox-image">🌊</div>
+      <table class="infobox-table">
+        <tr><td>Type</td><td>Chapelet de ports et bourgs autonomes</td></tr>
+        <tr><td>Gouvernement</td><td>Pas d'autorité centrale — conseils locaux</td></tr>
+        <tr><td>Économie</td><td>Pêche, artisanat, commerce maritime</td></tr>
+        <tr><td>Spiritualité</td><td>Trinités des Lunes, de la Nature, des Maçons</td></tr>
+        <tr><td>Événement marquant</td><td>Dévastée par les tsunamis du retour d'Astoryem (-280 EdT)</td></tr>
+      </table>
+    </div>
+
+    <div class="toc" id="auto-toc"><div class="toc-title">Table des matières</div></div>
+
+    <h2 id="presentation">Présentation</h2>
+    <p>À l'écart des ambitions guerrières et des conflits divins, Sarathiil s'étend au nord-ouest de Musiyav, bordé d'eaux claires, de plages venteuses et de villages de pêcheurs nichés entre des falaises douces et des cultures en terrasses. Ni royaume, ni cité-état, Sarathiil est un chapelet de ports et de bourgs autonomes, unis par leur culture du partage, du cycle lunaire, et d'un rapport sacré à la mer et à la terre.</p>
+    <p>On y vit simplement, sans faste, sans excès, mais avec beaucoup de respect pour la nature et les dieux. Les grandes villes ne se sont jamais imposées ici. Les Confréries de Sarathiil — petits conseils locaux formés de pêcheurs, d'anciens navigateurs et de familles marines — gèrent la vie insulaire avec sagesse et tradition, sans autorité centrale.</p>
+
+    <h2 id="mer">Un Mode de Vie Tourné vers la Mer</h2>
+    <p>La plupart des habitants vivent de la pêche, de la ferme familiale ou du commerce artisanal. La mer est nourricière mais aussi mystérieuse, et les marées sont perçues comme des messagères des Lunes. Chaque famille possède sa propre prière transmise de génération en génération, récitée avant de prendre la mer ou de semer la terre.</p>
+    <p>On trouve surtout des villages portuaires modestes, quelques routes côtières, et des navires aux voiles blanches qui relient les îles entre elles. Les Enfants des Lunes y sont accueillis avec révérence, tout comme les artisans des Saints-Maçons qui viennent parfois s'y ressourcer.</p>
+
+    <h2 id="ports">Ports et Localités</h2>
+
+    <h3 id="akalima">🐚 <a href="akalima.html">Akalima</a> — Le Grand Mouillage</h3>
+    <p>Plus grande ville de Sarathiil, Akalima est un port naturel qui sert de relais commercial entre les continents. Les marchands du Comhan De Na, les pèlerins des Terres Pieuses, et même les explorateurs de l'Anneau de Nuage y font escale. Bien que prospère, la ville refuse toute armée ou faction politique : elle reste neutre par tradition séculaire. Le <em>Conseil des Ancres</em>, formé de pêcheurs et d'anciens navigateurs, gouverne selon les marées, les lunes et les saisons — non selon les lois des rois.</p>
+
+    <h3 id="yndarev">🌬️ <a href="yndarev.html">Yndarev</a> — Le Village des Vents</h3>
+    <p>Petit village perché sur des falaises battues par les courants marins. On y trouve des moulins anciens et des autels dédiés à Ciuin, déesse du vent et des nuages. Les enfants d'Yndarev apprennent à lire les signes du ciel aussi bien que les lettres. La divination des vents y est pratiquée depuis des générations — chaque nuage, chaque bourrasque y est interprété comme un message des dieux.</p>
+
+    <h3 id="sillu">🌾 <a href="sillu.html">Sillu</a> — Terre Bénie, Champs d'Algues et de Blé</h3>
+    <p>Entre mer et terre, Sillu cultive des champs humides fertilisés par l'eau salée. Le blé y est doux, les légumes résistants. La ville est connue pour son <em>festival de l'abondance</em>, célébré chaque fin de Réolta, en l'honneur de la Trinité de la Nature. Les habitants disent que la mer et la terre s'y aiment — les marées y fertilisent les champs plutôt que de les noyer.</p>
+
+    <h2 id="cataclysmres">Le Souvenir du Cataclysme</h2>
+    <p>Sarathiil porte encore le souvenir des tsunamis provoqués par le retour d'Astoryem en l'an -280 EdT. Les villages côtiers furent dévastés. <a href="../lore/journal-arzi.html">Arzi Barmene</a>, qui se trouvait sur ces côtes, témoigne de la vision du continent Astoryem surgissant des flots à l'horizon. Certains hameaux ne furent jamais reconstruits — on peut encore trouver leurs ruines immergées à quelques mètres sous les eaux, lors des grandes marées basses.</p>
+    <blockquote>« Les anciens nous ont appris à lire les marées. Mais ce jour-là, la mer ne murmura rien. Elle se retira, et quand elle revint, elle avala tout. » — témoignage d'un pêcheur de Sarathiil</blockquote>
+
+    <h2 id="spiritualite">Spiritualité et Simplicité</h2>
+    <p>Sarathiil est un carrefour discret de foi, où les habitants rendent grâce à plusieurs Trinités sans favoritisme. On y trouve des pierres dressées pour la Trinité des Lunes, des croix marines pour la Trinité de la Nature, et des offrandes aux Maçons dans les falaises sculptées. Les relations avec les régions voisines sont cordiales — Éllirhom envoie parfois des érudits pour partager des savoirs ésotériques, et Munabenn entretient des liens diplomatiques respectueux, si tendus.</p>
+    <p>La spiritualité sarathiilaise est humble et pratique : on prie pour une bonne pêche, pour que le vent soit favorable, pour que les enfants reviennent des voyages. Les dieux y sont proches, mais jamais imposants.</p>
+
+    <h2 id="confréries">Les Confréries de Sarathiil</h2>
+    <p>Sans autorité centrale, Sarathiil est gouvernée par de petits conseils locaux — les <em>Confréries</em> — formés de pêcheurs, d'anciens navigateurs et de familles marines. Chaque ville ou village côtier possède la sienne, avec ses propres traditions et ses propres règles. Elles ne s'accordent pas toujours, mais savent coexister : la mer est trop grande pour qu'on la divise.</p>
+    <p>La neutralité d'Akalima est respectée de tous — même les nations les plus belliqueuses de Musiyav savent que toucher Sarathiil, c'est se couper des routes commerciales maritimes les plus importantes du continent.</p>
+
+  </main>
+</div>
+<footer><span>⚜ Kaleysur Wiki</span><span style="color: var(--text-muted)">Wiki de campagne D&D</span></footer>
+<script src="../js/wiki.js"></script>
+</body>
+</html>

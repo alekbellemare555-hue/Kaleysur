@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Armalak — Kaleysur Wiki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<nav class="top-nav">
+  <a href="../index.html" class="nav-brand"><span class="nav-brand-icon">⚜</span><span class="nav-brand-text">Kaleysur</span></a>
+  <div class="nav-right">
+    <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="search-input" type="text" placeholder="Rechercher…" autocomplete="off"><div class="search-results" id="search-results"></div></div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-section"><div class="sidebar-section-title">Navigation</div>
+    <a href="../index.html" class="sidebar-link"><span class="icon">🏠</span> Accueil</a>
+    <a href="../chronologie.html" class="sidebar-link"><span class="icon">📜</span> Chronologie</a>
+    <a href="../carte.html" class="sidebar-link"><span class="icon">🗺️</span> Carte du Monde</a>
+    <a href="../calendrier.html" class="sidebar-link"><span class="icon">📅</span> Calendrier</a>
+    <a href="../joueurs.html" class="sidebar-link"><span class="icon">🎲</span> Joueurs</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Astoryem</div>
+    <a href="../astoryem/astoryem.html" class="sidebar-link"><span class="icon">🌐</span> Astoryem</a>
+    <a href="../astoryem/feymundi.html" class="sidebar-link sidebar-sublink"><span class="icon">🏰</span> Feymundi</a>
+    <a href="../astoryem/waterflow.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Waterflow</a>
+    <a href="../astoryem/ville-tempete.html" class="sidebar-link sidebar-sublink"><span class="icon">⚡</span> Ville Tempête</a>
+    <a href="../astoryem/arcanumbra.html" class="sidebar-link sidebar-sublink"><span class="icon">⌛</span> Arcanumbra</a>
+    <a href="../astoryem/cite-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌑</span> Cité des Ombres</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Ayakan</div>
+    <a href="ayakan.html" class="sidebar-link"><span class="icon">🌐</span> Ayakan</a>
+    <div class="sidebar-region-label">Grand Plateau</div>
+    <a href="comhan-de-na.html" class="sidebar-link sidebar-sublink"><span class="icon">⚙️</span> Comhan De Na</a>
+    <a href="grand-plateau.html" class="sidebar-link sidebar-sublink"><span class="icon">⚒️</span> Grand Plateau</a>
+    <a href="armalak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Armalak</a>
+    <a href="fios.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔬</span> Fios</a>
+    <a href="indelair.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚗️</span> Indelair</a>
+    <a href="lukd-oigrid.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Lukd Oigrid</a>
+    <a href="lukd-naek.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🪡</span> Lukd Naek</a>
+    <a href="lukd-tagil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏗️</span> Lukd Tagil</a>
+    <a href="lukd-trenay.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐎</span> Lukd Trenay</a>
+    <a href="lukd-tuanak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Lukd Tuanak</a>
+    <a href="creidak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🕊️</span> Creidak</a>
+    <a href="curcodak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎪</span> Curcodak</a>
+    <div class="sidebar-region-label">Ouestvir</div>
+    <a href="ouestvir.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Ouestvir</a>
+    <a href="yokoki.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Yokoki</a>
+    <a href="laryok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Laryok</a>
+    <a href="yoklar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Yoklar</a>
+    <a href="kasvir.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Kasvir</a>
+    <a href="rusvar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Rusvar</a>
+    <a href="sordas.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔔</span> Sordas</a>
+    <a href="sunkur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Sunkur</a>
+    <a href="portlune.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Portlune</a>
+    <a href="kayadur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Kayadur</a>
+    <a href="zodory.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Zodory</a>
+    <a href="kolandur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Kolandur</a>
+    <a href="staurdur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Staurdur</a>
+    <div class="sidebar-region-label">Régions</div>
+        <a href="creve-glace.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Crève Glace</a>
+    <a href="varask.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Varask</a>
+    <a href="mornea.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Mornea</a>
+    <a href="thyrne.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">♨️</span> Thyrne</a>
+    <a href="selvend.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛒</span> Selvend</a>
+    <a href="frayakin.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Frayakin</a>
+    <a href="solcara.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌟</span> Solcara</a>
+    <a href="pyrael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔶</span> Pyraël</a>
+    <a href="leth.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Leth</a>
+    <a href="faran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Faran</a>
+    <a href="chaines-verre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎶</span> Chaînes de Verre</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Musiyav</div>
+    <a href="../musiyav/musiyav.html" class="sidebar-link"><span class="icon">🌐</span> Musiyav</a>
+    <div class="sidebar-region-label">Nord</div>
+    <a href="../musiyav/terres-gelees.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Terres Gelées</a>
+    <a href="../musiyav/munabenn.html" class="sidebar-link sidebar-sublink"><span class="icon">⛏️</span> Munabenn</a>
+    <a href="../musiyav/creastail.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚡</span> Creastail</a>
+    <a href="../musiyav/stasmoc.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Stasmoc</a>
+    <a href="../musiyav/clagrayn.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Clagrayn</a>
+    <a href="../musiyav/fedhidom.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌑</span> Fedhidom</a>
+    <a href="../musiyav/cricrosal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Cricrosal</a>
+    <a href="../musiyav/ellirhom.html" class="sidebar-link sidebar-sublink"><span class="icon">🍃</span> Éllirhom</a>
+    <div class="sidebar-region-label">Centre</div>
+    <a href="../musiyav/murblan.html" class="sidebar-link sidebar-sublink"><span class="icon">⚖️</span> Murblan</a>
+    <a href="../musiyav/bekai-keal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Bekai Keal</a>
+    <a href="../musiyav/thylkarok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎨</span> Thylkarok</a>
+    <a href="../musiyav/carroval.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🗿</span> Carroval</a>
+    <a href="../musiyav/caudherra.html" class="sidebar-link sidebar-sublink"><span class="icon">🐘</span> Caudherra</a>
+    <a href="../musiyav/saldromil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎵</span> Saldromil</a>
+    <a href="../musiyav/kandor-zei.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Kandor-Zeï</a>
+    <a href="../musiyav/mirsha-lu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐘</span> Mirsha Lû</a>
+    <a href="../musiyav/ukar-tal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📜</span> Ukar Tal</a>
+    <a href="../musiyav/brastelma.html" class="sidebar-link sidebar-sublink"><span class="icon">🌿</span> Brastelma</a>
+    <a href="../musiyav/xalatlal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐆</span> Xalatlal</a>
+    <a href="../musiyav/tochion.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Tochion</a>
+    <a href="../musiyav/yabalta.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Yabalta</a>
+    <a href="../musiyav/solgirne.html" class="sidebar-link sidebar-sublink"><span class="icon">🌾</span> Solgirne</a>
+    <a href="../musiyav/varnestal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Varnestal</a>
+    <a href="../musiyav/linvelar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌲</span> Linvelar</a>
+    <a href="../musiyav/eldmire.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐟</span> Eldmire</a>
+    <a href="../musiyav/cairondel.html" class="sidebar-link sidebar-sublink"><span class="icon">🗿</span> Cairondel</a>
+    <a href="../musiyav/gravantempe.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏔️</span> Gravantempe</a>
+    <a href="../musiyav/treufloran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Treufloran</a>
+    <a href="../musiyav/valtendre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Valtendre</a>
+    <div class="sidebar-region-label">Ouest</div>
+    <a href="../musiyav/valacorra.html" class="sidebar-link sidebar-sublink"><span class="icon">⚜️</span> Valacorra</a>
+    <a href="../musiyav/aunthrevin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Aunthrevin</a>
+    <a href="../musiyav/vendrolis.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Vendrolis</a>
+    <a href="../musiyav/darn-merath.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Darn Merath</a>
+    <a href="../musiyav/dusalain.html" class="sidebar-link sidebar-sublink"><span class="icon">🏜️</span> Dusalain</a>
+    <a href="../musiyav/sarathiil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Sarathiil</a>
+    <a href="../musiyav/akalima.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Akalima</a>
+    <a href="../musiyav/yndarev.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Yndarev</a>
+    <a href="../musiyav/sillu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Sillu</a>
+    <div class="sidebar-region-label">Sud</div>
+    <a href="../musiyav/xamaris.html" class="sidebar-link sidebar-sublink"><span class="icon">🚫</span> Xamaris</a>
+    <a href="../musiyav/xakaril.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Xakaril</a>
+    <a href="../musiyav/marolzhad.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚖️</span> Marolzhad</a>
+    <a href="../musiyav/dorvenkar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚒️</span> Dorvenkar</a>
+    <a href="../musiyav/naskarrem.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Naskarrem</a>
+    <a href="../musiyav/khaelbar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Khaëlbar</a>
+    <a href="../musiyav/tol-vekrah.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📖</span> Tol Vekrah</a>
+    <a href="../musiyav/krelsum.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🧱</span> Krelsum</a>
+    <a href="../musiyav/falstrein.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Falstrein</a>
+    <a href="../musiyav/terres-pieuses.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Terres Pieuses</a>
+    <a href="../musiyav/templum-triarii.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛪</span> Templum Triarii</a>
+    <a href="../musiyav/forge-vivante.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Forge Vivante</a>
+    <a href="../musiyav/isvarun.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌅</span> Isvarun</a>
+    <a href="../musiyav/callafhar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Callafhar</a>
+    <a href="../musiyav/auranthil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌲</span> Auranthil</a>
+    <a href="../musiyav/elvar-tyl.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌳</span> Elvarë Tyl</a>
+    <a href="../musiyav/lunemiral.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌙</span> Lunemiral</a>
+    <a href="../musiyav/miriathael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Mirithaël</a>
+    <a href="../musiyav/faelorrin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Faelorrin</a>
+    <div class="sidebar-region-label">Est</div>
+    <a href="../musiyav/terres-sauvages.html" class="sidebar-link sidebar-sublink"><span class="icon">🌋</span> Terres Sauvages</a>
+    <a href="../musiyav/kaelyth.html" class="sidebar-link sidebar-sublink"><span class="icon">⚔️</span> Viremarche</a>
+    <a href="../musiyav/briseneige.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Briseneige</a>
+    <div class="sidebar-region-label">Terres Isolées</div>
+    <a href="../musiyav/tinneas.html" class="sidebar-link sidebar-sublink"><span class="icon">🦴</span> Tinneas A'Bhàis</a>
+    <a href="../musiyav/shurakai.html" class="sidebar-link sidebar-sublink"><span class="icon">🌫️</span> Shurakai</a>
+    <a href="../musiyav/narkun.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Narkûn</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Régions Éloignées</div>
+    <a href="../musiyav/anneau-dieux.html" class="sidebar-link"><span class="icon">⚫</span> Anneau des Dieux</a>
+    <a href="../musiyav/archipel-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌙</span> Archipel des Ombres</a>
+    <a href="../musiyav/darnobscur.html" class="sidebar-link sidebar-sublink"><span class="icon">🩸</span> Darnobscur</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Personnages & Lore</div>
+    <a href="../lore/personnages.html" class="sidebar-link"><span class="icon">🧙</span> Personnages</a>
+    <a href="../lore/journal-arzi.html" class="sidebar-link sidebar-sublink"><span class="icon">📖</span> Journal d'Arzi</a>
+    <a href="../lore/organisations.html" class="sidebar-link"><span class="icon">⚔️</span> Organisations</a>
+    <a href="../lore/dieux.html" class="sidebar-link"><span class="icon">✨</span> Dieux & Trinités</a>
+  </div>
+</aside>
+
+<div class="page-wrapper">
+  <main class="main-content">
+    <nav class="breadcrumb">
+      <a href="../index.html">Accueil</a><span class="breadcrumb-sep">›</span>
+      <a href="ayakan.html">Ayakan</a><span class="breadcrumb-sep">›</span>
+      <a href="grand-plateau.html">Grand Plateau</a><span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Armalak</span>
+    </nav>
+
+    <div class="page-header">
+      <div class="page-category">Cité-Guilde · Grand Plateau · Ayakan</div>
+      <h1 class="page-title">🛡️ Armalak</h1>
+      <p class="page-subtitle">La Marche d'Acier — ville frontière, arsenal vivant, bouclier du Plateau</p>
+    </div>
+
+    <div class="infobox">
+      <div class="infobox-title">Armalak</div>
+      <div class="infobox-image">🛡️</div>
+      <table class="infobox-table">
+        <tr><td>Type</td><td>Cité-Guilde militaire du Grand Plateau</td></tr>
+        <tr><td>Région</td><td>Grand Plateau</td></tr>
+        <tr><td>Rôle</td><td>Défense, armurerie, escorte des convois</td></tr>
+        <tr><td>Spécialité</td><td>Armures technomagiques modulaires</td></tr>
+        <tr><td>Structure</td><td>Maîtres de Cohorte, Conseil Tactique, Bureau de Traçabilité</td></tr>
+        <tr><td>Lien</td><td>Coordination étroite avec toutes les autres guildes</td></tr>
+      </table>
+    </div>
+
+    <section class="content-section">
+      <h2>Présentation Générale</h2>
+      <p>
+        Armalak est une ville bâtie pour la guerre et la défense. Les pavés résonnent sous le pas des cohortes, et les verrières d'entraînement reflètent les armures qui s'animent comme des <strong>fleurs de métal</strong>. Son existence entière est dédiée à la protection du Grand Plateau — assurer la pérennité des routes, des rails et des tunnels, et le retour sécurisé de chaque équipe.
+      </p>
+      <p>
+        L'air d'Armalak est imprégné d'une douce chaleur d'huile propre et de cuivre. Des carillons secs rythment la marche, des jets d'étincelles éclairent l'intérieur des ateliers filtrés par d'épaisses vitres. Au loin, un train blindé glisse, tel une bête docile. Le soir, les champs d'essai rougeoyants évoquent une constellation tombée du ciel.
+      </p>
+    </section>
+
+    <section class="content-section">
+      <h2>Lieux Emblématiques</h2>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">🏟️</div>
+          <div class="card-name">Champ des Modules</div>
+          <div class="card-desc">Vaste espace à ciel ouvert où sont testées publiquement les capacités d'ancrage, d'impulsion, de mémoire et de canalisation. Chaque mouvement est d'une précision musicale.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">💎</div>
+          <div class="card-name">Salle des Résonances</div>
+          <div class="card-desc">Le cœur secret d'Armalak. Les cristaux y sont purifiés, rechargés et marqués. Leur timbre guide l'assemblage des modules. Triple signature obligatoire : maître d'atelier, officier Armalak, notaire du Mérite.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🚂</div>
+          <div class="card-name">Citadelle des Trains Blindés</div>
+          <div class="card-desc">Point de départ des convois blindés. Anneaux d'amarrage, ateliers mobiles et dépôts de rails. Les colonnes d'escorte s'y forment avant de rejoindre les passes et couloirs stratégiques.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🪨</div>
+          <div class="card-name">Portes de Roche</div>
+          <div class="card-desc">Les entrées monumentales des tunnels. On y enseigne l'art de la progression sans destruction, du maintien sans étouffement et du repli sans piéger les siens.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📜</div>
+          <div class="card-name">Cour des Serments</div>
+          <div class="card-desc">Place immaculée où les escouades prêtent serment de service utile. Les miroirs de contrat y affichent les engagements, les échéances et les preuves attendues.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🏥</div>
+          <div class="card-name">Hôpital de Campagne Tuanak-Naek</div>
+          <div class="card-desc">Pavillon de propreté absolue, contrôle des températures et verrerie fine. La priorité est toujours donnée à la réparation des êtres humains avant celle des modules. Le retour au Champ marque la fin de la convalescence.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>Les Armures Technomagiques</h2>
+      <p>
+        Les armures d'Armalak sont <strong>modulaires</strong> — elles s'adaptent à la mission plutôt que d'être conçues pour une seule tâche. Chaque module est certifié, signé et rechargeable dans les Salles de Résonance de toutes les cités-guildes du Plateau.
+      </p>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">💪</div>
+          <div class="card-name">Épaulière d'Ancrage</div>
+          <div class="card-desc">Établit un rempart de force — utilisée pour stopper une charge, tenir une ligne ou créer un écran de protection autour d'un point stratégique.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">⚡</div>
+          <div class="card-name">Gantelet d'Impulsion</div>
+          <div class="card-desc">Fournit énergie et recul — pour dégager une zone, alimenter une machine sur le terrain ou projeter un choc de recul contrôlé.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📋</div>
+          <div class="card-name">Plastron de Mémoire</div>
+          <div class="card-desc">Enregistre les objectifs et l'exécution de la mission — preuve irréfutable du contrat rempli, consultable par les Tribunaux du Mérite.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🌀</div>
+          <div class="card-name">Cape de Canalisation</div>
+          <div class="card-desc">Dévie les ondes, les souffles et les fronts de froid — essentielle contre les raids de Crève Glace et les gerbes de feu de Frayakin.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔍</div>
+          <div class="card-name">Visière de Verre</div>
+          <div class="card-desc">Affiche mesures, ordres et état de l'escouade en temps réel. Peut amplifier la voix pour calmer des foules ou coordonner des manœuvres complexes.</div>
+        </div>
+      </div>
+
+      <h3 style="margin-top:1.5rem;font-family:'Cinzel',serif;font-size:1rem;color:var(--accent);">Doctrines d'Emploi</h3>
+      <p><strong>Intervention urbaine</strong> — Boucliers mobiles pour espaces confinés, jets d'impulsion courts pour dégager sans blesser, voix amplifiée pour calmer les foules.</p>
+      <p><strong>Garde des rails</strong> — Ancrage profond pour la stabilité sur les traverses, rempart de force contre les chocs, plastron à double enregistrement pour la continuité du convoi.</p>
+      <p><strong>Front froid</strong> — Isolation interne, réchauffeurs d'articulations, visière anti-givre, marche silencieuse sur glace et signal faible pour les balises de Lukd Tagil.</p>
+      <p><strong>Contre la braise de Frayakin</strong> — Couches réfractaires, rideaux d'eau portatifs et ancrage rapide des écrans de pierre. Doctrine de contenir sans profaner.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Structure de Pouvoir</h2>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">⚔️</div>
+          <div class="card-name">Maîtres de Cohorte</div>
+          <div class="card-desc">Commandants responsables des escouades et de leur formation. Leur parole est un engagement solennel — équivalent d'un contrat signé.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🗺️</div>
+          <div class="card-name">Conseil Tactique</div>
+          <div class="card-desc">Table ronde coordonnant la défense ferroviaire, l'escorte des convois et la surveillance des cols. Collabore étroitement avec Comhan De Na et toutes les cités-guildes.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📁</div>
+          <div class="card-name">Bureau de Traçabilité</div>
+          <div class="card-desc">Suit chaque module depuis son premier essai jusqu'à sa dernière mission. Ni succès ni perte ne sont jamais oubliés — la mémoire institutionnelle d'Armalak.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>Culture et Traditions</h2>
+      <p>
+        La <strong>Parade du Mérite</strong> n'est pas une célébration — c'est une démonstration. Chaque escouade y prouve son savoir-faire devant la foule, et deux noms sont gravés chaque soir sur la stèle des solutions utiles. La <strong>chanson de cadence</strong> — apprise par les enfants avant même la lecture — rythme la marche et la respiration des cohortes. La <strong>Règle du Verre</strong>, serment de neutralité, interdit toute manifestation religieuse dans les ateliers et salles d'essai.
+      </p>
+      <p>
+        Armalak entretient des <strong>partenariats précis</strong> avec chaque cité-guilde : Fios vérifie les méthodes et cartes de risque, Indelair traduit les retours de terrain en outils améliorés, Lukd Oigrid fournit métal et cristaux bruts, Lukd Naek assure la finition des pièces, Lukd Tagil bâtit les dalles et ponts porteurs, Lukd Trenay équipe les bêtes pour les terrains difficiles, Lukd Tuanak gère le ravitaillement des campagnes, Creidak veille au Concordat du Verre, Curcodak organise la Parade du Mérite et enseigne l'esthétique du mouvement.
+      </p>
+    </section>
+
+  </main>
+</div>
+
+<script src="../js/wiki.js"></script>
+</body>
+</html>

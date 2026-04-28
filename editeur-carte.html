@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Éditeur de Carte — Kaleysur</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #111;
+  color: #ddd;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Top bar ── */
+.topbar {
+  background: #1a1208;
+  border-bottom: 1px solid #4a3510;
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.topbar h1 {
+  font-size: 1rem;
+  color: #c9a227;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.btn {
+  padding: 0.35rem 0.85rem;
+  border-radius: 4px;
+  border: 1px solid #4a3510;
+  background: #2a1f0a;
+  color: #c9a227;
+  cursor: pointer;
+  font-size: 0.78rem;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.btn:hover { background: #3a2f1a; border-color: #c9a227; }
+.btn.active { background: #c9a227; color: #111; border-color: #c9a227; }
+.btn.danger { border-color: #8b2020; color: #e05050; }
+.btn.danger:hover { background: #3a1010; }
+.btn.success { border-color: #2a6020; color: #60c040; }
+.btn.success:hover { background: #1a3010; }
+.sep { width: 1px; height: 24px; background: #4a3510; flex-shrink: 0; }
+.hint { font-size: 0.72rem; color: #7a6840; font-style: italic; }
+.mode-indicator {
+  padding: 0.25rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: #2a1f0a;
+  border: 1px solid #4a3510;
+  color: #c9a227;
+}
+.mode-indicator.drawing { background: #1a3010; border-color: #60c040; color: #60c040; }
+.mode-indicator.marker { background: #0a1a30; border-color: #4060c0; color: #8090e0; }
+
+/* ── Main layout ── */
+.main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── Canvas area ── */
+.canvas-wrap {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  background: #0a0804;
+  cursor: crosshair;
+}
+#canvas {
+  display: block;
+  position: absolute;
+  top: 0; left: 0;
+  transform-origin: top left;
+}
+
+/* ── Side panel ── */
+.panel {
+  width: 280px;
+  flex-shrink: 0;
+  background: #161208;
+  border-left: 1px solid #3a2810;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.panel-section {
+  border-bottom: 1px solid #2a2010;
+  padding: 0.75rem;
+}
+.panel-section h3 {
+  font-size: 0.72rem;
+  color: #7a6840;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 0.5rem;
+}
+label {
+  display: block;
+  font-size: 0.75rem;
+  color: #9a8860;
+  margin-bottom: 0.15rem;
+  margin-top: 0.4rem;
+}
+input[type=text], textarea, select {
+  width: 100%;
+  background: #1e1810;
+  border: 1px solid #3a2810;
+  color: #ddd;
+  padding: 0.35rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.78rem;
+  font-family: inherit;
+  resize: vertical;
+}
+input[type=text]:focus, textarea:focus {
+  outline: none;
+  border-color: #c9a227;
+}
+textarea { min-height: 60px; }
+
+/* Zone list */
+.zone-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+.zone-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  margin-bottom: 0.3rem;
+  transition: all 0.15s;
+}
+.zone-item:hover { background: #2a1f0a; border-color: #4a3510; }
+.zone-item.selected { background: #2a2010; border-color: #c9a227; }
+.zone-item .zi-icon { font-size: 1rem; flex-shrink: 0; }
+.zone-item .zi-name { font-size: 0.78rem; color: #c9a227; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.zone-item .zi-type { font-size: 0.65rem; color: #6a5830; }
+.zone-item .zi-del { font-size: 0.9rem; color: #5a3020; cursor: pointer; flex-shrink: 0; padding: 0 0.2rem; }
+.zone-item .zi-del:hover { color: #e05050; }
+
+/* Export area */
+.export-box {
+  background: #0e0c08;
+  border: 1px solid #2a2010;
+  border-radius: 3px;
+  padding: 0.5rem;
+  font-size: 0.68rem;
+  font-family: 'Courier New', monospace;
+  color: #80a060;
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 0.4rem;
+}
+.copy-feedback {
+  font-size: 0.72rem;
+  color: #60c040;
+  margin-top: 0.3rem;
+  display: none;
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <h1>🗺️ Éditeur de Carte Kaleysur</h1>
+  <div class="sep"></div>
+
+  <button class="btn" id="btn-zone" onclick="setMode('zone')">✏️ Dessiner zone</button>
+  <button class="btn" id="btn-marker" onclick="setMode('marker')">📍 Placer marqueur</button>
+  <button class="btn" id="btn-select" onclick="setMode('select')">↖ Sélectionner</button>
+  <div class="sep"></div>
+  <button class="btn" id="btn-finish" onclick="finishPolygon()" style="display:none">✅ Terminer zone</button>
+  <button class="btn danger" id="btn-cancel" onclick="cancelDrawing()" style="display:none">✕ Annuler</button>
+  <div class="sep"></div>
+  <button class="btn" onclick="zoomIn()">＋</button>
+  <button class="btn" onclick="zoomOut()">－</button>
+  <button class="btn" onclick="resetZoom()">⌂</button>
+  <div class="sep"></div>
+  <span class="mode-indicator" id="mode-label">Mode : Sélectionner</span>
+  <span class="hint">Double-clic pour terminer une zone · Clic droit pour annuler dernier point</span>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- Canvas -->
+  <div class="canvas-wrap" id="canvas-wrap">
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <!-- Panel -->
+  <div class="panel">
+    <!-- Zone form -->
+    <div class="panel-section">
+      <h3>Propriétés de la zone</h3>
+      <label>Nom</label>
+      <input type="text" id="f-name" placeholder="ex: Musiyav">
+      <label>Icône</label>
+      <input type="text" id="f-icon" placeholder="ex: 🩸">
+      <label>URL (relative à wiki/)</label>
+      <input type="text" id="f-url" placeholder="ex: musiyav/musiyav.html">
+      <label>Description</label>
+      <textarea id="f-desc" placeholder="Description courte du continent…"></textarea>
+      <div style="margin-top:0.5rem; display:flex; gap:0.4rem">
+        <button class="btn success" onclick="saveZoneProps()" style="flex:1">💾 Appliquer</button>
+        <button class="btn danger" onclick="deleteSelected()" style="flex:1">🗑 Supprimer</button>
+      </div>
+    </div>
+
+    <!-- Zone list -->
+    <div class="panel-section" style="flex:1; display:flex; flex-direction:column; overflow:hidden; border-bottom:none;">
+      <h3>Zones & Marqueurs (<span id="zone-count">0</span>)</h3>
+      <div class="zone-list" id="zone-list"></div>
+    </div>
+
+    <!-- Export -->
+    <div class="panel-section">
+      <h3>Exporter le code SVG</h3>
+      <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+        <button class="btn" onclick="exportCode()" style="flex:1">📋 Générer</button>
+        <button class="btn success" onclick="copyCode()" style="flex:1">⎘ Copier</button>
+        <button class="btn success" onclick="applyToCarteHtml()" style="flex:1; border-color:#4080c0; color:#80a0e0">💾 Sauvegarder</button>
+      </div>
+      <div class="export-box" id="export-box">Cliquez "Générer" pour voir le code SVG des zones.</div>
+      <div class="copy-feedback" id="copy-feedback">✓ Copié !</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════════════
+const IMG_SRC = 'img/carte-kaleysur.jpg';
+
+let mode = 'select'; // 'select' | 'zone' | 'marker'
+let scale = 1, tx = 0, ty = 0;
+let isDragging = false, dragBtn = -1;
+let startMx = 0, startMy = 0, startTx = 0, startTy = 0;
+let hasMoved = false;
+
+let zones = [];          // { type:'polygon'|'marker', id, name, icon, url, desc, points:[{x,y}] }
+let currentPoints = [];  // points being drawn
+let mousePos = null;     // current mouse in image coords
+let selectedId = null;
+
+// ════════════════════════════════════════════════════════
+//  CANVAS / IMAGE SETUP
+// ════════════════════════════════════════════════════════
+const wrap   = document.getElementById('canvas-wrap');
+const canvas = document.getElementById('canvas');
+const ctx    = canvas.getContext('2d');
+
+const img = new Image();
+img.src = IMG_SRC;
+img.onload = () => { resetZoom(); render(); };
+img.onerror = () => {
+  ctx.fillStyle = '#1a1208';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#c9a227';
+  ctx.font = '16px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Image non trouvée — placez carte-kaleysur.jpg dans wiki/img/', canvas.width/2, canvas.height/2);
+};
+
+function resizeCanvas() {
+  canvas.width  = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+  render();
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+// ════════════════════════════════════════════════════════
+//  ZOOM / PAN
+// ════════════════════════════════════════════════════════
+function resetZoom() {
+  if (!img.naturalWidth) return;
+  const scaleX = wrap.clientWidth  / img.naturalWidth;
+  const scaleY = wrap.clientHeight / img.naturalHeight;
+  scale = Math.min(scaleX, scaleY);
+  tx = (wrap.clientWidth  - img.naturalWidth  * scale) / 2;
+  ty = (wrap.clientHeight - img.naturalHeight * scale) / 2;
+  render();
+}
+function zoomAt(cx, cy, factor) {
+  const newScale = Math.max(0.1, Math.min(10, scale * factor));
+  const r = newScale / scale;
+  tx = cx - r * (cx - tx);
+  ty = cy - r * (cy - ty);
+  scale = newScale;
+  render();
+}
+function zoomIn()  { zoomAt(wrap.clientWidth/2, wrap.clientHeight/2, 1.25); }
+function zoomOut() { zoomAt(wrap.clientWidth/2, wrap.clientHeight/2, 0.8);  }
+
+// canvas coords → image coords
+function toImg(cx, cy) {
+  return { x: (cx - tx) / scale, y: (cy - ty) / scale };
+}
+// image coords → canvas coords
+function toCanvas(ix, iy) {
+  return { x: ix * scale + tx, y: iy * scale + ty };
+}
+
+// ════════════════════════════════════════════════════════
+//  RENDER
+// ════════════════════════════════════════════════════════
+const COLORS = {
+  zone:   { fill: 'rgba(201,162,39,0.15)', stroke: 'rgba(201,162,39,0.7)' },
+  marker: { fill: '#c9a227', stroke: '#fff' },
+  sel:    { fill: 'rgba(201,162,39,0.3)',  stroke: '#c9a227' },
+  draw:   { fill: 'rgba(96,192,64,0.15)',  stroke: '#60c040' },
+  point:  '#60c040',
+};
+
+function render() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Background
+  ctx.fillStyle = '#0a0804';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Image
+  if (img.naturalWidth) {
+    ctx.drawImage(img, tx, ty, img.naturalWidth * scale, img.naturalHeight * scale);
+  }
+
+  // Draw finished zones
+  zones.forEach(z => {
+    const isSel = z.id === selectedId;
+    if (z.type === 'polygon' && z.points.length > 2) {
+      ctx.beginPath();
+      z.points.forEach((p, i) => {
+        const c = toCanvas(p.x, p.y);
+        i === 0 ? ctx.moveTo(c.x, c.y) : ctx.lineTo(c.x, c.y);
+      });
+      ctx.closePath();
+      ctx.fillStyle   = isSel ? COLORS.sel.fill   : COLORS.zone.fill;
+      ctx.strokeStyle = isSel ? COLORS.sel.stroke  : COLORS.zone.stroke;
+      ctx.lineWidth   = isSel ? 2.5 : 1.5;
+      ctx.fill();
+      ctx.stroke();
+
+      // Label
+      const cx = z.points.reduce((s,p)=>s+p.x,0)/z.points.length;
+      const cy = z.points.reduce((s,p)=>s+p.y,0)/z.points.length;
+      const cc = toCanvas(cx, cy);
+      ctx.font = `bold ${Math.max(10, 14*scale)}px Cinzel, serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      ctx.fillText((z.icon||'') + ' ' + (z.name||'?'), cc.x+1, cc.y+1);
+      ctx.fillStyle = '#c9a227';
+      ctx.fillText((z.icon||'') + ' ' + (z.name||'?'), cc.x, cc.y);
+
+      // Vertex dots when selected
+      if (isSel) {
+        z.points.forEach(p => {
+          const c = toCanvas(p.x, p.y);
+          ctx.beginPath();
+          ctx.arc(c.x, c.y, 5, 0, Math.PI*2);
+          ctx.fillStyle = '#c9a227';
+          ctx.fill();
+        });
+      }
+    }
+
+    if (z.type === 'marker') {
+      const c = toCanvas(z.points[0].x, z.points[0].y);
+      const r = Math.max(4, 6 * scale);
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, r, 0, Math.PI*2);
+      ctx.fillStyle   = isSel ? '#fff' : COLORS.marker.fill;
+      ctx.strokeStyle = isSel ? '#c9a227' : COLORS.marker.stroke;
+      ctx.lineWidth   = 1.5;
+      ctx.fill(); ctx.stroke();
+      // Label
+      ctx.font = `${Math.max(8, 11*scale)}px Cinzel, serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      ctx.fillText((z.icon||'📍')+' '+(z.name||'?'), c.x+1, c.y+r+3);
+      ctx.fillStyle = '#c9a227';
+      ctx.fillText((z.icon||'📍')+' '+(z.name||'?'), c.x, c.y+r+2);
+    }
+  });
+
+  // Draw in-progress polygon
+  if (mode === 'zone' && currentPoints.length > 0) {
+    ctx.beginPath();
+    currentPoints.forEach((p, i) => {
+      const c = toCanvas(p.x, p.y);
+      i === 0 ? ctx.moveTo(c.x, c.y) : ctx.lineTo(c.x, c.y);
+    });
+    if (mousePos) {
+      const c = toCanvas(mousePos.x, mousePos.y);
+      ctx.lineTo(c.x, c.y);
+    }
+    ctx.strokeStyle = COLORS.draw.stroke;
+    ctx.lineWidth   = 1.5;
+    ctx.setLineDash([6, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Fill preview
+    if (currentPoints.length > 2) {
+      ctx.beginPath();
+      currentPoints.forEach((p, i) => {
+        const c = toCanvas(p.x, p.y);
+        i === 0 ? ctx.moveTo(c.x, c.y) : ctx.lineTo(c.x, c.y);
+      });
+      ctx.closePath();
+      ctx.fillStyle = COLORS.draw.fill;
+      ctx.fill();
+    }
+
+    // Dots for placed points
+    currentPoints.forEach((p, i) => {
+      const c = toCanvas(p.x, p.y);
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, i === 0 ? 6 : 4, 0, Math.PI*2);
+      ctx.fillStyle = i === 0 ? '#60e040' : COLORS.point;
+      ctx.fill();
+    });
+
+    // Point count
+    ctx.font = '12px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = '#60c040';
+    ctx.fillText(`${currentPoints.length} point(s) — double-clic pour terminer`, 10, 10);
+  }
+}
+
+// ════════════════════════════════════════════════════════
+//  MOUSE EVENTS
+// ════════════════════════════════════════════════════════
+wrap.addEventListener('wheel', e => {
+  e.preventDefault();
+  const rect = wrap.getBoundingClientRect();
+  zoomAt(e.clientX - rect.left, e.clientY - rect.top, e.deltaY < 0 ? 1.12 : 0.9);
+}, { passive: false });
+
+wrap.addEventListener('pointerdown', e => {
+  hasMoved = false;
+  if (e.button === 1 || (e.button === 0 && mode === 'select')) {
+    isDragging = true; dragBtn = e.button;
+    startMx = e.clientX; startMy = e.clientY;
+    startTx = tx; startTy = ty;
+    wrap.setPointerCapture(e.pointerId);
+  } else if (e.button === 0) {
+    isDragging = true; dragBtn = -99; // track move to distinguish click vs drag
+    startMx = e.clientX; startMy = e.clientY;
+    startTx = tx; startTy = ty;
+    wrap.setPointerCapture(e.pointerId);
+  }
+});
+
+wrap.addEventListener('pointermove', e => {
+  const rect = wrap.getBoundingClientRect();
+  const cx = e.clientX - rect.left;
+  const cy = e.clientY - rect.top;
+  mousePos = toImg(cx, cy);
+
+  if (isDragging && (dragBtn === 1 || dragBtn === 0 && mode === 'select')) {
+    const dx = e.clientX - startMx, dy = e.clientY - startMy;
+    if (Math.abs(dx)+Math.abs(dy) > 3) hasMoved = true;
+    tx = startTx + dx;
+    ty = startTy + dy;
+  } else if (isDragging) {
+    const dx = e.clientX - startMx, dy = e.clientY - startMy;
+    if (Math.abs(dx)+Math.abs(dy) > 5) hasMoved = true;
+  }
+  render();
+});
+
+wrap.addEventListener('pointerup', e => {
+  if (!isDragging) return;
+  isDragging = false;
+  if (hasMoved) return; // was a pan, not a click
+
+  const rect = wrap.getBoundingClientRect();
+  const cx = e.clientX - rect.left;
+  const cy = e.clientY - rect.top;
+  const ip = toImg(cx, cy);
+
+  if (mode === 'zone' && e.button === 0) {
+    currentPoints.push(ip);
+    updateFinishButton();
+    render();
+  } else if (mode === 'marker' && e.button === 0) {
+    addZone({ type:'marker', points:[ip] });
+  } else if (mode === 'select' && e.button === 0) {
+    hitTest(ip);
+  }
+});
+
+// Right-click: remove last point
+wrap.addEventListener('contextmenu', e => {
+  e.preventDefault();
+  if (mode === 'zone' && currentPoints.length > 0) {
+    currentPoints.pop();
+    updateFinishButton();
+    render();
+  }
+});
+
+// Double-click: finish polygon
+wrap.addEventListener('dblclick', e => {
+  if (mode === 'zone' && currentPoints.length >= 3) {
+    // Remove the extra point added by the last single-click before dblclick
+    currentPoints.pop();
+    finishPolygon();
+  }
+});
+
+function hitTest(ip) {
+  // Check markers first (smaller target)
+  for (let i = zones.length - 1; i >= 0; i--) {
+    const z = zones[i];
+    if (z.type === 'marker') {
+      const p = z.points[0];
+      const dist = Math.hypot(ip.x - p.x, ip.y - p.y);
+      if (dist < 15 / scale) { selectZone(z.id); return; }
+    }
+  }
+  // Then polygons
+  for (let i = zones.length - 1; i >= 0; i--) {
+    const z = zones[i];
+    if (z.type === 'polygon' && pointInPolygon(ip, z.points)) {
+      selectZone(z.id); return;
+    }
+  }
+  selectZone(null);
+}
+
+function pointInPolygon(pt, poly) {
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const xi = poly[i].x, yi = poly[i].y;
+    const xj = poly[j].x, yj = poly[j].y;
+    if ((yi > pt.y) !== (yj > pt.y) && pt.x < ((xj - xi) * (pt.y - yi)) / (yj - yi) + xi)
+      inside = !inside;
+  }
+  return inside;
+}
+
+// ════════════════════════════════════════════════════════
+//  MODE
+// ════════════════════════════════════════════════════════
+function setMode(m) {
+  if (mode === 'zone' && currentPoints.length > 0) cancelDrawing();
+  mode = m;
+  currentPoints = [];
+  const modeLabel = document.getElementById('mode-label');
+  const labels = { select:'Sélectionner', zone:'Dessiner zone', marker:'Placer marqueur' };
+  modeLabel.textContent = 'Mode : ' + labels[m];
+  modeLabel.className = 'mode-indicator' + (m==='zone'?' drawing':m==='marker'?' marker':'');
+  ['btn-zone','btn-marker','btn-select'].forEach(id => {
+    document.getElementById(id).classList.toggle('active', id === 'btn-'+m);
+  });
+  document.getElementById('btn-finish').style.display = m === 'zone' ? 'inline-block' : 'none';
+  document.getElementById('btn-cancel').style.display = m === 'zone' ? 'inline-block' : 'none';
+  render();
+}
+
+// ════════════════════════════════════════════════════════
+//  ZONE MANAGEMENT
+// ════════════════════════════════════════════════════════
+let nextId = 1;
+
+function addZone(data) {
+  const z = {
+    id:     nextId++,
+    type:   data.type || 'polygon',
+    name:   data.name || '',
+    icon:   data.icon || (data.type==='marker'?'📍':''),
+    url:    data.url  || '',
+    desc:   data.desc || '',
+    points: data.points || [],
+  };
+  zones.push(z);
+  selectZone(z.id);
+  updateList();
+  render();
+  if (data.type === 'marker') setMode('marker'); // stay in marker mode
+  return z;
+}
+
+function selectZone(id) {
+  selectedId = id;
+  const z = zones.find(z => z.id === id);
+  document.getElementById('f-name').value = z?.name || '';
+  document.getElementById('f-icon').value = z?.icon || '';
+  document.getElementById('f-url').value  = z?.url  || '';
+  document.getElementById('f-desc').value = z?.desc || '';
+  document.querySelectorAll('.zone-item').forEach(el => {
+    el.classList.toggle('selected', parseInt(el.dataset.id) === id);
+  });
+  render();
+}
+
+function saveZoneProps() {
+  if (!selectedId) return;
+  const z = zones.find(z => z.id === selectedId);
+  if (!z) return;
+  z.name = document.getElementById('f-name').value.trim();
+  z.icon = document.getElementById('f-icon').value.trim();
+  z.url  = document.getElementById('f-url').value.trim();
+  z.desc = document.getElementById('f-desc').value.trim();
+  updateList();
+  render();
+}
+
+function deleteSelected() {
+  if (!selectedId) return;
+  zones = zones.filter(z => z.id !== selectedId);
+  selectedId = null;
+  updateList();
+  render();
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-icon').value = '';
+  document.getElementById('f-url').value  = '';
+  document.getElementById('f-desc').value = '';
+}
+
+function finishPolygon() {
+  if (currentPoints.length < 3) return;
+  addZone({ type:'polygon', points:[...currentPoints] });
+  currentPoints = [];
+  setMode('select');
+}
+
+function cancelDrawing() {
+  currentPoints = [];
+  setMode('select');
+}
+
+function updateFinishButton() {
+  const btn = document.getElementById('btn-finish');
+  btn.textContent = currentPoints.length >= 3
+    ? `✅ Terminer zone (${currentPoints.length} pts)`
+    : `✅ Terminer zone`;
+  btn.disabled = currentPoints.length < 3;
+}
+
+function updateList() {
+  const list = document.getElementById('zone-list');
+  document.getElementById('zone-count').textContent = zones.length;
+  list.innerHTML = zones.map(z => `
+    <div class="zone-item ${z.id===selectedId?'selected':''}" data-id="${z.id}" onclick="selectZone(${z.id})">
+      <span class="zi-icon">${z.icon||'▭'}</span>
+      <div style="flex:1; overflow:hidden">
+        <div class="zi-name">${z.name||'(sans nom)'}</div>
+        <div class="zi-type">${z.type==='marker'?'Marqueur':'Zone — '+z.points.length+' pts'}</div>
+      </div>
+      <span class="zi-del" onclick="event.stopPropagation(); selectedId=${z.id}; deleteSelected()">✕</span>
+    </div>
+  `).join('');
+}
+
+// ════════════════════════════════════════════════════════
+//  EXPORT
+// ════════════════════════════════════════════════════════
+function generateCode() {
+  const imgW = img.naturalWidth  || 2600;
+  const imgH = img.naturalHeight || 1462;
+
+  const lines = zones.map(z => {
+    const name  = z.name || 'Zone';
+    const icon  = z.icon || '';
+    const url   = z.url  || '#';
+    const desc  = (z.desc||'').replace(/"/g,'&quot;');
+    const safeId = name.toLowerCase().replace(/[^a-z0-9]/g,'-');
+
+    if (z.type === 'polygon') {
+      const pts = z.points.map(p =>
+        `${Math.round(p.x)},${Math.round(p.y)}`
+      ).join(' ');
+      return `            <!-- ══ ${name.toUpperCase()} ══ -->
+            <polygon
+              class="zone"
+              id="zone-${safeId}"
+              data-name="${name}"
+              data-icon="${icon}"
+              data-url="${url}"
+              data-desc="${desc}"
+              points="${pts}"
+            />`;
+    } else {
+      const px = Math.round(z.points[0].x);
+      const py = Math.round(z.points[0].y);
+      return `            <!-- ══ ${name.toUpperCase()} (marqueur) ══ -->
+            <circle
+              class="zone"
+              id="zone-${safeId}"
+              cx="${px}" cy="${py}" r="18"
+              data-name="${name}"
+              data-icon="${icon}"
+              data-url="${url}"
+              data-desc="${desc}"
+            />`;
+    }
+  });
+
+  return lines.join('\n\n');
+}
+
+function exportCode() {
+  const code = generateCode();
+  document.getElementById('export-box').textContent = code || '(aucune zone définie)';
+}
+
+function copyCode() {
+  const code = generateCode();
+  navigator.clipboard.writeText(code).then(() => {
+    const fb = document.getElementById('copy-feedback');
+    fb.style.display = 'block';
+    setTimeout(() => fb.style.display = 'none', 2000);
+  });
+}
+
+async function applyToCarteHtml() {
+  const code = generateCode();
+  if (!code) { alert('Aucune zone à sauvegarder.'); return; }
+
+  try {
+    const res = await fetch('save-zones.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ zones: generateZonesData() })
+    });
+    if (res.ok) alert('Sauvegardé !');
+    else throw new Error();
+  } catch {
+    // No server — fallback: show code to copy manually
+    exportCode();
+    alert('Pas de serveur actif. Le code SVG est affiché dans la boîte Export — copiez-le et remplacez les <polygon> dans carte.html manuellement, ou utilisez le bouton "Copier".');
+  }
+}
+
+function generateZonesData() {
+  return zones.map(z => ({
+    type:   z.type,
+    name:   z.name,
+    icon:   z.icon,
+    url:    z.url,
+    desc:   z.desc,
+    points: z.points.map(p => ({ x: Math.round(p.x), y: Math.round(p.y) }))
+  }));
+}
+
+// ════════════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════════════
+setMode('select');
+</script>
+</body>
+</html>

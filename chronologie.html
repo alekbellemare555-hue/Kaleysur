@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chronologie — Kaleysur Wiki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="top-nav">
+  <a href="index.html" class="nav-brand">
+    <span class="nav-brand-icon">⚜</span>
+    <span class="nav-brand-text">Kaleysur</span>
+  </a>
+  <div class="nav-right">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="search-input" type="text" placeholder="Rechercher…" autocomplete="off">
+      <div class="search-results" id="search-results"></div>
+    </div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-section"><div class="sidebar-section-title">Navigation</div>
+    <a href="index.html" class="sidebar-link"><span class="icon">🏠</span> Accueil</a>
+    <a href="chronologie.html" class="sidebar-link"><span class="icon">📜</span> Chronologie</a>
+    <a href="carte.html" class="sidebar-link"><span class="icon">🗺️</span> Carte du Monde</a>
+    <a href="calendrier.html" class="sidebar-link"><span class="icon">📅</span> Calendrier</a>
+    <a href="joueurs.html" class="sidebar-link"><span class="icon">🎲</span> Joueurs</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Astoryem</div>
+    <a href="astoryem/astoryem.html" class="sidebar-link"><span class="icon">🌐</span> Astoryem</a>
+    <a href="astoryem/feymundi.html" class="sidebar-link sidebar-sublink"><span class="icon">🏰</span> Feymundi</a>
+    <a href="astoryem/waterflow.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Waterflow</a>
+    <a href="astoryem/ville-tempete.html" class="sidebar-link sidebar-sublink"><span class="icon">⚡</span> Ville Tempête</a>
+    <a href="astoryem/arcanumbra.html" class="sidebar-link sidebar-sublink"><span class="icon">⌛</span> Arcanumbra</a>
+    <a href="astoryem/cite-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌑</span> Cité des Ombres</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Ayakan</div>
+    <a href="ayakan/ayakan.html" class="sidebar-link"><span class="icon">🌐</span> Ayakan</a>
+    <div class="sidebar-region-label">Grand Plateau</div>
+    <a href="ayakan/comhan-de-na.html" class="sidebar-link sidebar-sublink"><span class="icon">⚙️</span> Comhan De Na</a>
+    <a href="ayakan/grand-plateau.html" class="sidebar-link sidebar-sublink"><span class="icon">⚒️</span> Grand Plateau</a>
+    <a href="ayakan/armalak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Armalak</a>
+    <a href="ayakan/fios.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔬</span> Fios</a>
+    <a href="ayakan/indelair.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚗️</span> Indelair</a>
+    <a href="ayakan/lukd-oigrid.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Lukd Oigrid</a>
+    <a href="ayakan/lukd-naek.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🪡</span> Lukd Naek</a>
+    <a href="ayakan/lukd-tagil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏗️</span> Lukd Tagil</a>
+    <a href="ayakan/lukd-trenay.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐎</span> Lukd Trenay</a>
+    <a href="ayakan/lukd-tuanak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Lukd Tuanak</a>
+    <a href="ayakan/creidak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🕊️</span> Creidak</a>
+    <a href="ayakan/curcodak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎪</span> Curcodak</a>
+    <div class="sidebar-region-label">Ouestvir</div>
+    <a href="ayakan/ouestvir.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Ouestvir</a>
+    <a href="ayakan/yokoki.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Yokoki</a>
+    <a href="ayakan/laryok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Laryok</a>
+    <a href="ayakan/yoklar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Yoklar</a>
+    <a href="ayakan/kasvir.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Kasvir</a>
+    <a href="ayakan/rusvar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Rusvar</a>
+    <a href="ayakan/sordas.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔔</span> Sordas</a>
+    <a href="ayakan/sunkur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Sunkur</a>
+    <a href="ayakan/portlune.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Portlune</a>
+    <div class="sidebar-region-label">Régions</div>
+    <a href="ayakan/kayadur.html" class="sidebar-link sidebar-sublink"><span class="icon">🌋</span> Kayadur</a>
+    <a href="ayakan/zodory.html" class="sidebar-link sidebar-sublink"><span class="icon">💎</span> Zodory</a>
+    <a href="ayakan/kolandur.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Kolandur</a>
+    <a href="ayakan/staurdur.html" class="sidebar-link sidebar-sublink"><span class="icon">💨</span> Staurdur</a>
+        <a href="ayakan/creve-glace.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Crève Glace</a>
+    <a href="ayakan/varask.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Varask</a>
+    <a href="ayakan/mornea.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Mornea</a>
+    <a href="ayakan/thyrne.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">♨️</span> Thyrne</a>
+    <a href="ayakan/selvend.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛒</span> Selvend</a>
+    <a href="ayakan/frayakin.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Frayakin</a>
+    <a href="ayakan/solcara.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌟</span> Solcara</a>
+    <a href="ayakan/pyrael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔶</span> Pyraël</a>
+    <a href="ayakan/leth.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Leth</a>
+    <a href="ayakan/faran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Faran</a>
+    <a href="ayakan/chaines-verre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎶</span> Chaînes de Verre</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Musiyav</div>
+    <a href="musiyav/musiyav.html" class="sidebar-link"><span class="icon">🌐</span> Musiyav</a>
+    <div class="sidebar-region-label">Nord</div>
+    <a href="musiyav/terres-gelees.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Terres Gelées</a>
+    <a href="musiyav/munabenn.html" class="sidebar-link sidebar-sublink"><span class="icon">⛏️</span> Munabenn</a>
+    <a href="musiyav/creastail.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚡</span> Creastail</a>
+    <a href="musiyav/stasmoc.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Stasmoc</a>
+    <a href="musiyav/clagrayn.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Clagrayn</a>
+    <a href="musiyav/fedhidom.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌑</span> Fedhidom</a>
+    <a href="musiyav/cricrosal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Cricrosal</a>
+    <a href="musiyav/ellirhom.html" class="sidebar-link sidebar-sublink"><span class="icon">🍃</span> Éllirhom</a>
+    <div class="sidebar-region-label">Centre</div>
+    <a href="musiyav/murblan.html" class="sidebar-link sidebar-sublink"><span class="icon">⚖️</span> Murblan</a>
+    <a href="musiyav/bekai-keal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Bekai Keal</a>
+    <a href="musiyav/thylkarok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎨</span> Thylkarok</a>
+    <a href="musiyav/carroval.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🗿</span> Carroval</a>
+    <a href="musiyav/caudherra.html" class="sidebar-link sidebar-sublink"><span class="icon">🐘</span> Caudherra</a>
+    <a href="musiyav/saldromil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎵</span> Saldromil</a>
+    <a href="musiyav/kandor-zei.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Kandor-Zeï</a>
+    <a href="musiyav/mirsha-lu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐘</span> Mirsha Lû</a>
+    <a href="musiyav/ukar-tal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📜</span> Ukar Tal</a>
+    <a href="musiyav/brastelma.html" class="sidebar-link sidebar-sublink"><span class="icon">🌿</span> Brastelma</a>
+    <a href="musiyav/xalatlal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐆</span> Xalatlal</a>
+    <a href="musiyav/tochion.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Tochion</a>
+    <a href="musiyav/yabalta.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Yabalta</a>
+    <a href="musiyav/solgirne.html" class="sidebar-link sidebar-sublink"><span class="icon">🌾</span> Solgirne</a>
+    <a href="musiyav/varnestal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Varnestal</a>
+    <a href="musiyav/linvelar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌲</span> Linvelar</a>
+    <a href="musiyav/eldmire.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐟</span> Eldmire</a>
+    <a href="musiyav/cairondel.html" class="sidebar-link sidebar-sublink"><span class="icon">🗿</span> Cairondel</a>
+    <a href="musiyav/gravantempe.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏔️</span> Gravantempe</a>
+    <a href="musiyav/treufloran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Treufloran</a>
+    <a href="musiyav/valtendre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Valtendre</a>
+    <div class="sidebar-region-label">Ouest</div>
+    <a href="musiyav/valacorra.html" class="sidebar-link sidebar-sublink"><span class="icon">⚜️</span> Valacorra</a>
+    <a href="musiyav/aunthrevin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Aunthrevin</a>
+    <a href="musiyav/vendrolis.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Vendrolis</a>
+    <a href="musiyav/darn-merath.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Darn Merath</a>
+    <a href="musiyav/dusalain.html" class="sidebar-link sidebar-sublink"><span class="icon">🏜️</span> Dusalain</a>
+    <a href="musiyav/sarathiil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Sarathiil</a>
+    <a href="musiyav/akalima.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Akalima</a>
+    <a href="musiyav/yndarev.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Yndarev</a>
+    <a href="musiyav/sillu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Sillu</a>
+    <div class="sidebar-region-label">Sud</div>
+    <a href="musiyav/xamaris.html" class="sidebar-link sidebar-sublink"><span class="icon">🚫</span> Xamaris</a>
+    <a href="musiyav/xakaril.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Xakaril</a>
+    <a href="musiyav/marolzhad.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚖️</span> Marolzhad</a>
+    <a href="musiyav/dorvenkar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚒️</span> Dorvenkar</a>
+    <a href="musiyav/naskarrem.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Naskarrem</a>
+    <a href="musiyav/khaelbar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Khaëlbar</a>
+    <a href="musiyav/tol-vekrah.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📖</span> Tol Vekrah</a>
+    <a href="musiyav/krelsum.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🧱</span> Krelsum</a>
+    <a href="musiyav/falstrein.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Falstrein</a>
+    <a href="musiyav/terres-pieuses.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Terres Pieuses</a>
+    <a href="musiyav/templum-triarii.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛪</span> Templum Triarii</a>
+    <a href="musiyav/forge-vivante.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Forge Vivante</a>
+    <a href="musiyav/isvarun.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌅</span> Isvarun</a>
+    <a href="musiyav/callafhar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Callafhar</a>
+    <a href="musiyav/auranthil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌲</span> Auranthil</a>
+    <a href="musiyav/elvar-tyl.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌳</span> Elvarë Tyl</a>
+    <a href="musiyav/lunemiral.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌙</span> Lunemiral</a>
+    <a href="musiyav/miriathael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Mirithaël</a>
+    <a href="musiyav/faelorrin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Faelorrin</a>
+    <div class="sidebar-region-label">Est</div>
+    <a href="musiyav/terres-sauvages.html" class="sidebar-link sidebar-sublink"><span class="icon">🌋</span> Terres Sauvages</a>
+    <a href="musiyav/kaelyth.html" class="sidebar-link sidebar-sublink"><span class="icon">⚔️</span> Viremarche</a>
+    <a href="musiyav/briseneige.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Briseneige</a>
+    <div class="sidebar-region-label">Terres Isolées</div>
+    <a href="musiyav/tinneas.html" class="sidebar-link sidebar-sublink"><span class="icon">🦴</span> Tinneas A'Bhàis</a>
+    <a href="musiyav/shurakai.html" class="sidebar-link sidebar-sublink"><span class="icon">🌫️</span> Shurakai</a>
+    <a href="musiyav/narkun.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Narkûn</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Régions Éloignées</div>
+    <a href="musiyav/anneau-dieux.html" class="sidebar-link"><span class="icon">⚫</span> Anneau des Dieux</a>
+    <a href="musiyav/archipel-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌙</span> Archipel des Ombres</a>
+    <a href="musiyav/darnobscur.html" class="sidebar-link sidebar-sublink"><span class="icon">🩸</span> Darnobscur</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Personnages & Lore</div>
+    <a href="lore/personnages.html" class="sidebar-link"><span class="icon">🧙</span> Personnages</a>
+    <a href="lore/journal-arzi.html" class="sidebar-link sidebar-sublink"><span class="icon">📖</span> Journal d'Arzi</a>
+    <a href="lore/organisations.html" class="sidebar-link"><span class="icon">⚔️</span> Organisations</a>
+    <a href="lore/dieux.html" class="sidebar-link"><span class="icon">✨</span> Dieux & Trinités</a>
+  </div>
+</aside>
+
+<div class="page-wrapper">
+  <main class="main-content">
+    <nav class="breadcrumb">
+      <a href="index.html">Accueil</a>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Chronologie</span>
+    </nav>
+
+    <div class="page-header">
+      <div class="page-category">Lore · Histoire</div>
+      <h1 class="page-title">📜 Chronologie de Kaleysur</h1>
+      <p class="page-subtitle">Des origines mythiques à l'Ère Actuelle — toute l'histoire du monde en une seule page.</p>
+    </div>
+
+    <div class="toc" id="auto-toc">
+      <div class="toc-title">Table des matières</div>
+    </div>
+
+    <!-- ═══ CHRONOLOGIE PRINCIPALE ═══ -->
+    <div class="timeline">
+
+      <!-- Âge des Mythes -->
+      <div class="timeline-era" id="age-mythes">
+        <h2 class="timeline-era-title">Âge des Mythes</h2>
+        <div class="timeline-event">
+          <div class="timeline-date">Origines</div>
+          <div class="timeline-text">Création — Le Dieu Unique façonne Kaleysur. La Lune Noire veille, seule lune originelle du monde.</div>
+        </div>
+        <div class="timeline-event">
+          <div class="timeline-date">~ -1350 EdT</div>
+          <div class="timeline-text">Arrivée des Eladrins et d'Udasa sur Astoryem.</div>
+        </div>
+        <div class="timeline-event">
+          <div class="timeline-date">~ -1280 EdT</div>
+          <div class="timeline-text">La guerre entre le Feywild et le Shadowfell menace Kaleysur. L'archimage Ellear Belkam scelle le continent d'Astoryem dans une poche dimensionnelle pour protéger le monde. Début de la Guerre Planaire Interne à l'intérieur du voile.</div>
+        </div>
+      </div>
+
+      <!-- Ère du Silence -->
+      <div class="timeline-era" id="ere-silence">
+        <h2 class="timeline-era-title">Ère du Silence</h2>
+        <div class="timeline-event">
+          <div class="timeline-date">-1280 → -280 EdT</div>
+          <div class="timeline-text">Temps oublié sur les continents. Le souvenir du Dieu Unique s'estompe pour devenir mythe.</div>
+        </div>
+        <div class="timeline-event">
+          <div class="timeline-date">~ -1280 à -1080 EdT</div>
+          <div class="timeline-text"><em>À l'intérieur d'Astoryem :</em> Ère du Chaos — survie des peuples dans le continent scellé.</div>
+        </div>
+        <div class="timeline-event">
+          <div class="timeline-date">~ -1080 à -480 EdT</div>
+          <div class="timeline-text"><em>À l'intérieur d'Astoryem :</em> Ère des Sanctuaires — fondation d'<a href="astoryem/arcanumbra.html">Arcanumbra</a>.</div>
+        </div>
+        <div class="timeline-event">
+          <div class="timeline-date">~ -800 à -650 EdT</div>
+          <div class="timeline-text">Âge du Sang sur <a href="musiyav/musiyav.html">Musiyav</a> — des seigneurs vampires émergent et établissent leurs « Cours du Sang » dans les Terres Sauvages. Début de l'exode des Orcs (<em>Ghash-Nak</em>).</div>
+        </div>
+        <div class="timeline-event">
+          <div class="timeline-date">~ -650 EdT</div>
+          <div class="timeline-text">Guerre des Anciens — Dragons et Géants s'éveillent et anéantissent les Cours du Sang vampiriques. Les Terres Sauvages sont dévastées.</div>
+        </div>
+        <div class="timeline-event">
+          <div class="timeline-date">~ -287 EdT</div>
+          <div class="timeline-text"><em>À l'intérieur d'Astoryem :</em> Ère des Héros — débute la Quête de la Libération d'Astoryem.</div>
+        </div>
+        <div class="timeline-event">
+          <div class="timeline-date">~ -264 EdT</div>
+          <div class="timeline-text">Renaissance de Silitiama à l'intérieur d'Astoryem.</div>
+        </div>
+      </div>
+
+      <!-- Invasion et Chute -->
+      <div class="timeline-era" id="invasion">
+        <h2 class="timeline-era-title">Invasion et Chute</h2>
+        <div class="timeline-event">
+          <div class="timeline-date">-280 EdT</div>
+          <div class="timeline-text">Retour d'Astoryem — les Héros d'Astoryem brisent le sceau avec l'aide des Sœurs du Temps. Le continent réapparaît brutalement, provoquant des tsunamis monstrueux et des catastrophes d'ampleur divine. Ellear Belkam tombe mort à l'instant même. Début de l'Invasion des Illithids (Mangeurs de Cerveaux) sur Kaleysur.</div>
+        </div>
+        <div class="timeline-event">
+          <div class="timeline-date">-280 → -270 EdT</div>
+          <div class="timeline-text">Chute des continents — les Illithids et leurs Elder Brains asservissent les peuples. Asservissement quasi-total de Kaleysur.</div>
+        </div>
+      </div>
+
+      <!-- Âge Sombre -->
+      <div class="timeline-era" id="age-sombre">
+        <h2 class="timeline-era-title">Âge Sombre</h2>
+        <div class="timeline-event">
+          <div class="timeline-date">-270 → -96 EdT</div>
+          <div class="timeline-text">Résistance écrasée — les peuples tentent de s'organiser mais sont systématiquement réprimés. Des siècles de souffrance sous la domination des Illithids.</div>
+        </div>
+        <div class="timeline-event">
+          <div class="timeline-date">-96 EdT</div>
+          <div class="timeline-text">Découverte de la Prophétie : <em>« Plume de l'Orage »</em> — une prophétie annonce la naissance de 27 Élus destinés à libérer le monde.</div>
+        </div>
+        <div class="timeline-event">
+          <div class="timeline-date">-94 → -91 EdT</div>
+          <div class="timeline-text">Formation de l'Alliance Secrète — des résistants de tous les continents s'unissent dans l'ombre.</div>
+        </div>
+      </div>
+
+      <!-- Ascension des Élus -->
+      <div class="timeline-era" id="ascension">
+        <h2 class="timeline-era-title">L'Ascension des Élus</h2>
+        <div class="timeline-event">
+          <div class="timeline-date">-43 EdT</div>
+          <div class="timeline-text">Naissance des 27 Élus — les enfants prophétisés naissent à travers tout Kaleysur.</div>
+        </div>
+        <div class="timeline-event">
+          <div class="timeline-date">-43 → -20 EdT</div>
+          <div class="timeline-text">Protection des Élus et diffusion de la Légende de la Plume Bleue — l'Alliance protège secrètement les Élus durant leur enfance et adolescence.</div>
+        </div>
+        <div class="timeline-event">
+          <div class="timeline-date">-20 EdT</div>
+          <div class="timeline-text">Rassemblement des Élus — les 27 se réunissent et débutent la Reconquête de Kaleysur.</div>
+        </div>
+      </div>
+
+      <!-- Victoire -->
+      <div class="timeline-era" id="trinites">
+        <h2 class="timeline-era-title">Victoire et Nouvel Ordre</h2>
+        <div class="timeline-event">
+          <div class="timeline-date">-5 EdT</div>
+          <div class="timeline-text">Victoire Finale — les 27 Élus triomphent. Libération de Kaleysur du joug des Illithids.</div>
+        </div>
+        <div class="timeline-event">
+          <div class="timeline-date">-5 → -1 EdT</div>
+          <div class="timeline-text">Quête du Rituel — les Élus parcourent les continents pour rassembler les éléments du Rituel d'Ascension.</div>
+        </div>
+        <div class="timeline-event">
+          <div class="timeline-date">0 EdT</div>
+          <div class="timeline-text">Ascension des 27 — les Élus deviennent des dieux. Création des Trinités (groupes de 3 divinités) et des 3 Lunes qui remplacent la Lune Noire solitaire. Début de l'ère calendaire actuelle.</div>
+        </div>
+      </div>
+
+      <!-- Ère Actuelle -->
+      <div class="timeline-era" id="ere-actuelle">
+        <h2 class="timeline-era-title">Ère Actuelle</h2>
+        <div class="timeline-event">
+          <div class="timeline-date">0 → ~287 EdT</div>
+          <div class="timeline-text">Ère des Trinités — les dieux nouvellement créés règnent sur Kaleysur depuis leurs domaines divins. Les peuples reconstruisent et prospèrent.</div>
+        </div>
+        <div class="timeline-event">
+          <div class="timeline-date">287 EdT</div>
+          <div class="timeline-text">Ascension d'Ambition le Foreclaimer — un événement d'une portée encore incertaine secoue l'équilibre des Trinités. Nous sommes <em>maintenant</em>.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ═══ ÈRES ET FORMULES ═══ -->
+    <hr>
+    <h2 id="eres">Les Grandes Ères de Kaleysur</h2>
+    <p>L'histoire de Kaleysur est divisée en quatre grandes ères. La référence calendaire actuelle est l'<strong>Ère des Trinités (EdT)</strong>, qui débute à l'année 0 — jour de l'Ascension des 27 Élus.</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">🌅</div>
+        <div class="card-name">Âge des Mythes (AdM)</div>
+        <div class="card-desc">Époque de la création du monde par le Dieu Unique. Date de début inconnue. Aucune formule de conversion fiable.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🤫</div>
+        <div class="card-name">Ère du Silence (EdS)</div>
+        <div class="card-desc">Débute en -1280 EdT avec le scellement d'Astoryem. Durée : ~1000 ans. Formule : <em>Année EdS − 1281 = Année EdT</em></div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🩸</div>
+        <div class="card-name">Âge Sombre (AS)</div>
+        <div class="card-desc">Débute en -280 EdT avec l'Invasion des Illithids. Durée : ~280 ans. Formule : <em>Année AS − 281 = Année EdT</em></div>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚜️</div>
+        <div class="card-name">Ère des Trinités (EdT)</div>
+        <div class="card-desc">Débute en 0 EdT avec l'Ascension des 27. Ère actuelle — en cours depuis plus de 300 ans. Référence standard.</div>
+      </div>
+    </div>
+
+    <!-- ═══ CALENDRIER ═══ -->
+    <hr>
+    <h2 id="calendrier">Le Calendrier de Kaleysur</h2>
+    <p>
+      Le calendrier de Kaleysur compte <strong>333 jours</strong>, répartis en <strong>9 mois</strong> et <strong>3 saisons</strong>. Chaque semaine compte <strong>9 jours</strong>, en correspondance avec les cycles des trois lunes. Chaque mois est associé à l'une des Trinités divines.
+    </p>
+
+    <h3 id="mois">Les Neuf Mois</h3>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">🌙</div>
+        <div class="card-name">Réolta <span style="color:var(--text-muted);font-size:.85em">— 41 jours</span></div>
+        <div class="card-desc">Premier mois de l'année. Début de l'hiver. Associé à la <em>Trinité des Lunes</em>.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🧱</div>
+        <div class="card-name">Togail <span style="color:var(--text-muted);font-size:.85em">— 37 jours</span></div>
+        <div class="card-desc">Associé à la <em>Trinité des Maçons</em>. Mois de construction et de consolidation.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">⏳</div>
+        <div class="card-name">Amrean <span style="color:var(--text-muted);font-size:.85em">— 37 jours</span></div>
+        <div class="card-desc">Dernier mois de l'hiver. Associé à la <em>Trinité du Temps</em>. Fin de la saison froide.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">💧</div>
+        <div class="card-name">Brònair <span style="color:var(--text-muted);font-size:.85em">— 37 jours</span></div>
+        <div class="card-desc">Début de l'été. Associé à la <em>Trinité des Émotions</em>. Temps des passions et des décisions.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🌿</div>
+        <div class="card-name">Féasach <span style="color:var(--text-muted);font-size:.85em">— 35 jours</span></div>
+        <div class="card-desc">Associé à la <em>Trinité de la Nature</em>. Mois des expéditions et de la croissance.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">☀️</div>
+        <div class="card-name">Soillse <span style="color:var(--text-muted);font-size:.85em">— 31 jours</span></div>
+        <div class="card-desc">Dernier mois de l'été. Associé à la <em>Trinité de la Lumière</em>. Le <strong>3 Soillse</strong> est le Zénith de l'Année — jour sacré dans tout Kaleysur.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚔️</div>
+        <div class="card-name">Cogadhán <span style="color:var(--text-muted);font-size:.85em">— 38 jours</span></div>
+        <div class="card-desc">Début de l'automne. Associé à la <em>Trinité des Conflits</em>. Mois des guerres et des bouleversements.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🦅</div>
+        <div class="card-name">Fiadhra <span style="color:var(--text-muted);font-size:.85em">— 38 jours</span></div>
+        <div class="card-desc">Associé à la <em>Trinité du Bestial</em>. Saison des chasses, des migrations et des pactes.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏛️</div>
+        <div class="card-name">Sealbh <span style="color:var(--text-muted);font-size:.85em">— 39 jours</span></div>
+        <div class="card-desc">Dernier mois de l'année et de l'automne. Associé à la <em>Trinité des Fondements</em>. Temps du repli et des mystères enfouis.</div>
+      </div>
+    </div>
+
+    <h3 id="saisons">Les Trois Saisons</h3>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">❄️</div>
+        <div class="card-name">Hiver</div>
+        <div class="card-desc"><strong>Du 1er Réolta au 37e Amrean</strong> — 115 jours. Temps des longues nuits, des tempêtes magiques et de la méditation. On dit que c'est la saison où les dieux écoutent… mais rarement répondent.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔥</div>
+        <div class="card-name">Été</div>
+        <div class="card-desc"><strong>Du 1er Brònair au 31e Soillse</strong> — 103 jours. Saison brève mais intense, rythmée par les guerres, les expéditions et les révélations solaires. Le <strong>3 Soillse</strong>, Zénith de l'Année, est un jour sacré célébré dans tout Kaleysur.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🍂</div>
+        <div class="card-name">Automne</div>
+        <div class="card-desc"><strong>Du 1er Cogadhán au 39e Sealbh</strong> — 115 jours. Saison du repli, des récoltes, des pactes et des mystères enfouis. C'est souvent la période des plus grands bouleversements.</div>
+      </div>
+    </div>
+
+    <h3 id="semaine">La Semaine de Neuf Jours</h3>
+    <p>
+      La semaine kaleysurienne compte <strong>9 jours</strong>, correspondant aux cycles combinés des trois lunes. Chaque groupe de trois jours suit le patron d'une lune :
+    </p>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">🌕</div>
+        <div class="card-name">Cycle de la Lune Blanche</div>
+        <div class="card-desc"><strong>Precia · Secia · Trecia</strong> — les trois premiers jours de la semaine. Associés à l'ordre, la vérité et la prêtrise.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🌑</div>
+        <div class="card-name">Cycle de la Lune Bleue</div>
+        <div class="card-desc"><strong>Pregael · Segael · Trigael</strong> — les trois jours du milieu. Associés à la magie aberrante, les rêves et les frontières planaires.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔴</div>
+        <div class="card-name">Cycle de la Lune Rouge</div>
+        <div class="card-desc"><strong>Presgard · Deusgard · Trisgard</strong> — les trois derniers jours. Associés à la nécromancie, la rage et la lycanthropie.</div>
+      </div>
+    </div>
+
+    <!-- ═══ TROIS LUNES ═══ -->
+    <hr>
+    <h2 id="lunes">Les Trois Lunes</h2>
+    <p>
+      Avant l'Ascension des 27 Élus, une seule lune — la <strong>Lune Noire</strong> — veillait sur Kaleysur. Lors du Rituel d'Ascension, les 27 dieux créèrent trois nouvelles lunes pour remplacer la lune originelle, chacune incarnant un aspect du pouvoir divin.
+    </p>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">🌕</div>
+        <div class="card-name">Lune Blanche</div>
+        <div class="card-desc"><strong>Cycle de 29 jours</strong> — ~11,5 pleines lunes par an. Symbole d'ordre, de vérité et de prêtrise. La lune de référence pour le comptage du temps. À Ouestvir, les serments majeurs se prêtent sous la lumière de la Lune Blanche.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔵</div>
+        <div class="card-name">Lune Bleue</div>
+        <div class="card-desc"><strong>Cycle de 41 jours</strong> — ~8 pleines lunes par an. Symbole de magie aberrante, de rêves et de frontières planaires. Sa lumière rend les enchantements plus instables mais permet des effets impossibles sous les autres lunes.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔴</div>
+        <div class="card-name">Lune Rouge</div>
+        <div class="card-desc"><strong>Cycle de 18 jours</strong> — ~18,5 pleines lunes par an. Symbole de nécromancie, de rage et de lycanthropie maléfique. Sa pleine lune est redoutée dans tout Kaleysur.</div>
+      </div>
+    </div>
+
+    <!-- Chronologie d'Astoryem scellé -->
+    <hr>
+    <h2 id="astoryem-scelle">Échelle Temporelle d'Astoryem Scellé</h2>
+    <p>Pendant le millénaire durant lequel Astoryem fut caché du monde, le temps continua de s'écouler à l'intérieur du voile. Voici ce qui s'y passa :</p>
+    <div class="timeline">
+      <div class="timeline-era">
+        <div class="timeline-event"><div class="timeline-date">-1350 EdT</div><div class="timeline-text">Arrivée des Eladrins et d'Udasa sur Astoryem.</div></div>
+        <div class="timeline-event"><div class="timeline-date">~ -1280 EdT</div><div class="timeline-text">Scellement — Début de la Guerre Planaire Interne entre les forces du Feywild et du Shadowfell à l'intérieur du continent isolé.</div></div>
+        <div class="timeline-event"><div class="timeline-date">-1280 à -1080 EdT</div><div class="timeline-text">Ère du Chaos — Survie des peuples face aux forces planaires déchaînées.</div></div>
+        <div class="timeline-event"><div class="timeline-date">-1080 à -480 EdT</div><div class="timeline-text">Ère des Sanctuaires — Fondation d'<a href="astoryem/arcanumbra.html">Arcanumbra</a> comme refuge du savoir.</div></div>
+        <div class="timeline-event"><div class="timeline-date">~ -287 EdT</div><div class="timeline-text">Ère des Héros — Les Héros d'Astoryem commencent leur quête pour libérer le continent.</div></div>
+        <div class="timeline-event"><div class="timeline-date">~ -264 EdT</div><div class="timeline-text">Renaissance de <a href="lore/personnages.html#silitiama">Silitiama</a>, l'Eladrin Phénix.</div></div>
+        <div class="timeline-event"><div class="timeline-date">-280 EdT</div><div class="timeline-text">Sceau Brisé — Retour d'Astoryem dans le plan matériel. La mort de Belkam marque la fin de mille ans d'isolement.</div></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer>
+  <span>⚜ Kaleysur Wiki</span>
+  <span style="color: var(--text-muted)">Wiki de campagne D&D</span>
+</footer>
+
+<script src="js/wiki.js"></script>
+</body>
+</html>

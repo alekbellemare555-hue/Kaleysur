@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Îles Hagruk — Kaleysur Wiki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<nav class="top-nav">
+  <a href="../index.html" class="nav-brand"><span class="nav-brand-icon">⚜</span><span class="nav-brand-text">Kaleysur</span></a>
+  <div class="nav-right">
+    <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="search-input" type="text" placeholder="Rechercher…" autocomplete="off"><div class="search-results" id="search-results"></div></div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-section"><div class="sidebar-section-title">Navigation</div>
+    <a href="../index.html" class="sidebar-link"><span class="icon">🏠</span> Accueil</a>
+    <a href="../chronologie.html" class="sidebar-link"><span class="icon">📜</span> Chronologie</a>
+    <a href="../carte.html" class="sidebar-link"><span class="icon">🗺️</span> Carte du Monde</a>
+    <a href="../calendrier.html" class="sidebar-link"><span class="icon">📅</span> Calendrier</a>
+    <a href="../joueurs.html" class="sidebar-link"><span class="icon">🎲</span> Joueurs</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Astoryem</div>
+    <a href="../astoryem/astoryem.html" class="sidebar-link"><span class="icon">🌐</span> Astoryem</a>
+    <a href="../astoryem/feymundi.html" class="sidebar-link sidebar-sublink"><span class="icon">🏰</span> Feymundi</a>
+    <a href="../astoryem/waterflow.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Waterflow</a>
+    <a href="../astoryem/ville-tempete.html" class="sidebar-link sidebar-sublink"><span class="icon">⚡</span> Ville Tempête</a>
+    <a href="../astoryem/arcanumbra.html" class="sidebar-link sidebar-sublink"><span class="icon">⌛</span> Arcanumbra</a>
+    <a href="../astoryem/cite-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌑</span> Cité des Ombres</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Ayakan</div>
+    <a href="../ayakan/ayakan.html" class="sidebar-link"><span class="icon">🌐</span> Ayakan</a>
+    <div class="sidebar-region-label">Grand Plateau</div>
+    <a href="../ayakan/comhan-de-na.html" class="sidebar-link sidebar-sublink"><span class="icon">⚙️</span> Comhan De Na</a>
+    <a href="../ayakan/grand-plateau.html" class="sidebar-link sidebar-sublink"><span class="icon">⚒️</span> Grand Plateau</a>
+    <a href="../ayakan/armalak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Armalak</a>
+    <a href="../ayakan/fios.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔬</span> Fios</a>
+    <a href="../ayakan/indelair.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚗️</span> Indelair</a>
+    <a href="../ayakan/lukd-oigrid.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Lukd Oigrid</a>
+    <a href="../ayakan/lukd-naek.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🪡</span> Lukd Naek</a>
+    <a href="../ayakan/lukd-tagil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏗️</span> Lukd Tagil</a>
+    <a href="../ayakan/lukd-trenay.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐎</span> Lukd Trenay</a>
+    <a href="../ayakan/lukd-tuanak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Lukd Tuanak</a>
+    <a href="../ayakan/creidak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🕊️</span> Creidak</a>
+    <a href="../ayakan/curcodak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎪</span> Curcodak</a>
+    <div class="sidebar-region-label">Ouestvir</div>
+    <a href="../ayakan/ouestvir.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Ouestvir</a>
+    <a href="../ayakan/yokoki.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Yokoki</a>
+    <a href="../ayakan/laryok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Laryok</a>
+    <a href="../ayakan/yoklar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Yoklar</a>
+    <a href="../ayakan/kasvir.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Kasvir</a>
+    <a href="../ayakan/rusvar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Rusvar</a>
+    <a href="../ayakan/sordas.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔔</span> Sordas</a>
+    <a href="../ayakan/sunkur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Sunkur</a>
+    <a href="../ayakan/portlune.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Portlune</a>
+    <a href="../ayakan/kayadur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Kayadur</a>
+    <a href="../ayakan/zodory.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Zodory</a>
+    <a href="../ayakan/kolandur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Kolandur</a>
+    <a href="../ayakan/staurdur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Staurdur</a>
+    <div class="sidebar-region-label">Régions</div>
+        <a href="../ayakan/creve-glace.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Crève Glace</a>
+    <a href="../ayakan/varask.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Varask</a>
+    <a href="../ayakan/mornea.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Mornea</a>
+    <a href="../ayakan/thyrne.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">♨️</span> Thyrne</a>
+    <a href="../ayakan/selvend.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛒</span> Selvend</a>
+    <a href="../ayakan/frayakin.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Frayakin</a>
+    <a href="../ayakan/solcara.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌟</span> Solcara</a>
+    <a href="../ayakan/pyrael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔶</span> Pyraël</a>
+    <a href="../ayakan/leth.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Leth</a>
+    <a href="../ayakan/faran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Faran</a>
+    <a href="../ayakan/chaines-verre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎶</span> Chaînes de Verre</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Musiyav</div>
+    <a href="musiyav.html" class="sidebar-link"><span class="icon">🌐</span> Musiyav</a>
+    <div class="sidebar-region-label">Nord</div>
+    <a href="terres-gelees.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Terres Gelées</a>
+    <a href="munabenn.html" class="sidebar-link sidebar-sublink"><span class="icon">⛏️</span> Munabenn</a>
+    <a href="creastail.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚡</span> Creastail</a>
+    <a href="stasmoc.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Stasmoc</a>
+    <a href="clagrayn.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Clagrayn</a>
+    <a href="fedhidom.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌑</span> Fedhidom</a>
+    <a href="cricrosal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Cricrosal</a>
+    <a href="ellirhom.html" class="sidebar-link sidebar-sublink"><span class="icon">🍃</span> Éllirhom</a>
+    <div class="sidebar-region-label">Centre</div>
+    <a href="murblan.html" class="sidebar-link sidebar-sublink"><span class="icon">⚖️</span> Murblan</a>
+    <a href="bekai-keal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Bekai Keal</a>
+    <a href="thylkarok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎨</span> Thylkarok</a>
+    <a href="carroval.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🗿</span> Carroval</a>
+    <a href="caudherra.html" class="sidebar-link sidebar-sublink"><span class="icon">🐘</span> Caudherra</a>
+    <a href="saldromil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎵</span> Saldromil</a>
+    <a href="kandor-zei.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Kandor-Zeï</a>
+    <a href="mirsha-lu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐘</span> Mirsha Lû</a>
+    <a href="ukar-tal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📜</span> Ukar Tal</a>
+    <a href="brastelma.html" class="sidebar-link sidebar-sublink"><span class="icon">🌿</span> Brastelma</a>
+    <a href="xalatlal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐆</span> Xalatlal</a>
+    <a href="tochion.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Tochion</a>
+    <a href="yabalta.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Yabalta</a>
+    <a href="solgirne.html" class="sidebar-link sidebar-sublink"><span class="icon">🌾</span> Solgirne</a>
+    <a href="varnestal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Varnestal</a>
+    <a href="linvelar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌲</span> Linvelar</a>
+    <a href="eldmire.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐟</span> Eldmire</a>
+    <a href="cairondel.html" class="sidebar-link sidebar-sublink"><span class="icon">🗿</span> Cairondel</a>
+    <a href="gravantempe.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏔️</span> Gravantempe</a>
+    <a href="treufloran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Treufloran</a>
+    <a href="valtendre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Valtendre</a>
+    <div class="sidebar-region-label">Ouest</div>
+    <a href="valacorra.html" class="sidebar-link sidebar-sublink"><span class="icon">⚜️</span> Valacorra</a>
+    <a href="aunthrevin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Aunthrevin</a>
+    <a href="vendrolis.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Vendrolis</a>
+    <a href="darn-merath.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Darn Merath</a>
+    <a href="dusalain.html" class="sidebar-link sidebar-sublink"><span class="icon">🏜️</span> Dusalain</a>
+    <a href="sarathiil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Sarathiil</a>
+    <a href="akalima.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Akalima</a>
+    <a href="yndarev.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Yndarev</a>
+    <a href="sillu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Sillu</a>
+    <div class="sidebar-region-label">Sud</div>
+    <a href="xamaris.html" class="sidebar-link sidebar-sublink"><span class="icon">🚫</span> Xamaris</a>
+    <a href="xakaril.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Xakaril</a>
+    <a href="marolzhad.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚖️</span> Marolzhad</a>
+    <a href="dorvenkar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚒️</span> Dorvenkar</a>
+    <a href="naskarrem.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Naskarrem</a>
+    <a href="khaelbar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Khaëlbar</a>
+    <a href="tol-vekrah.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📖</span> Tol Vekrah</a>
+    <a href="krelsum.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🧱</span> Krelsum</a>
+    <a href="falstrein.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Falstrein</a>
+    <a href="terres-pieuses.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Terres Pieuses</a>
+    <a href="templum-triarii.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛪</span> Templum Triarii</a>
+    <a href="forge-vivante.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Forge Vivante</a>
+    <a href="isvarun.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌅</span> Isvarun</a>
+    <a href="callafhar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Callafhar</a>
+    <a href="auranthil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌲</span> Auranthil</a>
+    <a href="elvar-tyl.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌳</span> Elvarë Tyl</a>
+    <a href="lunemiral.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌙</span> Lunemiral</a>
+    <a href="miriathael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Mirithaël</a>
+    <a href="faelorrin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Faelorrin</a>
+    <div class="sidebar-region-label">Est</div>
+    <a href="terres-sauvages.html" class="sidebar-link sidebar-sublink"><span class="icon">🌋</span> Terres Sauvages</a>
+    <a href="kaelyth.html" class="sidebar-link sidebar-sublink"><span class="icon">⚔️</span> Viremarche</a>
+    <a href="briseneige.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Briseneige</a>
+    <div class="sidebar-region-label">Terres Isolées</div>
+    <a href="tinneas.html" class="sidebar-link sidebar-sublink"><span class="icon">🦴</span> Tinneas A'Bhàis</a>
+    <a href="shurakai.html" class="sidebar-link sidebar-sublink"><span class="icon">🌫️</span> Shurakai</a>
+    <a href="narkun.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Narkûn</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Régions Éloignées</div>
+    <a href="anneau-dieux.html" class="sidebar-link"><span class="icon">⚫</span> Anneau des Dieux</a>
+    <a href="archipel-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌙</span> Archipel des Ombres</a>
+    <a href="darnobscur.html" class="sidebar-link sidebar-sublink"><span class="icon">🩸</span> Darnobscur</a>
+    <a href="iles-hagruk.html" class="sidebar-link sidebar-sublink active"><span class="icon">⚔️</span> Îles Hagruk</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Personnages & Lore</div>
+    <a href="../lore/personnages.html" class="sidebar-link"><span class="icon">🧙</span> Personnages</a>
+    <a href="../lore/journal-arzi.html" class="sidebar-link sidebar-sublink"><span class="icon">📖</span> Journal d'Arzi</a>
+    <a href="../lore/organisations.html" class="sidebar-link"><span class="icon">⚔️</span> Organisations</a>
+    <a href="../lore/dieux.html" class="sidebar-link"><span class="icon">✨</span> Dieux & Trinités</a>
+  </div>
+</aside>
+
+<div class="page-wrapper">
+  <main class="main-content">
+    <nav class="breadcrumb">
+      <a href="../index.html">Accueil</a><span class="breadcrumb-sep">›</span>
+      <a href="musiyav.html">Musiyav</a><span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Îles Hagruk</span>
+    </nav>
+
+    <div class="page-header">
+      <div class="page-category">Archipel · Régions Éloignées</div>
+      <h1 class="page-title">⚔️ Les Îles Hagruk — L'Archipel des Conquérants du Nord</h1>
+      <p class="page-subtitle">« Ils ne connaissent pas la défaite. Seulement les batailles qu'ils n'ont pas encore livrées. » — Commandant Essiv Dralgh, Fort de Lysécume</p>
+    </div>
+
+    <div class="toc" id="auto-toc"><div class="toc-title">Table des matières</div></div>
+
+    <div class="infobox">
+      <div class="infobox-title">Îles Hagruk</div>
+      <div class="infobox-image">⚔️</div>
+      <table class="infobox-table">
+        <tr><td>Type</td><td>Archipel nordique</td></tr>
+        <tr><td>Habitants</td><td>Clans orcs Hagruk</td></tr>
+        <tr><td>Climat</td><td>Arctique, tempêtes perpétuelles, glaces</td></tr>
+        <tr><td>Culture</td><td>Viking, guerrière, clanique</td></tr>
+        <tr><td>Menace principale</td><td>Musiyav (nord), <a href="terres-gelees.html">Terres Gelées</a></td></tr>
+        <tr><td>Adversaires</td><td><a href="kaelyth.html">Chevaliers du Lys</a></td></tr>
+      </table>
+    </div>
+
+    <h2 id="presentation">Présentation</h2>
+    <p>Au nord de Musiyav, au-delà des <a href="terres-gelees.html">Terres Gelées</a> et des eaux bouillonnantes qui séparent le continent de l'inconnu, s'étend un archipel gelé et battu par les tempêtes : les Îles Hagruk. Ce n'est pas un endroit que l'on choisit d'habiter — c'est un endroit qui forge ceux qui y survivent. Ses rives de roc noir, ses montagnes couvertes de glace perpétuelle, ses fjords profonds taillés dans la pierre par des siècles de tempête : tout ici crie une seule chose. La force.</p>
+    <p>C'est de cet archipel impitoyable que viennent les redoutables <strong>clans orcs Hagruk</strong>, une civilisation fière aux accents vikings, dont les navires de guerre sillonnent les mers du nord depuis des générations. Leurs drakkars noirs, sculptés à l'effigie de bêtes glaciaires, sont la terreur de tout navigateur qui s'aventure trop loin vers le septentrion. Et si les Chevaliers du Lys gardent sans relâche les frontières du nord de Musiyav, c'est précisément pour les contenir — car les Hagruk ne rêvent que d'une chose : reprendre Kaleysur, qu'ils estiment leur avoir été volé.</p>
+
+    <h2 id="histoire">Histoire et Ressentiment Ancien</h2>
+    <p>Les Hagruk ne se considèrent pas comme des envahisseurs. Dans leur tradition orale, transmise de chef en chef par des scaldes aux voix graveleuses autour de feux de bois flotté, ils sont les <em>premiers</em>. Avant les humains de Musiyav, avant les royaumes et les cités, avant les Chevaliers du Lys avec leurs oriflammes blanches — il y avait les Hagruk. Ils foulaient les côtes nord de Kaleysur, ils chassaient dans ses forêts, et ils appelaient ces terres les leurs.</p>
+    <p>Puis vinrent les grands exodes, les guerres d'expansion des peuples du sud, et les Hagruk furent chassés de leurs terres ancestrales, repoussés vers les îles du nord. Ce déplacement forcé est gravé dans leur culture comme une blessure qui ne cicatrisera jamais. Chaque raid sur les côtes de Musiyav n'est pas, à leurs yeux, une agression : c'est une tentative de <em>récupérer ce qui leur appartient</em>.</p>
+
+    <h2 id="clans">Les Clans Majeurs</h2>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-icon">🪓</span>
+        <div class="card-name" style="color:var(--gold)">Clan Grakh-Ul</div>
+        <div class="card-desc">Le plus puissant des clans Hagruk, dirigé par le Seigneur de Guerre <strong>Urzak le Briseur</strong>. Spécialisés dans les assauts amphibies, ils manœuvrent leurs drakkars avec une précision terrifiante même dans les tempêtes les plus violentes. Leur emblème est un ours polaire éventré sur fond de rouge.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🌊</span>
+        <div class="card-name" style="color:var(--gold)">Clan Vorgrul</div>
+        <div class="card-desc">Marins et navigateurs hors pair, les Vorgrul connaissent chaque courant, chaque récif, chaque tempête de la mer du Nord. Moins enclins à la guerre frontale qu'au pillage rapide et à la retraite, ils fournissent les éclaireurs et les pilotes de flotte à la coalition Hagruk.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🐺</span>
+        <div class="card-name" style="color:var(--gold)">Clan Dhurrek</div>
+        <div class="card-desc">Guerriers terrestres d'élite, les Dhurrek s'entraînent sur les flancs glacés de l'île centrale depuis l'enfance. Leurs chamanes invoquent les esprits de la tempête pour aveugler les défenseurs ennemis lors des débarquements. Réputés pour ne jamais capituler, même acculés.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🔱</span>
+        <div class="card-name" style="color:var(--gold)">Clan Hral-Gur</div>
+        <div class="card-desc">Gardiens des traditions et des lois Hagruk, les Hral-Gur jouent un rôle diplomatique au sein de l'archipel. Ils organisent le <em>Grand Rassemblement</em> annuel où tous les clans votent sur les grandes décisions — dont les campagnes de reconquête sur Musiyav.</div>
+      </div>
+    </div>
+
+    <h2 id="culture">Culture et Société</h2>
+    <p>La société Hagruk est fondée sur deux piliers inséparables : la force et l'honneur. Un Hagruk sans force n'est rien. Un Hagruk sans honneur est pire que mort. Ce n'est pas seulement une philosophie — c'est un code de survie dans un archipel où la nature elle-même cherche à vous tuer à chaque instant. Les tempêtes d'hiver peuvent durer des semaines. La nourriture est rare. Le froid est une entité presque consciente.</p>
+    <p>Pourtant, la culture Hagruk n'est pas que violence. Leurs scaldes — les <em>Kharralun</em> — sont des artistes de la mémoire, capables de réciter des généalogies remontant à trente générations et de composer des épopées qui durent toute une nuit. Leur artisanat naval est sans égal dans le monde connu : leurs drakkars sont construits pour affronter des conditions que tout autre navire ne survivrait pas. Et leur cuisine, bien qu'étrange aux palais du sud, révèle une connaissance profonde des ressources de leur environnement hostile.</p>
+
+    <h2 id="navires">Les Drakkars Hagruk</h2>
+    <p>Au cœur de la puissance militaire Hagruk se trouvent leurs navires de guerre. Les drakkars Hagruk sont plus larges et plus bas que les navires classiques, conçus pour naviguer aussi bien en haute mer que pour s'échouer directement sur une plage ennemie. Leur proue est invariablement sculptée à l'effigie d'une créature arctique — kraken, ours des glaces, serpent de mer — dont les yeux sont souvent incrustés de pierres précieuses arrachées à des pillages passés.</p>
+    <p>La flotte Hagruk peut rassembler jusqu'à deux cents drakkars lors d'une grande campagne. Les <a href="terres-gelees.html">Terres Gelées</a> de Musiyav ont été construites précisément pour répondre à cette menace : chaque fort côtier dispose de balistes géantes capable de couler un drakkar à cinq cents mètres, et les mages du Lys peuvent appeler des tempêtes pour disperser une flotte ennemie.</p>
+
+    <h2 id="chevaliers">Confrontation avec les Chevaliers du Lys</h2>
+    <p>La relation entre les Hagruk et les <a href="kaelyth.html">Chevaliers du Lys</a> est ancienne, brutale, et d'une étrange forme de respect mutuel. Les Chevaliers ont appris à connaître leurs adversaires : leurs tactiques, leurs saisons de raid préférées, leurs points faibles. Les Hagruk, de leur côté, savent que les Chevaliers ne cèdent jamais et ne négocient pas. Chaque confrontation est donc totale.</p>
+    <p>Les raids Hagruk suivent généralement un schéma : débarquement rapide à l'aube, pillage des avant-postes les moins défendus, retraite avant que les renforts du Lys n'arrivent. Mais lors des grandes campagnes — qui surviennent une fois par génération — les Hagruk rassemblent tous leurs clans et tentent une invasion en règle. À ce jour, toutes ont échoué, au prix de pertes colossales des deux côtés. Les <a href="terres-gelees.html">Terres Gelées</a> sont jonchées de tombes — certaines marquées d'oriflammes blanches, d'autres de runes orques gravées dans des pierres levées que personne n'ose déplacer.</p>
+
+    <h2 id="croyances">Croyances et Spiritualité</h2>
+    <p>Les Hagruk vénèrent les forces brutes de la nature sous la forme de <em>Grands Esprits</em> — ni dieux ni démons au sens strict, mais des puissances immémoriales qui habitent les tempêtes, les glaces et les profondeurs marines. Leurs chamanes, les <em>Skorn</em>, servent d'intermédiaires entre le monde des vivants et celui des Esprits. Avant chaque grand raid, un Skorn s'isole pendant trois jours sur la glace, sans nourriture, pour communier avec les Esprits et demander leur bénédiction.</p>
+    <p>La mort au combat est la forme la plus haute d'existence pour un Hagruk. Tomber les armes à la main, face à l'ennemi, garantit une place dans les <em>Salles du Vent Éternel</em> — leur vision d'un au-delà où la tempête gronde à jamais et les combats n'ont ni fin ni douleur. Mourir dans son lit, vieux et épuisé, est une honte discrète que l'on tait par égard pour les proches.</p>
+
+    <h2 id="rapport-kaleysur">Rapport à Kaleysur</h2>
+    <p>Pour les Hagruk, Kaleysur n'est pas seulement un continent convoité : c'est une terre sacrée perdue. Leur cosmologie place les terres du sud comme le <em>Kharrak</em> — le pays des origines, où les premiers ancêtres Hagruk vivaient en harmonie avec la nature avant d'en être arrachés. Reconquérir Kaleysur n'est donc pas une ambition politique. C'est un devoir spirituel, une mission que chaque génération lègue à la suivante.</p>
+    <p>Cette conviction profonde les rend particulièrement dangereux : les Hagruk ne combattent pas pour le butin ou la gloire. Ils combattent pour quelque chose qu'ils ressentent comme un droit fondamental. Et c'est précisément ce qui fait que les Chevaliers du Lys ne peuvent jamais baisser leur garde — car les Hagruk, eux, ne le font jamais.</p>
+
+  </main>
+</div>
+<footer><span>⚜ Kaleysur Wiki</span><span style="color: var(--text-muted)">Wiki de campagne D&D</span></footer>
+<script src="../js/wiki.js"></script>
+</body>
+</html>

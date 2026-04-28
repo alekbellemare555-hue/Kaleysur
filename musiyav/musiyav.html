@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Musiyav — Kaleysur Wiki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<nav class="top-nav">
+  <a href="../index.html" class="nav-brand"><span class="nav-brand-icon">⚜</span><span class="nav-brand-text">Kaleysur</span></a>
+  <div class="nav-right">
+    <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="search-input" type="text" placeholder="Rechercher…" autocomplete="off"><div class="search-results" id="search-results"></div></div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-section"><div class="sidebar-section-title">Navigation</div>
+    <a href="../index.html" class="sidebar-link"><span class="icon">🏠</span> Accueil</a>
+    <a href="../chronologie.html" class="sidebar-link"><span class="icon">📜</span> Chronologie</a>
+    <a href="../carte.html" class="sidebar-link"><span class="icon">🗺️</span> Carte du Monde</a>
+    <a href="../calendrier.html" class="sidebar-link"><span class="icon">📅</span> Calendrier</a>
+    <a href="../joueurs.html" class="sidebar-link"><span class="icon">🎲</span> Joueurs</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Astoryem</div>
+    <a href="../astoryem/astoryem.html" class="sidebar-link"><span class="icon">🌐</span> Astoryem</a>
+    <a href="../astoryem/feymundi.html" class="sidebar-link sidebar-sublink"><span class="icon">🏰</span> Feymundi</a>
+    <a href="../astoryem/waterflow.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Waterflow</a>
+    <a href="../astoryem/ville-tempete.html" class="sidebar-link sidebar-sublink"><span class="icon">⚡</span> Ville Tempête</a>
+    <a href="../astoryem/arcanumbra.html" class="sidebar-link sidebar-sublink"><span class="icon">⌛</span> Arcanumbra</a>
+    <a href="../astoryem/cite-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌑</span> Cité des Ombres</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Ayakan</div>
+    <a href="../ayakan/ayakan.html" class="sidebar-link"><span class="icon">🌐</span> Ayakan</a>
+    <div class="sidebar-region-label">Grand Plateau</div>
+    <a href="../ayakan/comhan-de-na.html" class="sidebar-link sidebar-sublink"><span class="icon">⚙️</span> Comhan De Na</a>
+    <a href="../ayakan/grand-plateau.html" class="sidebar-link sidebar-sublink"><span class="icon">⚒️</span> Grand Plateau</a>
+    <a href="../ayakan/armalak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Armalak</a>
+    <a href="../ayakan/fios.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔬</span> Fios</a>
+    <a href="../ayakan/indelair.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚗️</span> Indelair</a>
+    <a href="../ayakan/lukd-oigrid.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Lukd Oigrid</a>
+    <a href="../ayakan/lukd-naek.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🪡</span> Lukd Naek</a>
+    <a href="../ayakan/lukd-tagil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏗️</span> Lukd Tagil</a>
+    <a href="../ayakan/lukd-trenay.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐎</span> Lukd Trenay</a>
+    <a href="../ayakan/lukd-tuanak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Lukd Tuanak</a>
+    <a href="../ayakan/creidak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🕊️</span> Creidak</a>
+    <a href="../ayakan/curcodak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎪</span> Curcodak</a>
+    <div class="sidebar-region-label">Ouestvir</div>
+    <a href="../ayakan/ouestvir.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Ouestvir</a>
+    <a href="../ayakan/yokoki.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Yokoki</a>
+    <a href="../ayakan/laryok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Laryok</a>
+    <a href="../ayakan/yoklar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Yoklar</a>
+    <a href="../ayakan/kasvir.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Kasvir</a>
+    <a href="../ayakan/rusvar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Rusvar</a>
+    <a href="../ayakan/sordas.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔔</span> Sordas</a>
+    <a href="../ayakan/sunkur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Sunkur</a>
+    <a href="../ayakan/portlune.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Portlune</a>
+    <a href="../ayakan/kayadur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Kayadur</a>
+    <a href="../ayakan/zodory.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Zodory</a>
+    <a href="../ayakan/kolandur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Kolandur</a>
+    <a href="../ayakan/staurdur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Staurdur</a>
+    <div class="sidebar-region-label">Régions</div>
+        <a href="../ayakan/creve-glace.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Crève Glace</a>
+    <a href="../ayakan/varask.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Varask</a>
+    <a href="../ayakan/mornea.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Mornea</a>
+    <a href="../ayakan/thyrne.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">♨️</span> Thyrne</a>
+    <a href="../ayakan/selvend.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛒</span> Selvend</a>
+    <a href="../ayakan/frayakin.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Frayakin</a>
+    <a href="../ayakan/solcara.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌟</span> Solcara</a>
+    <a href="../ayakan/pyrael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔶</span> Pyraël</a>
+    <a href="../ayakan/leth.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Leth</a>
+    <a href="../ayakan/faran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Faran</a>
+    <a href="../ayakan/chaines-verre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎶</span> Chaînes de Verre</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Musiyav</div>
+    <a href="musiyav.html" class="sidebar-link"><span class="icon">🌐</span> Musiyav</a>
+    <div class="sidebar-region-label">Nord</div>
+    <a href="terres-gelees.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Terres Gelées</a>
+    <a href="munabenn.html" class="sidebar-link sidebar-sublink"><span class="icon">⛏️</span> Munabenn</a>
+    <a href="creastail.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚡</span> Creastail</a>
+    <a href="stasmoc.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Stasmoc</a>
+    <a href="clagrayn.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Clagrayn</a>
+    <a href="fedhidom.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌑</span> Fedhidom</a>
+    <a href="cricrosal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Cricrosal</a>
+    <a href="ellirhom.html" class="sidebar-link sidebar-sublink"><span class="icon">🍃</span> Éllirhom</a>
+    <div class="sidebar-region-label">Centre</div>
+    <a href="murblan.html" class="sidebar-link sidebar-sublink"><span class="icon">⚖️</span> Murblan</a>
+    <a href="bekai-keal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Bekai Keal</a>
+    <a href="thylkarok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎨</span> Thylkarok</a>
+    <a href="carroval.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🗿</span> Carroval</a>
+    <a href="caudherra.html" class="sidebar-link sidebar-sublink"><span class="icon">🐘</span> Caudherra</a>
+    <a href="saldromil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎵</span> Saldromil</a>
+    <a href="kandor-zei.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Kandor-Zeï</a>
+    <a href="mirsha-lu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐘</span> Mirsha Lû</a>
+    <a href="ukar-tal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📜</span> Ukar Tal</a>
+    <a href="brastelma.html" class="sidebar-link sidebar-sublink"><span class="icon">🌿</span> Brastelma</a>
+    <a href="xalatlal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐆</span> Xalatlal</a>
+    <a href="tochion.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Tochion</a>
+    <a href="yabalta.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Yabalta</a>
+    <a href="solgirne.html" class="sidebar-link sidebar-sublink"><span class="icon">🌾</span> Solgirne</a>
+    <a href="varnestal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Varnestal</a>
+    <a href="linvelar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌲</span> Linvelar</a>
+    <a href="eldmire.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐟</span> Eldmire</a>
+    <a href="cairondel.html" class="sidebar-link sidebar-sublink"><span class="icon">🗿</span> Cairondel</a>
+    <a href="gravantempe.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏔️</span> Gravantempe</a>
+    <a href="treufloran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Treufloran</a>
+    <a href="valtendre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Valtendre</a>
+    <div class="sidebar-region-label">Ouest</div>
+    <a href="valacorra.html" class="sidebar-link sidebar-sublink"><span class="icon">⚜️</span> Valacorra</a>
+    <a href="aunthrevin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Aunthrevin</a>
+    <a href="vendrolis.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Vendrolis</a>
+    <a href="darn-merath.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Darn Merath</a>
+    <a href="dusalain.html" class="sidebar-link sidebar-sublink"><span class="icon">🏜️</span> Dusalain</a>
+    <a href="sarathiil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Sarathiil</a>
+    <a href="akalima.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Akalima</a>
+    <a href="yndarev.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Yndarev</a>
+    <a href="sillu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Sillu</a>
+    <div class="sidebar-region-label">Sud</div>
+    <a href="xamaris.html" class="sidebar-link sidebar-sublink"><span class="icon">🚫</span> Xamaris</a>
+    <a href="xakaril.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Xakaril</a>
+    <a href="marolzhad.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚖️</span> Marolzhad</a>
+    <a href="dorvenkar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚒️</span> Dorvenkar</a>
+    <a href="naskarrem.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Naskarrem</a>
+    <a href="khaelbar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Khaëlbar</a>
+    <a href="tol-vekrah.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📖</span> Tol Vekrah</a>
+    <a href="krelsum.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🧱</span> Krelsum</a>
+    <a href="falstrein.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Falstrein</a>
+    <a href="terres-pieuses.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Terres Pieuses</a>
+    <a href="templum-triarii.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛪</span> Templum Triarii</a>
+    <a href="forge-vivante.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Forge Vivante</a>
+    <a href="isvarun.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌅</span> Isvarun</a>
+    <a href="callafhar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Callafhar</a>
+    <a href="auranthil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌲</span> Auranthil</a>
+    <a href="elvar-tyl.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌳</span> Elvarë Tyl</a>
+    <a href="lunemiral.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌙</span> Lunemiral</a>
+    <a href="miriathael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Mirithaël</a>
+    <a href="faelorrin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Faelorrin</a>
+    <div class="sidebar-region-label">Est</div>
+    <a href="terres-sauvages.html" class="sidebar-link sidebar-sublink"><span class="icon">🌋</span> Terres Sauvages</a>
+    <a href="kaelyth.html" class="sidebar-link sidebar-sublink"><span class="icon">⚔️</span> Viremarche</a>
+    <a href="briseneige.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Briseneige</a>
+    <div class="sidebar-region-label">Terres Isolées</div>
+    <a href="tinneas.html" class="sidebar-link sidebar-sublink"><span class="icon">🦴</span> Tinneas A'Bhàis</a>
+    <a href="shurakai.html" class="sidebar-link sidebar-sublink"><span class="icon">🌫️</span> Shurakai</a>
+    <a href="narkun.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Narkûn</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Régions Éloignées</div>
+    <a href="anneau-dieux.html" class="sidebar-link"><span class="icon">⚫</span> Anneau des Dieux</a>
+    <a href="archipel-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌙</span> Archipel des Ombres</a>
+    <a href="darnobscur.html" class="sidebar-link sidebar-sublink"><span class="icon">🩸</span> Darnobscur</a>
+    <a href="iles-hagruk.html" class="sidebar-link sidebar-sublink"><span class="icon">⚔️</span> Îles Hagruk</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Personnages & Lore</div>
+    <a href="../lore/personnages.html" class="sidebar-link"><span class="icon">🧙</span> Personnages</a>
+    <a href="../lore/journal-arzi.html" class="sidebar-link sidebar-sublink"><span class="icon">📖</span> Journal d'Arzi</a>
+    <a href="../lore/organisations.html" class="sidebar-link"><span class="icon">⚔️</span> Organisations</a>
+    <a href="../lore/dieux.html" class="sidebar-link"><span class="icon">✨</span> Dieux & Trinités</a>
+  </div>
+</aside>
+
+<div class="page-wrapper">
+  <main class="main-content">
+    <nav class="breadcrumb">
+      <a href="../index.html">Accueil</a><span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Musiyav</span>
+    </nav>
+
+    <div class="page-header">
+      <div class="page-category">Continent — Le Vieux Monde</div>
+      <h1 class="page-title">🩸 Musiyav — Terre des Dieux et des Fractures</h1>
+      <p class="page-subtitle">« C'est ici que les héros sont devenus dieux, que les esprits de l'ancien monde murmurent encore sous les pierres sacrées, et que chaque vallée a vu couler le sang d'un empire oublié. »</p>
+    </div>
+
+    <div class="infobox">
+      <div class="infobox-title">Musiyav</div>
+      <div class="infobox-image">🩸</div>
+      <table class="infobox-table">
+        <tr><td>Type</td><td>Continent (Le plus ancien de Kaleysur)</td></tr>
+        <tr><td>Régions notables</td><td>18+ régions distinctes</td></tr>
+        <tr><td>Habitants</td><td>Humains, Nains, Elfes, Goliaths, races diverses</td></tr>
+        <tr><td>Événement majeur</td><td>Retour d'Astoryem (-280 EdT) vécu depuis ses côtes</td></tr>
+        <tr><td>Chroniqueuse</td><td><a href="../lore/personnages.html#arzi-barmene">Arzi Barmene</a></td></tr>
+        <tr><td>Capitale informelle</td><td><a href="bekai-keal.html">Bekai Keal</a></td></tr>
+      </table>
+    </div>
+
+    <div class="toc" id="auto-toc"><div class="toc-title">Table des matières</div></div>
+
+    <h2 id="presentation">Présentation</h2>
+    <p>Musiyav est le plus ancien des continents connus de Kaleysur. C'est la terre où les 27 héros mortels ont renversé les mindflayers et donné naissance aux Trinités divines. Depuis ce jour mythique, Musiyav porte en elle la gloire d'un monde béni… mais aussi les cicatrices profondes de ses guerres passées.</p>
+    <p>Le continent est fragmenté en régions distinctes : cités fortifiées, terres sauvages indomptées, royaumes nains, forêts elfiques, jungles tribales et empires inquisitoriaux se disputent l'attention des dieux et des puissances politiques. Musiyav n'a pas de royaume unique — les cités-états, les ordres religieux et les factions secrètes contrôlent ses terres en un tissage fragile de paix temporaire. La foi y est forte, mais diverse : chaque région honore des Trinités différentes.</p>
+
+    <h2 id="ere-silence">À l'Ère du Silence</h2>
+    <p>Avant que les civilisations n'apportent leurs contrats, leurs dogmes et leur magie codifiée, Musiyav était une terre où diverses cultures indigènes vivaient en harmonie avec leur environnement. Ces peuples n'étaient pas des bâtisseurs de cités — ils étaient des parties intégrantes de l'écosystème.</p>
+
+    <h2 id="age-du-sang">L'Âge du Sang (~-800 à -650 EdT)</h2>
+    <p>Au cœur de l'Ère du Silence, une obscurité ancienne s'étendit sur le continent. Ce ne fut pas une conquête d'armées, mais une lente infection — une marée de sang et de peur qui submergea la région aujourd'hui connue comme les Terres Sauvages.</p>
+    <p>Des conclaves de seigneurs vampires, dont l'origine se perd dans les âges, émergèrent de leurs cryptes. Sans dieux pour les contenir, ils virent le monde comme un garde-manger. Dans les forêts profondes et les montagnes escarpées des Terres Sauvages, les vampires établirent leurs <em>Cours du Sang</em>. Les tribus mortelles de la région devinrent leur bétail.</p>
+    <p>Face à la puissance vampirique, les tribus Orcs qui peuplaient ces terres depuis des millénaires prirent une décision désespérée : ils prirent la mer. Cet exode tragique, connu comme le <em>Ghash-Nak</em> (la Fuite de la Nuit), les mena jusqu'à un archipel d'îles volcaniques. Ils y conservent une haine ancestrale pour les morts-vivants.</p>
+
+    <h2 id="guerre-des-anciens">La Guerre des Anciens (~-650 EdT)</h2>
+    <p>Les vampires, enivrés par leur puissance, commirent une erreur fatale : ils s'attaquèrent à un jeune dragon endormi dans son repaire montagneux et violèrent un cimetière sacré de géants. Ces deux actes sacrilèges éveillèrent les anciens gardiens de Kaleysur. Ce ne fut pas une guerre, mais une extermination. Les cieux s'embrasèrent sous le souffle des dragons. Les montagnes tremblèrent sous les pas des géants. En quelques décennies, les Cours du Sang furent anéanties.</p>
+
+    <h2 id="retour-astoryem">Le Retour d'Astoryem vu depuis Musiyav</h2>
+    <p>C'est depuis les côtes de Musiyav qu'<a href="../lore/personnages.html#arzi-barmene">Arzi Barmene</a> vit le retour d'Astoryem en l'an -280 EdT. Son témoignage dans son <em>Journal</em> reste l'un des récits les plus détaillés de cet événement.</p>
+    <blockquote>« Ce qui autrefois n'était qu'une ligne infinie d'océan se brisait ; quelque chose surgissait des flots, ou plutôt apparaissait brusquement là où il n'y avait rien. Un continent entier venait de percer le voile de la réalité. » — Arzi Barmene, an 1720</blockquote>
+    <p>Les tsunamis provoqués par le retour d'Astoryem dévastèrent les villages côtiers de Musiyav, notamment le paisible chapelet de villages de pêcheurs de <a href="sarathiil.html">Sarathiil</a>, au nord-ouest du continent.</p>
+
+    <h2 id="regions">Régions du Continent</h2>
+    <p>Musiyav est un continent vaste et morcelé, divisé en une vingtaine de régions distinctes aux cultures, peuples et pouvoirs radicalement différents.</p>
+
+    <h3 id="terres-gelees">❄️ <a href="terres-gelees.html">Les Terres Gelées</a> — Remparts Givrés du Nord</h3>
+    <p>Situées à l'extrême nord de Musiyav, les Terres Inoccupables sont une bande de terre gelée, stérile, balayée par les vents, où la neige ne fond jamais vraiment. Cette région inhospitalière est stratégiquement occupée par une série de forteresses construites pour protéger le continent contre les invasions orcs venues des archipels nordiques. Le froid y est magiquement amplifié — même les sorts de chaleur y perdent de leur efficacité. Les <strong>Chevaliers du Lys</strong> tiennent cette ligne de défense sacrée.</p>
+    <p>Forts notables : <em>Fort de Lysécume</em> (plus grande forteresse, contrôle le passage naval), <em>Poste de Tigehame</em> (avant-poste avancé des éclaireurs), <em>Osthmar</em> (centre de formation des paladins du nord), <em>Cramurin</em> (fort rasé, hanté par les âmes gelées de chevaliers morts sans avoir accompli leur serment).</p>
+
+    <h3 id="terres-sauvages">🌋 <a href="terres-sauvages.html">Les Terres Sauvages</a> — Royaume de l'Instinct</h3>
+    <p>Loin des cités éclatantes et des chants pieux des autres régions, les Terres Sauvages s'étendent comme une blessure ouverte au cœur de Musiyav. On y trouve des montagnes crevassées, des forêts primordiales, des vallées hantées par des bêtes titanesques, des tribus nomades, et des échos de puissances plus anciennes que les Trinités elles-mêmes. La région ne connaît ni frontières claires, ni autorité centrale.</p>
+    <p>Les Terres Sauvages sont habitées par des tribus vénérant la <strong>Trinité du Bestial</strong> (Dachaigheil, Gintinn, Sealg) — sans autel, par des rituels corporels et des danses de chasse. Les ruines d'avant l'Âge du Sang, les forêts où les arbres ont poussé autour d'ossements géants, et les lacs noirs dont les eaux ne reflètent aucune lumière sont des témoins silencieux des guerres passées.</p>
+    <p>Lieux marquants : <em>Cavernes de Kitalgag</em> (tribu Kyodegag, épreuves de combat contre des créatures dans des cages au-dessus de la lave), <em>Vallée des Hurlements</em> (faille où les émotions extrêmes prennent forme physique), <em>Paliers de Coralbren</em> (terrasses de pierre pour les rituels des tribus nomades).</p>
+
+    <h3 id="sarathiil">🌊 Sarathiil — Le Calme Sous le Vent</h3>
+    <p>À l'écart des ambitions guerrières, <a href="sarathiil.html">Sarathiil</a> s'étend au nord-ouest de Musiyav, bordé d'eaux claires, de plages venteuses et de villages de pêcheurs nichés entre des falaises douces. Ni royaume, ni cité-état, Sarathiil est un chapelet de ports et de bourgs autonomes, unis par leur culture du partage, du cycle lunaire et d'un rapport sacré à la mer. La région fut dévastée par les tsunamis du retour d'Astoryem, comme en témoigne le journal d'Arzi Barmene.</p>
+
+    <h3 id="munabenn">⛏️ <a href="munabenn.html">Munabenn</a> — Royaume des Pics Foudroyés</h3>
+    <p>Bastion ancestral des Nains des Montagnes, Munabenn est une région accidentée nichée entre les monts indomptés et les rafales marines du nord-ouest. Les Nains vivent selon un système clanique organisé autour de <em>fordain</em> — forteresses-forges creusées dans les flancs des montagnes. Tous rendent hommage au Trône de Karigmor, siège du Haut-Roi élu. Réputés pour leurs alliages légendaires (le fer-céleste, fondu lors d'orages sacrés) et leur culte du Marteau-Tonnerre.</p>
+    <p>Villes : <em>Creastail</em> (capitale, forteresse sacrée sur le Pic Tonnerre, paratonnerres géants pour les forges sacrées), <em>Stasmoc</em> (centre métallurgique, cheminées obscurcissant le ciel), <em>Clagrayn</em> (seul port nain, actif deux mois par an), <em>Fedhidom</em> (ville souterraine verticale, communications par gestes et coups de marteau codés), <em>Cricrosal</em> (poste avancé surveillant les frontières elfiques d'Éllirhom).</p>
+
+    <h3 id="ellirhom">🍃 <a href="ellirhom.html">Éllirhom</a> — La Forêt du Reflet</h3>
+    <p>Havre de cohabitation harmonieuse entre elfes des bois, gnomes des forêts, firbolgs, satyrs et shifters, Éllirhom est saturée de magie naturelle. La forêt est un miroir de l'âme : les voyageurs égarés y voient leurs peurs, leurs vérités, ou leur avenir. Le pouvoir est partagé par le <strong>Conseil des Saisons</strong>. Des fragments du Feywild seraient prisonniers de la forêt, changeant les saisons au rythme des émotions des habitants.</p>
+    <p>Lieux légendaires : <em>l'Arbre d'Asranhël</em> (dernier représentant du premier printemps du monde, confère des visions prophétiques), <em>Grotte des Racines Pleurantes</em> (sanctuaire de deuil où les racines réagissent aux émotions), <em>Ruines de Vanysël</em> (ancienne cité sylvestre ensevelie, esprits végétaux hostiles).</p>
+
+    <h3 id="murblan">⚖️ <a href="murblan.html">Murblan</a> — Les Piliers du Pouvoir</h3>
+    <p>Presqu'île lumineuse et chaude au centre de Musiyav, Murblan est dominée par une culture de pouvoir et de richesse. Les rites ancestraux y existent comme décor — la véritable religion est celle du statut, du contrat et du poids des fortunes familiales. Protégée à l'est par le <em>Grand Mur Blanc</em>, qui la sépare des créatures des Terres Sauvages.</p>
+    <p>Villes : <a href="bekai-keal.html"><em>Bekai Keal</em></a> (cité la plus peuplée et influente de Musiyav, divisée en Ville Haute, Ville Basse et Souterrains), <em>Thylkarok</em> (cité des arts silencieux perchée à mi-hauteur du Mur Blanc, gouvernée par les Maîtres du Trait), <em>Carroval</em> (ville-monument à l'extrémité de la presqu'île, archives de pierre, cimetières monumentaux, chrono-sculpteurs).</p>
+
+    <h3 id="caudherra">🐘 <a href="caudherra.html">Caudherra</a> — L'Or qui Marche</h3>
+    <p>Territoire de savanes dorées, de collines d'herbes hautes et de plateaux secs, Caudherra est unique : ses cités voyagent. Les familles nobles, les castes mystiques et les ordres marchands se déplacent en convois immenses à dos d'animaux titanesques. Les Caudherrans ne mesurent pas la richesse en terres ou en murs, mais en bétail sacré, artefacts transmis et histoires contées.</p>
+    <p>Convois notables : <em>Saldromil</em> (seule cité sédentaire, ville fluviale de mémoire sonore et musique rituelle), <em>Kandor-Zeï</em> (guerriers à dos de tortogéants cuirassés, forges et banques mobiles), <em>Mirsha Lû</em> (musiciens et alchimistes sur éléphants blancs, experts en parfumerie magique), <em>Ukar Tal</em> (juges et archivistes sur scaravores noirs, justice itinérante et oracles du sable).</p>
+
+    <h3 id="solgirne">🌾 <a href="solgirne.html">Solgirne</a> — Le Lac des Moissons et du Bouclier</h3>
+    <p>Région boisée et fertile au cœur de Musiyav, façonnée par les saisons et une tradition ancrée. Le Lac d'Arvon occupe le cœur de ce territoire calme et prospère. Ici, tout garçon de 14 ans doit servir deux ans dans l'armée centrale — non pas par crainte, mais par honneur rural. Les armes forgées à Varnestal sont bénies par les prêtres de la Trinité des Maçons.</p>
+    <p>Villes : <em>Varnestal</em> (capitale lacustre, centre logistique, armurerie nationale, Marche des Épis annuelle), <em>Linvelar</em> (hameau forestier et religieux, lieu d'accueil des soldats blessés), <em>Eldmire</em> (village de pêcheurs sur pilotis, centre de récits oraux, le Miroir des Ancêtres).</p>
+
+    <h3 id="cairondel">🗿 <a href="cairondel.html">Cairondel</a> — La Couronne des Géants Silencieux</h3>
+    <p>Royaume sculpté entre ciel et terre, Cairondel est une terre calme couverte de brume et de mousse, dont les habitants parlent peu mais bâtissent beaucoup. Dirigé par la Maison Varruun, des Goliaths au sang de géants pratiquant la <em>Magie de la Forme Terrestre</em> — lisser des falaises, faire surgir un mur de racines, plier des collines à leur volonté. Le roi actuel, Halver Varruun, âgé de 217 ans, ne parle plus qu'aux pierres.</p>
+    <p>Villes : <em>Gravantempe</em> (palais taillé à flanc de montagne, accessible uniquement aux guidés), <em>Treufloran</em> (bourgade forestière, druides-pierre, archives orales de la fondation du royaume), <em>Valtendre</em> (ville de guérisseurs dans une gorge où trois rivières convergent, le Pont Creux chante une note différente chaque soir).</p>
+
+    <h3 id="valacorra">⚔️ <a href="valacorra.html">Valacorra</a> — Les Lignées de Fer et de Soie</h3>
+    <p>Plaines fertiles et vallées raffinées partagées entre des dizaines de lignées nobles, toutes persuadées d'avoir un droit ancestral au trône invisible de la région. Valacorra n'est pas en guerre ouverte — elle est en duel constant, en cérémonie, en jeu. L'apparence de paix est maintenue par la forme, la beauté et le prestige.</p>
+    <p>Villes : <em>Aunthrevin</em> (cité circulaire neutre, Cour des Sept Voix annuelle, le Trône Vide scellé au centre), <em>Vendrolis</em> (La Ville-Masque, chaque citoyen porte un masque officiel, les artistes sont sacrés et intouchables), <em>Darn Merath</em> (bastion militaire, Salle des Lames Plongeantes, art du duel).</p>
+
+    <h3 id="brastelma">🌿 <a href="brastelma.html">Brastelma</a> — Le Règne des Lianes et du Sang</h3>
+    <p>Territoire de jungle étouffante, de fleuves puissants et de ruines vivantes à l'ouest de Musiyav. La nature impose ses lois — et l'humain a appris à survivre non pas contre, mais à travers elle. Divisée en grandes Maisons Tribales unies par la croyance : la force donne droit, mais seule la mémoire donne puissance. Les guerriers n'ont pas de nom personnel, seulement des titres gagnés ou arrachés.</p>
+    <p>Villes : <em>Xalatlal</em> (cité sacrée dans un arbre géant aux racines creuses, rituals de possession animale), <em>Tochion</em> (ville-portage entre cascades, guerriers-chanteurs de la tribu Raxu, peintures tactiques), <em>Yabalta</em> (centre mystique dans une caldeira endormie, érudits des tribus, astronomie sacrée).</p>
+
+    <h3 id="viremarche">🛡️ <a href="kaelyth.html">Viremarche</a> — Les Serments et la Lumière Disciplinée</h3>
+    <p>Région fertile du nord-est de Musiyav, structurée et tournée vers l'ordre et la lumière. Ses habitants vivent selon le <em>Codex du Lys Blanc</em> — texte ancien codifiant la justice, la hiérarchie et les rituels. L'épine dorsale : les <strong>Chevaliers du Lys</strong>, ordre semi-religieux en quatre branches (Lys Bleu : défense sacrée ; Lys Doré : diplomatie ; Lys Écarlate : inquisiteurs ; Lys Blanc : renseignements). Viremarche ne reconnaît pas de roi : les serments et la parole divine priment sur toute souveraineté.</p>
+    <p>Villes : <a href="kaelyth.html"><em>Kaelyth</em></a> (grande cité commerciale à la frontière d'Éllirhom, Grand Marché du Ralliement, Rue des Consuls), <em>Briseneige</em> (cœur rayonnant de Viremarche, forteresse sacrée, Temple des Serments enregistrant chaque pacte).</p>
+
+    <h3 id="terres-pieuses">✨ <a href="terres-pieuses.html">Les Terres Pieuses</a> — Sanctuaire du Sacré</h3>
+    <p>Vaste plateau de vallées fertiles, de hauts lieux spirituels, de monastères millénaires et de vestiges divins au sud de Xamaris. Territoire sans autorité centrale, où la parole des dieux pèse plus que celle d'un roi. Carrefour de cultes anciens et modernes — Trinités reconnues mais aussi descendants de cultes pré-trinitaires dédiés aux dragons ancestraux, aux astres déchus, aux esprits oubliés.</p>
+    <p>Lieux saints : <em>Templum Triarii</em> (temple aux Neuf Sommets, centre de formation des clercs), <em>Isvarun</em> (Cité du Premier Crépuscule, oracles aveugles aux pupilles orangées), <em>Callafhar</em> (Académie des Doutes, ville de philosophes où le doute est un chemin sacré), <em>Bròna Mòr</em> (amphithéâtre des âmes, rituels d'expression émotionnelle intense), <em>Urdh-Kalag</em> (volcan secret plus ancien que les Trinités, activement dissimulé par les ordres religieux).</p>
+
+    <h3 id="auranthil">🌲 <a href="auranthil.html">Auranthil</a> — Le Royaume des Rameaux Souverains</h3>
+    <p>Nation cachée des hauts-elfes à la frontière ouest de l'Empire de Xamaris. Cités hautes et élancées sculptées dans le vivant même de la forêt, en pierre-écorce, verre floral et lianes intelligentes. Un royaume caché en pleine lumière, défiant silencieusement l'Empire inquisitorial. Ses arbres géants servent de piliers, ponts et réservoirs d'énergie magique.</p>
+    <p>Villes : <em>Elvarë Tyl</em> (capitale, tours vrillées dans la brume, Conseil des Neuf Voix élu par le chant des Arbres-Mères), <em>Lunemiral</em> (centre d'astronomie mystique, chaque bâtiment reflète une phase lunaire), <em>Mirithaël</em> (ville suspendue en passerelles naturelles, poètes, oracles et diplomates), <em>Faelorrin</em> (cité souterraine secrète, bastion militaire contre l'Inquisition).</p>
+
+    <h3 id="xamaris">🚫 Xamaris — Le Fer contre la Magie</h3>
+    <p>Région austère et sèche dominée par un pouvoir centralisé autour de <a href="xamaris.html">Xakaril</a>, capitale-forteresse inquisitoriale. Autrefois terre de mages exilés, aujourd'hui régie par l'Ordre Absolu : la magie y est non seulement interdite mais haïe. L'Inquisition de Xakaril traque sorciers, priants lunaires et toute forme de magie divine non approuvée. Huit grandes villes composent cet empire de loi froide.</p>
+
+    <h3 id="narkun">🔥 <a href="narkun.html">Narkûn</a> — La Fournaise des Exilés</h3>
+    <p>À l'extrême sud de Musiyav, Narkûn est une mer de flammes minérales, un désert si brûlant que même les cendres s'évaporent. Pendant des siècles, les rois de Murblan, Xamaris, Viremarche y envoyèrent leurs traîtres, fous, mages déchus et cultistes, convaincus qu'aucun ne survivrait. Et pourtant, certains l'ont fait. Les survivants ont fondé un peuple souterrain : les <em>Lignées du Fiel</em>, organisées dans des grottes aux structures spiralées. Ils haïssent les Trinités, vénèrent des entités bannies et préparent une vengeance cosmique.</p>
+    <p>Lieux : <em>Uzzama</em> (ville-canyon en spirale inversée, langue faite de clics et de gémissements), <em>Vrekh Mhor</em> (immense fourmilière-cité des Reines du Soufre), <em>Cercle des Yeux Non-Nés</em> (cratère contenant un fragment de conscience venue d'avant la Création).</p>
+
+    <h3 id="dusalain">🏜️ <a href="dusalain.html">Dusalain</a> — Les Dunes de Sel</h3>
+    <p>Au sud d'Éllirhom et de Sarathiil, Dusalain est un territoire désertique radicalement étranger. Autrefois recouvert d'un océan primitif, ses eaux se retirèrent lors d'un cataclysme dont plus personne ne connaît l'origine, laissant une mer morte de dunes blanches et de croûtes cristallines. Ses habitants, autrefois humains, ont été mutés par des générations d'adaptation : les <em>Brûlés</em>, les <em>Croûtes</em>, les <em>Os-Blancs</em>. Des créatures terrifiantes y rôdent : Ramcarin (scolopendre translucide se liquéfiant), Sirènes de Dépouille (êtres fossilisés chantants), Kraxolims (prédateurs à carapace albâtre).</p>
+
+    <h3 id="tinneas">🦴 <a href="tinneas.html">Tinneas A'Bhàis</a> — L'Île de la Joie Éteinte</h3>
+    <p>Île au large des côtes ouest, autrefois connue sous le nom de « l'Île de la Joie », gouvernée par Sonas Toïlï, le Roi Bouffon. Dévastée par les cataclysmes du retour d'Astoryem (tsunamis, tremblements de terre, cendres célestes), la joie y disparut. Un pacte secret avec une entité abyssale aurait été passé par le Roi pour préserver son peuple. Aujourd'hui ses habitants, les <em>Bhàisiens</em>, vivent dans des zones marécageuses, honorant les morts plus intensément que les vivants. Les rires d'enfants résonnent parfois sous la terre, sans qu'aucun enfant ne soit né depuis des années.</p>
+
+    <h3 id="shurakai">🌲 <a href="shurakai.html">Shurakai</a> — La Ville aux Racines Silencieuses</h3>
+    <p>À la lisière sud-est de Caudherra, Shurakai est une ville au charme sylvestre et à l'aura insaisissable. Ses bâtiments anciens ont des fondations plongeant dans la roche bien plus profondément qu'elles ne devraient. Des portes murées, des escaliers inachevés, des couloirs oubliés ponctuent les vieilles structures. La ville n'a jamais de muraille, de vigie, de tour de guet — et pourtant n'est jamais attaquée. Les anciens disent : <em>« Nous avons été là les premiers. Et nous ne sommes pas les seuls à nous en souvenir. »</em></p>
+
+    <h2 id="organisations">Organisations de Musiyav</h2>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-icon">⛏️</span>
+        <div class="card-name" style="color:var(--gold)">Les Saints-Maçons</div>
+        <div class="card-desc">Ordre d'artisans sacrés bénis par la Trinité des Maçons. Ils façonnent des œuvres imprégnées de pouvoir divin et sont respectés dans toutes les grandes villes.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🌕</span>
+        <div class="card-name" style="color:var(--gold)">Les Enfants des Lunes</div>
+        <div class="card-desc">27 enfants élus à la naissance, chacun lié à l'une des lunes, dotés de pouvoirs spirituels. Ils guident les pieux à travers des visions ou des rituels secrets. Leur demeure : l'Île du Croissant de Lune.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">⚔️</span>
+        <div class="card-name" style="color:var(--gold)">Les Chevaliers du Lys</div>
+        <div class="card-desc">Ordre chevaleresque de Viremarche, défenseurs de la foi et des peuples. Ils tiennent les forts dans les Terres Inoccupables et appliquent un code d'honneur strict selon le Codex du Lys Blanc.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🕯️</span>
+        <div class="card-name" style="color:var(--gold)">Le Conseil de l'Ombre</div>
+        <div class="card-desc">Dirige véritablement la basse-ville de Bekai Keal. Composé du Magicien de la Lune, du Nécromancien Blanc et du chef d'Ailazur, ils manipulent la cité loin du regard du roi.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🐉</span>
+        <div class="card-name" style="color:var(--gold)">Ailazur</div>
+        <div class="card-desc">Organisation draconique secrète cherchant à établir un nouvel ordre mondial basé sur la ruse et la magie, infiltrant certains gouvernements depuis Bekai Keal.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">💀</span>
+        <div class="card-name" style="color:var(--gold)">Les Assassins Vraskimok</div>
+        <div class="card-desc">Organisation d'élite dédiée à l'élimination silencieuse. Cinq maîtres chacun en charge d'un aspect (renseignement, stratégie…). Leur seul code : servir leur sauveur.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🧬</span>
+        <div class="card-name" style="color:var(--gold)">La Main des Ombres (Xamaris)</div>
+        <div class="card-desc">Inquisition dirigée par le roi de Xakaril. Objectif : éradiquer toute trace de magie. Elle traque sorciers, mages et objets enchantés avec fanatisme.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🐾</span>
+        <div class="card-name" style="color:var(--gold)">Les Kyodegag</div>
+        <div class="card-desc">Tribu bénie par Kitalgag, vivant dans les cavernes volcaniques des Terres Sauvages. Ils organisent des rites de combat extrêmes dans la lave et vénèrent la force brute.</div>
+      </div>
+    </div>
+
+    <h2 id="archipels">Archipels et Zones Extrêmes</h2>
+    <p>Au large de Musiyav et d'Ayakan s'étendent deux zones d'une dangerosité extrême :</p>
+    <div class="card-grid">
+      <a href="archipel-ombres.html" class="card-link">
+        <span class="card-icon">🌙</span>
+        <div class="card-name">Archipel des Ombres</div>
+        <div class="card-desc">Au nord d'Ayakan, chapelet d'îles gouvernées par les vampires, les loups-garous et des puissances ancestrales. Ville principale : Darnobscur.</div>
+      </a>
+      <a href="anneau-dieux.html" class="card-link">
+        <span class="card-icon">⚫</span>
+        <div class="card-name">Anneau des Dieux</div>
+        <div class="card-desc">À la lisière du monde connu, archipel de 14+ îles abritant des entités primordiales — fomorians, géants, modrons, dragons de gemmes et un temple aux 27 chaînes divines.</div>
+      </a>
+    </div>
+
+  </main>
+</div>
+<footer><span>⚜ Kaleysur Wiki</span><span style="color: var(--text-muted)">Wiki de campagne D&D</span></footer>
+<script src="../js/wiki.js"></script>
+</body>
+</html>

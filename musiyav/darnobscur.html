@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Darnobscur — Kaleysur Wiki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<nav class="top-nav">
+  <a href="../index.html" class="nav-brand"><span class="nav-brand-icon">⚜</span><span class="nav-brand-text">Kaleysur</span></a>
+  <div class="nav-right">
+    <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="search-input" type="text" placeholder="Rechercher…" autocomplete="off"><div class="search-results" id="search-results"></div></div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-section"><div class="sidebar-section-title">Navigation</div>
+    <a href="../index.html" class="sidebar-link"><span class="icon">🏠</span> Accueil</a>
+    <a href="../chronologie.html" class="sidebar-link"><span class="icon">📜</span> Chronologie</a>
+    <a href="../carte.html" class="sidebar-link"><span class="icon">🗺️</span> Carte du Monde</a>
+    <a href="../calendrier.html" class="sidebar-link"><span class="icon">📅</span> Calendrier</a>
+    <a href="../joueurs.html" class="sidebar-link"><span class="icon">🎲</span> Joueurs</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Astoryem</div>
+    <a href="../astoryem/astoryem.html" class="sidebar-link"><span class="icon">🌐</span> Astoryem</a>
+    <a href="../astoryem/feymundi.html" class="sidebar-link sidebar-sublink"><span class="icon">🏰</span> Feymundi</a>
+    <a href="../astoryem/waterflow.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Waterflow</a>
+    <a href="../astoryem/ville-tempete.html" class="sidebar-link sidebar-sublink"><span class="icon">⚡</span> Ville Tempête</a>
+    <a href="../astoryem/arcanumbra.html" class="sidebar-link sidebar-sublink"><span class="icon">⌛</span> Arcanumbra</a>
+    <a href="../astoryem/cite-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌑</span> Cité des Ombres</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Ayakan</div>
+    <a href="../ayakan/ayakan.html" class="sidebar-link"><span class="icon">🌐</span> Ayakan</a>
+    <div class="sidebar-region-label">Grand Plateau</div>
+    <a href="../ayakan/comhan-de-na.html" class="sidebar-link sidebar-sublink"><span class="icon">⚙️</span> Comhan De Na</a>
+    <a href="../ayakan/grand-plateau.html" class="sidebar-link sidebar-sublink"><span class="icon">⚒️</span> Grand Plateau</a>
+    <a href="../ayakan/armalak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Armalak</a>
+    <a href="../ayakan/fios.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔬</span> Fios</a>
+    <a href="../ayakan/indelair.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚗️</span> Indelair</a>
+    <a href="../ayakan/lukd-oigrid.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Lukd Oigrid</a>
+    <a href="../ayakan/lukd-naek.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🪡</span> Lukd Naek</a>
+    <a href="../ayakan/lukd-tagil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏗️</span> Lukd Tagil</a>
+    <a href="../ayakan/lukd-trenay.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐎</span> Lukd Trenay</a>
+    <a href="../ayakan/lukd-tuanak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Lukd Tuanak</a>
+    <a href="../ayakan/creidak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🕊️</span> Creidak</a>
+    <a href="../ayakan/curcodak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎪</span> Curcodak</a>
+    <div class="sidebar-region-label">Ouestvir</div>
+    <a href="../ayakan/ouestvir.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Ouestvir</a>
+    <a href="../ayakan/yokoki.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Yokoki</a>
+    <a href="../ayakan/laryok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Laryok</a>
+    <a href="../ayakan/yoklar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Yoklar</a>
+    <a href="../ayakan/kasvir.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Kasvir</a>
+    <a href="../ayakan/rusvar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Rusvar</a>
+    <a href="../ayakan/sordas.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔔</span> Sordas</a>
+    <a href="../ayakan/sunkur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Sunkur</a>
+    <a href="../ayakan/portlune.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Portlune</a>
+    <a href="../ayakan/kayadur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Kayadur</a>
+    <a href="../ayakan/zodory.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Zodory</a>
+    <a href="../ayakan/kolandur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Kolandur</a>
+    <a href="../ayakan/staurdur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Staurdur</a>
+    <div class="sidebar-region-label">Régions</div>
+        <a href="../ayakan/creve-glace.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Crève Glace</a>
+    <a href="../ayakan/varask.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Varask</a>
+    <a href="../ayakan/mornea.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Mornea</a>
+    <a href="../ayakan/thyrne.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">♨️</span> Thyrne</a>
+    <a href="../ayakan/selvend.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛒</span> Selvend</a>
+    <a href="../ayakan/frayakin.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Frayakin</a>
+    <a href="../ayakan/solcara.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌟</span> Solcara</a>
+    <a href="../ayakan/pyrael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔶</span> Pyraël</a>
+    <a href="../ayakan/leth.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Leth</a>
+    <a href="../ayakan/faran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Faran</a>
+    <a href="../ayakan/chaines-verre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎶</span> Chaînes de Verre</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Musiyav</div>
+    <a href="musiyav.html" class="sidebar-link"><span class="icon">🌐</span> Musiyav</a>
+    <div class="sidebar-region-label">Nord</div>
+    <a href="terres-gelees.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Terres Gelées</a>
+    <a href="munabenn.html" class="sidebar-link sidebar-sublink"><span class="icon">⛏️</span> Munabenn</a>
+    <a href="creastail.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚡</span> Creastail</a>
+    <a href="stasmoc.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Stasmoc</a>
+    <a href="clagrayn.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Clagrayn</a>
+    <a href="fedhidom.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌑</span> Fedhidom</a>
+    <a href="cricrosal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Cricrosal</a>
+    <a href="ellirhom.html" class="sidebar-link sidebar-sublink"><span class="icon">🍃</span> Éllirhom</a>
+    <div class="sidebar-region-label">Centre</div>
+    <a href="murblan.html" class="sidebar-link sidebar-sublink"><span class="icon">⚖️</span> Murblan</a>
+    <a href="bekai-keal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Bekai Keal</a>
+    <a href="thylkarok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎨</span> Thylkarok</a>
+    <a href="carroval.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🗿</span> Carroval</a>
+    <a href="caudherra.html" class="sidebar-link sidebar-sublink"><span class="icon">🐘</span> Caudherra</a>
+    <a href="saldromil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎵</span> Saldromil</a>
+    <a href="kandor-zei.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Kandor-Zeï</a>
+    <a href="mirsha-lu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐘</span> Mirsha Lû</a>
+    <a href="ukar-tal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📜</span> Ukar Tal</a>
+    <a href="brastelma.html" class="sidebar-link sidebar-sublink"><span class="icon">🌿</span> Brastelma</a>
+    <a href="xalatlal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐆</span> Xalatlal</a>
+    <a href="tochion.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Tochion</a>
+    <a href="yabalta.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Yabalta</a>
+    <a href="solgirne.html" class="sidebar-link sidebar-sublink"><span class="icon">🌾</span> Solgirne</a>
+    <a href="varnestal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Varnestal</a>
+    <a href="linvelar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌲</span> Linvelar</a>
+    <a href="eldmire.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐟</span> Eldmire</a>
+    <a href="cairondel.html" class="sidebar-link sidebar-sublink"><span class="icon">🗿</span> Cairondel</a>
+    <a href="gravantempe.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏔️</span> Gravantempe</a>
+    <a href="treufloran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Treufloran</a>
+    <a href="valtendre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Valtendre</a>
+    <div class="sidebar-region-label">Ouest</div>
+    <a href="valacorra.html" class="sidebar-link sidebar-sublink"><span class="icon">⚜️</span> Valacorra</a>
+    <a href="aunthrevin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Aunthrevin</a>
+    <a href="vendrolis.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Vendrolis</a>
+    <a href="darn-merath.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Darn Merath</a>
+    <a href="dusalain.html" class="sidebar-link sidebar-sublink"><span class="icon">🏜️</span> Dusalain</a>
+    <a href="sarathiil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Sarathiil</a>
+    <a href="akalima.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Akalima</a>
+    <a href="yndarev.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Yndarev</a>
+    <a href="sillu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Sillu</a>
+    <div class="sidebar-region-label">Sud</div>
+    <a href="xamaris.html" class="sidebar-link sidebar-sublink"><span class="icon">🚫</span> Xamaris</a>
+    <a href="xakaril.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Xakaril</a>
+    <a href="marolzhad.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚖️</span> Marolzhad</a>
+    <a href="dorvenkar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚒️</span> Dorvenkar</a>
+    <a href="naskarrem.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Naskarrem</a>
+    <a href="khaelbar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Khaëlbar</a>
+    <a href="tol-vekrah.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📖</span> Tol Vekrah</a>
+    <a href="krelsum.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🧱</span> Krelsum</a>
+    <a href="falstrein.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Falstrein</a>
+    <a href="terres-pieuses.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Terres Pieuses</a>
+    <a href="templum-triarii.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛪</span> Templum Triarii</a>
+    <a href="forge-vivante.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Forge Vivante</a>
+    <a href="isvarun.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌅</span> Isvarun</a>
+    <a href="callafhar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Callafhar</a>
+    <a href="auranthil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌲</span> Auranthil</a>
+    <a href="elvar-tyl.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌳</span> Elvarë Tyl</a>
+    <a href="lunemiral.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌙</span> Lunemiral</a>
+    <a href="miriathael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Mirithaël</a>
+    <a href="faelorrin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Faelorrin</a>
+    <div class="sidebar-region-label">Est</div>
+    <a href="terres-sauvages.html" class="sidebar-link sidebar-sublink"><span class="icon">🌋</span> Terres Sauvages</a>
+    <a href="kaelyth.html" class="sidebar-link sidebar-sublink"><span class="icon">⚔️</span> Viremarche</a>
+    <a href="briseneige.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Briseneige</a>
+    <div class="sidebar-region-label">Terres Isolées</div>
+    <a href="tinneas.html" class="sidebar-link sidebar-sublink"><span class="icon">🦴</span> Tinneas A'Bhàis</a>
+    <a href="shurakai.html" class="sidebar-link sidebar-sublink"><span class="icon">🌫️</span> Shurakai</a>
+    <a href="narkun.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Narkûn</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Régions Éloignées</div>
+    <a href="anneau-dieux.html" class="sidebar-link"><span class="icon">⚫</span> Anneau des Dieux</a>
+    <a href="archipel-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌙</span> Archipel des Ombres</a>
+    <a href="darnobscur.html" class="sidebar-link sidebar-sublink"><span class="icon">🩸</span> Darnobscur</a>
+    <a href="iles-hagruk.html" class="sidebar-link sidebar-sublink"><span class="icon">⚔️</span> Îles Hagruk</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Personnages & Lore</div>
+    <a href="../lore/personnages.html" class="sidebar-link"><span class="icon">🧙</span> Personnages</a>
+    <a href="../lore/journal-arzi.html" class="sidebar-link sidebar-sublink"><span class="icon">📖</span> Journal d'Arzi</a>
+    <a href="../lore/organisations.html" class="sidebar-link"><span class="icon">⚔️</span> Organisations</a>
+    <a href="../lore/dieux.html" class="sidebar-link"><span class="icon">✨</span> Dieux & Trinités</a>
+  </div>
+</aside>
+
+<div class="page-wrapper">
+  <main class="main-content">
+    <nav class="breadcrumb">
+      <a href="../index.html">Accueil</a><span class="breadcrumb-sep">›</span>
+      <a href="archipel-ombres.html">Archipel des Ombres</a><span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Darnobscur</span>
+    </nav>
+
+    <div class="page-header">
+      <div class="page-category">Ville · Archipel des Ombres</div>
+      <h1 class="page-title">🩸 Darnobscur — La Ville des Familles Sombres</h1>
+      <p class="page-subtitle">« Ici, chaque rue a un maître, et chaque maître a du sang sur les mains. »</p>
+    </div>
+
+    <div class="infobox">
+      <div class="infobox-title">Darnobscur</div>
+      <div class="infobox-image">🩸</div>
+      <table class="infobox-table">
+        <tr><td>Type</td><td>Ville portuaire corrompue</td></tr>
+        <tr><td>Région</td><td><a href="archipel-ombres.html">Archipel des Ombres</a></td></tr>
+        <tr><td>Gouvernance officielle</td><td>Conseil d'Échevins</td></tr>
+        <tr><td>Vrai pouvoir</td><td>Les Quatre Grandes Familles</td></tr>
+        <tr><td>Activités</td><td>Esclavage, alchimie noire, usure, espionnage</td></tr>
+      </table>
+    </div>
+
+    <div class="toc" id="auto-toc"><div class="toc-title">Table des matières</div></div>
+
+    <h2 id="presentation">Présentation</h2>
+    <p>La ville est bâtie sur une côte rocheuse, ses quais délabrés accueillent esclavagistes, contrebandiers et marchands de malheur. Officiellement dirigée par un Conseil d'Échevins, elle est en réalité contrôlée par quatre grandes familles qui se partagent les richesses et la misère des habitants.</p>
+    <p>Les riches vivent dans les hauteurs, protégés par des gardes privés et entourés d'opulence. Les pauvres survivent dans les bas-fonds, vendant leur force, leur sang, ou même leurs enfants. Chaque quartier est sous l'influence d'une maison, et toute tentative de rébellion disparaît dans la nuit.</p>
+
+    <h2 id="familles">Les Quatre Grandes Familles</h2>
+
+    <h3>🔴 Maison Veydran — Les Marchands d'Âmes</h3>
+    <p>Spécialité : Esclavage, commerce d'âmes, trafic humain. Contrôlent le <em>Quartier du Port</em>.</p>
+    <div class="card-grid">
+      <div class="card"><div class="card-name" style="color:var(--gold)">Selvar Veydran</div><div class="card-desc"><span class="badge">Patriarche</span> Vieil homme aux yeux d'acier, maître du commerce maritime.</div></div>
+      <div class="card"><div class="card-name" style="color:var(--gold)">Irissa Veydran</div><div class="card-desc"><span class="badge">La Perle Noire</span> Sa fille, sorcière froide qui arrache des âmes pour ses rituels.</div></div>
+      <div class="card"><div class="card-name" style="color:var(--gold)">Dorel Veydran</div><div class="card-desc"><span class="badge">Le Chasseur de Chair</span> Cousin bâtard, capitaine de navires négriers, passionné de chasse.</div></div>
+      <div class="card"><div class="card-name" style="color:var(--gold)">Lysandor Veydran</div><div class="card-desc"><span class="badge badge-neutral">Le Fils Perdu</span> Héritier en fuite, soupçonné de soutenir la résistance.</div></div>
+    </div>
+
+    <h3>🟢 Maison Calroth — Les Alchimistes Noirs</h3>
+    <p>Spécialité : Composants occultes, nécro-alchimie, poisons. Contrôlent le <em>Quartier des Alambics</em>.</p>
+    <div class="card-grid">
+      <div class="card"><div class="card-name" style="color:var(--gold)">Veylan Calroth</div><div class="card-desc"><span class="badge">L'Empoisonneur</span> Patriarche, alchimiste craint, adepte de poisons subtils.</div></div>
+      <div class="card"><div class="card-name" style="color:var(--gold)">Sileah Calroth</div><div class="card-desc"><span class="badge">La Dame au Flacon</span> Épouse, négociatrice froide aux parfums empoisonnés.</div></div>
+      <div class="card"><div class="card-name" style="color:var(--gold)">Darin Calroth</div><div class="card-desc"><span class="badge">L'Héritier Brisé</span> Fils difforme, cobaye des expériences familiales, porteur de pouvoirs instables.</div></div>
+      <div class="card"><div class="card-name" style="color:var(--gold)">Tahlmor Calroth</div><div class="card-desc"><span class="badge badge-neutral">L'Apprenti</span> Jeune prodige obsédé par l'élixir d'éternité.</div></div>
+    </div>
+
+    <h3>🟡 Maison Dorness — Les Banquiers de l'Ombre</h3>
+    <p>Spécialité : Dettes, usure, esclavage contractuel. Contrôlent le <em>Quartier des Hauteurs</em>.</p>
+    <div class="card-grid">
+      <div class="card"><div class="card-name" style="color:var(--gold)">Marla Dorness</div><div class="card-desc"><span class="badge">La Veuve Dorée</span> Matriarche cruelle, reine des contrats maudits.</div></div>
+      <div class="card"><div class="card-name" style="color:var(--gold)">Korin Dorness</div><div class="card-desc"><span class="badge">Le Collecteur</span> Son neveu, brutal, marque les débiteurs à vie.</div></div>
+      <div class="card"><div class="card-name" style="color:var(--gold)">Ysolda Dorness</div><div class="card-desc"><span class="badge">La Voix du Contrat</span> Prêtresse corrompue qui scelle les dettes par magie divine.</div></div>
+      <div class="card"><div class="card-name" style="color:var(--gold)">Raflor Dorness</div><div class="card-desc"><span class="badge badge-neutral">L'Héritier Hésitant</span> Fils charmant mais fragile, lié à la résistance.</div></div>
+    </div>
+
+    <h3>⚫ Maison Ravencourt — Les Faiseurs de Masques</h3>
+    <p>Spécialité : Espionnage, mascarades, manipulation politique. Contrôlent le <em>Quartier des Masques</em>.</p>
+    <div class="card-grid">
+      <div class="card"><div class="card-name" style="color:var(--gold)">Loric Ravencourt</div><div class="card-desc"><span class="badge">Le Maître des Masques</span> Chef énigmatique, toujours masqué, manipulateur hors pair.</div></div>
+      <div class="card"><div class="card-name" style="color:var(--gold)">Syrial Ravencourt</div><div class="card-desc"><span class="badge">L'Enchanteresse</span> Nièce charmeuse et voleuse de souvenirs.</div></div>
+      <div class="card"><div class="card-name" style="color:var(--gold)">Veyric Ravencourt</div><div class="card-desc"><span class="badge">Le Marionnettiste</span> Oncle metteur en scène, transforme ses spectateurs en pions politiques.</div></div>
+      <div class="card"><div class="card-name" style="color:var(--gold)">Nyss Ravencourt</div><div class="card-desc"><span class="badge badge-neutral">La Fille au Masque Brisé</span> Adolescente maudite — son masque fissuré cache un secret effrayant.</div></div>
+    </div>
+
+    <h2 id="independants">Figures Indépendantes</h2>
+    <div class="card-grid">
+      <div class="card"><div class="card-name" style="color:var(--gold)">Jorek Briselame</div><div class="card-desc">Capitaine du Guet, corrompu par toutes les familles mais surtout dépendant des Dorness.</div></div>
+      <div class="card"><div class="card-name" style="color:var(--gold)">Sanna l'Écorchée</div><div class="card-desc">Ancienne esclave évadée, chef d'une rébellion souterraine dans les égouts.</div></div>
+      <div class="card"><div class="card-name" style="color:var(--gold)">Maître Vorkhan</div><div class="card-desc">Archiviste des Catacombes. Gardien de tous les secrets de la ville.</div></div>
+      <div class="card"><div class="card-name" style="color:var(--gold)">Anselm « Trois-Doigts »</div><div class="card-desc">Contrebandier passant entre les mailles des familles, peut-être protégé par une force occulte.</div></div>
+      <div class="card"><div class="card-name" style="color:var(--gold)">La Mère Avenra</div><div class="card-desc">Prêtresse déchue et prophétesse. Ses visions se réalisent parfois.</div></div>
+      <div class="card"><div class="card-name" style="color:var(--gold)">Rokhan le Balafré</div><div class="card-desc">Gladiateur esclave, spectacle favori des arènes clandestines.</div></div>
+    </div>
+
+    <h2 id="intrigues">Relations et Intrigues</h2>
+    <h3>Entre les Familles</h3>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-name" style="color:var(--gold)">🔴 + 🟢 Veydran & Calroth</div>
+        <div class="card-desc">Alliance pragmatique. Les cadavres invendables des Veydran sont recyclés en composants alchimiques par les Calroth. Un pacte silencieux entre marchands de mort.</div>
+      </div>
+      <div class="card">
+        <div class="card-name" style="color:var(--gold)">🔴 ↔ 🟡 Veydran & Dorness</div>
+        <div class="card-desc">Guerre larvée. Les deux familles se disputent le contrôle de l'esclavage : Veydran vend les corps, Dorness vend les âmes par contrat. La frontière entre leurs domaines est un champ de mines.</div>
+      </div>
+      <div class="card">
+        <div class="card-name" style="color:var(--gold)">🔴 + ⚫ Veydran & Ravencourt</div>
+        <div class="card-desc">Mépris affiché. Pourtant, les serviteurs Veydran peuplent les bals Ravencourt. Le mépris est un masque comme les autres.</div>
+      </div>
+      <div class="card">
+        <div class="card-name" style="color:var(--gold)">🟢 + 🟡 Calroth & Dorness</div>
+        <div class="card-desc">Méfiance réciproque. Des transactions régulières — poisons contre contrats — mais chaque famille se sait cible de l'autre dès que l'intérêt disparaît.</div>
+      </div>
+      <div class="card">
+        <div class="card-name" style="color:var(--gold)">🟡 + ⚫ Dorness & Ravencourt</div>
+        <div class="card-desc">Coopération secrète. Un réseau de contrats magiques scellés par des masques relie les deux maisons loin des regards. L'alliance la plus dangereuse de la ville.</div>
+      </div>
+    </div>
+
+    <h3>Rivalités et Alliances Personnelles</h3>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-name" style="color:var(--gold)">Irissa vs Ysolda</div>
+        <div class="card-desc">Irissa Veydran et Ysolda Dorness se disputent la « possession des âmes » : arrachement brutal contre enchaînement contractuel. Une rivalité qui prend parfois des airs de vendetta personnelle.</div>
+      </div>
+      <div class="card">
+        <div class="card-name" style="color:var(--gold)">Sileah & Syrial</div>
+        <div class="card-desc">Sileah Calroth et Syrial Ravencourt s'échangent poisons et masques, liées par une admiration mutuelle teintée de jalousie et de méfiance.</div>
+      </div>
+      <div class="card">
+        <div class="card-name" style="color:var(--gold)">Nyss & Darin — l'union maudite</div>
+        <div class="card-desc">Nyss Ravencourt et Darin Calroth se rapprochent silencieusement. Une union entre deux lignées maudites qui ferait trembler les quatre familles.</div>
+      </div>
+      <div class="card">
+        <div class="card-name" style="color:var(--gold)">Lysandor & Sanna</div>
+        <div class="card-desc">Lysandor Veydran, héritier en fuite, serait protégé par Sanna l'Écorchée — alimentant la rumeur d'une résistance grandissante dans les bas-fonds.</div>
+      </div>
+    </div>
+
+    <h2 id="quartiers">Les Quartiers</h2>
+
+    <h3 id="quartier-port">🔴 Quartier du Port — Les Chaînes de Fer <em>(Veydran)</em></h3>
+    <p>Cœur de l'esclavage et du commerce maritime. Les quais sont remplis de cages, de grilles rouillées et de navires noirs. Les tavernes du port sont des repaires de négriers, mercenaires et chasseurs de primes. La garde y est inexistante : les hommes de Selvar Veydran font la loi.</p>
+    <div class="card-grid">
+      <div class="card"><span class="card-icon">⛓️</span><div class="card-name" style="color:var(--gold)">La Jetée des Lamentations</div><div class="card-desc">Quai d'enchère où les esclaves sont vendus à la criée. Les chaînes y résonnent du matin au soir.</div></div>
+      <div class="card"><span class="card-icon">🍺</span><div class="card-name" style="color:var(--gold)">La Taverne du Nœud Étranglé</div><div class="card-desc">Repère des capitaines esclavagistes. Les contrats s'y signent dans le sang. Nul n'y entre sans y laisser quelque chose.</div></div>
+      <div class="card"><span class="card-icon">💀</span><div class="card-name" style="color:var(--gold)">Le Chantier des Os</div><div class="card-desc">Les coques des navires Veydran y sont renforcées par des ossements blanchis. On dit que les âmes des esclaves morts y sont scellées pour guider les navires.</div></div>
+    </div>
+
+    <h3 id="quartier-alambics">🟢 Quartier des Alambics — La Fange Alchimique <em>(Calroth)</em></h3>
+    <p>Ruelles saturées d'odeurs chimiques, bâtiments noircis par les fumées, rivières polluées par des rejets toxiques. Les habitants y meurent jeunes, souvent cobayes involontaires. La nuit, on voit la lumière verte des alambics briller dans les fenêtres des laboratoires.</p>
+    <div class="card-grid">
+      <div class="card"><span class="card-icon">🧪</span><div class="card-name" style="color:var(--gold)">Le Laboratoire Noir de Veylan Calroth</div><div class="card-desc">Forteresse alchimique aux murs suintants de résidu vert. L'entrée est interdite à tout non-initié sous peine de disparition.</div></div>
+      <div class="card"><span class="card-icon">🦴</span><div class="card-name" style="color:var(--gold)">Le Marché des Restes</div><div class="card-desc">Vente de morceaux de cadavres, d'organes rares et de composants occultes. Les Calroth y tiennent leurs approvisionnements les plus macabres.</div></div>
+      <div class="card"><span class="card-icon">🌿</span><div class="card-name" style="color:var(--gold)">Le Jardin des Fumées</div><div class="card-desc">Un ancien parc devenu serre empoisonnée où poussent des plantes interdites dans toute l'étendue de Kaleysur.</div></div>
+    </div>
+
+    <h3 id="quartier-hauteurs">🟡 Quartier des Hauteurs — Les Chaînes Dorées <em>(Dorness)</em></h3>
+    <p>Situé sur la colline dominant la ville, riche et clinquant en façade, mais chaque demeure est bâtie sur des dettes et du désespoir. Les habitants y sont plus « libres », mais leurs vies appartiennent aux contrats magiques de Marla Dorness. Les nobles s'y réunissent pour signer des accords éternels.</p>
+    <div class="card-grid">
+      <div class="card"><span class="card-icon">📜</span><div class="card-name" style="color:var(--gold)">Le Palais aux Mille Contrats</div><div class="card-desc">Demeure des Dorness. Ses murs sont tapissés de parchemins magiques, chacun représentant une vie liée. On dit que brûler un contrat ici tue le débiteur.</div></div>
+      <div class="card"><span class="card-icon">⚖️</span><div class="card-name" style="color:var(--gold)">La Salle des Chaînes</div><div class="card-desc">Tribunal où chaque jugement est une dette. Le condamné n'est jamais emprisonné — il est lié à vie aux intérêts de la maison Dorness.</div></div>
+      <div class="card"><span class="card-icon">😱</span><div class="card-name" style="color:var(--gold)">Le Balcon des Suppliciés</div><div class="card-desc">Où l'on expose publiquement ceux ruinés par leurs dettes, avant de les vendre. Avertissement visible de toute la ville.</div></div>
+    </div>
+
+    <h3 id="quartier-masques">⚫ Quartier des Masques — Les Ombres du Bal <em>(Ravencourt)</em></h3>
+    <p>Labyrinthe d'avenues pavées et de places illuminées par des lanternes enchantées. La beauté des lieux cache une atmosphère suffocante. Les bals et mascarades rythment la vie politique. Tout citoyen influent doit porter un masque dans ce quartier.</p>
+    <div class="card-grid">
+      <div class="card"><span class="card-icon">🎭</span><div class="card-name" style="color:var(--gold)">Le Palais du Masque Inversé</div><div class="card-desc">Résidence des Ravencourt. Son architecture est conçue pour désorienfer : portes donnant sur des murs, couloirs circulaires, pièces sans fenêtres.</div></div>
+      <div class="card"><span class="card-icon">🎪</span><div class="card-name" style="color:var(--gold)">Le Théâtre des Mille Visages</div><div class="card-desc">Les pièces qui y sont jouées manipulent l'opinion publique. Chaque représentation est une opération politique déguisée en divertissement.</div></div>
+      <div class="card"><span class="card-icon">🪞</span><div class="card-name" style="color:var(--gold)">La Galerie des Reflets</div><div class="card-desc">Couloir de miroirs enchantés qui subtilisent des souvenirs aux visiteurs. Entrer deux fois dans la galerie, c'est sortir sans savoir qui vous étiez.</div></div>
+    </div>
+
+    <h3 id="bas-fonds">🕳️ Les Bas-Fonds — Le Ventre Pourri <em>(territoire neutre)</em></h3>
+    <p>Zone « neutre » en surface, théâtre de la résistance souterraine. Égouts puants, catacombes, ruelles étroites grouillant de misère. C'est là que Sanna l'Écorchée et ses rebelles mènent une guérilla contre les grandes familles.</p>
+    <div class="card-grid">
+      <div class="card"><span class="card-icon">📚</span><div class="card-name" style="color:var(--gold)">Les Catacombes de Vorkhan</div><div class="card-desc">Remplies de contrats, de reliques interdites et de secrets capables de faire tomber n'importe quelle famille. Maître Vorkhan en est l'unique gardien.</div></div>
+      <div class="card"><span class="card-icon">🌑</span><div class="card-name" style="color:var(--gold)">Le Marché de l'Ombre</div><div class="card-desc">Tout peut s'y acheter, contre une vie ou un secret. Il n'y a pas d'argent ici — seulement des échanges en chair et en vérité.</div></div>
+      <div class="card"><span class="card-icon">🗡️</span><div class="card-name" style="color:var(--gold)">Le Repaire de l'Écorchée</div><div class="card-desc">Caché dans les profondeurs des égouts. Sanna l'Écorchée y coordonne la résistance contre les quatre familles.</div></div>
+    </div>
+
+    <h3 id="quartier-interdit">💀 Quartier Interdit — Les Ruines Maudites <em>(territoire contesté)</em></h3>
+    <p>Aucune maison n'y a l'avantage. Ruines d'anciens temples, maisons effondrées, hantises persistantes. Les familles l'évitent, mais cultes sombres, hags et espions le fréquentent assidûment.</p>
+    <div class="card-grid">
+      <div class="card"><span class="card-icon">⛪</span><div class="card-name" style="color:var(--gold)">Le Temple du Dieu Mort</div><div class="card-desc">Ancien sanctuaire devenu zone d'occultisme sauvage. Depuis la mort du Dieu Unique, des cultes se disputent l'héritage de ce lieu de pouvoir résiduel.</div></div>
+      <div class="card"><span class="card-icon">👻</span><div class="card-name" style="color:var(--gold)">La Maison aux Mille Voix</div><div class="card-desc">Maison hantée qui rejoue chaque nuit les cris de ses habitants disparus. Les esprits refusent de partir et racontent, en boucle, leurs derniers instants.</div></div>
+      <div class="card"><span class="card-icon">🪦</span><div class="card-name" style="color:var(--gold)">La Place des Pendus</div><div class="card-desc">Où les cadavres refusent parfois de rester morts. Des familles laissent des offrandes pour s'assurer que leurs victimes ne reviennent pas.</div></div>
+    </div>
+
+    <h2 id="rumeurs">Rumeurs et Légendes</h2>
+    <p>À Darnobscur, les rumeurs circulent comme les rats — elles sont partout, et certaines portent des maladies. Les plus persistantes :</p>
+    <ul>
+      <li><em>Les Rats Parlants</em> — Maître Vorkhan aurait dressé des centaines de rats pour lui chuchoter les secrets des familles. Certains dormeurs des égouts rapportent avoir entendu leur propre nom murmuré dans les tunnels.</li>
+      <li><em>La Danse des Cendres</em> — Une fois par an, les Ravencourt organiseraient un bal dont tous les invités disparaissent à l'aube. On les retrouve parfois dans la Galerie des Reflets — figés dans les miroirs, souriant.</li>
+      <li><em>Le Pacte des Vampires</em> — Les grandes familles devraient leur puissance à un pacte ancien avec les vampires de Fort-Sépulcre. Si ce pacte se brisait, la ville s'effondrerait en une nuit… mais les vampires viendraient réclamer leur dû.</li>
+      <li><em>La Brume Rouge</em> — Parfois, une fumée écarlate s'échappe des ateliers Calroth et couvre tout le quartier. Les habitants qui la respirent oublient la journée entière. Qui a-t-on voulu faire taire ?</li>
+      <li><em>Les Chaînes Invisibles</em> — Des gens libres découvrent une rune brillante tatouée sur leur peau au réveil, prouvant que leurs ancêtres ont signé un pacte oublié avec les Dorness. Des familles entières vivent des générations sous cette malédiction sans le savoir.</li>
+      <li><em>Le Masque du Zéro</em> — Un masque unique existerait, capable de révéler la vraie nature de quiconque le porte. Les familles le cherchent depuis des décennies. On dit qu'il se trouve quelque part dans la Maison aux Mille Voix.</li>
+    </ul>
+
+    <h2 id="ambiance">L'Âme de Darnobscur</h2>
+    <blockquote>« Dans cette ville, même la lumière des torches semble louée aux ténèbres. »</blockquote>
+    <p>Darnobscur vit dans une pénombre perpétuelle. Le soleil s'élève rarement sur ses toits noirs, voilé par des nuages lourds, de la fumée alchimique et une brume venue du large. La nuit y dure plus longtemps qu'ailleurs, et même à midi, les rues paraissent baignées d'un crépuscule éternel. Les habitants murmurent que la ville elle-même « aime l'ombre » et qu'elle dévore toute clarté.</p>
+    <p>Les pavés sont humides, l'air saturé de sel, de cendres et de sang. On entend en permanence les cris des esclaves chargés sur les navires, le gargouillis des alambics distillant poisons et drogues, le bruit sec de pièces d'or signant des dettes éternelles, et la musique étouffée des mascarades Ravencourt.</p>
+    <p>À Darnobscur, la peur est la véritable monnaie. On chuchote au lieu de parler. On baisse les yeux devant les uniformes du guet, les masques, ou les manteaux marqués du sceau d'une maison. Les enfants chantent des comptines morbides mettant en garde contre les loups-garous, les hags et les collecteurs de dettes.</p>
+    <div class="card" style="margin-top:1.5rem">
+      <p style="margin-bottom:0"><em>Des rumeurs circulent constamment : certains disent que les maisons servent en secret les vampires de l'île voisine. D'autres murmurent que le Dieu Mort du quartier interdit n'est pas si mort que ça. Beaucoup croient que la ville est une prison volontaire, que nul n'en sort sans payer un prix terrible.</em></p>
+    </div>
+
+  </main>
+</div>
+<footer><span>⚜ Kaleysur Wiki</span><span style="color: var(--text-muted)">Wiki de campagne D&D</span></footer>
+<script src="../js/wiki.js"></script>
+</body>
+</html>

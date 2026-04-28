@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crève Glace — Kaleysur Wiki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<nav class="top-nav">
+  <a href="../index.html" class="nav-brand"><span class="nav-brand-icon">⚜</span><span class="nav-brand-text">Kaleysur</span></a>
+  <div class="nav-right">
+    <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="search-input" type="text" placeholder="Rechercher…" autocomplete="off"><div class="search-results" id="search-results"></div></div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-section"><div class="sidebar-section-title">Navigation</div>
+    <a href="../index.html" class="sidebar-link"><span class="icon">🏠</span> Accueil</a>
+    <a href="../chronologie.html" class="sidebar-link"><span class="icon">📜</span> Chronologie</a>
+    <a href="../carte.html" class="sidebar-link"><span class="icon">🗺️</span> Carte du Monde</a>
+    <a href="../calendrier.html" class="sidebar-link"><span class="icon">📅</span> Calendrier</a>
+    <a href="../joueurs.html" class="sidebar-link"><span class="icon">🎲</span> Joueurs</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Astoryem</div>
+    <a href="../astoryem/astoryem.html" class="sidebar-link"><span class="icon">🌐</span> Astoryem</a>
+    <a href="../astoryem/feymundi.html" class="sidebar-link sidebar-sublink"><span class="icon">🏰</span> Feymundi</a>
+    <a href="../astoryem/waterflow.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Waterflow</a>
+    <a href="../astoryem/ville-tempete.html" class="sidebar-link sidebar-sublink"><span class="icon">⚡</span> Ville Tempête</a>
+    <a href="../astoryem/arcanumbra.html" class="sidebar-link sidebar-sublink"><span class="icon">⌛</span> Arcanumbra</a>
+    <a href="../astoryem/cite-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌑</span> Cité des Ombres</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Ayakan</div>
+    <a href="ayakan.html" class="sidebar-link"><span class="icon">🌐</span> Ayakan</a>
+    <div class="sidebar-region-label">Grand Plateau</div>
+    <a href="comhan-de-na.html" class="sidebar-link sidebar-sublink"><span class="icon">⚙️</span> Comhan De Na</a>
+    <a href="grand-plateau.html" class="sidebar-link sidebar-sublink"><span class="icon">⚒️</span> Grand Plateau</a>
+    <a href="armalak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Armalak</a>
+    <a href="fios.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔬</span> Fios</a>
+    <a href="indelair.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚗️</span> Indelair</a>
+    <a href="lukd-oigrid.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Lukd Oigrid</a>
+    <a href="lukd-naek.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🪡</span> Lukd Naek</a>
+    <a href="lukd-tagil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏗️</span> Lukd Tagil</a>
+    <a href="lukd-trenay.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐎</span> Lukd Trenay</a>
+    <a href="lukd-tuanak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Lukd Tuanak</a>
+    <a href="creidak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🕊️</span> Creidak</a>
+    <a href="curcodak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎪</span> Curcodak</a>
+    <div class="sidebar-region-label">Ouestvir</div>
+    <a href="ouestvir.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Ouestvir</a>
+    <a href="yokoki.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Yokoki</a>
+    <a href="laryok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Laryok</a>
+    <a href="yoklar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Yoklar</a>
+    <a href="kasvir.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Kasvir</a>
+    <a href="rusvar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Rusvar</a>
+    <a href="sordas.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔔</span> Sordas</a>
+    <a href="sunkur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Sunkur</a>
+    <a href="portlune.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Portlune</a>
+    <a href="kayadur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Kayadur</a>
+    <a href="zodory.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Zodory</a>
+    <a href="kolandur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Kolandur</a>
+    <a href="staurdur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Staurdur</a>
+    <div class="sidebar-region-label">Régions</div>
+        <a href="creve-glace.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Crève Glace</a>
+    <a href="varask.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Varask</a>
+    <a href="mornea.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Mornea</a>
+    <a href="thyrne.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">♨️</span> Thyrne</a>
+    <a href="selvend.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛒</span> Selvend</a>
+    <a href="frayakin.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Frayakin</a>
+    <a href="solcara.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌟</span> Solcara</a>
+    <a href="pyrael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔶</span> Pyraël</a>
+    <a href="leth.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Leth</a>
+    <a href="faran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Faran</a>
+    <a href="chaines-verre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎶</span> Chaînes de Verre</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Musiyav</div>
+    <a href="../musiyav/musiyav.html" class="sidebar-link"><span class="icon">🌐</span> Musiyav</a>
+    <div class="sidebar-region-label">Nord</div>
+    <a href="../musiyav/terres-gelees.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Terres Gelées</a>
+    <a href="../musiyav/munabenn.html" class="sidebar-link sidebar-sublink"><span class="icon">⛏️</span> Munabenn</a>
+    <a href="../musiyav/creastail.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚡</span> Creastail</a>
+    <a href="../musiyav/stasmoc.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Stasmoc</a>
+    <a href="../musiyav/clagrayn.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Clagrayn</a>
+    <a href="../musiyav/fedhidom.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌑</span> Fedhidom</a>
+    <a href="../musiyav/cricrosal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Cricrosal</a>
+    <a href="../musiyav/ellirhom.html" class="sidebar-link sidebar-sublink"><span class="icon">🍃</span> Éllirhom</a>
+    <div class="sidebar-region-label">Centre</div>
+    <a href="../musiyav/murblan.html" class="sidebar-link sidebar-sublink"><span class="icon">⚖️</span> Murblan</a>
+    <a href="../musiyav/bekai-keal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Bekai Keal</a>
+    <a href="../musiyav/thylkarok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎨</span> Thylkarok</a>
+    <a href="../musiyav/carroval.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🗿</span> Carroval</a>
+    <a href="../musiyav/caudherra.html" class="sidebar-link sidebar-sublink"><span class="icon">🐘</span> Caudherra</a>
+    <a href="../musiyav/saldromil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎵</span> Saldromil</a>
+    <a href="../musiyav/kandor-zei.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Kandor-Zeï</a>
+    <a href="../musiyav/mirsha-lu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐘</span> Mirsha Lû</a>
+    <a href="../musiyav/ukar-tal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📜</span> Ukar Tal</a>
+    <a href="../musiyav/brastelma.html" class="sidebar-link sidebar-sublink"><span class="icon">🌿</span> Brastelma</a>
+    <a href="../musiyav/xalatlal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐆</span> Xalatlal</a>
+    <a href="../musiyav/tochion.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Tochion</a>
+    <a href="../musiyav/yabalta.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Yabalta</a>
+    <a href="../musiyav/solgirne.html" class="sidebar-link sidebar-sublink"><span class="icon">🌾</span> Solgirne</a>
+    <a href="../musiyav/varnestal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Varnestal</a>
+    <a href="../musiyav/linvelar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌲</span> Linvelar</a>
+    <a href="../musiyav/eldmire.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐟</span> Eldmire</a>
+    <a href="../musiyav/cairondel.html" class="sidebar-link sidebar-sublink"><span class="icon">🗿</span> Cairondel</a>
+    <a href="../musiyav/gravantempe.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏔️</span> Gravantempe</a>
+    <a href="../musiyav/treufloran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Treufloran</a>
+    <a href="../musiyav/valtendre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Valtendre</a>
+    <div class="sidebar-region-label">Ouest</div>
+    <a href="../musiyav/valacorra.html" class="sidebar-link sidebar-sublink"><span class="icon">⚜️</span> Valacorra</a>
+    <a href="../musiyav/aunthrevin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Aunthrevin</a>
+    <a href="../musiyav/vendrolis.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Vendrolis</a>
+    <a href="../musiyav/darn-merath.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Darn Merath</a>
+    <a href="../musiyav/dusalain.html" class="sidebar-link sidebar-sublink"><span class="icon">🏜️</span> Dusalain</a>
+    <a href="../musiyav/sarathiil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Sarathiil</a>
+    <a href="../musiyav/akalima.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Akalima</a>
+    <a href="../musiyav/yndarev.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Yndarev</a>
+    <a href="../musiyav/sillu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Sillu</a>
+    <div class="sidebar-region-label">Sud</div>
+    <a href="../musiyav/xamaris.html" class="sidebar-link sidebar-sublink"><span class="icon">🚫</span> Xamaris</a>
+    <a href="../musiyav/xakaril.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Xakaril</a>
+    <a href="../musiyav/marolzhad.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚖️</span> Marolzhad</a>
+    <a href="../musiyav/dorvenkar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚒️</span> Dorvenkar</a>
+    <a href="../musiyav/naskarrem.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Naskarrem</a>
+    <a href="../musiyav/khaelbar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Khaëlbar</a>
+    <a href="../musiyav/tol-vekrah.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📖</span> Tol Vekrah</a>
+    <a href="../musiyav/krelsum.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🧱</span> Krelsum</a>
+    <a href="../musiyav/falstrein.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Falstrein</a>
+    <a href="../musiyav/terres-pieuses.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Terres Pieuses</a>
+    <a href="../musiyav/templum-triarii.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛪</span> Templum Triarii</a>
+    <a href="../musiyav/forge-vivante.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Forge Vivante</a>
+    <a href="../musiyav/isvarun.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌅</span> Isvarun</a>
+    <a href="../musiyav/callafhar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Callafhar</a>
+    <a href="../musiyav/auranthil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌲</span> Auranthil</a>
+    <a href="../musiyav/elvar-tyl.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌳</span> Elvarë Tyl</a>
+    <a href="../musiyav/lunemiral.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌙</span> Lunemiral</a>
+    <a href="../musiyav/miriathael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Mirithaël</a>
+    <a href="../musiyav/faelorrin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Faelorrin</a>
+    <div class="sidebar-region-label">Est</div>
+    <a href="../musiyav/terres-sauvages.html" class="sidebar-link sidebar-sublink"><span class="icon">🌋</span> Terres Sauvages</a>
+    <a href="../musiyav/kaelyth.html" class="sidebar-link sidebar-sublink"><span class="icon">⚔️</span> Viremarche</a>
+    <a href="../musiyav/briseneige.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Briseneige</a>
+    <div class="sidebar-region-label">Terres Isolées</div>
+    <a href="../musiyav/tinneas.html" class="sidebar-link sidebar-sublink"><span class="icon">🦴</span> Tinneas A'Bhàis</a>
+    <a href="../musiyav/shurakai.html" class="sidebar-link sidebar-sublink"><span class="icon">🌫️</span> Shurakai</a>
+    <a href="../musiyav/narkun.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Narkûn</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Régions Éloignées</div>
+    <a href="../musiyav/anneau-dieux.html" class="sidebar-link"><span class="icon">⚫</span> Anneau des Dieux</a>
+    <a href="../musiyav/archipel-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌙</span> Archipel des Ombres</a>
+    <a href="../musiyav/darnobscur.html" class="sidebar-link sidebar-sublink"><span class="icon">🩸</span> Darnobscur</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Personnages & Lore</div>
+    <a href="../lore/personnages.html" class="sidebar-link"><span class="icon">🧙</span> Personnages</a>
+    <a href="../lore/journal-arzi.html" class="sidebar-link sidebar-sublink"><span class="icon">📖</span> Journal d'Arzi</a>
+    <a href="../lore/organisations.html" class="sidebar-link"><span class="icon">⚔️</span> Organisations</a>
+    <a href="../lore/dieux.html" class="sidebar-link"><span class="icon">✨</span> Dieux & Trinités</a>
+  </div>
+</aside>
+
+<div class="page-wrapper">
+  <main class="main-content">
+    <nav class="breadcrumb">
+      <a href="../index.html">Accueil</a><span class="breadcrumb-sep">›</span>
+      <a href="ayakan.html">Ayakan</a><span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Crève Glace</span>
+    </nav>
+
+    <div class="page-header">
+      <div class="page-category">Région · Nord d'Ayakan</div>
+      <h1 class="page-title">❄️ Crève Glace</h1>
+      <p class="page-subtitle">« Chaque souffle compte. Le Nord ne pardonne pas — il continue seulement d'être ce qu'il est. »</p>
+    </div>
+
+    <div class="infobox">
+      <div class="infobox-title">Crève Glace</div>
+      <div class="infobox-image">❄️</div>
+      <table class="infobox-table">
+        <tr><td>Type</td><td>Région arctique</td></tr>
+        <tr><td>Gouvernance</td><td>Aucun trône — Légions de Glace</td></tr>
+        <tr><td>Valeurs</td><td>Survie, patience, chaleur humaine</td></tr>
+        <tr><td>Magie</td><td>Effets sobres, cristaux de stabilité</td></tr>
+        <tr><td>Villes</td><td>Varask, Mornea, Thyrne, Selvend</td></tr>
+      </table>
+    </div>
+
+    <section class="content-section">
+      <h2>L'Essence de Crève Glace</h2>
+      <p>
+        Crève Glace est la région la plus septentrionale d'Ayakan — un royaume de glace dure, de vents coupants, de falaises noires et de mers figées. Là où d'autres terres connaissent des hivers, Crève Glace <em>est</em> l'hiver. Un hiver permanent, implacable, qui ne tolère ni l'imprudence ni la hâte.
+      </p>
+      <p>
+        Ce n'est pas une région qui se conquiert. Elle se survit. Ceux qui y vivent — les Peuples Libres — ne cherchent pas à dominer le froid : ils apprennent à exister à côté de lui, à trouver la chaleur dans la pierre tiède et dans le souffle des autres.
+      </p>
+    </section>
+
+    <section class="content-section">
+      <h2>Les Légions de Glace</h2>
+      <p>
+        Nul trône, nulle couronne ne gouverne Crève Glace au sens traditionnel. La seule puissance qui s'impose à tous est celle des <strong>Légions de Glace</strong> — une armée dont le vrai nom est inconnu, qui avance lentement vers le sud comme une banquise vivante.
+      </p>
+      <p>
+        Composées de mortels endurcis et de créatures gelées, les Légions ne marchent pas pour conquérir : elles marchent parce qu'elles marchent. Leur avance est saisonnière, inéluctable. Les signes précurseurs sont toujours les mêmes — le silence qui précède leur passage, les étendards de givre immobiles dans un vent absent, les lampes dont la flamme pâlit sans raison apparente.
+      </p>
+      <p>
+        Certains chuchotent qu'une intelligence glacée sommeille au cœur des Légions. Une intelligence qui n'aime ni le mensonge ni la hâte, et qui reconnaît, peut-être, ceux qui respectent le Nord.
+      </p>
+    </section>
+
+    <section class="content-section">
+      <h2>Les Peuples Libres</h2>
+      <p>
+        Entre les falaises et les sources fumantes, des communautés résilientes survivent depuis des générations. Elles ne forment pas un État — elles forment un <em>peuple</em>, uni par des pratiques partagées plutôt que par des lois écrites.
+      </p>
+      <p>
+        Leurs modes de vie varient : certains se cachent dans la pierre tiède, d'autres passent des pactes avec les éléments, d'autres encore descendent vers le Grand Plateau en hiver pour remonter au dégel. Mais tous respectent le <strong>Droit Non Écrit</strong>, les trois gestes simples qui définissent l'humanité dans le froid extrême :
+      </p>
+      <ul>
+        <li><strong>Feu partagé</strong> — pour toute personne qui sert à son tour.</li>
+        <li><strong>Bol clair</strong> — pour la faim des voyageuses et voyageurs.</li>
+        <li><strong>Corde tendue</strong> — pour éviter que quiconque ne disparaisse dans la tempête.</li>
+      </ul>
+      <p>
+        Ces trois gestes valent plus que tout serment gravé dans le marbre. Un serment sur pierre tiède, dit-on, résiste mieux à la tempête que n'importe quel parchemin.
+      </p>
+    </section>
+
+    <section class="content-section">
+      <h2>Paysages et Phénomènes</h2>
+      <p>
+        Crève Glace possède une beauté que seuls les survivants apprennent à voir. Ses paysages sont intimes et mortels à la fois.
+      </p>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">🪞</div>
+          <div class="card-name">Falaises de Revers</div>
+          <div class="card-desc">Des parois de glace noire qui renvoient le ciel comme un miroir sombre. S'y orienter requiert de connaître la différence entre le reflet et la réalité.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🎵</div>
+          <div class="card-name">Mer Bleue Sonnante</div>
+          <div class="card-desc">Une étendue de glace qui chante sous le pas — chaque foulée produit une note différente selon l'épaisseur. Les guides expérimentés lisent la sécurité d'un chemin à son timbre.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">♨️</div>
+          <div class="card-name">Chemins des Puits Tièdes</div>
+          <div class="card-desc">Un réseau de sources d'eau chaude naturelle qui offre des haltes respirables à travers la région. Ces puits sont sacrés — nul ne les souille, nul ne les barre.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🌨️</div>
+          <div class="card-name">Blizzard Fixe</div>
+          <div class="card-desc">Un mur de neige immobile qui ne se déplace pas, n'augmente pas, ne diminue pas. Il oblige simplement au contournement. Personne ne sait depuis combien de temps il est là.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">✨</div>
+          <div class="card-name">Lueurs d'Aiguille</div>
+          <div class="card-desc">Des piqûres de lumière qui dansent juste avant une rupture de glace. Apprendre à les reconnaître est l'une des premières leçons données aux enfants du Nord.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>Villes Ancrées</h2>
+      <p>
+        Il n'y a pas de capitale à Crève Glace. Il y a quatre villes qui tiennent — chacune occupant une fonction vitale dans l'équilibre de la région.
+      </p>
+
+      <h3 id="varask">❄️ Varask</h3>
+      <p>
+        Varask tient les passes. Bâtie à l'entrée des cols du Nord, c'est une ville-verrou — massive, sobre, construite pour durer plutôt que pour impressionner. Ses habitants sont des gardiens par nature. Nul ne passe sans être annoncé, nulle caravane ne s'engage dans les hauteurs sans avoir consigné sa route.
+      </p>
+      <p>
+        La ville dispose d'abris marqués d'une lampe sourde et de lignes de fanions qui jalonnent les routes dangereuses. Les règles de Varask sont simples : annoncer son départ, sonner son retour, ne jamais mentir sur sa route.
+      </p>
+
+      <h3 id="mornea">🚢 Mornea</h3>
+      <p>
+        Mornea ouvre la mer gelée. Les navires à coque tiède partent de son port pour fendre les plaques de glace et accoster sur des darses mobiles — constructions temporaires installées au début de la saison navigable et retirées avant l'hiver profond.
+      </p>
+      <p>
+        C'est une ville de marins et de pêcheurs sous glace, dont la principale richesse est la connaissance des courants sous-glaciaires. Un marin de Mornea peut lire la glace comme d'autres lisent une carte.
+      </p>
+
+      <h3 id="thyrne">♨️ Thyrne</h3>
+      <p>
+        Thyrne soigne par les sources chaudes. Construite autour d'un réseau exceptionnel de puits tièdes, c'est la ville où l'on vient guérir du gel, des engelures et des fièvres du Nord. Ses guérisseurs pratiquent une médecine qui associe les vertus des eaux chaudes à des préparations à base de mousses et de lichens arctiques.
+      </p>
+      <p>
+        Thyrne est également un lieu de repos pour ceux qui traversent Crève Glace — une halte de chaleur et de silence avant de repartir vers le froid.
+      </p>
+
+      <h3 id="selvend">🛒 Selvend</h3>
+      <p>
+        Selvend n'existe vraiment qu'une partie de l'année : c'est un marché saisonnier qui prend vie au dégel et se vide au retour du froid profond. Des marchands du Grand Plateau, d'Ouestvir et même de Musiyav font le voyage pour échanger contre les fourrures, les cristaux de stabilité et les provisions du Nord.
+      </p>
+      <p>
+        Durant la saison du marché, Selvend est la ville la plus vivante de Crève Glace — bruyante, colorée, chaleureuse. Le reste du l'année, quelques gardiens maintiennent les structures et attendent le retour du printemps.
+      </p>
+    </section>
+
+    <section class="content-section">
+      <h2>Magie à Crève Glace</h2>
+      <p>
+        La magie "crue" se brise rapidement dans le froid extrême. Les sorts élaborés perdent leur cohésion, les enchantements instables se désagrègent. Seule la magie sobre, économe et précise résiste au Nord.
+      </p>
+      <p>
+        Les praticiens de Crève Glace privilégient les effets sobres : chaleur douce, lumière non éblouissante, renforcement des liens entre personnes. On ne fait pas de démonstration au Nord — on survit.
+      </p>
+      <p>
+        Les <strong>cristaux</strong> sont rares et précieux. Jamais utilisés pour le prestige, ils servent à des usages pratiques : tenir une porte dans le vent, apaiser une braise qui s'emballe, lire la fatigue d'une coque de navire avant qu'elle ne cède. Un cristal utilisé pour frimer est un cristal gaspillé — et dans le Nord, rien ne se gaspille.
+      </p>
+    </section>
+
+    <section class="content-section">
+      <h2>Relations avec les Voisins</h2>
+      <p>
+        Crève Glace entretient des relations pragmatiques avec ses voisins — la survie prime sur la politique.
+      </p>
+      <p>
+        Avec le <strong>Grand Plateau</strong> au sud, les échanges sont constants. Des rails chauffés, des dalles antidérapantes et des portes de roche maintiennent un corridor commercial ouvert en toutes saisons. En hiver profond, des communautés entières descendent du Nord et s'installent temporairement dans les zones tampon du Plateau.
+      </p>
+      <p>
+        Avec <strong>Frayakin</strong> à l'ouest, la relation est plus tendue — un conflit d'éléments autant que de cultures. Les routes de braise de Frayakin s'opposent aux vents coupants du Nord. La Citadelle de Faran, fort de roche rouge à la frontière, maintient une ligne de défense contre le souffle de glace. Les escarmouches restent rares : la logistique prime sur la colère, et les deux régions savent que la guerre coûte plus qu'elle ne rapporte dans ces conditions.
+      </p>
+    </section>
+
+    <section class="content-section">
+      <h2>Ambiance Sensorielle</h2>
+      <p>
+        Crève Glace se ressent avant de se voir. <strong>Le ciel est lavé</strong>, d'un bleu pâle qui tire vers le blanc en altitude. <strong>La roche est sombre</strong> — noire ou gris anthracite, tranchant sur la neige. L'odeur est propre et froide, avec une note de pierre humide et, près des campements, de braise propre.
+      </p>
+      <p>
+        Et puis il y a le son. Une cloche courte qui résonne sans s'attarder. Et la glace — la glace qui gémit comme un instrument ancien, un instrument que personne n'a appris à jouer mais que tout le monde finit par comprendre.
+      </p>
+    </section>
+
+    <section class="content-section">
+      <h2>Trois Scènes du Nord</h2>
+      <p>
+        Pour sentir ce qu'est Crève Glace, trois images suffisent :
+      </p>
+      <p>
+        Une porte de neige s'entrouvre. L'air redevient respirable. La file entre sans bruit — pas de cris, pas de célébration. La porte se referme derrière le dernier.
+      </p>
+      <p>
+        Un navire à coque tiède fend une plaque et accoste sur une darse mobile. La vapeur danse entre la coque chaude et l'eau glacée. Le capitaine compte les membres d'équipage avant même d'amarrer.
+      </p>
+      <p>
+        Au bord d'un puits tiède, une guide pose la main sur la pierre et murmure : "Encore deux respirations, puis nous partons."
+      </p>
+    </section>
+
+  </main>
+</div>
+
+<script src="../js/wiki.js"></script>
+</body>
+</html>

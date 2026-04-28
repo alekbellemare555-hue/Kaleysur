@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dieux & Trinités — Kaleysur Wiki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<nav class="top-nav">
+  <a href="../index.html" class="nav-brand"><span class="nav-brand-icon">⚜</span><span class="nav-brand-text">Kaleysur</span></a>
+  <div class="nav-right">
+    <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="search-input" type="text" placeholder="Rechercher…" autocomplete="off"><div class="search-results" id="search-results"></div></div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-section"><div class="sidebar-section-title">Navigation</div>
+    <a href="../index.html" class="sidebar-link"><span class="icon">🏠</span> Accueil</a>
+    <a href="../chronologie.html" class="sidebar-link"><span class="icon">📜</span> Chronologie</a>
+    <a href="../carte.html" class="sidebar-link"><span class="icon">🗺️</span> Carte du Monde</a>
+    <a href="../calendrier.html" class="sidebar-link"><span class="icon">📅</span> Calendrier</a>
+    <a href="../joueurs.html" class="sidebar-link"><span class="icon">🎲</span> Joueurs</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Astoryem</div>
+    <a href="../astoryem/astoryem.html" class="sidebar-link"><span class="icon">🌐</span> Astoryem</a>
+    <a href="../astoryem/feymundi.html" class="sidebar-link sidebar-sublink"><span class="icon">🏰</span> Feymundi</a>
+    <a href="../astoryem/waterflow.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Waterflow</a>
+    <a href="../astoryem/ville-tempete.html" class="sidebar-link sidebar-sublink"><span class="icon">⚡</span> Ville Tempête</a>
+    <a href="../astoryem/arcanumbra.html" class="sidebar-link sidebar-sublink"><span class="icon">⌛</span> Arcanumbra</a>
+    <a href="../astoryem/cite-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌑</span> Cité des Ombres</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Ayakan</div>
+    <a href="../ayakan/ayakan.html" class="sidebar-link"><span class="icon">🌐</span> Ayakan</a>
+    <div class="sidebar-region-label">Grand Plateau</div>
+    <a href="../ayakan/comhan-de-na.html" class="sidebar-link sidebar-sublink"><span class="icon">⚙️</span> Comhan De Na</a>
+    <a href="../ayakan/grand-plateau.html" class="sidebar-link sidebar-sublink"><span class="icon">⚒️</span> Grand Plateau</a>
+    <a href="../ayakan/armalak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Armalak</a>
+    <a href="../ayakan/fios.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔬</span> Fios</a>
+    <a href="../ayakan/indelair.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚗️</span> Indelair</a>
+    <a href="../ayakan/lukd-oigrid.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Lukd Oigrid</a>
+    <a href="../ayakan/lukd-naek.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🪡</span> Lukd Naek</a>
+    <a href="../ayakan/lukd-tagil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏗️</span> Lukd Tagil</a>
+    <a href="../ayakan/lukd-trenay.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐎</span> Lukd Trenay</a>
+    <a href="../ayakan/lukd-tuanak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Lukd Tuanak</a>
+    <a href="../ayakan/creidak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🕊️</span> Creidak</a>
+    <a href="../ayakan/curcodak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎪</span> Curcodak</a>
+    <div class="sidebar-region-label">Ouestvir</div>
+    <a href="../ayakan/ouestvir.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Ouestvir</a>
+    <a href="../ayakan/yokoki.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Yokoki</a>
+    <a href="../ayakan/laryok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Laryok</a>
+    <a href="../ayakan/yoklar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Yoklar</a>
+    <a href="../ayakan/kasvir.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Kasvir</a>
+    <a href="../ayakan/rusvar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Rusvar</a>
+    <a href="../ayakan/sordas.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔔</span> Sordas</a>
+    <a href="../ayakan/sunkur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Sunkur</a>
+    <a href="../ayakan/portlune.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Portlune</a>
+    <a href="../ayakan/kayadur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Kayadur</a>
+    <a href="../ayakan/zodory.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Zodory</a>
+    <a href="../ayakan/kolandur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Kolandur</a>
+    <a href="../ayakan/staurdur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Staurdur</a>
+    <div class="sidebar-region-label">Régions</div>
+        <a href="../ayakan/creve-glace.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Crève Glace</a>
+    <a href="../ayakan/varask.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Varask</a>
+    <a href="../ayakan/mornea.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Mornea</a>
+    <a href="../ayakan/thyrne.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">♨️</span> Thyrne</a>
+    <a href="../ayakan/selvend.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛒</span> Selvend</a>
+    <a href="../ayakan/frayakin.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Frayakin</a>
+    <a href="../ayakan/solcara.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌟</span> Solcara</a>
+    <a href="../ayakan/pyrael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔶</span> Pyraël</a>
+    <a href="../ayakan/leth.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Leth</a>
+    <a href="../ayakan/faran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Faran</a>
+    <a href="../ayakan/chaines-verre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎶</span> Chaînes de Verre</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Musiyav</div>
+    <a href="../musiyav/musiyav.html" class="sidebar-link"><span class="icon">🌐</span> Musiyav</a>
+    <div class="sidebar-region-label">Nord</div>
+    <a href="../musiyav/terres-gelees.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Terres Gelées</a>
+    <a href="../musiyav/munabenn.html" class="sidebar-link sidebar-sublink"><span class="icon">⛏️</span> Munabenn</a>
+    <a href="../musiyav/creastail.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚡</span> Creastail</a>
+    <a href="../musiyav/stasmoc.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Stasmoc</a>
+    <a href="../musiyav/clagrayn.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Clagrayn</a>
+    <a href="../musiyav/fedhidom.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌑</span> Fedhidom</a>
+    <a href="../musiyav/cricrosal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Cricrosal</a>
+    <a href="../musiyav/ellirhom.html" class="sidebar-link sidebar-sublink"><span class="icon">🍃</span> Éllirhom</a>
+    <div class="sidebar-region-label">Centre</div>
+    <a href="../musiyav/murblan.html" class="sidebar-link sidebar-sublink"><span class="icon">⚖️</span> Murblan</a>
+    <a href="../musiyav/bekai-keal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Bekai Keal</a>
+    <a href="../musiyav/thylkarok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎨</span> Thylkarok</a>
+    <a href="../musiyav/carroval.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🗿</span> Carroval</a>
+    <a href="../musiyav/caudherra.html" class="sidebar-link sidebar-sublink"><span class="icon">🐘</span> Caudherra</a>
+    <a href="../musiyav/saldromil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎵</span> Saldromil</a>
+    <a href="../musiyav/kandor-zei.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Kandor-Zeï</a>
+    <a href="../musiyav/mirsha-lu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐘</span> Mirsha Lû</a>
+    <a href="../musiyav/ukar-tal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📜</span> Ukar Tal</a>
+    <a href="../musiyav/brastelma.html" class="sidebar-link sidebar-sublink"><span class="icon">🌿</span> Brastelma</a>
+    <a href="../musiyav/xalatlal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐆</span> Xalatlal</a>
+    <a href="../musiyav/tochion.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Tochion</a>
+    <a href="../musiyav/yabalta.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Yabalta</a>
+    <a href="../musiyav/solgirne.html" class="sidebar-link sidebar-sublink"><span class="icon">🌾</span> Solgirne</a>
+    <a href="../musiyav/varnestal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Varnestal</a>
+    <a href="../musiyav/linvelar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌲</span> Linvelar</a>
+    <a href="../musiyav/eldmire.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐟</span> Eldmire</a>
+    <a href="../musiyav/cairondel.html" class="sidebar-link sidebar-sublink"><span class="icon">🗿</span> Cairondel</a>
+    <a href="../musiyav/gravantempe.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏔️</span> Gravantempe</a>
+    <a href="../musiyav/treufloran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Treufloran</a>
+    <a href="../musiyav/valtendre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Valtendre</a>
+    <div class="sidebar-region-label">Ouest</div>
+    <a href="../musiyav/valacorra.html" class="sidebar-link sidebar-sublink"><span class="icon">⚜️</span> Valacorra</a>
+    <a href="../musiyav/aunthrevin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Aunthrevin</a>
+    <a href="../musiyav/vendrolis.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Vendrolis</a>
+    <a href="../musiyav/darn-merath.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Darn Merath</a>
+    <a href="../musiyav/dusalain.html" class="sidebar-link sidebar-sublink"><span class="icon">🏜️</span> Dusalain</a>
+    <a href="../musiyav/sarathiil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Sarathiil</a>
+    <a href="../musiyav/akalima.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Akalima</a>
+    <a href="../musiyav/yndarev.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Yndarev</a>
+    <a href="../musiyav/sillu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Sillu</a>
+    <div class="sidebar-region-label">Sud</div>
+    <a href="../musiyav/xamaris.html" class="sidebar-link sidebar-sublink"><span class="icon">🚫</span> Xamaris</a>
+    <a href="../musiyav/xakaril.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Xakaril</a>
+    <a href="../musiyav/marolzhad.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚖️</span> Marolzhad</a>
+    <a href="../musiyav/dorvenkar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚒️</span> Dorvenkar</a>
+    <a href="../musiyav/naskarrem.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Naskarrem</a>
+    <a href="../musiyav/khaelbar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Khaëlbar</a>
+    <a href="../musiyav/tol-vekrah.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📖</span> Tol Vekrah</a>
+    <a href="../musiyav/krelsum.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🧱</span> Krelsum</a>
+    <a href="../musiyav/falstrein.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Falstrein</a>
+    <a href="../musiyav/terres-pieuses.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Terres Pieuses</a>
+    <a href="../musiyav/templum-triarii.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛪</span> Templum Triarii</a>
+    <a href="../musiyav/forge-vivante.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Forge Vivante</a>
+    <a href="../musiyav/isvarun.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌅</span> Isvarun</a>
+    <a href="../musiyav/callafhar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Callafhar</a>
+    <a href="../musiyav/auranthil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌲</span> Auranthil</a>
+    <a href="../musiyav/elvar-tyl.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌳</span> Elvarë Tyl</a>
+    <a href="../musiyav/lunemiral.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌙</span> Lunemiral</a>
+    <a href="../musiyav/miriathael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Mirithaël</a>
+    <a href="../musiyav/faelorrin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Faelorrin</a>
+    <div class="sidebar-region-label">Est</div>
+    <a href="../musiyav/terres-sauvages.html" class="sidebar-link sidebar-sublink"><span class="icon">🌋</span> Terres Sauvages</a>
+    <a href="../musiyav/kaelyth.html" class="sidebar-link sidebar-sublink"><span class="icon">⚔️</span> Viremarche</a>
+    <a href="../musiyav/briseneige.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Briseneige</a>
+    <div class="sidebar-region-label">Terres Isolées</div>
+    <a href="../musiyav/tinneas.html" class="sidebar-link sidebar-sublink"><span class="icon">🦴</span> Tinneas A'Bhàis</a>
+    <a href="../musiyav/shurakai.html" class="sidebar-link sidebar-sublink"><span class="icon">🌫️</span> Shurakai</a>
+    <a href="../musiyav/narkun.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Narkûn</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Régions Éloignées</div>
+    <a href="../musiyav/anneau-dieux.html" class="sidebar-link"><span class="icon">⚫</span> Anneau des Dieux</a>
+    <a href="../musiyav/archipel-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌙</span> Archipel des Ombres</a>
+    <a href="../musiyav/darnobscur.html" class="sidebar-link sidebar-sublink"><span class="icon">🩸</span> Darnobscur</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Personnages & Lore</div>
+    <a href="personnages.html" class="sidebar-link"><span class="icon">🧙</span> Personnages</a>
+    <a href="journal-arzi.html" class="sidebar-link sidebar-sublink"><span class="icon">📖</span> Journal d'Arzi</a>
+    <a href="organisations.html" class="sidebar-link"><span class="icon">⚔️</span> Organisations</a>
+    <a href="dieux.html" class="sidebar-link"><span class="icon">✨</span> Dieux & Trinités</a>
+  </div>
+</aside>
+
+<div class="page-wrapper">
+  <main class="main-content">
+    <nav class="breadcrumb">
+      <a href="../index.html">Accueil</a><span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Dieux & Trinités</span>
+    </nav>
+
+    <div class="page-header">
+      <div class="page-category">Lore · Divin · Panthéon</div>
+      <h1 class="page-title">✨ Dieux & Trinités de Kaleysur</h1>
+      <p class="page-subtitle">Il y a 278 ans, 27 héros sacrifièrent leur humanité pour vaincre les Illithids. En échange, ils s'élevèrent au rang divin — et le monde ne fut plus jamais le même.</p>
+    </div>
+
+    <div class="toc" id="auto-toc"><div class="toc-title">Table des matières</div></div>
+
+    <h2 id="origine">Origine des Dieux</h2>
+    <p>Les dieux actuels de Kaleysur ne sont pas des entités primordiales : ce sont des mortels élevés au rang divin. Les 27 Élus, nés en -43 EdT et prophétisés par la « Plume de l'Orage », libérèrent Kaleysur du joug des Illithids après des décennies de lutte. En l'an 0 EdT, après avoir accompli le Rituel d'Ascension, ils transcendèrent leur condition mortelle et créèrent simultanément les 9 Trinités et les Trois Lunes, remplaçant la Lune Noire unique de l'ère ancienne.</p>
+    <blockquote>« Ils ne prirent pas la divinité. Ils la méritèrent. » — Inscription commune dans les temples de Kaleysur</blockquote>
+    <p>Depuis, les dieux ne marchent plus parmi les mortels — mais leur influence reste immense : temples, cultes, artefacts, manifestations divines, et les lunes elles-mêmes témoignent de leur présence continue. Chaque Trinité est liée à un mois du calendrier, rythmant la vie spirituelle de Kaleysur.</p>
+
+    <h2 id="trinites">Le Système des Trinités</h2>
+    <p>Les 27 dieux sont organisés en 9 Trinités de 3 divinités chacune. Chaque trinité représente un domaine thématique fondamental et contient un dieu <em>bon</em>, un dieu <em>neutre</em> et un dieu <em>mauvais</em> — symbolisant que chaque force du monde a ses facettes lumineuse, équilibrée et sombre. Nul n'est absolument pur, nul n'est absolument corrompu.</p>
+
+    <div class="card" style="margin-bottom:1.5rem">
+      <p style="margin:0">Les trois membres d'une Trinité sont liés karmiquement : si l'un gagne des fidèles, les autres en bénéficient aussi, car ils représentent les aspects complémentaires d'une même force. S'opposer à une Trinité entière est considéré comme une folie cosmique.</p>
+    </div>
+
+    <h2 id="trinite-lunes">🌕 Trinité des Lunes</h2>
+    <p><em>Féminine · Première Trinité éveillée · Mois : Réolta (41 jours)</em></p>
+    <p>La plus haute autorité spirituelle pour Ouestvir et ses provinces arcanes. Les serments majeurs se prêtent sous lumière lunaire. Les Enfants des Lunes — ordre mystique de 27 enfants élus — vénèrent les trois déesses ensemble.</p>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-icon">🌕</span>
+        <div class="card-name" style="color:var(--gold)">Cïaaïn — La Lune Bleue</div>
+        <div class="card-desc"><strong>Bonne · Magies : Abjuration, Conjuration, Évocation</strong><br>Gardienne des voiles et protectrice des âmes perdues. Elle guide sans aveugler, apaise sans affaiblir. Invoquée dans tous les rituels de passage, les prières de protection et les exorcismes. Ses fidèles : les Enfants des Lunes, les Gardiennes d'Ærdhal, les Moines du Saphir.<br><em>Lieux sacrés : l'Île du Croissant de Lune, le Temple de la Voile dans les Terres Pieuses.</em></div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🌙</span>
+        <div class="card-name" style="color:var(--gold)">Gealshaï — La Lune Blanche</div>
+        <div class="card-desc"><strong>Neutre · Magies : Divination, Illusion</strong><br>Miroir de l'esprit, gardienne des mystères. Elle n'éclaire pas la voie, elle éclaire l'âme — jamais directement. Déesse des devins, des rêveurs éveillés et des prophètes. Elle ne ment jamais, mais ne dit jamais la vérité non plus.<br><em>Lieux sacrés : la Grotte des Reflets Blancs (nord de Murblan), la Tour des Échos (Éllirhom).</em></div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🌑</span>
+        <div class="card-name" style="color:var(--gold)">Sgarlaïd — La Lune Rouge</div>
+        <div class="card-desc"><strong>Mauvaise · Magies : Nécromancie, Enchantement</strong><br>Tisseuse d'ombres, beauté dangereuse, transgression faite divine. Elle murmure aux ambitieux, ensorcelle les esprits faibles, offre ses dons à un prix terrible. Ses fidèles : les Filles de la Lune Rouge, les Nécromants Lunaires.<br><em>Symbole : une lune rouge fendue en son centre.</em></div>
+      </div>
+    </div>
+
+    <h2 id="trinite-temps">⏳ Trinité du Temps</h2>
+    <p><em>Masculine · Mois : Amrean (37 jours)</em></p>
+    <p>Trinité du devenir, de l'instant et de l'origine. Vénérée par les devins, les historiens et ceux qui cherchent à comprendre le fil du destin. Ces trois dieux ne s'accordent pas toujours — le passé, le présent et le futur sont rarement en paix.</p>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-icon">🔮</span>
+        <div class="card-name" style="color:var(--gold)">Ritehakd — Le Guide des Avenirs</div>
+        <div class="card-desc"><strong>Bon · Domaines : Prophétie, inspiration, invention</strong><br>Sphère d'influence : destinées futures, espoir, progrès, anticipation. Il est l'espoir — l'idée que même dans le chaos, une lumière peut surgir. Ritehakd ne donne pas les réponses, il montre le chemin pour les trouver.<br><em>Symbole : sabliers renversés formant un ∞. Couleur : or clair et bleu nuit.</em></div>
+      </div>
+      <div class="card">
+        <span class="card-icon">⏳</span>
+        <div class="card-name" style="color:var(--gold)">Seakad — Le Gardien du Fil Tendu</div>
+        <div class="card-desc"><strong>Neutre · Domaines : Observation, méditation, constance, vigilance</strong><br>Sphère d'influence : le présent, l'équilibre de l'instant. Il n'exige ni action ni inaction — seulement l'attention totale à ce qui est. Les moines contemplatifs et les tacticiens le vénèrent.<br><em>Couleur : gris pâle, blanc céruléen.</em></div>
+      </div>
+      <div class="card">
+        <span class="card-icon">💀</span>
+        <div class="card-name" style="color:var(--gold)">Seo — Le Passé Immuable</div>
+        <div class="card-desc"><strong>Mauvais · Domaines : Nécromancie, divination, lien ancestral, malédiction</strong><br>Sphère d'influence : le passé, le regret, la mémoire corrompue. Il ne détruit pas — il emprisonne dans ce qui fut. Parent de Spiaos (Dieu Inférieur). Ses prêtres fouillent les morts pour en extraire des vérités.<br><em>Symbole : un sablier brisé.</em></div>
+      </div>
+    </div>
+
+    <h2 id="trinite-macons">⛏️ Trinité des Maçons</h2>
+    <p><em>Androgyne · Mois : Togail (37 jours)</em></p>
+    <p>Trinité de la matière et du cycle universel : naissance, vie, mort. Les Saints-Maçons — artisans bénis parcourant Kaleysur — lui rendent hommage. La Forge Vivante des Terres Pieuses est leur sanctuaire commun, où Breith fonde, Beatha fait croître, et Crihok consume ce qui doit cesser.</p>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-icon">🔨</span>
+        <div class="card-name" style="color:var(--gold)">Breith — Le Marteau du Commencement</div>
+        <div class="card-desc"><strong>Bon · Domaines : Vie, forge, protection</strong><br>L'architecte du premier cri. Chaque naissance, chaque invention, chaque maison érigée lui rend hommage. Ses fidèles : les Maisons Fondatrices, les Veilleurs de Pierre, les Jardins d'Éveil.<br><em>Saints notables : Tharnok le Marteau-Mère, Ymaelle des Feux Lents, Drenn "le Fondamental".</em></div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🌱</span>
+        <div class="card-name" style="color:var(--gold)">Beatha — L'Éclat du Changement</div>
+        <div class="card-desc"><strong>Neutre · Domaines : Vitalité, guérison, renouveau, élémental</strong><br>La force tranquille de la transformation. Là où Breith crée, Beatha fait croître. Elle n'a pas de visage unique — elle est tour à tour jeune, vieille, changeante, car la vie elle-même ne reste jamais figée.<br><em>Saints notables : Tylvenn "la Méandre", Orla la Renaissante, Bruldir Vent-Crissant.</em></div>
+      </div>
+      <div class="card">
+        <span class="card-icon">💀</span>
+        <div class="card-name" style="color:var(--gold)">Crihok — Le Dernier Souffle</div>
+        <div class="card-desc"><strong>Mauvais · Domaines : Nécromancie, entropie, feu, ruine</strong><br>Le bruit qui vient après le dernier souffle. Implacable — non pas cruel, mais nécessaire. Il enseigne que tout ce qui est construit doit un jour tomber. Ses fidèles : les Fracturants, les Forgerons de Cendres, les Noctaires.<br><em>Saints notables : Huran "le Dernier", Droska Cendre-Rouge, Karvek d'Æther.</em></div>
+      </div>
+    </div>
+
+    <h2 id="trinite-bestial">🐾 Trinité du Bestial</h2>
+    <p><em>Mois : Fiadhra (38 jours)</em></p>
+    <p>Trinité de la faune et de l'instinct. Vénérée à <a href="../astoryem/ville-tempete.html">Ville Tempête</a> par les humanoïdes bestiaux (Leonins, Tabaxis, Minotaures), et par les tribus des <a href="../musiyav/terres-sauvages.html">Terres Sauvages</a>. Parent de Kitalgag, dieu inférieur de la fureur sauvage.</p>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-icon">🐻</span>
+        <div class="card-name" style="color:var(--gold)">Dachaigheil — Le Protecteur du Foyer</div>
+        <div class="card-desc"><strong>Bonne · Domaines : Animaux domestiques, protection du troupeau, élevage</strong><br>Vénérée par les éleveurs, les bergers, ceux qui prennent soin. Elle est la chaleur du feu dans la grange, la présence rassurante du chien au seuil. Ses temples sont ouverts aux animaux comme aux humains.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🦌</span>
+        <div class="card-name" style="color:var(--gold)">Gintinn — L'Équilibre du Cycle</div>
+        <div class="card-desc"><strong>Neutre · Domaines : Animaux d'élevage, cycle naturel, équilibre</strong><br>L'équilibre entre domination et liberté de la bête. Il n'est ni domestiqué ni sauvage — il est le passage. Vénéré conjointement avec Sealg à Ville Tempête pour symboliser l'équilibre prédateur-proie.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🐺</span>
+        <div class="card-name" style="color:var(--gold)">Sealg — La Chasse Éternelle</div>
+        <div class="card-desc"><strong>Mauvaise · Domaines : Chasse sauvage, prédation, instinct brut</strong><br>La déesse de l'instinct pur, de la chasse sans pitié. Parent (avec Oidhche) de Kitalgag. Ses cultes pratiquent des rituels de chasse ritualisée. À Ville Tempête, sa violence est canalisée en sport sacré.</div>
+      </div>
+    </div>
+
+    <h2 id="trinite-fondements">🌍 Trinité des Fondements</h2>
+    <p><em>Mois : Sealbh (39 jours)</em></p>
+    <p>Trinité de la matière première du monde : la terre, l'eau, le ciel. Ces trois forces préexistaient aux 27 Élus sous forme primordiale ; les héros leur donnèrent simplement une voix divine. Naluin, dieu inférieur né de Cuatan et Ciuin, en est l'enfant mystique.</p>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-icon">🗻</span>
+        <div class="card-name" style="color:var(--gold)">Talahmn — Le Sol et la Stabilité</div>
+        <div class="card-desc"><strong>Loyal Neutre · Domaines : Terre, stabilité, fondation, permanence</strong><br>La roche sous les pieds, l'argile qui garde les formes. Vénéré par les mineurs, les agriculteurs, et toute cité qui veut durer. Son silence est perçu comme une promesse : ce qui repose sur moi ne tombera pas.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🌊</span>
+        <div class="card-name" style="color:var(--gold)">Cuatan — Les Océans et la Mutation</div>
+        <div class="card-desc"><strong>Chaotique Neutre · Domaines : Mer, mutation, imprévisibilité, flux</strong><br>Les eaux profondes et les marées changeantes. Parent (avec Ciuin) de Naluin. Les marins lui font des offrandes avant tout voyage. Il ne promet pas la sécurité — seulement la chance pour ceux qui méritent d'arriver.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">☁️</span>
+        <div class="card-name" style="color:var(--gold)">Néamnh — Les Cieux et la Perspective</div>
+        <div class="card-desc"><strong>Neutre · Domaines : Ciel, perspective, distance, vue d'ensemble</strong><br>La déesse du ciel immense qui permet de tout voir. Vénérée par les cartographes, les stratèges et les philosophes. Elle offre la perspective — mais jamais la certitude. Son silence est vertige pour les esprits étroits.</div>
+      </div>
+    </div>
+
+    <h2 id="trinite-emotions">❤️ Trinité des Émotions</h2>
+    <p><em>Mois : Brònair (37 jours)</em></p>
+    <p>Trinité de l'âme humaine et de ses profondeurs. Vénérée partout, par tout le monde — car nul n'échappe à ses émotions. Parent de Spiaos (dieu inférieur), né de Seo et Foblath.</p>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-icon">💛</span>
+        <div class="card-name" style="color:var(--gold)">Falahm — Le Cœur Rayonnant</div>
+        <div class="card-desc"><strong>Bon · Domaines : Charme, lumière, soin, communauté</strong><br>La voix qui dit « tu n'es pas seul ». Gardienne des sentiments qui élèvent : espoir, courage, tendresse, émerveillement. Adorée des soignants, bardes et diplomates. Ses fidèles : les Porteurs de Chaleur, les Chœurs d'Aube.<br><em>Saints notables : Nelliar Saincoeur, Oris des Lueurs, Thereme l'Élue du Souvenir.</em></div>
+      </div>
+      <div class="card">
+        <span class="card-icon">⚖️</span>
+        <div class="card-name" style="color:var(--gold)">Foblath — Le Miroir Gris</div>
+        <div class="card-desc"><strong>Neutre · Domaines : Méditation, équilibre émotionnel, introspection</strong><br>Les émotions ni bonnes ni mauvaises — la mélancolie, la nostalgie, la résignation sereine. Parent (avec Seo) de Spiaos. Vénérée des thérapeutes spirituels, artistes et philosophes qui cherchent la vérité dans la grisaille.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🖤</span>
+        <div class="card-name" style="color:var(--gold)">Miforthan — Le Soupir des Ombres</div>
+        <div class="card-desc"><strong>Mauvais · Domaines : Désespoir, haine, jalousie, manipulation émotionnelle</strong><br>Les émotions qui rongent et dévorent. Non pas le mal simple, mais la souffrance tournée en arme. Ses cultes sont secrets et dangereux. On invoque Miforthan dans les rituels de vengeance et de manipulation psychique.</div>
+      </div>
+    </div>
+
+    <h2 id="trinite-nature">🌿 Trinité de la Nature</h2>
+    <p><em>Mois : Féasach (35 jours)</em></p>
+    <p>Trinité de la flore, des saisons et des forces naturelles. Parent de Meora (déesse inférieure née de Mathair et Cïaaïn). Profondément vénérée à <a href="../musiyav/ellirhom.html">Éllirhom</a> et <a href="../musiyav/sarathiil.html">Sarathiil</a>.</p>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-icon">🌸</span>
+        <div class="card-name" style="color:var(--gold)">Mathair — La Mère Fertile</div>
+        <div class="card-desc"><strong>Bonne · Domaines : Fertilité, printemps, récolte, beau temps</strong><br>La déesse-mère par excellence. Elle veille sur les semences, les naissances et le retour des beaux jours. Parent (avec Cïaaïn) de Meora. Les druides d'Éllirhom la considèrent comme l'essence même de la forêt.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🌬️</span>
+        <div class="card-name" style="color:var(--gold)">Ciuin — La Déesse du Vent Calme</div>
+        <div class="card-desc"><strong>Neutre · Domaines : Vent, calme, nuages, équilibre des vents</strong><br>Parent (avec Cuatan) de Naluin. Vénérée des marins et navigateurs — c'est elle qui donne ou retient le vent. À Yndarev (<a href="../musiyav/sarathiil.html">Sarathiil</a>), on pratique la divination par le vent en son nom depuis des générations.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">⛈️</span>
+        <div class="card-name" style="color:var(--gold)">Gorta — L'Intempérie et la Famine</div>
+        <div class="card-desc"><strong>Mauvaise · Domaines : Famine, orages, gelées, pestilence agricole</strong><br>La face sombre de la nature — non cruelle par choix, mais implacable par nature. Ses temples sont discrets, mais on la prie avant les semailles pour l'apaiser. Dans les Terres Sauvages, elle est redoutée plus que toute autre divinité.</div>
+      </div>
+    </div>
+
+    <h2 id="trinite-lumiere">☀️ Trinité de la Lumière</h2>
+    <p><em>Un seul dieu à trois visages · Mois : Soillse (31 jours — le plus court)</em></p>
+    <p>Trinité unique dans sa forme : les trois aspects sont le même être divin observé à trois moments du soleil. Son mois, Soillse, est le plus court mais contient le jour le plus sacré de l'année — le 3 Soillse, Zénith de l'Année, célébré dans tout Kaleysur.</p>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-icon">🌅</span>
+        <div class="card-name" style="color:var(--gold)">Ciarahd — Le Soleil Levant</div>
+        <div class="card-desc"><strong>Bon · Domaines : Aube, espoir, nouveau départ, clarté</strong><br>Le visage bienveillant du dieu-soleil. Invoqué au lever du jour pour bénir les entreprises nouvelles. Dans les Terres Pieuses, les clercs de Ciarahd accueillent chaque aube par une prière tournée vers l'est.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">☀️</span>
+        <div class="card-name" style="color:var(--gold)">Latha — Le Jour Éternel</div>
+        <div class="card-desc"><strong>Neutre · Domaines : Vérité en plein jour, vigilance, ordre naturel</strong><br>Le visage impassible du soleil à son zénith — il révèle tout, ombre ou lumière, sans jugement. Vénéré des juges, des témoins et de ceux qui cherchent une vérité nette. Neutre par essence, car le soleil éclaire le juste comme le criminel.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🌇</span>
+        <div class="card-name" style="color:var(--gold)">Oidhche — Le Soleil Couchant</div>
+        <div class="card-desc"><strong>Mauvais · Domaines : Crépuscule, obscurité voilée, trahison, secret</strong><br>Le visage dangereux du soleil mourant. Parent (avec Sealg) de Kitalgag. L'heure du couchant est celle des complots, des adieux, des transitions funestes. Ses fidèles voient la beauté du crépuscule comme un rappel que tout finit.</div>
+      </div>
+    </div>
+
+    <h2 id="trinite-conflits">⚔️ Trinité des Conflits</h2>
+    <p><em>Mois : Cogadhán (38 jours)</em></p>
+    <p>Trinité de la guerre et de ses deux faces : la paix qui en découle et la conquête qu'elle nourrit. Cogadh, le dieu neutre de la guerre, est le seul temple toléré à <a href="../musiyav/xamaris.html">Khaëlbar (Xamaris)</a>. Les Chevaliers du Lys de <a href="../musiyav/kaelyth.html">Viremarche</a> vénèrent Aonta.</p>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-icon">🕊️</span>
+        <div class="card-name" style="color:var(--gold)">Aonta — La Paix Méritée</div>
+        <div class="card-desc"><strong>Bon · Domaines : Diplomatie, traités, réconciliation, honneur guerrier</strong><br>Non pas la paix par la faiblesse, mais par la force maîtrisée. Dieu des traités, des cessez-le-feu et des armistices honorables. Vénéré à Kaelyth et dans les Terres Pieuses. Ses prêtres servent de médiateurs entre nations.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">⚔️</span>
+        <div class="card-name" style="color:var(--gold)">Cogadh — La Guerre Éternelle</div>
+        <div class="card-desc"><strong>Neutre · Domaines : Guerre, combat, stratégie, discipline militaire</strong><br>La guerre sans jugement moral — ni héroïque, ni monstrueuse, simplement inévitable. Le seul dieu dont le temple est toléré à Xamaris. Vénéré par les soldats de toutes nations, car même les ennemis partagent un dieu commun au combat.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🏴</span>
+        <div class="card-name" style="color:var(--gold)">Ionnsaig — La Conquête Sans Fin</div>
+        <div class="card-desc"><strong>Mauvais · Domaines : Invasion, domination, pillage, empire</strong><br>La guerre comme fin en soi, la conquête comme idéal. Dieu des envahisseurs et des tyrans. L'Empire de Xamaris, malgré sa haine de la magie divine, partage des valeurs proches de son dogme d'expansionnisme total.</div>
+      </div>
+    </div>
+
+    <h2 id="dieux-inferieurs">✦ Dieux Inférieurs — Enfants des Trinités</h2>
+    <p>Plusieurs divinités mineures sont nées spontanément des interactions entre dieux du panthéon — non pas par rituel, mais par résonance mystique. Ces <em>Dieux Inférieurs</em> ne furent pas parmi les 27 Élus, mais possèdent un pouvoir réel et des cultes actifs.</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-icon">🌒</span>
+        <div class="card-name" style="color:var(--gold)">Meora — Déesse des Reflets</div>
+        <div class="card-desc"><strong>Parents : Mathair (Nature) & Cïaaïn (Lunes) · Neutre Bon</strong><br>Née d'un rayon de lune bleue tombé sur un étang calme d'Éllirhom. Déesse de la vérité intérieure, de la mémoire voilée et de l'eau calme. Elle ne révèle jamais ce qu'on croit vouloir voir — seulement ce qu'on doit affronter. Ses autels sont dissimulés dans des lieux paisibles.<br><em>Symbole : une lune bleue dans un étang en forme d'œil.</em></div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🔥</span>
+        <div class="card-name" style="color:var(--gold)">Kitalgag — L'Ailé des Cavernes</div>
+        <div class="card-desc"><strong>Parents : Sealg (Bestial) & Oidhche (Lumière) · Chaotique Neutre</strong><br>Né de l'union violente entre la chasse et le crépuscule. Corps bestial d'écailles volcaniques, ailes de chauve-souris, crocs d'obsidienne. Il ne parle pas — il éprouve. Son culte pratique des combats rituels extrêmes dans les Cavernes de Kitalgag.<br><em>Dogme : « Seuls les corps brisés accueillent la puissance. »</em></div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🌫️</span>
+        <div class="card-name" style="color:var(--gold)">Spiaos — Le Souffle des Ancêtres</div>
+        <div class="card-desc"><strong>Parents : Seo (Temps) & Foblath (Émotions) · Neutre</strong><br>Dieu des souffles laissés par les vivants, des voix oubliées, de l'empreinte des morts sur le monde. Gardien du murmure : pensées non dites, émotions réprimées, souvenirs que le monde refuse d'oublier. Ses temples : de simples cercles de pierres où le vent chante.<br><em>Symbole : spirale de brume, masque sans yeux, galet soufflé.</em></div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🦢</span>
+        <div class="card-name" style="color:var(--gold)">Naluin — Le Grand Héron</div>
+        <div class="card-desc"><strong>Parents : Cuatan (Fondements) & Ciuin (Nature) · Neutre Bon</strong><br>Né d'une résonance mystique lorsque Morwen la Tatouée grava des runes de transition sur un héron solitaire. Esprit du passage entre états, des transitions douces, des rêves oubliés en route. Rare entre tous : il est physiquement présent sur Kaleysur sous la forme d'un héron blanc aux plumes nacrées, protégé par les Gardiens du Héron.<br><em>Symbole : deux vagues croisées en spirale, surmontées d'une plume flottante.</em></div>
+      </div>
+    </div>
+
+    <h2 id="dieu-unique">Le Dieu Unique — Avant les Trinités</h2>
+    <p>Avant les 27, avant les Trinités, il existait un Dieu Unique — créateur originel de Kaleysur. Son silence, déjà proverbial à l'époque d'Arzi Barmene, semblait absolu même face aux plus grandes catastrophes.</p>
+    <blockquote>« Le Dieu Unique est silencieux, distant comme toujours — unique en son absence, pourrait-on dire avec ironie. Je me surprends à murmurer une prière hésitante vers ce père céleste qui n'écoute jamais. » — Arzi Barmene, an 1700</blockquote>
+    <p>Certaines théories, basées sur l'existence de l'<a href="../musiyav/anneau-dieux.html">Île 14 de l'Anneau des Dieux</a> — scellée par 27 chaînes divines — suggèrent que les nouveaux dieux auraient <em>emprisonné</em> le Dieu Unique pour prendre sa place. Ces théories ne sont jamais confirmées… ni démenties.</p>
+
+    <h2 id="ambition">Ambition — Le Foreclaimer</h2>
+    <p>En l'an 287 EdT, un événement sans précédent secoua le panthéon : Ambition s'est hissé au rang divin en devenant le <em>Foreclaimer</em> — une divinité en dehors du système des Trinités, issue non d'un groupe de 27 Élus mais d'un être unique ayant forcé sa propre ascension. La portée de cet événement reste incertaine. Trouble-t-il l'équilibre des 9 Trinités ? Est-il un présage ou une menace ? Nul n'ose encore répondre.</p>
+    <blockquote>« Vingt-sept héros ont brisé les chaînes du monde. Moi, je n'avais besoin de personne. » — attribué à Ambition</blockquote>
+
+    <h2 id="lunes">Les Trois Lunes</h2>
+    <p>Avant l'Ascension des 27, Kaleysur n'avait qu'une seule lune — la Lune Noire, solitaire et froide, sous laquelle le Dieu Unique régnait. En l'an 0 EdT, les Élus créèrent deux nouvelles lunes, portant leur nombre à trois. Leurs cycles influencent directement la puissance des sorts et les grandes fêtes religieuses.</p>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-icon">🔵</span>
+        <div class="card-name" style="color:var(--gold)">Cïaaïn — La Lune Bleue</div>
+        <div class="card-desc">Cycle : 41 jours · ~8 pleines lunes par an. Gouverne la magie aberrante, les rêves et les frontières planaires. Sa pleine lune renforce les rituels d'Abjuration, Conjuration et Évocation.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">⚪</span>
+        <div class="card-name" style="color:var(--gold)">Gealshaï — La Lune Blanche</div>
+        <div class="card-desc">Cycle : 29 jours · ~11,5 pleines lunes par an. Standard de comptage du calendrier. Gouverne l'ordre, la vérité, la prêtrise. Sa pleine lune amplifie la Divination et l'Illusion.</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🔴</span>
+        <div class="card-name" style="color:var(--gold)">Sgarlaïd — La Lune Rouge</div>
+        <div class="card-desc">Cycle : 18 jours · ~18,5 pleines lunes par an. Gouverne la nécromancie, la rage et la lycanthropie maléfique. La nuit de pleine Sgarlaïd est redoutée — les magies sombres y atteignent leur puissance maximale.</div>
+      </div>
+    </div>
+
+  </main>
+</div>
+<footer><span>⚜ Kaleysur Wiki</span><span style="color: var(--text-muted)">Wiki de campagne D&D</span></footer>
+<script src="../js/wiki.js"></script>
+</body>
+</html>

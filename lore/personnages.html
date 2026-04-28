@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personnages — Kaleysur Wiki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<nav class="top-nav">
+  <a href="../index.html" class="nav-brand"><span class="nav-brand-icon">⚜</span><span class="nav-brand-text">Kaleysur</span></a>
+  <div class="nav-right">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="search-input" type="text" placeholder="Rechercher…" autocomplete="off">
+      <div class="search-results" id="search-results"></div>
+    </div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-section"><div class="sidebar-section-title">Navigation</div>
+    <a href="../index.html" class="sidebar-link"><span class="icon">🏠</span> Accueil</a>
+    <a href="../chronologie.html" class="sidebar-link"><span class="icon">📜</span> Chronologie</a>
+    <a href="../carte.html" class="sidebar-link"><span class="icon">🗺️</span> Carte du Monde</a>
+    <a href="../calendrier.html" class="sidebar-link"><span class="icon">📅</span> Calendrier</a>
+    <a href="../joueurs.html" class="sidebar-link"><span class="icon">🎲</span> Joueurs</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Astoryem</div>
+    <a href="../astoryem/astoryem.html" class="sidebar-link"><span class="icon">🌐</span> Astoryem</a>
+    <a href="../astoryem/feymundi.html" class="sidebar-link sidebar-sublink"><span class="icon">🏰</span> Feymundi</a>
+    <a href="../astoryem/waterflow.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Waterflow</a>
+    <a href="../astoryem/ville-tempete.html" class="sidebar-link sidebar-sublink"><span class="icon">⚡</span> Ville Tempête</a>
+    <a href="../astoryem/arcanumbra.html" class="sidebar-link sidebar-sublink"><span class="icon">⌛</span> Arcanumbra</a>
+    <a href="../astoryem/cite-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌑</span> Cité des Ombres</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Ayakan</div>
+    <a href="../ayakan/ayakan.html" class="sidebar-link"><span class="icon">🌐</span> Ayakan</a>
+    <div class="sidebar-region-label">Grand Plateau</div>
+    <a href="../ayakan/comhan-de-na.html" class="sidebar-link sidebar-sublink"><span class="icon">⚙️</span> Comhan De Na</a>
+    <a href="../ayakan/grand-plateau.html" class="sidebar-link sidebar-sublink"><span class="icon">⚒️</span> Grand Plateau</a>
+    <a href="../ayakan/armalak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Armalak</a>
+    <a href="../ayakan/fios.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔬</span> Fios</a>
+    <a href="../ayakan/indelair.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚗️</span> Indelair</a>
+    <a href="../ayakan/lukd-oigrid.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Lukd Oigrid</a>
+    <a href="../ayakan/lukd-naek.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🪡</span> Lukd Naek</a>
+    <a href="../ayakan/lukd-tagil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏗️</span> Lukd Tagil</a>
+    <a href="../ayakan/lukd-trenay.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐎</span> Lukd Trenay</a>
+    <a href="../ayakan/lukd-tuanak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Lukd Tuanak</a>
+    <a href="../ayakan/creidak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🕊️</span> Creidak</a>
+    <a href="../ayakan/curcodak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎪</span> Curcodak</a>
+    <div class="sidebar-region-label">Ouestvir</div>
+    <a href="../ayakan/ouestvir.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Ouestvir</a>
+    <a href="../ayakan/yokoki.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Yokoki</a>
+    <a href="../ayakan/laryok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Laryok</a>
+    <a href="../ayakan/yoklar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Yoklar</a>
+    <a href="../ayakan/kasvir.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Kasvir</a>
+    <a href="../ayakan/rusvar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Rusvar</a>
+    <a href="../ayakan/sordas.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔔</span> Sordas</a>
+    <a href="../ayakan/sunkur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Sunkur</a>
+    <a href="../ayakan/portlune.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Portlune</a>
+    <a href="../ayakan/kayadur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Kayadur</a>
+    <a href="../ayakan/zodory.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Zodory</a>
+    <a href="../ayakan/kolandur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Kolandur</a>
+    <a href="../ayakan/staurdur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Staurdur</a>
+    <div class="sidebar-region-label">Régions</div>
+        <a href="../ayakan/creve-glace.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Crève Glace</a>
+    <a href="../ayakan/varask.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Varask</a>
+    <a href="../ayakan/mornea.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Mornea</a>
+    <a href="../ayakan/thyrne.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">♨️</span> Thyrne</a>
+    <a href="../ayakan/selvend.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛒</span> Selvend</a>
+    <a href="../ayakan/frayakin.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Frayakin</a>
+    <a href="../ayakan/solcara.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌟</span> Solcara</a>
+    <a href="../ayakan/pyrael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔶</span> Pyraël</a>
+    <a href="../ayakan/leth.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Leth</a>
+    <a href="../ayakan/faran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Faran</a>
+    <a href="../ayakan/chaines-verre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎶</span> Chaînes de Verre</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Musiyav</div>
+    <a href="../musiyav/musiyav.html" class="sidebar-link"><span class="icon">🌐</span> Musiyav</a>
+    <div class="sidebar-region-label">Nord</div>
+    <a href="../musiyav/terres-gelees.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Terres Gelées</a>
+    <a href="../musiyav/munabenn.html" class="sidebar-link sidebar-sublink"><span class="icon">⛏️</span> Munabenn</a>
+    <a href="../musiyav/creastail.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚡</span> Creastail</a>
+    <a href="../musiyav/stasmoc.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Stasmoc</a>
+    <a href="../musiyav/clagrayn.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Clagrayn</a>
+    <a href="../musiyav/fedhidom.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌑</span> Fedhidom</a>
+    <a href="../musiyav/cricrosal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Cricrosal</a>
+    <a href="../musiyav/ellirhom.html" class="sidebar-link sidebar-sublink"><span class="icon">🍃</span> Éllirhom</a>
+    <div class="sidebar-region-label">Centre</div>
+    <a href="../musiyav/murblan.html" class="sidebar-link sidebar-sublink"><span class="icon">⚖️</span> Murblan</a>
+    <a href="../musiyav/bekai-keal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Bekai Keal</a>
+    <a href="../musiyav/thylkarok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎨</span> Thylkarok</a>
+    <a href="../musiyav/carroval.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🗿</span> Carroval</a>
+    <a href="../musiyav/caudherra.html" class="sidebar-link sidebar-sublink"><span class="icon">🐘</span> Caudherra</a>
+    <a href="../musiyav/saldromil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎵</span> Saldromil</a>
+    <a href="../musiyav/kandor-zei.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Kandor-Zeï</a>
+    <a href="../musiyav/mirsha-lu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐘</span> Mirsha Lû</a>
+    <a href="../musiyav/ukar-tal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📜</span> Ukar Tal</a>
+    <a href="../musiyav/brastelma.html" class="sidebar-link sidebar-sublink"><span class="icon">🌿</span> Brastelma</a>
+    <a href="../musiyav/xalatlal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐆</span> Xalatlal</a>
+    <a href="../musiyav/tochion.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Tochion</a>
+    <a href="../musiyav/yabalta.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Yabalta</a>
+    <a href="../musiyav/solgirne.html" class="sidebar-link sidebar-sublink"><span class="icon">🌾</span> Solgirne</a>
+    <a href="../musiyav/varnestal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Varnestal</a>
+    <a href="../musiyav/linvelar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌲</span> Linvelar</a>
+    <a href="../musiyav/eldmire.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐟</span> Eldmire</a>
+    <a href="../musiyav/cairondel.html" class="sidebar-link sidebar-sublink"><span class="icon">🗿</span> Cairondel</a>
+    <a href="../musiyav/gravantempe.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏔️</span> Gravantempe</a>
+    <a href="../musiyav/treufloran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Treufloran</a>
+    <a href="../musiyav/valtendre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Valtendre</a>
+    <div class="sidebar-region-label">Ouest</div>
+    <a href="../musiyav/valacorra.html" class="sidebar-link sidebar-sublink"><span class="icon">⚜️</span> Valacorra</a>
+    <a href="../musiyav/aunthrevin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Aunthrevin</a>
+    <a href="../musiyav/vendrolis.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Vendrolis</a>
+    <a href="../musiyav/darn-merath.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Darn Merath</a>
+    <a href="../musiyav/dusalain.html" class="sidebar-link sidebar-sublink"><span class="icon">🏜️</span> Dusalain</a>
+    <a href="../musiyav/sarathiil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Sarathiil</a>
+    <a href="../musiyav/akalima.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Akalima</a>
+    <a href="../musiyav/yndarev.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Yndarev</a>
+    <a href="../musiyav/sillu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Sillu</a>
+    <div class="sidebar-region-label">Sud</div>
+    <a href="../musiyav/xamaris.html" class="sidebar-link sidebar-sublink"><span class="icon">🚫</span> Xamaris</a>
+    <a href="../musiyav/xakaril.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Xakaril</a>
+    <a href="../musiyav/marolzhad.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚖️</span> Marolzhad</a>
+    <a href="../musiyav/dorvenkar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚒️</span> Dorvenkar</a>
+    <a href="../musiyav/naskarrem.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Naskarrem</a>
+    <a href="../musiyav/khaelbar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Khaëlbar</a>
+    <a href="../musiyav/tol-vekrah.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📖</span> Tol Vekrah</a>
+    <a href="../musiyav/krelsum.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🧱</span> Krelsum</a>
+    <a href="../musiyav/falstrein.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Falstrein</a>
+    <a href="../musiyav/terres-pieuses.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Terres Pieuses</a>
+    <a href="../musiyav/templum-triarii.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛪</span> Templum Triarii</a>
+    <a href="../musiyav/forge-vivante.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Forge Vivante</a>
+    <a href="../musiyav/isvarun.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌅</span> Isvarun</a>
+    <a href="../musiyav/callafhar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Callafhar</a>
+    <a href="../musiyav/auranthil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌲</span> Auranthil</a>
+    <a href="../musiyav/elvar-tyl.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌳</span> Elvarë Tyl</a>
+    <a href="../musiyav/lunemiral.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌙</span> Lunemiral</a>
+    <a href="../musiyav/miriathael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Mirithaël</a>
+    <a href="../musiyav/faelorrin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Faelorrin</a>
+    <div class="sidebar-region-label">Est</div>
+    <a href="../musiyav/terres-sauvages.html" class="sidebar-link sidebar-sublink"><span class="icon">🌋</span> Terres Sauvages</a>
+    <a href="../musiyav/kaelyth.html" class="sidebar-link sidebar-sublink"><span class="icon">⚔️</span> Viremarche</a>
+    <a href="../musiyav/briseneige.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Briseneige</a>
+    <div class="sidebar-region-label">Terres Isolées</div>
+    <a href="../musiyav/tinneas.html" class="sidebar-link sidebar-sublink"><span class="icon">🦴</span> Tinneas A'Bhàis</a>
+    <a href="../musiyav/shurakai.html" class="sidebar-link sidebar-sublink"><span class="icon">🌫️</span> Shurakai</a>
+    <a href="../musiyav/narkun.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Narkûn</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Régions Éloignées</div>
+    <a href="../musiyav/anneau-dieux.html" class="sidebar-link"><span class="icon">⚫</span> Anneau des Dieux</a>
+    <a href="../musiyav/archipel-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌙</span> Archipel des Ombres</a>
+    <a href="../musiyav/darnobscur.html" class="sidebar-link sidebar-sublink"><span class="icon">🩸</span> Darnobscur</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Personnages & Lore</div>
+    <a href="personnages.html" class="sidebar-link"><span class="icon">🧙</span> Personnages</a>
+    <a href="journal-arzi.html" class="sidebar-link sidebar-sublink"><span class="icon">📖</span> Journal d'Arzi</a>
+    <a href="organisations.html" class="sidebar-link"><span class="icon">⚔️</span> Organisations</a>
+    <a href="dieux.html" class="sidebar-link"><span class="icon">✨</span> Dieux & Trinités</a>
+  </div>
+</aside>
+
+<div class="page-wrapper">
+  <main class="main-content">
+    <nav class="breadcrumb">
+      <a href="../index.html">Accueil</a>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Personnages</span>
+    </nav>
+
+    <div class="page-header">
+      <div class="page-category">Lore · Personnages</div>
+      <h1 class="page-title">🧙 Personnages de Kaleysur</h1>
+      <p class="page-subtitle">Héros, archimages, rois, légendes et figures marquantes qui ont façonné le destin du monde.</p>
+    </div>
+
+    <!-- ARZI BARMENE -->
+    <div class="char-sheet" id="arzi-barmene">
+      <div class="char-header">
+        <div class="char-avatar">🐉</div>
+        <div>
+          <div class="char-name">Arzi Barmene</div>
+          <div class="char-title">Chroniqueuse Immortelle, Sang Draconique</div>
+          <div class="char-tags">
+            <span class="char-tag">Immortelle</span>
+            <span class="char-tag">Demi-dragon</span>
+            <span class="char-tag">Musiyav</span>
+          </div>
+        </div>
+      </div>
+      <div class="char-body">
+        <div class="char-stats">
+          <div class="char-stat"><span class="char-stat-label">Race</span><span class="char-stat-value">Humaine (sang draconique bleu)</span></div>
+          <div class="char-stat"><span class="char-stat-label">Statut</span><span class="char-stat-value">Immortelle</span></div>
+          <div class="char-stat"><span class="char-stat-label">Époque</span><span class="char-stat-value">1700 EdT +</span></div>
+          <div class="char-stat"><span class="char-stat-label">Lieu</span><span class="char-stat-value">Musiyav</span></div>
+          <div class="char-stat"><span class="char-stat-label">Pouvoir</span><span class="char-stat-value">Foudre draconique, ailes</span></div>
+        </div>
+        <p>Arzi Barmene est une chroniqueuse immortelle au sang draconique bleu — héritage d'un ancêtre dragon bleu. Mordue par un vampire dans sa jeunesse, la souillure vampirique fut consumée par sa puissance draconique, lui conférant l'immortalité sans lui ôter sa nature vivante.</p>
+        <p>Elle tient un journal depuis l'an 1700 EdT, consignant les événements du monde avec une plume à la fois poétique et mélancolique. Elle préfère embellir la réalité dans ses écrits pour pouvoir la supporter.</p>
+        <p>En 1720 EdT, elle fut témoin du retour d'Astoryem depuis les côtes de Musiyav. Elle déploya ses ailes draconiques pour secourir des naufragés lors des tsunamis provoqués par le retour du continent. Elle peut sentir dans l'air des présages et possède une intuition presque prophétique des événements à venir.</p>
+        <blockquote>« J'écris pour ne pas sombrer dans la folie qui imprègne ce monde ancien. Je choisis mes mots comme on rallume une bougie dans la nuit. »</blockquote>
+      </div>
+    </div>
+
+    <!-- MYRIEL TOPAZ -->
+    <div class="char-sheet" id="myriel-topaz">
+      <div class="char-header">
+        <div class="char-avatar">👑</div>
+        <div>
+          <div class="char-name">Myriel Topaz</div>
+          <div class="char-title">Reine d'Astoryem, Archfey Vivante, la Fleur des Âges</div>
+          <div class="char-tags">
+            <span class="char-tag">Archfey</span>
+            <span class="char-tag">Eladrin</span>
+            <span class="char-tag">Feymundi</span>
+          </div>
+        </div>
+      </div>
+      <div class="char-body">
+        <div class="char-stats">
+          <div class="char-stat"><span class="char-stat-label">Race</span><span class="char-stat-value">Eladrin / Archfey</span></div>
+          <div class="char-stat"><span class="char-stat-label">Rôle</span><span class="char-stat-value">Reine de Feymundi</span></div>
+          <div class="char-stat"><span class="char-stat-label">Famille</span><span class="char-stat-value">Maison Topaz</span></div>
+          <div class="char-stat"><span class="char-stat-label">Lien</span><span class="char-stat-value">Cookie (dragon psychique)</span></div>
+          <div class="char-stat"><span class="char-stat-label">Noms sacrés</span><span class="char-stat-value">La Fleur des Âges, la Voix du Premier Vent</span></div>
+        </div>
+        <p>Myriel Topaz est la souveraine politique et entité sacrée de <a href="../astoryem/feymundi.html">Feymundi</a>. Issue de la lignée sacrée au sang féérique, elle est l'une des deux Archfey encore présentes sur le plan matériel après le retour d'Astoryem. On murmure qu'elle <em>entend parfois les pensées de la cité</em>.</p>
+        <p>Elle gouverne le Conseil de la Couronne des Cinq Familles (Topaz, Saphire, D'Or, Rubis, Émeraude) avec une sagesse glacée mais juste. Les Eladrins l'honorent comme une incarnation vivante de la royauté féerique, et ses paroles sont parfois transcrites comme des prophéties.</p>
+        <p>Elle est liée à Cookie, un dragon psychique, qui est son compagnon et symbole de sa connexion aux forces mentales et féeriques du continent.</p>
+      </div>
+    </div>
+
+    <!-- SILITIAMA -->
+    <div class="char-sheet" id="silitiama">
+      <div class="char-header">
+        <div class="char-avatar">🔥</div>
+        <div>
+          <div class="char-name">Silitiama</div>
+          <div class="char-title">La Phoenix Radiant, Archfey Exilée</div>
+          <div class="char-tags">
+            <span class="char-tag">Archfey</span>
+            <span class="char-tag">Eladrin</span>
+            <span class="char-tag">Exilée sur Ayakan</span>
+          </div>
+        </div>
+      </div>
+      <div class="char-body">
+        <div class="char-stats">
+          <div class="char-stat"><span class="char-stat-label">Race</span><span class="char-stat-value">Eladrin / Archfey Phoenix</span></div>
+          <div class="char-stat"><span class="char-stat-label">Statut</span><span class="char-stat-value">Exilée sur Frayakin (Ayakan)</span></div>
+          <div class="char-stat"><span class="char-stat-label">Organisation</span><span class="char-stat-value">Fondatrice de l'Ordre du Soleil Radiant</span></div>
+          <div class="char-stat"><span class="char-stat-label">Renaissance</span><span class="char-stat-value">~ -264 EdT</span></div>
+        </div>
+        <p>Silitiama est l'une des deux Archfey encore présentes sur le plan matériel. Autrefois révérée à <a href="../astoryem/feymundi.html">Feymundi</a>, elle fut expulsée et est désormais perçue comme une figure de colère, de feu et de renouveau incontrôlé.</p>
+        <p>Elle est la fondatrice de l'Ordre du Soleil Radiant, organisation religieuse radicale prêchant la pureté radiante par l'éradication du chaos magique et des corruptions planaires. Depuis son exil sur <a href="../ayakan/ayakan.html">Ayakan</a>, elle est actives dans la région de Frayakin.</p>
+        <p>Certains prêtres lui vouent encore des cultes secrets, en marge des enseignements de la cour de Feymundi.</p>
+      </div>
+    </div>
+
+    <!-- ARYNN SYLFIR -->
+    <div class="char-sheet" id="arynn-sylfir">
+      <div class="char-header">
+        <div class="char-avatar">🏹</div>
+        <div>
+          <div class="char-name">Arynn Sylfir</div>
+          <div class="char-title">La Flèche du Nord, Chasseur de Liches</div>
+          <div class="char-tags">
+            <span class="char-tag">Eladrin hivernal</span>
+            <span class="char-tag">Astoryem</span>
+            <span class="char-tag">Fondateur</span>
+          </div>
+        </div>
+      </div>
+      <div class="char-body">
+        <div class="char-stats">
+          <div class="char-stat"><span class="char-stat-label">Race</span><span class="char-stat-value">Eladrin hivernal</span></div>
+          <div class="char-stat"><span class="char-stat-label">Spécialité</span><span class="char-stat-value">Archer, chasseur de morts-vivants</span></div>
+          <div class="char-stat"><span class="char-stat-label">Héritage</span><span class="char-stat-value">L'Arc du Nord</span></div>
+        </div>
+        <p>Archer Eladrin de la saison hivernale, Arynn Sylfir fut l'un des héros légendaires d'Astoryem, spécialisé dans la chasse aux liches et aux morts-vivants. Il est le fondateur et modèle vénéré de l'organisation <a href="organisations.html#arc-du-nord">L'Arc du Nord</a>.</p>
+        <p>Les membres de l'Arc du Nord lui vouent un véritable culte, et certaines de leurs flèches sont forgées dans des fragments d'armes psychiques récupérées lors de la guerre contre Udasa — en hommage à sa mémoire.</p>
+      </div>
+    </div>
+
+    <!-- MORWEN -->
+    <div class="char-sheet" id="morwen">
+      <div class="char-header">
+        <div class="char-avatar">📖</div>
+        <div>
+          <div class="char-name">Morwen la Tatouée</div>
+          <div class="char-title">Scribe Runique, Héroïne d'Astoryem</div>
+          <div class="char-tags">
+            <span class="char-tag">Scribe</span>
+            <span class="char-tag">Runiste</span>
+            <span class="char-tag">Astoryem</span>
+          </div>
+        </div>
+      </div>
+      <div class="char-body">
+        <div class="char-stats">
+          <div class="char-stat"><span class="char-stat-label">Spécialité</span><span class="char-stat-value">Magie runique</span></div>
+          <div class="char-stat"><span class="char-stat-label">Statut</span><span class="char-stat-value">Liée à de sombres secrets</span></div>
+        </div>
+        <p>Scribe runique et héroïne d'Astoryem, Morwen la Tatouée est liée à de sombres secrets du passé. Ses tatouages runiques ne sont pas simplement décoratifs — ils sont des sceaux, des contrats vivants gravés dans sa chair.</p>
+        <blockquote>« La beauté de Feymundi est telle qu'elle vous coupe le souffle. Mais ici, c'est le silence entre deux mots qui peut vous tuer. »</blockquote>
+      </div>
+    </div>
+
+    <!-- RUPERT -->
+    <div class="char-sheet" id="rupert">
+      <div class="char-header">
+        <div class="char-avatar">🐉</div>
+        <div>
+          <div class="char-name">Rupert — Le Fou à Plumes</div>
+          <div class="char-title">Dragon d'Argent Défunt, Protecteur du Peuple</div>
+          <div class="char-tags">
+            <span class="char-tag">Dragon d'argent</span>
+            <span class="char-tag">Métamorphe</span>
+            <span class="char-tag">Défunt</span>
+          </div>
+        </div>
+      </div>
+      <div class="char-body">
+        <div class="char-stats">
+          <div class="char-stat"><span class="char-stat-label">Race</span><span class="char-stat-value">Dragon d'argent métamorphe</span></div>
+          <div class="char-stat"><span class="char-stat-label">Statut</span><span class="char-stat-value">Défunt (tué par Elder Brain)</span></div>
+          <div class="char-stat"><span class="char-stat-label">Mémorial</span><span class="char-stat-value">Le Repos d'Argent (Arcanumbra)</span></div>
+        </div>
+        <p>Rupert était un dragon d'argent métamorphe qui avait choisi de vivre parmi les mortels, dissimulé dans une forme excentrique et bienveillante — le « Fou à Plumes ». À la fois érudit et protecteur, il protégea des populations entières durant les cataclysmes post-sceau.</p>
+        <p>Il périt face à une colonie de mindflayers dirigée par un Elder Brain logé dans le corps d'Amps, un dragon de bronze qui était son ami — un destin encore plus funèbre.</p>
+        <p>Sa statue, Le Repos d'Argent, se dresse dans le Quartier Spiralois d'<a href="../astoryem/arcanumbra.html">Arcanumbra</a>, bénite par les Sœurs du Temps dans une boucle calme pour préserver à jamais sa mémoire.</p>
+        <blockquote>« Il riait dans les flammes et chuchotait aux dragons. Nous avons perdu deux merveilles ce jour-là. » — Plaque du Repos d'Argent</blockquote>
+      </div>
+    </div>
+
+    <!-- THOKK POK -->
+    <div class="char-sheet" id="thokk-pok">
+      <div class="char-header">
+        <div class="char-avatar">⚔️</div>
+        <div>
+          <div class="char-name">Thokk Pok</div>
+          <div class="char-title">L'Assoiffé, Mi-orc Légendaire</div>
+          <div class="char-tags">
+            <span class="char-tag">Mi-orc</span>
+            <span class="char-tag">Guerrier</span>
+            <span class="char-tag">Figé dans la pierre</span>
+          </div>
+        </div>
+      </div>
+      <div class="char-body">
+        <div class="char-stats">
+          <div class="char-stat"><span class="char-stat-label">Race</span><span class="char-stat-value">Mi-orc</span></div>
+          <div class="char-stat"><span class="char-stat-label">Statut</span><span class="char-stat-value">Figé dans la pierre</span></div>
+          <div class="char-stat"><span class="char-stat-label">Arme</span><span class="char-stat-value">Hache maudite (assoiffée de sang)</span></div>
+          <div class="char-stat"><span class="char-stat-label">Héritage</span><span class="char-stat-value">La Hache de Sang</span></div>
+        </div>
+        <p>Mi-orc légendaire, Thokk Pok était porteur d'une hache maudite qui exigeait le sang pour survivre — et finalement, le consumait lui-même. Il est désormais figé dans la pierre, mais sa légende perdure.</p>
+        <p>La milice <a href="organisations.html#hache-de-sang">La Hache de Sang</a> lui rend hommage : chaque membre arbore une arme peinte de rouge en mémoire de leur héros fondateur et de son arme maudite.</p>
+      </div>
+    </div>
+
+    <!-- UDASA -->
+    <div class="char-sheet" id="udasa">
+      <div class="char-header">
+        <div class="char-avatar">🌑</div>
+        <div>
+          <div class="char-name">Udasa</div>
+          <div class="char-title">Dragon d'Ombre Déchu, Ancien Souverain des Ombres</div>
+          <div class="char-tags">
+            <span class="char-tag">Dragon d'ombre</span>
+            <span class="char-tag">Shadowfell</span>
+            <span class="char-tag">Ennemi</span>
+          </div>
+        </div>
+      </div>
+      <div class="char-body">
+        <div class="char-stats">
+          <div class="char-stat"><span class="char-stat-label">Nature</span><span class="char-stat-value">Mi-dragon, mi-ombre</span></div>
+          <div class="char-stat"><span class="char-stat-label">Envoyé par</span><span class="char-stat-value">Seigneurs du Shadowfell</span></div>
+          <div class="char-stat"><span class="char-stat-label">Domaine</span><span class="char-stat-value">Cité des Ombres (nord d'Astoryem)</span></div>
+          <div class="char-stat"><span class="char-stat-label">Statut</span><span class="char-stat-value">Vaincu mais possiblement pas mort</span></div>
+        </div>
+        <p>Udasa fut envoyé par les Seigneurs du Shadowfell pour ébranler l'équilibre de Kaleysur. Il fonda un royaume souterrain construit sur la peur, la domination et la promesse d'une immortalité froide — la <a href="../astoryem/cite-ombres.html">Cité des Ombres</a>.</p>
+        <p>Sous son règne, la magie solaire fut bannie, la musique rendue illégale, et la pensée individuelle punie par la fusion mentale. Ses partisans — humains, eladrins renégats et créatures d'ombre — bâtirent une cité spiralée faite d'obsidienne, d'os et de souvenirs.</p>
+        <p>Vaincu par les Héros d'Astoryem, on murmure qu'un fragment d'Udasa lui-même sommeille dans la crypte inférieure de la Cité des Ombres, prêt à renaître par un hôte…</p>
+      </div>
+    </div>
+
+    <!-- ELLEAR BELKAM -->
+    <div class="char-sheet" id="ellear-belkam">
+      <div class="char-header">
+        <div class="char-avatar">🔮</div>
+        <div>
+          <div class="char-name">Ellear Belkam</div>
+          <div class="char-title">L'Archimage du Scellement, Protecteur de Kaleysur</div>
+          <div class="char-tags">
+            <span class="char-tag">Archimage</span>
+            <span class="char-tag">Défunt</span>
+            <span class="char-tag">Légendaire</span>
+          </div>
+        </div>
+      </div>
+      <div class="char-body">
+        <div class="char-stats">
+          <div class="char-stat"><span class="char-stat-label">Spécialité</span><span class="char-stat-value">Magie dimensionnelle</span></div>
+          <div class="char-stat"><span class="char-stat-label">Grand acte</span><span class="char-stat-value">Scellement d'Astoryem (-1280 EdT)</span></div>
+          <div class="char-stat"><span class="char-stat-label">Mort</span><span class="char-stat-value">-280 EdT (brisure du sceau)</span></div>
+        </div>
+        <p>Ellear Belkam est le grand archimage qui, face à la guerre dévastatrice entre le Feywild et le Shadowfell, prit la décision de sceller le continent d'Astoryem dans une poche dimensionnelle autour de l'an -1280 EdT — sacrifiant le continent pour sauver le reste de Kaleysur.</p>
+        <p>Sa vie était intrinsèquement liée à son grand sortilège : lorsqu'en -280 EdT le sceau fut brisé et qu'Astoryem réapparut, Belkam tomba raide mort à l'instant précis du retour, où qu'il fût.</p>
+        <blockquote>« Belkam était peut-être un héros pour certains, un fou pour d'autres, mais il était surtout un protecteur invisible. » — Arzi Barmene, Journal, an 1720</blockquote>
+      </div>
+    </div>
+
+    <!-- YELNA FARONDIR -->
+    <div class="char-sheet" id="yelna-farondir">
+      <div class="char-header">
+        <div class="char-avatar">🔮</div>
+        <div>
+          <div class="char-name">Yelna Farondir</div>
+          <div class="char-title">Émissaire des Gnomes de Farondir</div>
+          <div class="char-tags">
+            <span class="char-tag">Gnome (illusion)</span>
+            <span class="char-tag">Résistance</span>
+            <span class="char-tag">Trans-continental</span>
+          </div>
+        </div>
+      </div>
+      <div class="char-body">
+        <div class="char-stats">
+          <div class="char-stat"><span class="char-stat-label">Nature</span><span class="char-stat-value">Créature magique sous illusion gnome</span></div>
+          <div class="char-stat"><span class="char-stat-label">Rôle</span><span class="char-stat-value">Marchande, espionne, protectrice des Élus</span></div>
+          <div class="char-stat"><span class="char-stat-label">Alliée de</span><span class="char-stat-value"><a href="#arzi-barmene">Arzi Barmene</a></span></div>
+        </div>
+        <p>Marchande itinérante en apparence, Yelna Farondir est l'une des émissaires les plus actives des <a href="organisations.html#gnomes-farondir">Gnomes de Farondir</a>. Rencontrée par Arzi Barmene en 1825 dans les landes arides de l'est de Musiyav, elle lui remit un médaillon de protection mentale et les premières listes de naissances suspectes pouvant correspondre aux Élus prophétisés.</p>
+        <p>Elle utilise un cône de silence magique pour ses conversations sensibles et peut faire apparaître ou disparaître sa boutique à volonté. Son sourire chaleureux et ses yeux pétillants contrastent avec la précision militaire de ses opérations de renseignement.</p>
+        <blockquote>« Trouve-les, Arzi. Nous ferons en sorte qu'aucun flagelleur ne sache ce que tu protèges. »</blockquote>
+      </div>
+    </div>
+
+    <!-- SIR EDWYN -->
+    <div class="char-sheet" id="sir-edwyn">
+      <div class="char-header">
+        <div class="char-avatar">⚜️</div>
+        <div>
+          <div class="char-name">Sir Edwyn</div>
+          <div class="char-title">Dernier Commandant des Chevaliers du Lys</div>
+          <div class="char-tags">
+            <span class="char-tag">Chevalier</span>
+            <span class="char-tag">Défunt</span>
+            <span class="char-tag">Kaelyth · Musiyav</span>
+          </div>
+        </div>
+      </div>
+      <div class="char-body">
+        <div class="char-stats">
+          <div class="char-stat"><span class="char-stat-label">Rang</span><span class="char-stat-value">Commandant des Chevaliers du Lys</span></div>
+          <div class="char-stat"><span class="char-stat-label">Mort</span><span class="char-stat-value">An 1820 — Souterrains de Gol-Monra</span></div>
+          <div class="char-stat"><span class="char-stat-label">Caractéristique</span><span class="char-stat-value">Visage barré d'une balafre</span></div>
+        </div>
+        <p>Vétéran balafré rencontré par Arzi Barmene dans la crypte de Kaelyth en 1818, Sir Edwyn était l'un des derniers représentants des <a href="organisations.html#chevaliers-lys">Chevaliers du Lys</a>. Malgré la chute de leurs forteresses, lui et ses compagnons continuaient la résistance clandestine — guidant des fugitifs, sabotant des convois illithids.</p>
+        <p>Il périt héroïquement en 1820 dans les souterrains de Gol-Monra, formant avec ses camarades un mur de chair et d'acier pour couvrir la fuite d'esclaves libérés. Ses derniers mots entendus furent le cri : <em>« Pour le Lys ! Pour Kaleysur ! »</em></p>
+      </div>
+    </div>
+
+    <!-- SOEURS DU TEMPS -->
+    <div class="char-sheet" id="soeurs-du-temps">
+      <div class="char-header">
+        <div class="char-avatar">⏳</div>
+        <div>
+          <div class="char-name">Les Sœurs du Temps</div>
+          <div class="char-title">Gardiennes des Flux Temporels — Arcanumbra</div>
+          <div class="char-tags">
+            <span class="char-tag">Trio mythique</span>
+            <span class="char-tag">Arcanumbra</span>
+            <span class="char-tag">Neutres</span>
+          </div>
+        </div>
+      </div>
+      <div class="char-body">
+        <div class="char-stats">
+          <div class="char-stat"><span class="char-stat-label">Membres</span><span class="char-stat-value">Jeanne, Margueritte, Charlotte</span></div>
+          <div class="char-stat"><span class="char-stat-label">Siège</span><span class="char-stat-value">Arcanumbra</span></div>
+          <div class="char-stat"><span class="char-stat-label">Alignement</span><span class="char-stat-value">Neutres, respectées par tous</span></div>
+        </div>
+        <p>Les Sœurs du Temps sont trois figures mystiques parmi les plus puissantes du monde. Elles résident dans les trois tours cristallines d'<a href="../astoryem/arcanumbra.html">Arcanumbra</a> — la bleue, la blanche et la noire.</p>
+        <ul>
+          <li>Jeanne la Bleue — Maîtresse du futur, gardienne des destinées à venir.</li>
+          <li>Margueritte la Blanche — Gardienne du présent, témoin de l'instant.</li>
+          <li>Charlotte la Rouge — Mémoire du passé, archiviste des âges révolus.</li>
+        </ul>
+        <p>Elles ont façonné Arcanumbra en un lieu hors du rythme ordinaire du temps. Leur influence dépasse le continent, mais elles n'interviennent que rarement dans les affaires du monde — sauf quand l'équilibre temporel lui-même est menacé. Elles aidèrent les Héros d'Astoryem à briser le sceau de Belkam en -280 EdT.</p>
+      </div>
+    </div>
+
+    <!-- LES 27 ÉLUS -->
+    <div class="char-sheet" id="vingt-sept-elus" style="border-color: var(--accent-gold)">
+      <div class="char-header">
+        <div class="char-avatar">✨</div>
+        <div>
+          <div class="char-name">Les 27 Élus</div>
+          <div class="char-title">Libérateurs de Kaleysur — Prophétisés pour vaincre les Illithids</div>
+          <div class="char-tags">
+            <span class="char-tag">Prophétie</span>
+            <span class="char-tag">Légendaire</span>
+            <span class="char-tag">Divinisés en An 2000</span>
+          </div>
+        </div>
+      </div>
+      <div class="char-body">
+        <div class="char-stats">
+          <div class="char-stat"><span class="char-stat-label">Naissance</span><span class="char-stat-value">An 1957 — 3 du 6ème, Zénith</span></div>
+          <div class="char-stat"><span class="char-stat-label">Prophétie trouvée</span><span class="char-stat-value">An 1825 — Mont Miradal</span></div>
+          <div class="char-stat"><span class="char-stat-label">Rassemblement</span><span class="char-stat-value">An 1980 — Île Marie, Astoryem</span></div>
+          <div class="char-stat"><span class="char-stat-label">Victoire</span><span class="char-stat-value">An 1995 — Murmure-Profond</span></div>
+          <div class="char-stat"><span class="char-stat-label">Apothéose</span><span class="char-stat-value">An 2000 — Plaine Sacrée</span></div>
+          <div class="char-stat"><span class="char-stat-label">Tutrice secrète</span><span class="char-stat-value"><a href="#arzi-barmene">Arzi Barmene</a></span></div>
+        </div>
+        <p>Prophétisés dans un manuscrit ancien découvert par Arzi Barmene en 1825, les 27 Élus naquirent tous le même jour — le 3 du 6ème mois de l'an 1957, lors du Zénith solaire. Élevés séparément dans des conditions très différentes (camps orcs, monastères, fermes, cercles druidiques), ils portaient chacun une particularité magique qui les distinguait des autres mortels.</p>
+        <p>Réunis pour la première fois par Arzi Barmene en 1980 sur l'Île Marie, ils menèrent la Reconquête d'Astoryem puis, après quinze années de campagne, écrasèrent le dernier bastion illithid à Murmure-Profond en 1995. En l'An 2000, ils acceptèrent de transcender leur mortalité et furent divinisés lors d'un rituel conjoint orchestré par les trois Archfées. Les 27 se fondirent en neuf Trinités, devenant les dieux fondateurs de l'Ère des Trinités.</p>
+      </div>
+    </div>
+
+    <!-- TRINITÉS (détail) -->
+    <h2 id="trinites-detail" style="margin-top:2rem">Les 9 Trinités — Membres &amp; Domaines</h2>
+
+    <div class="card" style="margin-bottom:1.5rem">
+      <p style="margin:0">Lors de l'Éveil des Trinités en l'An 2000, les 27 Élus se regroupèrent spontanément en neuf Trinités selon leurs affinités. Chaque Trinité possède un domaine divin et réside depuis dans les plans célestes, guidant Kaleysur depuis les cieux. Voir aussi <a href="dieux.html">Dieux &amp; Trinités</a> pour les détails cultuels.</p>
+    </div>
+
+    <div class="char-sheet" id="trinite-lumiere">
+      <div class="char-header">
+        <div class="char-avatar">🌅</div>
+        <div>
+          <div class="char-name">Trinité de la Lumière</div>
+          <div class="char-title">Cycle Solaire — Aube, Midi, Crépuscule</div>
+          <div class="char-tags"><span class="char-tag">Lumière</span><span class="char-tag">Soleil</span><span class="char-tag">Cycle</span></div>
+        </div>
+      </div>
+      <div class="char-body">
+        <div class="char-stats">
+          <div class="char-stat"><span class="char-stat-label">Ciarahd</span><span class="char-stat-value">Doux et mystérieux — l'Aube</span></div>
+          <div class="char-stat"><span class="char-stat-label">Latha</span><span class="char-stat-value">Éclatant, guerrière — le Midi</span></div>
+          <div class="char-stat"><span class="char-stat-label">Oidhche</span><span class="char-stat-value">Paisible, archer — le Crépuscule</span></div>
+        </div>
+        <p>À l'apothéose, ces trois se regroupèrent en une silhouette majestueuse portant trois visages distincts — Ciarahd l'aube mystérieuse, Latha le midi éclatant, Oidhche le crépuscule serein. Une couronne solaire flottait au-dessus de leur tête. Ils incarnent le cycle solaire complet et veillent sur la lumière naturelle de Kaleysur.</p>
+      </div>
+    </div>
+
+    <div class="char-sheet" id="trinite-bestial">
+      <div class="char-header">
+        <div class="char-avatar">🐺</div>
+        <div>
+          <div class="char-name">Trinité du Bestial</div>
+          <div class="char-title">Règne Animal — Chasse, Croissance, Vol</div>
+          <div class="char-tags"><span class="char-tag">Nature Sauvage</span><span class="char-tag">Animaux</span><span class="char-tag">Instinct</span></div>
+        </div>
+      </div>
+      <div class="char-body">
+        <div class="char-stats">
+          <div class="char-stat"><span class="char-stat-label">Sealg</span><span class="char-stat-value">Pisteur — fourrure fauve, crocs</span></div>
+          <div class="char-stat"><span class="char-stat-label">Gintinn</span><span class="char-stat-value">Ami des troupeaux — sabots luisants</span></div>
+          <div class="char-stat"><span class="char-stat-label">Dachaigheil</span><span class="char-stat-value">Ailé — ailes et museau d'oiseau</span></div>
+        </div>
+        <p>Lors de l'apothéose, leurs silhouettes mutèrent de forme animale en forme animale avant de se stabiliser dans leur aspect divin définitif. La Trinité du Bestial gouverne le monde sauvage, la chasse, la faune et l'instinct primaire. Sealg porta à sa ceinture la plume bleue d'Arzi jusqu'à sa divinisation.</p>
+      </div>
+    </div>
+
+    <div class="char-sheet" id="trinite-fondements">
+      <div class="char-header">
+        <div class="char-avatar">🌊</div>
+        <div>
+          <div class="char-name">Trinité des Fondements</div>
+          <div class="char-title">Terre, Océan, Ciel — Les Forces Primordiales</div>
+          <div class="char-tags"><span class="char-tag">Terre</span><span class="char-tag">Mer</span><span class="char-tag">Ciel</span></div>
+        </div>
+      </div>
+      <div class="char-body">
+        <div class="char-stats">
+          <div class="char-stat"><span class="char-stat-label">Talahmn</span><span class="char-stat-value">La terre — tremblement, sol</span></div>
+          <div class="char-stat"><span class="char-stat-label">Cuatan</span><span class="char-stat-value">L'océan — marées, abysses</span></div>
+          <div class="char-stat"><span class="char-stat-label">Néamnh</span><span class="char-stat-value">Le ciel — vents, atmosphère</span></div>
+        </div>
+        <p>Leur fusion dessina dans la terre l'arcane des Fondements. Ces trois Élus incarnent les forces géologiques et atmosphériques qui structurent le monde physique — les séismes, les marées, les tempêtes climatiques. Leur regard scrute de la profondeur du sol jusqu'à la haute atmosphère.</p>
+      </div>
+    </div>
+
+    <div class="char-sheet" id="trinite-emotions">
+      <div class="char-header">
+        <div class="char-avatar">💫</div>
+        <div>
+          <div class="char-name">Trinité des Émotions</div>
+          <div class="char-title">Joie, Sérénité, Deuil — L'Âme Mortelle</div>
+          <div class="char-tags"><span class="char-tag">Émotions</span><span class="char-tag">Âme</span><span class="char-tag">Deuil</span></div>
+        </div>
+      </div>
+      <div class="char-body">
+        <div class="char-stats">
+          <div class="char-stat"><span class="char-stat-label">Falahm</span><span class="char-stat-value">Barde tatouée — la joie</span></div>
+          <div class="char-stat"><span class="char-stat-label">Foblath</span><span class="char-stat-value">Convoyeur de réfugiés — la sérénité</span></div>
+          <div class="char-stat"><span class="char-stat-label">Miforthan</span><span class="char-stat-value">L'éveilleur de colère — le deuil</span></div>
+        </div>
+        <p>Un tourbillon d'auras rose, grise et noire les enveloppa lors de l'apothéose — rires, soupirs et cris se mêlant dans une unique harmonie. La Trinité des Émotions régit la vie intérieure des mortels : leurs joies, leur paix, leurs deuils. Les prêtres de cette Trinité sont souvent thérapeutes et consolateurs.</p>
+      </div>
+    </div>
+
+    <div class="char-sheet" id="trinite-nature">
+      <div class="char-header">
+        <div class="char-avatar">🌿</div>
+        <div>
+          <div class="char-name">Trinité de la Nature</div>
+          <div class="char-title">Printemps, Calme Céleste, Orage — Les Saisons et Éléments</div>
+          <div class="char-tags"><span class="char-tag">Nature</span><span class="char-tag">Saisons</span><span class="char-tag">Éléments</span></div>
+        </div>
+      </div>
+      <div class="char-body">
+        <div class="char-stats">
+          <div class="char-stat"><span class="char-stat-label">Mathair</span><span class="char-stat-value">Pluies bienfaisantes — la croissance</span></div>
+          <div class="char-stat"><span class="char-stat-label">Ciuin</span><span class="char-stat-value">Ciel serein — la torpeur estivale</span></div>
+          <div class="char-stat"><span class="char-stat-label">Gorta</span><span class="char-stat-value">Tonnerre grondant — la colère climatique</span></div>
+        </div>
+        <p>Pluie fine, bourrasques, soleil doux, tonnerre grondant — leurs quatre éléments se manifestèrent simultanément lors de l'apothéose. La Trinité de la Nature préside aux cycles des saisons, aux récoltes, aux tempêtes et à la croissance du vivant. Mathair fit tomber des pluies sur des champs asséchés lors de la Reconquête, ralliant des paysans entiers à la cause.</p>
+      </div>
+    </div>
+
+    <div class="char-sheet" id="trinite-macons">
+      <div class="char-header">
+        <div class="char-avatar">🏗️</div>
+        <div>
+          <div class="char-name">Trinité des Maçons</div>
+          <div class="char-title">Création, Transformation, Fin — Architectes du Destin</div>
+          <div class="char-tags"><span class="char-tag">Création</span><span class="char-tag">Architecture</span><span class="char-tag">Destin</span></div>
+        </div>
+      </div>
+      <div class="char-body">
+        <div class="char-stats">
+          <div class="char-stat"><span class="char-stat-label">Breith</span><span class="char-stat-value">L'océan — la naissance, les commencements</span></div>
+          <div class="char-stat"><span class="char-stat-label">Beatha</span><span class="char-stat-value">La pierre — la vie, la solidité</span></div>
+          <div class="char-stat"><span class="char-stat-label">Crihok</span><span class="char-stat-value">La fin — la mort, la transformation</span></div>
+        </div>
+        <p>Des glyphes représentant l'océan, la pierre et la fin tournoyèrent autour d'eux lors de l'apothéose. Architectes du destin, cette Trinité préside aux grandes transitions de l'existence — naissances, transformations, trépas. Beatha pleurait de soulagement lors du grand rassemblement de 1980, comprenant enfin le poids qu'elle portait depuis toujours.</p>
+      </div>
+    </div>
+
+    <div class="char-sheet" id="trinite-temps">
+      <div class="char-header">
+        <div class="char-avatar">⏳</div>
+        <div>
+          <div class="char-name">Trinité du Temps</div>
+          <div class="char-title">Passé, Présent, Futur — Maîtres du Flux Temporel</div>
+          <div class="char-tags"><span class="char-tag">Temps</span><span class="char-tag">Prophétie</span><span class="char-tag">Destin</span></div>
+        </div>
+      </div>
+      <div class="char-body">
+        <div class="char-stats">
+          <div class="char-stat"><span class="char-stat-label">Ritehakd</span><span class="char-stat-value">Le futur — vision, stratégie</span></div>
+          <div class="char-stat"><span class="char-stat-label">Seakad</span><span class="char-stat-value">Le présent — logistique, ancrage</span></div>
+          <div class="char-stat"><span class="char-stat-label">Seo</span><span class="char-stat-value">Le passé — mémoire, archives</span></div>
+        </div>
+        <p>Leurs corps diffusaient simultanément passé, présent et futur lors de l'apothéose, illuminant la trame du monde. Ritehakd coordonna la stratégie de la Reconquête d'Astoryem et porta le coup de grâce final lors de l'assaut de Murmure-Profond — une lance de lumière qui détruisit le cœur du dispositif magique illithid.</p>
+      </div>
+    </div>
+
+    <div class="char-sheet" id="trinite-conflits">
+      <div class="char-header">
+        <div class="char-avatar">⚔️</div>
+        <div>
+          <div class="char-name">Trinité des Conflits</div>
+          <div class="char-title">Paix, Guerre, Conquête — L'Équilibre Instable</div>
+          <div class="char-tags"><span class="char-tag">Guerre</span><span class="char-tag">Paix</span><span class="char-tag">Stratégie</span></div>
+        </div>
+      </div>
+      <div class="char-body">
+        <div class="char-stats">
+          <div class="char-stat"><span class="char-stat-label">Aonta</span><span class="char-stat-value">Le pacificateur — diplomatie, trêve</span></div>
+          <div class="char-stat"><span class="char-stat-label">Cogadh</span><span class="char-stat-value">Le bretteur — guerre, force</span></div>
+          <div class="char-stat"><span class="char-stat-label">Ionnsaig</span><span class="char-stat-value">Le conquérant — expansion, assaut</span></div>
+        </div>
+        <p>Leur fusion lors de l'apothéose fut brutale, presque guerrière — l'arcane des Conflits s'inscrivit en lettres rouges dans l'air. Trinité paradoxale réunissant paix, guerre et conquête, ils symbolisent que tout conflit contient en lui-même sa résolution. Aonta fut le premier à briser la glace lors du rassemblement de 1980, accueillant ses futurs compagnons avec des mots fraternels. Cogadh avait dégainé son épée et la pointait vers l'horizon en jurant de teindre l'acier du sang des oppresseurs.</p>
+      </div>
+    </div>
+
+    <div class="char-sheet" id="trinite-lunes">
+      <div class="char-header">
+        <div class="char-avatar">🌙</div>
+        <div>
+          <div class="char-name">Trinité des Lunes</div>
+          <div class="char-title">Protection, Vision, Esprit — Les Trois Lunes de Kaleysur</div>
+          <div class="char-tags"><span class="char-tag">Lunes</span><span class="char-tag">Magie</span><span class="char-tag">Prophétie</span></div>
+        </div>
+      </div>
+      <div class="char-body">
+        <div class="char-stats">
+          <div class="char-stat"><span class="char-stat-label">Cïaain</span><span class="char-stat-value">Lune bleue — Protection, magie défensive</span></div>
+          <div class="char-stat"><span class="char-stat-label">Gealshaï</span><span class="char-stat-value">Lune blanche — Vision, vérité, clarté</span></div>
+          <div class="char-stat"><span class="char-stat-label">Sgarlaïd</span><span class="char-stat-value">Lune rouge — Esprit, manipulation, interdit</span></div>
+        </div>
+        <p>Dernière Trinité à émerger, leur apothéose fut la plus spectaculaire : une lumière bleue, blanche et rouge tournoie autour d'elles, puis elles s'arrachent de la terre, s'élèvent vers le ciel et reconstituent les fragments de l'ancienne Lune Noire brisée — forgeant les trois lunes actuelles de Kaleysur. Elles devinrent littéralement les astres qui éclairent le monde, symboles de la protection, de la vision et du pouvoir de l'esprit. Leur bannière — trois lunes entrelacées entourées de 24 étoiles — fut adoptée comme étendard de la Reconquête après une vision prophétique partagée des trois Élus lors de leur première rencontre.</p>
+        <blockquote>Ainsi s'acheva la nuit sans lune. Kaleysur regarda pour la première fois un ciel à trois éclats. — Journal d'Arzi Barmene, An 2000</blockquote>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer>
+  <span>⚜ Kaleysur Wiki</span>
+  <span style="color: var(--text-muted)">Wiki de campagne D&D</span>
+</footer>
+<script src="../js/wiki.js"></script>
+</body>
+</html>
