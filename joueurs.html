@@ -1216,14 +1216,7 @@ function C() { const s = activeSlot(); return s ? s.character : {}; }
 function INV() { const s = activeSlot(); return s ? s.inventory : { items:[], currency:{pp:0,gp:0,ep:0,sp:0,cp:0} }; }
 function NOTES() { const s = activeSlot(); return s ? (s.notes||'') : ''; }
 
-/* ── Firestore ───────────────────────────────────────────── */
-async function loadData(uid) {
-  const snap = await withTimeout(getDoc(doc(db, 'users', uid)), 10000);
-  return snap.exists() ? snap.data() : null;
-}
-async function saveData(uid, data) {
-  await withTimeout(setDoc(doc(db, 'users', uid), data), 10000);
-}
+/* ── Firestore : voir fonctions REST loadData/saveData plus haut ── */
 
 /* ── Autosave ────────────────────────────────────────────── */
 function triggerSave() {
