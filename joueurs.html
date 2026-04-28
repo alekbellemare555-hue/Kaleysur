@@ -1030,7 +1030,6 @@
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updatePassword } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-import { initializeFirestore, doc, getDoc, setDoc, collection, getDocs } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
 /* ── Config Firebase ─────────────────────────────────────── */
 const firebaseConfig = {
@@ -1044,7 +1043,59 @@ const firebaseConfig = {
 
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db   = initializeFirestore(app, { experimentalForceLongPolling: true });
+
+/* ── Firestore via REST API (plus fiable que le SDK sur GitHub Pages) ── */
+const FS_BASE = `https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents`;
+
+async function fsToken() {
+  if (!currentUser) throw new Error('Non connecté');
+  return await currentUser.getIdToken();
+}
+
+async function loadData(uid) {
+  const token = await fsToken();
+  const resp = await withTimeout(
+    fetch(`${FS_BASE}/users/${uid}`, { headers: { Authorization: `Bearer ${token}` } }),
+    10000
+  );
+  if (resp.status === 404) return null;
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    throw new Error(`HTTP ${resp.status} — ${err?.error?.message || ''}`);
+  }
+  const doc = await resp.json();
+  if (!doc.fields?.json) return null;
+  return JSON.parse(doc.fields.json.stringValue);
+}
+
+async function saveData(uid, data) {
+  const token = await fsToken();
+  const resp = await withTimeout(
+    fetch(`${FS_BASE}/users/${uid}`, {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fields: { json: { stringValue: JSON.stringify(data) } } })
+    }),
+    10000
+  );
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    throw new Error(`HTTP ${resp.status} — ${err?.error?.message || ''}`);
+  }
+}
+
+async function loadAllPlayers() {
+  const token = await fsToken();
+  const resp = await fetch(`${FS_BASE}/users`, { headers: { Authorization: `Bearer ${token}` } });
+  if (!resp.ok) return [];
+  const data = await resp.json();
+  if (!data.documents) return [];
+  return data.documents.map(d => {
+    const uid = d.name.split('/').pop();
+    try { return { uid, ...JSON.parse(d.fields.json.stringValue) }; }
+    catch { return { uid }; }
+  });
+}
 
 /* ── Diagnostic visible ──────────────────────────────────── */
 function setStatus(msg, color) {
@@ -1751,10 +1802,7 @@ function isAdmin() {
   return playerData && playerData.username && playerData.username.toLowerCase() === ADMIN_USERNAME;
 }
 
-async function loadAllPlayers() {
-  const snap = await getDocs(collection(db, 'users'));
-  return snap.docs.map(d => ({ uid: d.id, ...d.data() }));
-}
+// loadAllPlayers est défini plus haut via REST API
 
 async function renderAdminPanel() {
   const grid = document.getElementById('admin-grid');
