@@ -238,6 +238,22 @@
     .cf-feature.cf-sub { border-left-color:rgba(140,80,200,0.55); background:#13131e; }
     .cf-sub-label { font-size:0.62rem; color:#9a76cc; font-style:italic; margin-top:0.1rem; }
     .cf-sub-divider { border:none; border-top:1px dashed #2a2a3a; margin:0.3rem 0; }
+
+    /* ── Expandable rows (features & spells) ── */
+    .exp-table { width:100%; border-collapse:collapse; font-size:0.82rem; }
+    .exp-table th { color:var(--gold-dark); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em; padding:0 0.4rem 0.4rem; border-bottom:1px solid #2a2a3a; text-align:left; font-family:'Cinzel',serif; }
+    .exp-table td { padding:0.3rem 0.4rem; vertical-align:middle; }
+    .exp-row:hover td { background:rgba(255,255,255,0.02); }
+    .exp-desc-row td { padding:0.1rem 0.4rem 0.45rem; }
+    .exp-desc-area { width:100%; background:#0d0d14; border:1px solid #2a2a3a; border-radius:4px; color:#e8e0d0; font-size:0.8rem; padding:0.4rem 0.5rem; box-sizing:border-box; font-family:'Lora',serif; resize:vertical; min-height:52px; line-height:1.5; }
+    .exp-desc-area:focus { outline:none; border-color:var(--gold-dark); }
+    .exp-toggle { background:none; border:none; color:#555; cursor:pointer; font-size:0.72rem; padding:0.15rem 0.3rem; border-radius:3px; transition:color var(--transition), background var(--transition); white-space:nowrap; }
+    .exp-toggle:hover { color:var(--gold-dark); background:rgba(201,169,110,0.08); }
+    .exp-toggle.open { color:var(--gold-dark); }
+    .spell-level-badge { display:inline-block; font-size:0.65rem; font-family:'Cinzel',serif; padding:0.08rem 0.3rem; border-radius:3px; background:#1a1a2e; border:1px solid #2a2a3a; color:#8ab8e8; min-width:20px; text-align:center; }
+    .custom-sub-wrap { margin-top:0.45rem; display:none; }
+    .custom-sub-wrap label { display:block; font-size:0.7rem; color:#888; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:0.25rem; }
+    select.field-input option[value="__custom__"] { color:var(--gold-dark); font-style:italic; }
     .cf-progress-bar { height:4px; background:#1a1a24; border-radius:2px; margin-bottom:0.6rem; overflow:hidden; }
     .cf-progress-fill { height:100%; border-radius:2px; background:linear-gradient(90deg, var(--gold-dark), var(--gold)); transition:width 0.4s ease; }
     .cf-progress-label { font-size:0.68rem; color:#666; text-align:right; margin-bottom:0.6rem; margin-top:-0.4rem; font-style:italic; }
@@ -409,6 +425,10 @@
             <select class="field-input" data-f="sousClasse" id="sousclasse-select">
               <option value="">— Choisir une classe d'abord —</option>
             </select>
+            <div class="custom-sub-wrap" id="sousclasse-custom-wrap">
+              <label>Custom subclass name</label>
+              <input type="text" class="field-input" id="sousclasse-custom-input" placeholder="Enter your subclass name…">
+            </div>
           </div>
           <div class="field-group">
             <label class="field-label">Niveau</label>
@@ -580,15 +600,38 @@
         </div>
         <div id="spell-slots-grid"></div>
         <div style="margin-top:0.75rem;">
-          <div class="field-label" style="margin-bottom:0.4rem;">Liste de sorts connus / préparés</div>
-          <textarea class="field-input" data-f="sortListe" rows="5" placeholder="Liste tes sorts ici…"></textarea>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
+            <div class="field-label">Sorts connus / préparés</div>
+            <button class="btn btn-sm btn-gold" id="btn-add-spell">+ Ajouter</button>
+          </div>
+          <table class="exp-table">
+            <thead><tr>
+              <th style="width:60px;">Niveau</th>
+              <th>Nom du sort</th>
+              <th style="width:90px;">Action</th>
+              <th style="width:32px;"></th>
+              <th style="width:28px;"></th>
+            </tr></thead>
+            <tbody id="spell-tbody"></tbody>
+          </table>
         </div>
       </div>
 
       <!-- Traits & capacités -->
       <div class="sheet-section">
-        <div class="sheet-section-title">Traits &amp; Capacités</div>
-        <textarea class="field-input" data-f="capacites" rows="5" placeholder="Capacités de classe, traits raciaux, dons…"></textarea>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
+          <div class="sheet-section-title" style="margin-bottom:0;">Traits &amp; Capacités</div>
+          <button class="btn btn-sm btn-gold" id="btn-add-feature">+ Ajouter</button>
+        </div>
+        <table class="exp-table">
+          <thead><tr>
+            <th>Nom</th>
+            <th style="width:100px;">Source</th>
+            <th style="width:32px;"></th>
+            <th style="width:28px;"></th>
+          </tr></thead>
+          <tbody id="feature-tbody"></tbody>
+        </table>
       </div>
 
       <!-- Personnalité -->
@@ -1952,7 +1995,7 @@ function emptyCharacter() {
     attaques:[], classeSort:'', caractSort:'',
     emplacementsSort:{1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0},
     emplacementsUtilises:{1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0},
-    sortListe:'', capacites:'',
+    spells:[], customFeatures:[],
     traits:'', ideaux:'', liens:'', defauts:'', apparence:'', historique:''
   };
 }
@@ -1999,21 +2042,31 @@ function triggerSave() {
 /* ── Populate sous-classe dropdown ── */
 function populateSubclassSelect(classe) {
   const sel = document.getElementById('sousclasse-select');
+  const wrap = document.getElementById('sousclasse-custom-wrap');
+  const inp = document.getElementById('sousclasse-custom-input');
   if (!sel) return;
   const subs = (SUBCLASS_DATA[classe]) ? Object.keys(SUBCLASS_DATA[classe]) : [];
   const current = C().sousClasse || '';
   sel.innerHTML = '<option value="">— None —</option>';
   subs.forEach(s => {
     const opt = document.createElement('option');
-    opt.value = s;
-    opt.textContent = s;
+    opt.value = s; opt.textContent = s;
     if (s === current) opt.selected = true;
     sel.appendChild(opt);
   });
-  // If current subclass no longer valid for this class, clear it
-  if (current && !subs.includes(current)) {
-    C().sousClasse = '';
-    sel.value = '';
+  // Custom option
+  const customOpt = document.createElement('option');
+  customOpt.value = '__custom__'; customOpt.textContent = '✏ Custom…';
+  sel.appendChild(customOpt);
+  // If current subclass is not in known list, it's a custom one
+  const isCustom = current && !subs.includes(current);
+  if (isCustom) {
+    sel.value = '__custom__';
+    if (wrap) wrap.style.display = 'block';
+    if (inp) inp.value = current;
+  } else {
+    if (wrap) wrap.style.display = 'none';
+    if (inp) inp.value = '';
   }
 }
 
@@ -2378,6 +2431,8 @@ function renderAll() {
   renderSpellSlots();
   renderClassFeatures();
   renderAttacks();
+  renderCustomFeatures();
+  renderSpells();
   renderInventory();
   fillCurrency();
   document.getElementById('notes-editor').value = NOTES();
@@ -2554,6 +2609,58 @@ function renderAttacks() {
       <td><button class="atk-del" data-del="${i}" title="Supprimer">✕</button></td>
     `;
     tbody.appendChild(tr);
+  });
+}
+
+/* ── Custom Features ── */
+function renderCustomFeatures() {
+  const tbody = document.getElementById('feature-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  const feats = C().customFeatures || [];
+  feats.forEach((f, i) => {
+    const tr = document.createElement('tr');
+    tr.className = 'exp-row';
+    tr.innerHTML = `
+      <td><input class="atk-inp" data-feat="${i}" data-fk="name"   value="${esc(f.name||'')}"   placeholder="Nom de la capacité"></td>
+      <td><input class="atk-inp" data-feat="${i}" data-fk="source" value="${esc(f.source||'')}" placeholder="Source" style="font-size:0.75rem;"></td>
+      <td style="text-align:center;"><button class="exp-toggle${f._open?' open':''}" data-feat-toggle="${i}" title="Description">▾</button></td>
+      <td><button class="atk-del" data-del-feat="${i}" title="Supprimer">✕</button></td>
+    `;
+    tbody.appendChild(tr);
+    if (f._open) {
+      const dr = document.createElement('tr');
+      dr.className = 'exp-desc-row';
+      dr.innerHTML = `<td colspan="4"><textarea class="exp-desc-area" data-feat="${i}" data-fk="desc" placeholder="Description…">${esc(f.desc||'')}</textarea></td>`;
+      tbody.appendChild(dr);
+    }
+  });
+}
+
+/* ── Spells ── */
+function renderSpells() {
+  const tbody = document.getElementById('spell-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  const spells = C().spells || [];
+  spells.forEach((s, i) => {
+    const lvlBadge = s.level ? `<span class="spell-level-badge">${s.level}</span>` : `<span class="spell-level-badge">—</span>`;
+    const tr = document.createElement('tr');
+    tr.className = 'exp-row';
+    tr.innerHTML = `
+      <td style="text-align:center;"><input class="atk-inp" data-spell="${i}" data-sk="level" value="${esc(s.level||'')}" placeholder="1" style="width:50px;text-align:center;font-size:0.78rem;"></td>
+      <td><input class="atk-inp" data-spell="${i}" data-sk="name"   value="${esc(s.name||'')}"   placeholder="Nom du sort"></td>
+      <td><input class="atk-inp" data-spell="${i}" data-sk="action" value="${esc(s.action||'')}" placeholder="Action" style="font-size:0.75rem;"></td>
+      <td style="text-align:center;"><button class="exp-toggle${s._open?' open':''}" data-spell-toggle="${i}" title="Description">▾</button></td>
+      <td><button class="atk-del" data-del-spell="${i}" title="Supprimer">✕</button></td>
+    `;
+    tbody.appendChild(tr);
+    if (s._open) {
+      const dr = document.createElement('tr');
+      dr.className = 'exp-desc-row';
+      dr.innerHTML = `<td colspan="5"><textarea class="exp-desc-area" data-spell="${i}" data-sk="desc" placeholder="Description, composantes, portée…">${esc(s.desc||'')}</textarea></td>`;
+      tbody.appendChild(dr);
+    }
   });
 }
 
@@ -2793,16 +2900,6 @@ function renderAdminModalTab() {
             </select>
           </div>
         </div>
-        <div style="margin-top:0.75rem;">
-          <label class="field-label" style="margin-bottom:0.4rem;display:block;">Liste de sorts</label>
-          <textarea class="field-input" id="ae-sortListe" rows="4">${esc(c.sortListe)}</textarea>
-        </div>
-      </div>
-
-      <!-- Traits & capacités -->
-      <div class="sheet-section">
-        <div class="sheet-section-title">Traits &amp; Capacités</div>
-        <textarea class="field-input" id="ae-capacites" rows="4">${esc(c.capacites)}</textarea>
       </div>
 
       <!-- Personnalité -->
@@ -2892,7 +2989,7 @@ async function adminSaveEdit() {
 
   if (adminActiveTab === 'fiche') {
     // Collecte tous les champs identité
-    const fields = ['characterName','species','sousClasse','background','classeSort','sortListe','capacites','traits','ideaux','liens','defauts','apparence','historique'];
+    const fields = ['characterName','species','sousClasse','background','classeSort','traits','ideaux','liens','defauts','apparence','historique'];
     fields.forEach(f => {
       const el = document.getElementById('ae-' + f);
       if (el) c[f] = el.value;
@@ -3000,9 +3097,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  /* ── Custom subclass text input ── */
+  document.getElementById('sousclasse-custom-input').addEventListener('input', e => {
+    if (!playerData) return;
+    C().sousClasse = e.target.value;
+    renderClassFeatures();
+    triggerSave();
+  });
+
   /* ── Champs fiche (délégation) ── */
   document.getElementById('tab-personnage').addEventListener('input', e => {
     const el = e.target;
+    // sousClasse select — intercept __custom__
+    if (el.id === 'sousclasse-select') {
+      const wrap = document.getElementById('sousclasse-custom-wrap');
+      const inp  = document.getElementById('sousclasse-custom-input');
+      if (el.value === '__custom__') {
+        wrap.style.display = 'block';
+        inp.focus();
+        // Don't save "__custom__" to data — wait for custom input
+      } else {
+        wrap.style.display = 'none';
+        if (inp) inp.value = '';
+        C().sousClasse = el.value;
+        renderClassFeatures(); triggerSave();
+      }
+      return;
+    }
     if (el.dataset.f && el.dataset.f in C()) {
       if (el.type === 'checkbox') C()[el.dataset.f] = el.checked;
       else if (el.type === 'number') C()[el.dataset.f] = parseFloat(el.value) || 0;
@@ -3011,7 +3132,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (el.dataset.f === 'characterName') { activeSlot().name = el.value || 'Sans nom'; renderCharCards(); }
       if (el.dataset.f === 'niveau') { updateProfBonus(); renderSaves(); renderSkills(); renderClassFeatures(); autoFillClass(C().classe); }
       if (el.dataset.f === 'classe') { autoFillClass(el.value); updateCharSummary(); renderCharCards(); }
-      if (el.dataset.f === 'sousClasse') { renderClassFeatures(); }
       if (['for','dex','con','int','sag','cha'].includes(el.dataset.f)) { updateModifier(el.dataset.f); renderSaves(); renderSkills(); updateSpellCalcs(); }
       if (el.dataset.f === 'caractSort' || el.dataset.f === 'niveau') updateSpellCalcs();
       if (el.dataset.f === 'pvMax' || el.dataset.f === 'pvActuel') { updateHpBar(); renderCharCards(); }
@@ -3023,6 +3143,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (el.dataset.used) { C().emplacementsUtilises = C().emplacementsUtilises || {}; C().emplacementsUtilises[el.dataset.used] = parseInt(el.value)||0; triggerSave(); }
     // Attaques
     if (el.dataset.atk !== undefined && el.dataset.ak) { C().attaques = C().attaques || []; if (C().attaques[el.dataset.atk]) C().attaques[el.dataset.atk][el.dataset.ak] = el.value; triggerSave(); }
+    // Custom features
+    if (el.dataset.feat !== undefined && el.dataset.fk) {
+      C().customFeatures = C().customFeatures || [];
+      const fi = parseInt(el.dataset.feat);
+      if (C().customFeatures[fi]) C().customFeatures[fi][el.dataset.fk] = el.value;
+      triggerSave();
+    }
+    // Spells
+    if (el.dataset.spell !== undefined && el.dataset.sk) {
+      C().spells = C().spells || [];
+      const si = parseInt(el.dataset.spell);
+      if (C().spells[si]) C().spells[si][el.dataset.sk] = el.value;
+      triggerSave();
+    }
   });
 
   // Sauvegardes — clic dots maîtrise
@@ -3064,6 +3198,48 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!btn) return;
     C().attaques.splice(parseInt(btn.dataset.del), 1);
     renderAttacks(); triggerSave();
+  });
+
+  // Bouton ajouter feature
+  document.getElementById('btn-add-feature').addEventListener('click', () => {
+    if (!playerData) return;
+    C().customFeatures = C().customFeatures || [];
+    C().customFeatures.push({ name:'', source:'', desc:'', _open:false });
+    renderCustomFeatures(); triggerSave();
+  });
+  document.getElementById('feature-tbody').addEventListener('click', e => {
+    const delBtn = e.target.closest('[data-del-feat]');
+    if (delBtn) {
+      C().customFeatures.splice(parseInt(delBtn.dataset.delFeat), 1);
+      renderCustomFeatures(); triggerSave(); return;
+    }
+    const togBtn = e.target.closest('[data-feat-toggle]');
+    if (togBtn) {
+      const fi = parseInt(togBtn.dataset.featToggle);
+      C().customFeatures[fi]._open = !C().customFeatures[fi]._open;
+      renderCustomFeatures(); return;
+    }
+  });
+
+  // Bouton ajouter sort
+  document.getElementById('btn-add-spell').addEventListener('click', () => {
+    if (!playerData) return;
+    C().spells = C().spells || [];
+    C().spells.push({ level:'', name:'', action:'Action', desc:'', _open:false });
+    renderSpells(); triggerSave();
+  });
+  document.getElementById('spell-tbody').addEventListener('click', e => {
+    const delBtn = e.target.closest('[data-del-spell]');
+    if (delBtn) {
+      C().spells.splice(parseInt(delBtn.dataset.delSpell), 1);
+      renderSpells(); triggerSave(); return;
+    }
+    const togBtn = e.target.closest('[data-spell-toggle]');
+    if (togBtn) {
+      const si = parseInt(togBtn.dataset.spellToggle);
+      C().spells[si]._open = !C().spells[si]._open;
+      renderSpells(); return;
+    }
   });
 
   /* ── Inventaire ── */
