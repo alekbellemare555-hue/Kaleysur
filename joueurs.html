@@ -4,1432 +4,977 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Joueurs — Kaleysur Wiki</title>
-  <!-- v2 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <style>
-    /* ============================================================
-       JOUEURS — Styles
-    ============================================================ */
-    .jscreen { display: none; }
-    .jscreen.active { display: block; }
+    /* ── Variables ─────────────────────────────────────────── */
+    :root {
+      --gold: #c9a96e;
+      --gold-dark: #a07840;
+      --danger: #c97a7a;
+      --success: #6aba6a;
+      --radius: 8px;
+      --transition: 0.2s ease;
+    }
 
-    /* ── Auth ───────────────────────────────────────────────── */
+    /* ── Écrans ────────────────────────────────────────────── */
+    .j-screen { display: none; }
+    .j-screen.active { display: block; }
+
+    /* ── Auth ──────────────────────────────────────────────── */
     .auth-wrap {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 70vh;
+      display: flex; justify-content: center; align-items: flex-start;
+      padding: 3rem 1rem; min-height: 60vh;
     }
     .auth-box {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
+      background: var(--bg-card, #1a1a24);
+      border: 1px solid var(--border, #2a2a3a);
       border-radius: var(--radius);
-      padding: 2.5rem 2rem;
-      width: 100%;
-      max-width: 380px;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+      padding: 2rem 2.5rem;
+      width: 100%; max-width: 400px;
     }
-    .auth-emblem {
-      text-align: center;
-      font-size: 2.5rem;
-      margin-bottom: 0.5rem;
-      color: var(--gold-dark);
-    }
+    .auth-emblem { font-size: 2.5rem; text-align: center; margin-bottom: 0.5rem; }
     .auth-title {
-      font-family: var(--font-title);
-      font-size: 1.5rem;
-      color: var(--gold);
-      text-align: center;
-      margin-bottom: 0.3rem;
-      letter-spacing: 0.06em;
+      font-family: 'Cinzel', serif; font-size: 1.4rem; color: var(--gold);
+      text-align: center; margin-bottom: 0.25rem; letter-spacing: 0.06em;
     }
-    .auth-subtitle {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      text-align: center;
-      font-style: italic;
-      margin-bottom: 1.75rem;
-    }
-    .auth-mode-title {
-      font-family: var(--font-title);
-      font-size: 0.9rem;
-      color: var(--gold);
-      margin-bottom: 1.25rem;
-      letter-spacing: 0.05em;
-    }
-    .auth-field {
-      margin-bottom: 1rem;
-    }
-    .auth-label {
-      display: block;
-      font-size: 0.72rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 0.3rem;
-    }
+    .auth-subtitle { color: #888; font-size: 0.85rem; text-align: center; margin-bottom: 1.5rem; font-style: italic; }
+    .auth-mode-title { font-family: 'Cinzel', serif; font-size: 0.9rem; color: var(--gold-dark); margin-bottom: 1rem; letter-spacing: 0.05em; }
+    .auth-field { margin-bottom: 0.85rem; }
+    .auth-label { display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 0.3rem; letter-spacing: 0.04em; text-transform: uppercase; }
     .auth-input {
-      width: 100%;
-      box-sizing: border-box;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border);
-      border-radius: calc(var(--radius) - 2px);
-      color: var(--text-primary);
-      font-family: var(--font-body);
-      font-size: 0.95rem;
-      padding: 0.6rem 0.85rem;
+      width: 100%; background: #0d0d14; border: 1px solid #2a2a3a;
+      border-radius: 6px; color: #e8e0d0; font-size: 0.95rem;
+      padding: 0.55rem 0.75rem; box-sizing: border-box;
       transition: border-color var(--transition);
     }
-    .auth-input:focus {
-      outline: none;
-      border-color: var(--gold-dark);
-    }
+    .auth-input:focus { outline: none; border-color: var(--gold-dark); }
     .auth-btn {
-      width: 100%;
-      font-family: var(--font-title);
-      font-size: 0.9rem;
-      letter-spacing: 0.06em;
-      padding: 0.7rem;
-      border-radius: var(--radius);
-      border: 1px solid var(--gold);
-      background: var(--gold-dark);
-      color: var(--bg-deep);
-      cursor: pointer;
-      transition: all var(--transition);
-      margin-top: 0.5rem;
+      width: 100%; padding: 0.65rem; background: var(--gold-dark);
+      color: #fff; border: none; border-radius: 6px; font-size: 0.95rem;
+      font-family: 'Cinzel', serif; letter-spacing: 0.04em; cursor: pointer;
+      margin-top: 0.5rem; transition: background var(--transition); display: flex;
+      align-items: center; justify-content: center; gap: 0.5rem;
     }
-    .auth-btn:hover {
-      background: var(--gold);
-    }
-    .auth-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+    .auth-btn:hover { background: var(--gold); }
+    .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .auth-switch { text-align: center; margin-top: 1rem; font-size: 0.82rem; color: #888; }
+    .auth-switch-btn { background: none; border: none; color: var(--gold); cursor: pointer; font-size: 0.82rem; text-decoration: underline; }
     .auth-error {
-      background: rgba(180,40,40,0.15);
-      border: 1px solid rgba(180,40,40,0.4);
-      border-radius: var(--radius);
-      color: #e08080;
-      font-size: 0.82rem;
-      padding: 0.5rem 0.75rem;
-      margin-bottom: 1rem;
-      display: none;
+      background: rgba(201,122,122,0.15); border: 1px solid rgba(201,122,122,0.4);
+      border-radius: 6px; padding: 0.6rem 0.85rem; font-size: 0.82rem;
+      color: var(--danger); margin-bottom: 1rem; display: none;
     }
     .auth-error.show { display: block; }
-    .auth-switch {
-      text-align: center;
-      margin-top: 1.25rem;
-      font-size: 0.82rem;
-      color: var(--text-muted);
-    }
-    .auth-switch-btn {
-      background: none;
-      border: none;
-      color: var(--gold-dark);
-      cursor: pointer;
-      font-family: var(--font-body);
-      font-size: 0.82rem;
-      text-decoration: underline;
-      padding: 0;
-    }
-    .auth-switch-btn:hover { color: var(--gold); }
-    .auth-divider {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 1.5rem 0;
-    }
     .auth-spinner {
-      display: inline-block;
-      width: 14px;
-      height: 14px;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      vertical-align: middle;
-      margin-right: 0.4rem;
+      display: inline-block; width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.7s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── Boutons ────────────────────────────────────────────── */
+    /* ── Dashboard ─────────────────────────────────────────── */
+    .dash-header {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem; padding: 1rem 0 0.75rem; border-bottom: 1px solid #2a2a3a;
+      margin-bottom: 1rem; flex-wrap: wrap;
+    }
+    .dash-player { display: flex; align-items: center; gap: 0.75rem; }
+    .dash-avatar { font-size: 1.8rem; }
+    .dash-name { font-family: 'Cinzel', serif; color: var(--gold); font-size: 1rem; }
+    .dash-char-info { font-size: 0.8rem; color: #888; font-style: italic; }
+    .dash-actions { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .save-badge { font-size: 0.72rem; color: #888; font-style: italic; min-width: 90px; text-align: right; }
+    .save-badge.ok { color: var(--success); }
+    .save-badge.err { color: var(--danger); }
+
+    /* Sélecteur de personnage */
+    .char-bar {
+      display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;
+      padding: 0.6rem 0.85rem; background: #13131a; border: 1px solid #2a2a3a;
+      border-radius: 6px; flex-wrap: wrap;
+    }
+    .char-bar label { font-size: 0.78rem; color: #888; letter-spacing: 0.04em; text-transform: uppercase; }
+    .char-select {
+      flex: 1; min-width: 120px; background: #0d0d14; border: 1px solid #2a2a3a;
+      border-radius: 5px; color: #e8e0d0; font-size: 0.88rem; padding: 0.3rem 0.5rem; cursor: pointer;
+    }
+
+    /* Boutons */
     .btn {
-      font-family: var(--font-title);
-      font-size: 0.82rem;
-      letter-spacing: 0.05em;
-      padding: 0.55rem 1.25rem;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      background: var(--bg-card);
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: all var(--transition);
-    }
-    .btn:hover { border-color: var(--gold-dark); color: var(--gold); background: var(--bg-card-hover); }
-    .btn-gold { background: var(--gold-dark); border-color: var(--gold); color: var(--bg-deep); }
-    .btn-gold:hover { background: var(--gold); color: var(--bg-deep); }
-    .btn-danger { border-color: #7a2020; color: #c97a7a; }
-    .btn-danger:hover { background: #3a1010; border-color: #c97a7a; color: #f0b0b0; }
-    .btn-sm { font-size: 0.75rem; padding: 0.35rem 0.75rem; }
-
-    /* ── Dashboard ──────────────────────────────────────────── */
-    .dashboard-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1.5rem 0 1rem;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-    }
-    .dashboard-player-info { display: flex; align-items: center; gap: 1rem; }
-    .dashboard-avatar {
-      width: 48px; height: 48px; border-radius: 50%;
-      background: var(--bg-secondary); border: 2px solid var(--gold-dark);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.4rem; color: var(--gold-dark); flex-shrink: 0;
-    }
-    .dashboard-player-name { font-family: var(--font-title); font-size: 1.3rem; color: var(--gold); }
-    .dashboard-player-char { font-size: 0.82rem; color: var(--text-muted); font-style: italic; }
-    .dashboard-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
-
-    /* ── Tabs ───────────────────────────────────────────────── */
-    .tabs {
-      display: flex; gap: 0; border-bottom: 1px solid var(--border);
-      margin-bottom: 1.5rem; overflow-x: auto;
-    }
-    .tab-btn {
-      font-family: var(--font-title); font-size: 0.82rem; letter-spacing: 0.04em;
-      padding: 0.7rem 1.2rem; border: none; border-bottom: 2px solid transparent;
-      background: none; color: var(--text-muted); cursor: pointer; transition: all var(--transition);
+      padding: 0.35rem 0.85rem; border-radius: 5px; border: 1px solid #3a3a4a;
+      background: #1a1a24; color: #e8e0d0; font-size: 0.82rem; cursor: pointer;
+      transition: background var(--transition), border-color var(--transition);
       white-space: nowrap;
     }
-    .tab-btn:hover { color: var(--gold); }
+    .btn:hover { background: #25253a; border-color: #4a4a5a; }
+    .btn-gold { background: var(--gold-dark); border-color: var(--gold-dark); color: #fff; }
+    .btn-gold:hover { background: var(--gold); border-color: var(--gold); }
+    .btn-danger { background: rgba(201,122,122,0.15); border-color: rgba(201,122,122,0.4); color: var(--danger); }
+    .btn-danger:hover { background: rgba(201,122,122,0.25); }
+    .btn-sm { padding: 0.25rem 0.65rem; font-size: 0.78rem; }
+
+    /* Onglets */
+    .tabs { display: flex; gap: 0.25rem; flex-wrap: wrap; border-bottom: 1px solid #2a2a3a; margin-bottom: 1.25rem; }
+    .tab-btn {
+      padding: 0.5rem 1rem; background: none; border: none; border-bottom: 2px solid transparent;
+      color: #888; font-size: 0.85rem; cursor: pointer; transition: color var(--transition), border-color var(--transition);
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: #e8e0d0; }
     .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
-    /* ── Fiche personnage ───────────────────────────────────── */
-    .sheet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
-    .sheet-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    /* Sections fiche */
     .sheet-section {
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 1rem 1.2rem; margin-bottom: 1rem;
+      background: #1a1a24; border: 1px solid #2a2a3a; border-radius: var(--radius);
+      padding: 1.1rem 1.25rem; margin-bottom: 1rem;
     }
     .sheet-section-title {
-      font-family: var(--font-title); font-size: 0.72rem; letter-spacing: 0.12em;
-      color: var(--gold-dark); text-transform: uppercase;
-      border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; margin-bottom: 0.85rem;
+      font-family: 'Cinzel', serif; font-size: 0.78rem; color: var(--gold-dark);
+      letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.85rem;
+      padding-bottom: 0.4rem; border-bottom: 1px solid #2a2a3a;
     }
-    .field-group { margin-bottom: 0.75rem; }
-    .field-label {
-      display: block; font-size: 0.72rem; letter-spacing: 0.06em;
-      text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.25rem;
-    }
+    .sheet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.75rem; }
+    .sheet-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .field-group { display: flex; flex-direction: column; gap: 0.2rem; }
+    .field-label { font-size: 0.72rem; color: #888; text-transform: uppercase; letter-spacing: 0.05em; }
     .field-input {
-      width: 100%; background: var(--bg-secondary); border: 1px solid var(--border);
-      border-radius: calc(var(--radius) - 2px); color: var(--text-primary);
-      font-family: var(--font-body); font-size: 0.9rem; padding: 0.45rem 0.65rem;
-      box-sizing: border-box; transition: border-color var(--transition);
+      background: #0d0d14; border: 1px solid #2a2a3a; border-radius: 5px;
+      color: #e8e0d0; font-size: 0.88rem; padding: 0.4rem 0.6rem;
+      width: 100%; box-sizing: border-box; transition: border-color var(--transition);
+      font-family: 'Lora', serif;
     }
     .field-input:focus { outline: none; border-color: var(--gold-dark); }
     select.field-input { cursor: pointer; }
-    textarea.field-input { resize: vertical; min-height: 80px; }
-    .field-input-num { width: 72px; text-align: center; }
+    textarea.field-input { resize: vertical; min-height: 72px; }
+    .field-input-sm { width: 70px; text-align: center; }
+    .field-input-md { width: 110px; text-align: center; }
 
     /* Caractéristiques */
-    .ability-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.5rem; margin-bottom: 1rem; }
+    .ability-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.6rem; margin-bottom: 1rem; }
     .ability-box {
-      background: var(--bg-secondary); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 0.6rem 0.4rem; text-align: center;
-      transition: border-color var(--transition);
+      background: #13131a; border: 1px solid #2a2a3a; border-radius: 7px;
+      text-align: center; padding: 0.6rem 0.3rem;
     }
-    .ability-box:hover { border-color: var(--gold-dark); }
-    .ability-name {
-      font-family: var(--font-title); font-size: 0.6rem; letter-spacing: 0.08em;
-      color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 0.3rem;
+    .ability-name { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em; color: #888; margin-bottom: 0.25rem; }
+    .ability-score-input {
+      width: 48px; background: #0d0d14; border: 1px solid #2a2a3a; border-radius: 4px;
+      color: #e8e0d0; font-size: 1.1rem; font-weight: 600; text-align: center;
+      padding: 0.2rem; margin: 0 auto; display: block;
     }
-    .ability-score {
-      font-family: var(--font-title); font-size: 1.4rem; color: var(--gold);
-      width: 100%; background: none; border: none; text-align: center; padding: 0; display: block;
-    }
-    .ability-score:focus { outline: none; }
-    .ability-mod { font-size: 0.9rem; color: var(--text-secondary); display: block; margin-top: 0.15rem; }
+    .ability-score-input:focus { outline: none; border-color: var(--gold-dark); }
+    .ability-mod { font-size: 0.85rem; color: var(--gold); margin-top: 0.2rem; font-weight: 600; }
 
-    /* Jets de sauvegarde */
-    .saves-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; }
-    .save-row { display: flex; align-items: center; gap: 0.4rem; font-size: 0.82rem; color: var(--text-secondary); }
-    .save-row input[type="checkbox"] { accent-color: var(--gold-dark); width: 14px; height: 14px; cursor: pointer; flex-shrink: 0; }
-    .save-bonus { color: var(--gold); font-family: var(--font-title); font-size: 0.75rem; min-width: 24px; }
-
-    /* Compétences */
-    .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem; }
-    .skill-row { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: var(--text-secondary); padding: 0.15rem 0; }
-    .skill-prof {
-      width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--border);
-      cursor: pointer; flex-shrink: 0; transition: all var(--transition);
-      display: flex; align-items: center; justify-content: center; font-size: 0.5rem;
+    /* Sauvegardes & compétences */
+    .save-skill-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem; }
+    .sv-row, .sk-row {
+      display: flex; align-items: center; gap: 0.4rem; padding: 0.18rem 0;
+      font-size: 0.82rem; color: #ccc;
     }
-    .skill-prof[data-level="p"] { background: var(--gold-dark); border-color: var(--gold); }
-    .skill-prof[data-level="e"] { background: var(--gold); border-color: var(--gold); }
-    .skill-bonus { color: var(--gold); font-family: var(--font-title); font-size: 0.72rem; min-width: 22px; }
-    .skill-attr { color: var(--text-muted); font-size: 0.65rem; margin-left: auto; }
+    .prof-dot {
+      width: 12px; height: 12px; border-radius: 50%; border: 2px solid #3a3a4a;
+      background: transparent; cursor: pointer; flex-shrink: 0; transition: background var(--transition), border-color var(--transition);
+    }
+    .prof-dot.on { background: var(--gold-dark); border-color: var(--gold); }
+    .sv-val, .sk-val { font-size: 0.78rem; color: var(--gold); min-width: 22px; text-align: right; font-weight: 600; }
 
     /* Combat */
-    .combat-row { display: flex; gap: 0.75rem; align-items: flex-end; flex-wrap: wrap; margin-bottom: 0.75rem; }
-    .combat-field { flex: 1; min-width: 80px; }
-    .hp-display { display: flex; gap: 0.5rem; align-items: center; }
-    .hp-current {
-      font-family: var(--font-title); font-size: 2rem; color: var(--gold);
-      background: none; border: none; border-bottom: 2px solid var(--border);
-      width: 80px; text-align: center; padding: 0.1rem 0;
-    }
-    .hp-current:focus { outline: none; border-bottom-color: var(--gold-dark); }
-    .hp-sep { color: var(--text-muted); font-size: 1.5rem; }
-    .dice-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
-
-    /* Mort */
-    .death-saves { display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
-    .death-group { display: flex; gap: 0.35rem; align-items: center; }
-    .death-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-right: 0.25rem; }
-    .death-check { width: 16px; height: 16px; border-radius: 50%; border: 1px solid var(--border); cursor: pointer; transition: all var(--transition); }
-    .death-check.success-checked { background: #4a9a4a; border-color: #6aba6a; }
-    .death-check.fail-checked { background: #9a2a2a; border-color: #ba4a4a; }
-
-    /* Épuisement */
-    .exhaustion-track { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; }
-    .exhaustion-pip {
-      width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border);
-      cursor: pointer; font-family: var(--font-title); font-size: 0.72rem;
-      color: var(--text-muted); display: flex; align-items: center; justify-content: center;
-      transition: all var(--transition);
-    }
-    .exhaustion-pip.active { background: #7a3a10; border-color: #c06020; color: #f0a060; }
+    .combat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 0.65rem; }
+    .combat-field { display: flex; flex-direction: column; align-items: center; gap: 0.2rem; text-align: center; }
+    .hp-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 
     /* Attaques */
-    .attacks-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
-    .attacks-table th {
-      font-family: var(--font-title); font-size: 0.65rem; letter-spacing: 0.08em;
-      color: var(--text-muted); text-transform: uppercase;
-      padding: 0.4rem 0.5rem; text-align: left; border-bottom: 1px solid var(--border);
-    }
-    .attacks-table td { padding: 0.35rem 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
-    .attacks-table td input { background: none; border: none; color: var(--text-secondary); font-family: var(--font-body); font-size: 0.82rem; width: 100%; padding: 0; }
-    .attacks-table td input:focus { outline: none; color: var(--text-primary); }
-    .del-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem; padding: 0; transition: color var(--transition); }
-    .del-btn:hover { color: #c97a7a; }
+    .attack-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    .attack-table th { color: var(--gold-dark); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 0 0.4rem 0.4rem; border-bottom: 1px solid #2a2a3a; text-align: left; font-family: 'Cinzel', serif; }
+    .attack-table td { padding: 0.3rem 0.4rem; }
+    .atk-inp { background: #0d0d14; border: 1px solid #2a2a3a; border-radius: 4px; color: #e8e0d0; font-size: 0.82rem; padding: 0.25rem 0.4rem; width: 100%; }
+    .atk-inp:focus { outline: none; border-color: var(--gold-dark); }
+    .atk-del { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 1rem; padding: 0; line-height: 1; }
 
-    /* Maîtrises armes */
-    .mastery-grid { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-    .mastery-tag {
-      font-size: 0.75rem; padding: 0.25rem 0.6rem; border-radius: 12px;
-      border: 1px solid var(--border); color: var(--text-muted);
-      cursor: pointer; transition: all var(--transition); user-select: none;
-    }
-    .mastery-tag.selected { background: rgba(201,162,39,0.15); border-color: var(--gold-dark); color: var(--gold); }
+    /* Inventaire */
+    .inv-controls { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
+    .inv-search { flex: 1; min-width: 120px; }
+    .inv-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    .inv-table th { color: var(--gold-dark); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 0 0.35rem 0.4rem; border-bottom: 1px solid #2a2a3a; text-align: left; font-family: 'Cinzel', serif; }
+    .inv-table td { padding: 0.3rem 0.35rem; vertical-align: middle; }
+    .inv-inp { background: #0d0d14; border: 1px solid #2a2a3a; border-radius: 4px; color: #e8e0d0; font-size: 0.82rem; padding: 0.25rem 0.4rem; width: 100%; }
+    .inv-inp:focus { outline: none; border-color: var(--gold-dark); }
+    .currency-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; margin-top: 0.75rem; }
+    .currency-item { text-align: center; }
+    .currency-label { font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.2rem; }
 
-    /* Sorts */
-    .spell-slots-grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 0.4rem; margin-bottom: 0.75rem; }
-    .spell-slot-box { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: calc(var(--radius) - 2px); padding: 0.4rem 0.2rem; text-align: center; }
-    .spell-slot-lvl { font-family: var(--font-title); font-size: 0.6rem; color: var(--text-muted); display: block; margin-bottom: 0.25rem; }
-    .spell-slot-input { width: 28px; font-family: var(--font-title); font-size: 0.85rem; color: var(--gold); background: none; border: none; text-align: center; padding: 0; }
-    .spell-slot-input:focus { outline: none; }
-    .spell-slot-sep { font-size: 0.65rem; color: var(--text-muted); }
-
-    /* ── Inventaire ─────────────────────────────────────────── */
-    .currency-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; margin-bottom: 1.25rem; }
-    .currency-box { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.6rem 0.5rem; text-align: center; }
-    .currency-name { font-family: var(--font-title); font-size: 0.6rem; letter-spacing: 0.08em; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 0.25rem; }
-    .currency-input { width: 100%; background: none; border: none; font-family: var(--font-title); font-size: 1.2rem; color: var(--gold); text-align: center; padding: 0; }
-    .currency-input:focus { outline: none; }
-    .items-toolbar { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; align-items: center; }
-    .items-search { flex: 1; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-primary); font-family: var(--font-body); font-size: 0.88rem; padding: 0.45rem 0.75rem; }
-    .items-search:focus { outline: none; border-color: var(--gold-dark); }
-    .items-list { display: flex; flex-direction: column; gap: 0.4rem; }
-    .item-row { display: flex; align-items: center; gap: 0.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.5rem 0.75rem; transition: border-color var(--transition); }
-    .item-row:hover { border-color: rgba(201,162,39,0.3); }
-    .item-qty { font-family: var(--font-title); font-size: 0.9rem; color: var(--gold); width: 40px; text-align: center; background: none; border: none; padding: 0; }
-    .item-qty:focus { outline: none; }
-    .item-name { flex: 1; background: none; border: none; color: var(--text-primary); font-family: var(--font-body); font-size: 0.9rem; padding: 0; }
-    .item-name:focus { outline: none; }
-    .item-notes-input { flex: 1; background: none; border: none; color: var(--text-muted); font-size: 0.8rem; font-style: italic; padding: 0; }
-    .item-notes-input:focus { outline: none; color: var(--text-secondary); }
-    .item-weight { width: 60px; background: none; border: none; color: var(--text-muted); font-size: 0.8rem; text-align: right; padding: 0; }
-    .item-weight:focus { outline: none; color: var(--text-primary); }
-    .item-del { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1rem; padding: 0; flex-shrink: 0; transition: color var(--transition); }
-    .item-del:hover { color: #c97a7a; }
-    .items-empty { text-align: center; color: var(--text-muted); font-style: italic; padding: 2rem; }
-    .encumbrance-info { font-size: 0.78rem; color: var(--text-muted); text-align: right; margin-top: 0.5rem; }
-
-    /* ── Notes ──────────────────────────────────────────────── */
+    /* Notes */
     .notes-editor {
-      width: 100%; min-height: 400px; background: var(--bg-card);
-      border: 1px solid var(--border); border-radius: var(--radius);
-      color: var(--text-primary); font-family: var(--font-body);
-      font-size: 0.92rem; line-height: 1.75; padding: 1rem 1.25rem;
-      box-sizing: border-box; resize: vertical; transition: border-color var(--transition);
+      width: 100%; background: #0d0d14; border: 1px solid #2a2a3a; border-radius: 6px;
+      color: #e8e0d0; font-size: 0.9rem; padding: 0.75rem; box-sizing: border-box;
+      font-family: 'Lora', serif; line-height: 1.6; resize: vertical; min-height: 300px;
     }
     .notes-editor:focus { outline: none; border-color: var(--gold-dark); }
-    .notes-hint { font-size: 0.75rem; color: var(--text-muted); font-style: italic; margin-top: 0.5rem; text-align: right; }
 
-    /* ── Paramètres ─────────────────────────────────────────── */
-    .settings-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1rem; }
-    .settings-section h3 { font-family: var(--font-title); font-size: 0.9rem; color: var(--gold); margin-bottom: 0.75rem; letter-spacing: 0.05em; }
-    .settings-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.6rem; flex-wrap: wrap; }
-    .settings-label { font-size: 0.85rem; color: var(--text-secondary); flex: 1; min-width: 150px; }
-    .settings-desc { font-size: 0.78rem; color: var(--text-muted); font-style: italic; margin-top: 0.1rem; }
-    .avatar-picker { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-    .avatar-option {
-      width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--border);
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      font-size: 1.2rem; transition: all var(--transition); background: var(--bg-secondary);
+    /* Paramètres */
+    .settings-section {
+      background: #1a1a24; border: 1px solid #2a2a3a; border-radius: var(--radius);
+      padding: 1.1rem 1.25rem; margin-bottom: 1rem;
     }
-    .avatar-option:hover { border-color: var(--gold-dark); }
-    .avatar-option.selected { border-color: var(--gold); background: rgba(201,162,39,0.1); }
+    .settings-section h3 { font-family: 'Cinzel', serif; font-size: 0.85rem; color: var(--gold); margin: 0 0 0.85rem; letter-spacing: 0.05em; }
+    .settings-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.65rem; flex-wrap: wrap; }
+    .settings-label { flex: 1; min-width: 140px; font-size: 0.85rem; color: #bbb; }
+    .settings-desc { font-size: 0.75rem; color: #666; margin-top: 0.1rem; }
+    .pwd-msg { font-size: 0.78rem; margin-top: 0.25rem; display: none; }
 
-    /* ── Sélecteur de personnage ────────────────────────────── */
-    .char-selector-bar {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.6rem 0.85rem;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
+    /* Avatar picker */
+    .avatar-grid { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .av-btn {
+      width: 36px; height: 36px; border-radius: 6px; border: 2px solid #2a2a3a;
+      background: #0d0d14; font-size: 1.3rem; cursor: pointer; display: flex;
+      align-items: center; justify-content: center; transition: border-color var(--transition);
     }
-    .char-selector-label {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      flex-shrink: 0;
-    }
-    .char-selector-select {
-      flex: 1;
-      min-width: 140px;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border);
-      border-radius: calc(var(--radius) - 2px);
-      color: var(--gold);
-      font-family: var(--font-title);
-      font-size: 0.88rem;
-      padding: 0.35rem 0.6rem;
-      cursor: pointer;
-    }
-    .char-selector-select:focus { outline: none; border-color: var(--gold-dark); }
+    .av-btn:hover { border-color: var(--gold-dark); }
+    .av-btn.selected { border-color: var(--gold); background: rgba(201,162,39,0.1); }
 
-    /* ── Admin ──────────────────────────────────────────────── */
-    .admin-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 1rem;
-      margin-bottom: 2rem;
+    /* Admin */
+    .admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.85rem; margin-top: 1rem; }
+    .admin-card {
+      background: #13131a; border: 1px solid #2a2a3a; border-radius: var(--radius);
+      padding: 1rem; cursor: pointer; transition: border-color var(--transition), background var(--transition);
     }
-    .admin-player-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem 1rem;
-      cursor: pointer;
-      transition: all var(--transition);
-      text-align: center;
-    }
-    .admin-player-card:hover {
-      border-color: var(--gold-dark);
-      background: var(--bg-card-hover);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 16px var(--glow-gold);
-    }
-    .admin-player-avatar {
-      font-size: 2rem;
-      width: 56px; height: 56px;
-      border-radius: 50%;
-      border: 2px solid var(--border);
-      background: var(--bg-secondary);
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 0.75rem;
-      transition: border-color var(--transition);
-    }
-    .admin-player-card:hover .admin-player-avatar { border-color: var(--gold-dark); }
-    .admin-player-username {
-      font-family: var(--font-title);
-      color: var(--gold);
-      font-size: 1rem;
-      display: block;
-      margin-bottom: 0.25rem;
-    }
-    .admin-player-info {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      font-style: italic;
-    }
+    .admin-card:hover { border-color: var(--gold-dark); background: #1a1a24; }
+    .admin-card-name { font-family: 'Cinzel', serif; color: var(--gold); font-size: 0.9rem; margin-bottom: 0.25rem; }
+    .admin-card-info { font-size: 0.78rem; color: #888; }
 
-    /* Modal admin fiche */
-    .admin-modal-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.8);
-      z-index: 300;
-      display: none;
-      overflow-y: auto;
-      padding: 2rem 1rem;
+    /* Modal admin */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 1000;
+      display: none; align-items: flex-start; justify-content: center;
+      padding: 2rem 1rem; overflow-y: auto;
     }
-    .admin-modal-overlay.open { display: block; }
-    .admin-modal {
-      background: var(--bg-deep);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 1.5rem;
-      position: relative;
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #1a1a24; border: 1px solid #2a2a3a; border-radius: var(--radius);
+      padding: 1.5rem; width: 100%; max-width: 640px; position: relative;
     }
-    .admin-modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1.5rem;
-      flex-wrap: wrap;
-      gap: 0.75rem;
+    .modal-close {
+      position: absolute; top: 1rem; right: 1rem; background: none; border: none;
+      color: #888; font-size: 1.4rem; cursor: pointer; line-height: 1;
     }
-    .admin-modal-title {
-      font-family: var(--font-title);
-      color: var(--gold);
-      font-size: 1.3rem;
-    }
-    .admin-modal-close {
-      background: none; border: 1px solid var(--border);
-      border-radius: var(--radius); color: var(--text-muted);
-      cursor: pointer; font-size: 1.1rem; padding: 0.3rem 0.65rem;
-      transition: all var(--transition);
-    }
-    .admin-modal-close:hover { border-color: var(--gold-dark); color: var(--gold); }
-    .admin-stat-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-      gap: 0.6rem;
-      margin-bottom: 1rem;
-    }
-    .admin-stat-box {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 0.6rem 0.75rem;
-      text-align: center;
-    }
-    .admin-stat-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; display: block; margin-bottom: 0.2rem; }
-    .admin-stat-value { font-family: var(--font-title); font-size: 1.1rem; color: var(--gold); display: block; }
-    .admin-section-title {
-      font-family: var(--font-title); font-size: 0.72rem; letter-spacing: 0.12em;
-      color: var(--gold-dark); text-transform: uppercase;
-      border-bottom: 1px solid var(--border); padding-bottom: 0.4rem;
-      margin: 1rem 0 0.75rem;
-    }
-    .admin-skills-list {
-      display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.75rem;
-    }
-    .admin-skill-tag {
-      font-size: 0.75rem; padding: 0.2rem 0.55rem; border-radius: 12px;
-      border: 1px solid var(--border); color: var(--text-muted);
-    }
-    .admin-skill-tag.prof { border-color: var(--gold-dark); color: var(--gold); background: rgba(201,162,39,0.1); }
-    .admin-skill-tag.expert { border-color: var(--gold); color: var(--gold); background: rgba(201,162,39,0.2); }
-    .admin-notes-box {
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 1rem; font-size: 0.88rem;
-      color: var(--text-secondary); white-space: pre-wrap; line-height: 1.7;
-      max-height: 200px; overflow-y: auto;
-    }
-    .admin-items-list {
-      display: flex; flex-direction: column; gap: 0.3rem;
-    }
-    .admin-item-row {
-      display: flex; gap: 0.75rem; align-items: center;
-      font-size: 0.82rem; color: var(--text-secondary);
-      padding: 0.3rem 0.5rem;
-      background: var(--bg-card); border-radius: calc(var(--radius) - 2px);
-    }
-    .admin-item-qty { color: var(--gold); font-family: var(--font-title); min-width: 20px; }
-    .admin-empty { color: var(--text-muted); font-style: italic; font-size: 0.85rem; padding: 0.5rem 0; }
-    .admin-refresh-btn { }
+    .modal-close:hover { color: #e8e0d0; }
+    .modal-title { font-family: 'Cinzel', serif; color: var(--gold); font-size: 1.1rem; margin-bottom: 1rem; }
 
-    /* ── Autosave ───────────────────────────────────────────── */
-    .autosave-badge { font-size: 0.72rem; color: var(--text-muted); font-style: italic; transition: color 0.4s; }
-    .autosave-badge.saved { color: #6aba6a; }
+    /* Mort sauvetages */
+    .death-dots { display: flex; gap: 0.35rem; }
+    .death-dot {
+      width: 14px; height: 14px; border-radius: 50%; border: 2px solid #3a3a4a;
+      background: transparent; cursor: pointer; transition: background var(--transition), border-color var(--transition);
+    }
+    .death-dot.success-on { background: var(--success); border-color: var(--success); }
+    .death-dot.fail-on { background: var(--danger); border-color: var(--danger); }
 
-    /* ── Responsive ─────────────────────────────────────────── */
+    /* Responsive */
     @media (max-width: 700px) {
       .ability-grid { grid-template-columns: repeat(3, 1fr); }
-      .sheet-grid { grid-template-columns: 1fr; }
-      .skills-grid { grid-template-columns: 1fr; }
-      .saves-grid { grid-template-columns: 1fr 1fr; }
-      .spell-slots-grid { grid-template-columns: repeat(5, 1fr); }
+      .save-skill-grid { grid-template-columns: 1fr; }
+      .auth-box { padding: 1.25rem; }
       .currency-grid { grid-template-columns: repeat(3, 1fr); }
-    }
-    @media (max-width: 480px) {
-      .ability-grid { grid-template-columns: repeat(2, 1fr); }
-      .tab-btn { padding: 0.65rem 0.8rem; font-size: 0.75rem; }
-      .auth-box { padding: 1.75rem 1.25rem; }
     }
   </style>
 </head>
 <body>
 
-<!-- ▸ Navigation -->
-<nav class="top-nav">
-  <a href="index.html" class="nav-brand">
-    <span class="nav-brand-icon">⚜</span>
-    <span class="nav-brand-text">Kaleysur</span>
-  </a>
-  <div class="nav-right">
-    <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input class="search-input" id="search-input" type="text" placeholder="Rechercher…" autocomplete="off">
-      <div class="search-results" id="search-results"></div>
-    </div>
-    <button class="hamburger" id="hamburger" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-</nav>
-
 <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
+<!-- ▸ Barre latérale -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-section"><div class="sidebar-section-title">Navigation</div>
     <a href="index.html" class="sidebar-link"><span class="icon">🏠</span> Accueil</a>
     <a href="chronologie.html" class="sidebar-link"><span class="icon">📜</span> Chronologie</a>
     <a href="carte.html" class="sidebar-link"><span class="icon">🗺️</span> Carte du Monde</a>
     <a href="calendrier.html" class="sidebar-link"><span class="icon">📅</span> Calendrier</a>
-    <a href="joueurs.html" class="sidebar-link active"><span class="icon">🎲</span> Joueurs</a>
+    <a href="joueurs.html" class="sidebar-link"><span class="icon">🎲</span> Joueurs</a>
   </div>
   <hr class="sidebar-divider">
   <div class="sidebar-section"><div class="sidebar-section-title">Astoryem</div>
     <a href="astoryem/astoryem.html" class="sidebar-link"><span class="icon">🌐</span> Astoryem</a>
+    <a href="astoryem/feymundi.html" class="sidebar-link sidebar-sublink"><span class="icon">🏰</span> Feymundi</a>
+    <a href="astoryem/waterflow.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Waterflow</a>
+    <a href="astoryem/ville-tempete.html" class="sidebar-link sidebar-sublink"><span class="icon">⚡</span> Ville Tempête</a>
+    <a href="astoryem/arcanumbra.html" class="sidebar-link sidebar-sublink"><span class="icon">⌛</span> Arcanumbra</a>
+    <a href="astoryem/cite-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌑</span> Cité des Ombres</a>
   </div>
   <hr class="sidebar-divider">
-  <div class="sidebar-section"><div class="sidebar-section-title">Ayakan</div>
-    <a href="ayakan/ayakan.html" class="sidebar-link"><span class="icon">🌐</span> Ayakan</a>
-  </div>
-  <hr class="sidebar-divider">
-  <div class="sidebar-section"><div class="sidebar-section-title">Musiyav</div>
-    <a href="musiyav/musiyav.html" class="sidebar-link"><span class="icon">🌐</span> Musiyav</a>
-  </div>
-  <hr class="sidebar-divider">
-  <div class="sidebar-section"><div class="sidebar-section-title">Personnages & Lore</div>
+  <div class="sidebar-section"><div class="sidebar-section-title">Lore</div>
     <a href="lore/personnages.html" class="sidebar-link"><span class="icon">🧙</span> Personnages</a>
     <a href="lore/organisations.html" class="sidebar-link"><span class="icon">⚔️</span> Organisations</a>
-    <a href="lore/dieux.html" class="sidebar-link"><span class="icon">✨</span> Dieux & Trinités</a>
+    <a href="lore/dieux.html" class="sidebar-link"><span class="icon">✨</span> Dieux &amp; Trinités</a>
+    <a href="lore/anneau-dieux.html" class="sidebar-link"><span class="icon">💍</span> Anneau des Dieux</a>
+    <a href="lore/journal-arzi.html" class="sidebar-link"><span class="icon">📖</span> Journal d'Arzi</a>
   </div>
 </aside>
 
-<!-- ▸ Contenu -->
-<div class="page-wrapper">
-  <main class="main-content">
+<!-- ▸ Contenu principal -->
+<div class="wiki-wrapper">
+<main class="main-content" style="max-width:900px;">
 
-    <!-- ══ ÉCRAN AUTH ══ -->
-    <div class="jscreen active" id="screen-auth">
-      <div class="auth-wrap">
-        <div class="auth-box">
-          <div class="auth-emblem">⚔</div>
-          <div class="auth-title">Espace Joueurs</div>
-          <div class="auth-subtitle">Accède à ta fiche, ton inventaire et tes notes</div>
+  <!-- ══ ÉCRAN AUTH ══ -->
+  <div class="j-screen active" id="screen-auth">
+    <div class="auth-wrap">
+      <div class="auth-box">
+        <div class="auth-emblem">⚔</div>
+        <div class="auth-title">Espace Joueurs</div>
+        <div class="auth-subtitle">Accède à ta fiche de personnage</div>
+        <div class="auth-error" id="auth-error"></div>
 
-          <div class="auth-error" id="auth-error"></div>
-          <div id="firebase-status" style="font-size:0.72rem;color:var(--text-muted);margin-bottom:0.5rem;min-height:1.2em;"></div>
-
-          <!-- Connexion -->
-          <div id="mode-login">
-            <div class="auth-mode-title">Connexion</div>
-            <div class="auth-field">
-              <label class="auth-label">Pseudo</label>
-              <input type="text" class="auth-input" id="login-username" placeholder="Ton pseudo" autocomplete="username" autocorrect="off" autocapitalize="none">
-            </div>
-            <div class="auth-field">
-              <label class="auth-label">Mot de passe</label>
-              <input type="password" class="auth-input" id="login-password" placeholder="••••••••" autocomplete="current-password">
-            </div>
-            <button class="auth-btn" id="btn-login">Se connecter</button>
-            <div class="auth-switch">
-              Pas encore de compte ?
-              <button class="auth-switch-btn" id="btn-go-register">Créer un compte</button>
-            </div>
+        <!-- Connexion -->
+        <div id="mode-login">
+          <div class="auth-mode-title">Connexion</div>
+          <div class="auth-field">
+            <label class="auth-label">Pseudo</label>
+            <input type="text" class="auth-input" id="login-user" placeholder="Ton pseudo" autocorrect="off" autocapitalize="none">
           </div>
+          <div class="auth-field">
+            <label class="auth-label">Mot de passe</label>
+            <input type="password" class="auth-input" id="login-pass" placeholder="••••••••">
+          </div>
+          <button class="auth-btn" id="btn-login">Se connecter</button>
+          <div class="auth-switch">
+            Pas encore de compte ?
+            <button class="auth-switch-btn" id="btn-go-register">Créer un compte</button>
+          </div>
+        </div>
 
-          <!-- Inscription -->
-          <div id="mode-register" style="display:none;">
-            <div class="auth-mode-title">Créer un compte</div>
-            <div class="auth-field">
-              <label class="auth-label">Pseudo</label>
-              <input type="text" class="auth-input" id="reg-username" placeholder="Choisis un pseudo unique" autocomplete="username" autocorrect="off" autocapitalize="none">
-            </div>
-            <div class="auth-field">
-              <label class="auth-label">Mot de passe</label>
-              <input type="password" class="auth-input" id="reg-password" placeholder="Au moins 6 caractères" autocomplete="new-password">
-            </div>
-            <div class="auth-field">
-              <label class="auth-label">Confirmer le mot de passe</label>
-              <input type="password" class="auth-input" id="reg-password2" placeholder="Répète le mot de passe" autocomplete="new-password">
-            </div>
-            <button class="auth-btn" id="btn-register">Créer le compte</button>
-            <div class="auth-switch">
-              Déjà un compte ?
-              <button class="auth-switch-btn" id="btn-go-login">Se connecter</button>
-            </div>
+        <!-- Inscription -->
+        <div id="mode-register" style="display:none;">
+          <div class="auth-mode-title">Créer un compte</div>
+          <div class="auth-field">
+            <label class="auth-label">Pseudo</label>
+            <input type="text" class="auth-input" id="reg-user" placeholder="Choisis un pseudo unique" autocorrect="off" autocapitalize="none">
+          </div>
+          <div class="auth-field">
+            <label class="auth-label">Mot de passe</label>
+            <input type="password" class="auth-input" id="reg-pass" placeholder="Au moins 6 caractères">
+          </div>
+          <div class="auth-field">
+            <label class="auth-label">Confirmer le mot de passe</label>
+            <input type="password" class="auth-input" id="reg-pass2" placeholder="Répète le mot de passe">
+          </div>
+          <button class="auth-btn" id="btn-register">Créer le compte</button>
+          <div class="auth-switch">
+            Déjà un compte ?
+            <button class="auth-switch-btn" id="btn-go-login">Se connecter</button>
           </div>
         </div>
       </div>
     </div>
+  </div><!-- /screen-auth -->
 
-    <!-- ══ ÉCRAN DASHBOARD ══ -->
-    <div class="jscreen" id="screen-dashboard">
+  <!-- ══ DASHBOARD ══ -->
+  <div class="j-screen" id="screen-dashboard">
 
-      <div class="dashboard-header">
-        <div class="dashboard-player-info">
-          <div class="dashboard-avatar" id="dash-avatar">⚔</div>
-          <div>
-            <div class="dashboard-player-name" id="dash-player-name">—</div>
-            <div class="dashboard-player-char" id="dash-char-summary">Aucun personnage</div>
-          </div>
-        </div>
-        <div class="dashboard-actions">
-          <span class="autosave-badge" id="autosave-badge"></span>
-          <button class="btn btn-sm" id="btn-logout">Déconnexion</button>
-        </div>
-      </div>
-
-      <!-- Sélecteur de personnage -->
-      <div class="char-selector-bar">
-        <span class="char-selector-label">Personnage</span>
-        <select class="char-selector-select" id="char-select"></select>
-        <button class="btn btn-sm btn-gold" id="btn-new-char">+ Nouveau</button>
-        <button class="btn btn-sm btn-danger" id="btn-del-char" title="Supprimer ce personnage">🗑</button>
-      </div>
-
-      <div class="tabs">
-        <button class="tab-btn active" data-tab="personnage">⚔ Personnage</button>
-        <button class="tab-btn" data-tab="inventaire">🎒 Inventaire</button>
-        <button class="tab-btn" data-tab="notes">📜 Notes</button>
-        <button class="tab-btn" data-tab="parametres">⚙ Paramètres</button>
-        <button class="tab-btn" data-tab="admin" id="tab-btn-admin" style="display:none;color:#c97a7a;">👁 Admin</button>
-      </div>
-
-      <!-- ── Personnage ── -->
-      <div class="tab-panel active" id="tab-personnage">
-
-        <div class="sheet-section">
-          <div class="sheet-section-title">Informations</div>
-          <div class="sheet-grid">
-            <div class="field-group">
-              <label class="field-label">Nom du personnage</label>
-              <input type="text" class="field-input" data-field="characterName" placeholder="Nom du héros">
-            </div>
-            <div class="field-group">
-              <label class="field-label">Espèce (Species)</label>
-              <input type="text" class="field-input" data-field="species" placeholder="ex. Humain, Elfe…">
-            </div>
-            <div class="field-group">
-              <label class="field-label">Classe</label>
-              <input type="text" class="field-input" data-field="classe" placeholder="ex. Guerrier, Roublard…">
-            </div>
-            <div class="field-group">
-              <label class="field-label">Sous-classe</label>
-              <input type="text" class="field-input" data-field="sousClasse" placeholder="ex. Champion…">
-            </div>
-            <div class="field-group">
-              <label class="field-label">Niveau</label>
-              <input type="number" class="field-input" data-field="niveau" min="1" max="20" value="1">
-            </div>
-            <div class="field-group">
-              <label class="field-label">Historique (Background)</label>
-              <input type="text" class="field-input" data-field="background" placeholder="ex. Acolyte…">
-            </div>
-            <div class="field-group">
-              <label class="field-label">Alignement</label>
-              <select class="field-input" data-field="alignement">
-                <option value="">—</option>
-                <option>Loyal Bon</option><option>Neutre Bon</option><option>Chaotique Bon</option>
-                <option>Loyal Neutre</option><option>Neutre</option><option>Chaotique Neutre</option>
-                <option>Loyal Mauvais</option><option>Neutre Mauvais</option><option>Chaotique Mauvais</option>
-              </select>
-            </div>
-            <div class="field-group">
-              <label class="field-label">Points d'expérience (XP)</label>
-              <input type="number" class="field-input" data-field="xp" min="0" value="0">
-            </div>
-          </div>
-          <div style="display:flex;align-items:center;gap:0.75rem;">
-            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.85rem;color:var(--text-secondary);">
-              <input type="checkbox" data-field="inspiration" style="accent-color:var(--gold-dark);width:16px;height:16px;">
-              Inspiration
-            </label>
-            <span style="font-size:0.78rem;color:var(--text-muted);font-style:italic;">Bonus de maîtrise : <strong id="prof-bonus-display" style="color:var(--gold);">+2</strong></span>
-          </div>
-        </div>
-
-        <div class="sheet-section">
-          <div class="sheet-section-title">Caractéristiques</div>
-          <div class="ability-grid" id="ability-grid"></div>
-        </div>
-
-        <div class="sheet-grid">
-          <div class="sheet-section">
-            <div class="sheet-section-title">Jets de Sauvegarde</div>
-            <div class="saves-grid" id="saves-grid"></div>
-          </div>
-          <div class="sheet-section">
-            <div class="sheet-section-title">Maîtrises</div>
-            <div class="field-group"><label class="field-label">Langues</label><input type="text" class="field-input" data-field="langues" placeholder="Commun, Elfique…"></div>
-            <div class="field-group"><label class="field-label">Outils</label><input type="text" class="field-input" data-field="outils" placeholder="Outils de voleur…"></div>
-            <div class="field-group"><label class="field-label">Armures</label><input type="text" class="field-input" data-field="armures" placeholder="Légères, moyennes…"></div>
-            <div class="field-group"><label class="field-label">Armes</label><input type="text" class="field-input" data-field="armesProficiencies" placeholder="Armes simples…"></div>
-          </div>
-        </div>
-
-        <div class="sheet-section">
-          <div class="sheet-section-title">Compétences</div>
-          <div class="skills-grid" id="skills-grid"></div>
-        </div>
-
-        <div class="sheet-section">
-          <div class="sheet-section-title">Combat</div>
-          <div class="combat-row">
-            <div class="combat-field"><label class="field-label">Classe d'Armure</label><input type="number" class="field-input field-input-num" data-field="ca" value="10" min="0"></div>
-            <div class="combat-field"><label class="field-label">Initiative</label><input type="number" class="field-input field-input-num" data-field="initiative" value="0"></div>
-            <div class="combat-field"><label class="field-label">Vitesse (pi.)</label><input type="number" class="field-input field-input-num" data-field="vitesse" value="30" min="0" step="5"></div>
-          </div>
-          <div class="field-group">
-            <label class="field-label">Points de vie</label>
-            <div class="hp-display">
-              <div><div style="font-size:0.65rem;color:var(--text-muted);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.2rem;">Actuels</div><input type="number" class="hp-current" data-field="pvActuel" value="0" min="0"></div>
-              <span class="hp-sep">/</span>
-              <div><div style="font-size:0.65rem;color:var(--text-muted);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.2rem;">Maximum</div><input type="number" class="hp-current" data-field="pvMax" value="0" min="0"></div>
-              <div style="margin-left:0.75rem;"><div style="font-size:0.65rem;color:var(--text-muted);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.2rem;">Temporaires</div><input type="number" class="hp-current" data-field="pvTemp" value="0" min="0"></div>
-            </div>
-          </div>
-          <div class="field-group">
-            <label class="field-label">Dés de vie</label>
-            <div class="dice-row">
-              <input type="number" class="field-input field-input-num" data-field="nbDeVie" value="1" min="0" max="20" style="width:55px;">
-              <select class="field-input" data-field="deVie" style="width:80px;"><option>1d6</option><option selected>1d8</option><option>1d10</option><option>1d12</option></select>
-              <span style="font-size:0.82rem;color:var(--text-muted);">restants</span>
-            </div>
-          </div>
-          <div class="field-group">
-            <label class="field-label">Jets contre la mort</label>
-            <div class="death-saves">
-              <div class="death-group">
-                <span class="death-label">Succès</span>
-                <div class="death-check" data-death="success" data-idx="0"></div>
-                <div class="death-check" data-death="success" data-idx="1"></div>
-                <div class="death-check" data-death="success" data-idx="2"></div>
-              </div>
-              <div class="death-group">
-                <span class="death-label">Échecs</span>
-                <div class="death-check" data-death="fail" data-idx="0"></div>
-                <div class="death-check" data-death="fail" data-idx="1"></div>
-                <div class="death-check" data-death="fail" data-idx="2"></div>
-              </div>
-            </div>
-          </div>
-          <div class="field-group">
-            <label class="field-label">Épuisement <span style="color:var(--text-muted);font-size:0.7em;font-style:italic;">(D&D 2024 — −2 par niveau)</span></label>
-            <div class="exhaustion-track" id="exhaustion-track">
-              <div class="exhaustion-pip" data-lv="1">1</div>
-              <div class="exhaustion-pip" data-lv="2">2</div>
-              <div class="exhaustion-pip" data-lv="3">3</div>
-              <div class="exhaustion-pip" data-lv="4">4</div>
-              <div class="exhaustion-pip" data-lv="5">5</div>
-              <div class="exhaustion-pip" data-lv="6">6 ☠</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="sheet-section">
-          <div class="sheet-section-title">Maîtrise d'armes <span style="color:var(--text-muted);font-style:italic;font-size:0.85em;">(Weapon Mastery — D&D 2024)</span></div>
-          <div class="mastery-grid" id="mastery-grid">
-            <div class="mastery-tag" data-mastery="Cleave">Cleave</div>
-            <div class="mastery-tag" data-mastery="Flex">Flex</div>
-            <div class="mastery-tag" data-mastery="Graze">Graze</div>
-            <div class="mastery-tag" data-mastery="Nick">Nick</div>
-            <div class="mastery-tag" data-mastery="Push">Push</div>
-            <div class="mastery-tag" data-mastery="Sap">Sap</div>
-            <div class="mastery-tag" data-mastery="Slow">Slow</div>
-            <div class="mastery-tag" data-mastery="Topple">Topple</div>
-            <div class="mastery-tag" data-mastery="Vex">Vex</div>
-          </div>
-        </div>
-
-        <div class="sheet-section">
-          <div class="sheet-section-title">Attaques</div>
-          <table class="attacks-table"><thead><tr><th>Nom</th><th>Bonus</th><th>Dégâts</th><th>Type</th><th>Maîtrise</th><th></th></tr></thead>
-          <tbody id="attacks-tbody"></tbody></table>
-          <div style="margin-top:0.6rem;"><button class="btn btn-sm" id="btn-add-attack">+ Ajouter</button></div>
-        </div>
-
-        <div class="sheet-section">
-          <div class="sheet-section-title">Magie</div>
-          <div class="sheet-grid">
-            <div class="field-group"><label class="field-label">Classe de lanceur</label><input type="text" class="field-input" data-field="classeSort" placeholder="Magicien…"></div>
-            <div class="field-group"><label class="field-label">Caractéristique de sort</label>
-              <select class="field-input" data-field="caractSort"><option value="">—</option><option>FOR</option><option>DEX</option><option>CON</option><option>INT</option><option>SAG</option><option>CHA</option></select>
-            </div>
-          </div>
-          <label class="field-label" style="margin-bottom:0.5rem;">Emplacements de sorts</label>
-          <div class="spell-slots-grid" id="spell-slots-grid"></div>
-          <div class="field-group"><label class="field-label">Sorts connus / préparés</label><textarea class="field-input" data-field="sorts" rows="5" placeholder="Liste tes sorts ici…"></textarea></div>
-        </div>
-
-        <div class="sheet-section">
-          <div class="sheet-section-title">Personnalité & Traits</div>
-          <div class="sheet-grid">
-            <div class="field-group"><label class="field-label">Traits de personnalité</label><textarea class="field-input" data-field="traits" rows="3"></textarea></div>
-            <div class="field-group"><label class="field-label">Idéaux</label><textarea class="field-input" data-field="ideaux" rows="3"></textarea></div>
-            <div class="field-group"><label class="field-label">Liens</label><textarea class="field-input" data-field="liens" rows="3"></textarea></div>
-            <div class="field-group"><label class="field-label">Défauts</label><textarea class="field-input" data-field="defauts" rows="3"></textarea></div>
-          </div>
-          <div class="field-group"><label class="field-label">Apparence physique</label><textarea class="field-input" data-field="apparence" rows="2"></textarea></div>
-          <div class="field-group"><label class="field-label">Histoire & Contexte</label><textarea class="field-input" data-field="historique" rows="4"></textarea></div>
-        </div>
-
-        <div class="sheet-section">
-          <div class="sheet-section-title">Capacités & Traits de classe / espèce</div>
-          <textarea class="field-input" data-field="capacites" rows="6"></textarea>
-        </div>
-
-      </div><!-- /tab-personnage -->
-
-      <!-- ── Inventaire ── -->
-      <div class="tab-panel" id="tab-inventaire">
-        <div class="sheet-section">
-          <div class="sheet-section-title">Monnaie</div>
-          <div class="currency-grid">
-            <div class="currency-box"><span class="currency-name">PP</span><input type="number" class="currency-input" data-currency="pp" value="0" min="0"></div>
-            <div class="currency-box"><span class="currency-name">PO</span><input type="number" class="currency-input" data-currency="gp" value="0" min="0"></div>
-            <div class="currency-box"><span class="currency-name">PE</span><input type="number" class="currency-input" data-currency="ep" value="0" min="0"></div>
-            <div class="currency-box"><span class="currency-name">PA</span><input type="number" class="currency-input" data-currency="sp" value="0" min="0"></div>
-            <div class="currency-box"><span class="currency-name">PC</span><input type="number" class="currency-input" data-currency="cp" value="0" min="0"></div>
-          </div>
-        </div>
-        <div class="sheet-section">
-          <div class="sheet-section-title">Objets</div>
-          <div class="items-toolbar">
-            <input type="text" class="items-search" id="items-search" placeholder="Filtrer les objets…">
-            <button class="btn btn-sm btn-gold" id="btn-add-item">+ Ajouter</button>
-          </div>
-          <div class="items-list" id="items-list">
-            <div class="items-empty" id="items-empty">Aucun objet dans l'inventaire.</div>
-          </div>
-          <div class="encumbrance-info" id="encumbrance-info"></div>
-        </div>
-      </div>
-
-      <!-- ── Notes ── -->
-      <div class="tab-panel" id="tab-notes">
-        <div class="sheet-section">
-          <div class="sheet-section-title">Notes personnelles</div>
-          <textarea class="notes-editor" id="notes-editor" placeholder="Quêtes, indices, noms de PNJ, plans…"></textarea>
-          <div class="notes-hint">Sauvegarde automatique en ligne.</div>
-        </div>
-      </div>
-
-      <!-- ── Paramètres ── -->
-      <div class="tab-panel" id="tab-parametres">
-        <div class="settings-section">
-          <h3>Profil</h3>
-          <div class="settings-row">
-            <div class="settings-label">Avatar</div>
-            <div class="avatar-picker" id="settings-avatar-picker"></div>
-          </div>
-        </div>
-        <div class="settings-section">
-          <h3>Mot de passe</h3>
-          <div class="settings-row">
-            <div class="settings-label"><div>Nouveau mot de passe</div><div class="settings-desc">Au moins 6 caractères</div></div>
-            <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
-              <input type="password" class="field-input" id="settings-newpwd" placeholder="Nouveau mot de passe" style="width:180px;">
-              <button class="btn btn-sm btn-gold" id="btn-change-pwd">Changer</button>
-            </div>
-          </div>
-          <div id="pwd-msg" style="font-size:0.78rem;margin-top:0.25rem;display:none;"></div>
-        </div>
-        <div class="settings-section">
-          <h3>Compte</h3>
-          <div class="settings-row">
-            <div class="settings-label"><div>Supprimer toutes mes données</div><div class="settings-desc">Efface la fiche, l'inventaire et les notes (le compte reste)</div></div>
-            <button class="btn btn-sm btn-danger" id="btn-clear-data">🗑 Effacer</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── Admin ── -->
-      <div class="tab-panel" id="tab-admin">
-        <div class="sheet-section">
-          <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
-            <span>Tous les joueurs</span>
-            <button class="btn btn-sm admin-refresh-btn" id="btn-admin-refresh">↺ Actualiser</button>
-          </div>
-          <div id="admin-loading" style="color:var(--text-muted);font-style:italic;padding:1rem 0;">Chargement…</div>
-          <div class="admin-grid" id="admin-grid"></div>
-        </div>
-      </div>
-
-    </div><!-- /screen-dashboard -->
-
-  </main>
-</div>
-
-<!-- ▸ Modal fiche joueur (vue admin) -->
-<div class="admin-modal-overlay" id="admin-modal">
-  <div class="admin-modal">
-    <div class="admin-modal-header">
-      <div style="display:flex;align-items:center;gap:0.75rem;">
-        <div class="dashboard-avatar" id="admin-view-avatar">⚔</div>
+    <!-- En-tête -->
+    <div class="dash-header">
+      <div class="dash-player">
+        <div class="dash-avatar" id="dash-avatar">⚔</div>
         <div>
-          <div class="admin-modal-title" id="admin-view-name">—</div>
-          <div style="font-size:0.82rem;color:var(--text-muted);font-style:italic;" id="admin-view-char">—</div>
+          <div class="dash-name" id="dash-name">—</div>
+          <div class="dash-char-info" id="dash-info">Aucun personnage</div>
         </div>
       </div>
-      <button class="admin-modal-close" id="admin-modal-close">✕ Fermer</button>
+      <div class="dash-actions">
+        <span class="save-badge" id="save-badge"></span>
+        <button class="btn btn-sm btn-danger" id="btn-logout">Déconnexion</button>
+      </div>
     </div>
 
-    <!-- Stats de combat rapides -->
-    <div class="admin-stat-grid" id="admin-stat-grid"></div>
+    <!-- Sélecteur de personnage -->
+    <div class="char-bar">
+      <label>Personnage</label>
+      <select class="char-select" id="char-select"></select>
+      <button class="btn btn-sm btn-gold" id="btn-new-char">+ Nouveau</button>
+      <button class="btn btn-sm btn-danger" id="btn-del-char" title="Supprimer">🗑</button>
+    </div>
 
-    <!-- Caractéristiques -->
-    <div class="admin-section-title">Caractéristiques</div>
-    <div class="admin-stat-grid" id="admin-ability-grid"></div>
+    <!-- Onglets -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="personnage">⚔ Personnage</button>
+      <button class="tab-btn" data-tab="inventaire">🎒 Inventaire</button>
+      <button class="tab-btn" data-tab="notes">📜 Notes</button>
+      <button class="tab-btn" data-tab="parametres">⚙ Paramètres</button>
+      <button class="tab-btn" data-tab="admin" id="tab-admin-btn" style="display:none;color:var(--danger);">👁 Admin</button>
+    </div>
 
-    <!-- Jets de sauvegarde -->
-    <div class="admin-section-title">Jets de Sauvegarde</div>
-    <div class="admin-stat-grid" id="admin-saves-grid"></div>
+    <!-- ── Onglet Personnage ── -->
+    <div class="tab-panel active" id="tab-personnage">
 
-    <!-- Compétences maîtrisées -->
-    <div class="admin-section-title">Compétences</div>
-    <div class="admin-skills-list" id="admin-skills-list"></div>
+      <!-- Identité -->
+      <div class="sheet-section">
+        <div class="sheet-section-title">Identité</div>
+        <div class="sheet-grid">
+          <div class="field-group" style="grid-column:span 2;">
+            <label class="field-label">Nom du personnage</label>
+            <input type="text" class="field-input" data-f="characterName" placeholder="Nom du héros">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Espèce (Species)</label>
+            <input type="text" class="field-input" data-f="species" placeholder="ex. Humain, Elfe…">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Classe</label>
+            <input type="text" class="field-input" data-f="classe" placeholder="ex. Guerrier…">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Sous-classe</label>
+            <input type="text" class="field-input" data-f="sousClasse" placeholder="ex. Champion…">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Niveau</label>
+            <input type="number" class="field-input" data-f="niveau" min="1" max="20" value="1">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Background</label>
+            <input type="text" class="field-input" data-f="background" placeholder="ex. Acolyte…">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Alignement</label>
+            <select class="field-input" data-f="alignement">
+              <option value="">—</option>
+              <option>Loyal Bon</option><option>Neutre Bon</option><option>Chaotique Bon</option>
+              <option>Loyal Neutre</option><option>Neutre</option><option>Chaotique Neutre</option>
+              <option>Loyal Mauvais</option><option>Neutre Mauvais</option><option>Chaotique Mauvais</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Points d'XP</label>
+            <input type="number" class="field-input" data-f="xp" min="0" value="0">
+          </div>
+        </div>
+        <div style="margin-top:0.75rem;display:flex;align-items:center;gap:0.5rem;">
+          <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.85rem;color:#bbb;">
+            <input type="checkbox" data-f="inspiration" style="accent-color:var(--gold-dark);width:15px;height:15px;">
+            Inspiration
+          </label>
+          <span style="margin-left:1rem;font-size:0.82rem;color:#888;">Bonus de maîtrise : <strong id="prof-bonus" style="color:var(--gold);">+2</strong></span>
+        </div>
+      </div>
 
-    <!-- Attaques -->
-    <div class="admin-section-title">Attaques</div>
-    <div id="admin-attacks-list"></div>
+      <!-- Caractéristiques -->
+      <div class="sheet-section">
+        <div class="sheet-section-title">Caractéristiques</div>
+        <div class="ability-grid" id="ability-grid"></div>
+      </div>
 
-    <!-- Inventaire -->
-    <div class="admin-section-title">Inventaire</div>
-    <div id="admin-currency-display" style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.5rem;"></div>
-    <div class="admin-items-list" id="admin-items-list"></div>
+      <!-- Sauvegardes & Compétences -->
+      <div class="sheet-section">
+        <div class="sheet-section-title">Sauvegardes &amp; Compétences</div>
+        <div class="save-skill-grid">
+          <div id="saves-col"></div>
+          <div id="skills-col"></div>
+        </div>
+      </div>
 
-    <!-- Notes -->
-    <div class="admin-section-title">Notes du joueur</div>
-    <div class="admin-notes-box" id="admin-notes-box"></div>
+      <!-- Combat -->
+      <div class="sheet-section">
+        <div class="sheet-section-title">Combat</div>
+        <div class="combat-grid">
+          <div class="combat-field">
+            <label class="field-label">Classe d'Armure</label>
+            <input type="number" class="field-input field-input-sm" data-f="ca" value="10" min="0">
+          </div>
+          <div class="combat-field">
+            <label class="field-label">Initiative</label>
+            <input type="number" class="field-input field-input-sm" data-f="initiative" value="0">
+          </div>
+          <div class="combat-field">
+            <label class="field-label">Vitesse (pi.)</label>
+            <input type="number" class="field-input field-input-sm" data-f="vitesse" value="30" min="0" step="5">
+          </div>
+          <div class="combat-field">
+            <label class="field-label">PV Maximum</label>
+            <input type="number" class="field-input field-input-sm" data-f="pvMax" value="0" min="0">
+          </div>
+          <div class="combat-field">
+            <label class="field-label">PV Actuels</label>
+            <input type="number" class="field-input field-input-sm" data-f="pvActuel" value="0">
+          </div>
+          <div class="combat-field">
+            <label class="field-label">PV Temporaires</label>
+            <input type="number" class="field-input field-input-sm" data-f="pvTemp" value="0" min="0">
+          </div>
+          <div class="combat-field">
+            <label class="field-label">Dé de Vie</label>
+            <select class="field-input field-input-md" data-f="deVie">
+              <option>1d6</option><option selected>1d8</option><option>1d10</option><option>1d12</option>
+            </select>
+          </div>
+          <div class="combat-field">
+            <label class="field-label">Nb Dés de Vie</label>
+            <input type="number" class="field-input field-input-sm" data-f="nbDeVie" value="1" min="0">
+          </div>
+        </div>
+        <!-- Jets de mort -->
+        <div style="display:flex;gap:2rem;margin-top:0.85rem;flex-wrap:wrap;">
+          <div>
+            <div class="field-label" style="margin-bottom:0.3rem;">Jets de mort — Succès</div>
+            <div class="death-dots" id="death-success">
+              <div class="death-dot" data-idx="0" data-type="success"></div>
+              <div class="death-dot" data-idx="1" data-type="success"></div>
+              <div class="death-dot" data-idx="2" data-type="success"></div>
+            </div>
+          </div>
+          <div>
+            <div class="field-label" style="margin-bottom:0.3rem;">Jets de mort — Échecs</div>
+            <div class="death-dots" id="death-fail">
+              <div class="death-dot" data-idx="0" data-type="fail"></div>
+              <div class="death-dot" data-idx="1" data-type="fail"></div>
+              <div class="death-dot" data-idx="2" data-type="fail"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Attaques -->
+      <div class="sheet-section">
+        <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
+          <span>Attaques</span>
+          <button class="btn btn-sm btn-gold" id="btn-add-attack">+ Ajouter</button>
+        </div>
+        <table class="attack-table">
+          <thead><tr>
+            <th style="width:35%">Nom</th>
+            <th style="width:20%">Bonus att.</th>
+            <th style="width:30%">Dégâts / Type</th>
+            <th style="width:15%"></th>
+          </tr></thead>
+          <tbody id="attack-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Sorts -->
+      <div class="sheet-section">
+        <div class="sheet-section-title">Sorts</div>
+        <div class="sheet-grid" style="margin-bottom:0.75rem;">
+          <div class="field-group">
+            <label class="field-label">Classe de sort</label>
+            <input type="text" class="field-input" data-f="classeSort" placeholder="ex. Magicien">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Caractéristique</label>
+            <select class="field-input" data-f="caractSort">
+              <option value="">—</option>
+              <option>FOR</option><option>DEX</option><option>CON</option>
+              <option>INT</option><option>SAG</option><option>CHA</option>
+            </select>
+          </div>
+          <div class="combat-field">
+            <label class="field-label">Save DD</label>
+            <div class="field-input field-input-sm" id="sort-dd" style="padding:0.4rem;text-align:center;">—</div>
+          </div>
+          <div class="combat-field">
+            <label class="field-label">Bonus attaque</label>
+            <div class="field-input field-input-sm" id="sort-atk" style="padding:0.4rem;text-align:center;">—</div>
+          </div>
+        </div>
+        <!-- Emplacements de sorts -->
+        <div id="spell-slots-grid"></div>
+        <!-- Liste de sorts -->
+        <div style="margin-top:0.75rem;">
+          <div class="field-label" style="margin-bottom:0.4rem;">Liste de sorts connus / préparés</div>
+          <textarea class="field-input" data-f="sortListe" rows="5" placeholder="Liste tes sorts ici…"></textarea>
+        </div>
+      </div>
+
+      <!-- Traits & capacités -->
+      <div class="sheet-section">
+        <div class="sheet-section-title">Traits &amp; Capacités</div>
+        <textarea class="field-input" data-f="capacites" rows="5" placeholder="Capacités de classe, traits raciaux, dons…"></textarea>
+      </div>
+
+      <!-- Personnalité -->
+      <div class="sheet-section">
+        <div class="sheet-section-title">Personnalité</div>
+        <div class="sheet-grid-2">
+          <div class="field-group">
+            <label class="field-label">Traits de personnalité</label>
+            <textarea class="field-input" data-f="traits" rows="3"></textarea>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Idéaux</label>
+            <textarea class="field-input" data-f="ideaux" rows="3"></textarea>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Liens</label>
+            <textarea class="field-input" data-f="liens" rows="3"></textarea>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Défauts</label>
+            <textarea class="field-input" data-f="defauts" rows="3"></textarea>
+          </div>
+        </div>
+        <div class="field-group" style="margin-top:0.75rem;">
+          <label class="field-label">Apparence physique</label>
+          <textarea class="field-input" data-f="apparence" rows="2"></textarea>
+        </div>
+        <div class="field-group" style="margin-top:0.75rem;">
+          <label class="field-label">Histoire &amp; Contexte</label>
+          <textarea class="field-input" data-f="historique" rows="4"></textarea>
+        </div>
+      </div>
+
+    </div><!-- /tab-personnage -->
+
+    <!-- ── Onglet Inventaire ── -->
+    <div class="tab-panel" id="tab-inventaire">
+      <div class="sheet-section">
+        <div class="sheet-section-title">Objets</div>
+        <div class="inv-controls">
+          <input type="text" class="field-input inv-search" id="inv-search" placeholder="Rechercher un objet…">
+          <button class="btn btn-sm btn-gold" id="btn-add-item">+ Ajouter</button>
+        </div>
+        <table class="inv-table">
+          <thead><tr>
+            <th style="width:12%">Qté</th>
+            <th style="width:35%">Nom</th>
+            <th style="width:38%">Description</th>
+            <th style="width:15%"></th>
+          </tr></thead>
+          <tbody id="inv-tbody"></tbody>
+        </table>
+      </div>
+      <div class="sheet-section">
+        <div class="sheet-section-title">Monnaie</div>
+        <div class="currency-grid">
+          <div class="currency-item"><div class="currency-label">PP</div><input type="number" class="field-input" data-currency="pp" min="0" value="0"></div>
+          <div class="currency-item"><div class="currency-label">PO</div><input type="number" class="field-input" data-currency="gp" min="0" value="0"></div>
+          <div class="currency-item"><div class="currency-label">PE</div><input type="number" class="field-input" data-currency="ep" min="0" value="0"></div>
+          <div class="currency-item"><div class="currency-label">PA</div><input type="number" class="field-input" data-currency="sp" min="0" value="0"></div>
+          <div class="currency-item"><div class="currency-label">PC</div><input type="number" class="field-input" data-currency="cp" min="0" value="0"></div>
+        </div>
+      </div>
+    </div><!-- /tab-inventaire -->
+
+    <!-- ── Onglet Notes ── -->
+    <div class="tab-panel" id="tab-notes">
+      <div class="sheet-section">
+        <div class="sheet-section-title">Notes personnelles</div>
+        <textarea class="notes-editor" id="notes-editor" placeholder="Tes notes de session, quêtes, PNJ importants…"></textarea>
+        <div style="font-size:0.72rem;color:#666;text-align:right;margin-top:0.3rem;font-style:italic;">Sauvegarde automatique</div>
+      </div>
+    </div>
+
+    <!-- ── Onglet Paramètres ── -->
+    <div class="tab-panel" id="tab-parametres">
+      <div class="settings-section">
+        <h3>Profil</h3>
+        <div class="settings-row">
+          <div class="settings-label">Avatar</div>
+          <div class="avatar-grid" id="avatar-picker"></div>
+        </div>
+      </div>
+      <div class="settings-section">
+        <h3>Mot de passe</h3>
+        <div class="settings-row">
+          <div class="settings-label">Nouveau mot de passe<div class="settings-desc">Au moins 6 caractères</div></div>
+          <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+            <input type="password" class="field-input" id="new-pwd" placeholder="Nouveau mot de passe" style="width:200px;">
+            <button class="btn btn-sm btn-gold" id="btn-change-pwd">Changer</button>
+          </div>
+        </div>
+        <div class="pwd-msg" id="pwd-msg"></div>
+      </div>
+      <div class="settings-section">
+        <h3>Sauvegarde</h3>
+        <div class="settings-row">
+          <div class="settings-label">Exporter ma fiche<div class="settings-desc">Télécharge un fichier JSON de sauvegarde</div></div>
+          <button class="btn btn-sm btn-gold" id="btn-export">⬇ Exporter</button>
+        </div>
+        <div class="settings-row">
+          <div class="settings-label">Importer une fiche<div class="settings-desc">Restaure depuis un fichier JSON exporté</div></div>
+          <label class="btn btn-sm" style="cursor:pointer;">⬆ Importer<input type="file" id="btn-import" accept=".json" style="display:none;"></label>
+        </div>
+      </div>
+      <div class="settings-section">
+        <h3>Compte</h3>
+        <div class="settings-row">
+          <div class="settings-label">Réinitialiser ce personnage<div class="settings-desc">Efface la fiche du personnage actif (le compte reste)</div></div>
+          <button class="btn btn-sm btn-danger" id="btn-reset-char">🗑 Réinitialiser</button>
+        </div>
+      </div>
+    </div><!-- /tab-parametres -->
+
+    <!-- ── Onglet Admin ── -->
+    <div class="tab-panel" id="tab-admin">
+      <div class="sheet-section">
+        <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
+          <span>Tous les joueurs</span>
+          <button class="btn btn-sm" id="btn-admin-refresh">↺ Actualiser</button>
+        </div>
+        <div id="admin-loading" style="color:#666;font-style:italic;padding:0.75rem 0;">Chargement…</div>
+        <div class="admin-grid" id="admin-grid"></div>
+      </div>
+    </div>
+
+  </div><!-- /screen-dashboard -->
+
+</main>
+</div><!-- /wiki-wrapper -->
+
+<!-- Modal détail joueur (admin) -->
+<div class="modal-overlay" id="admin-modal">
+  <div class="modal-box">
+    <button class="modal-close" id="modal-close">✕</button>
+    <div class="modal-title" id="modal-title">Joueur</div>
+    <div id="modal-body"></div>
   </div>
 </div>
 
-<script src="js/wiki.js"></script>
+<script src="wiki.js"></script>
+<script>
+/* ════════════════════════════════════════════════════════════
+   KALEYSUR — ESPACE JOUEURS  v3.0  (Supabase)
+   ════════════════════════════════════════════════════════════ */
 
-<!-- ▸ Firebase SDK (modules) -->
-<script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updatePassword } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-
-/* ── Config Firebase ─────────────────────────────────────── */
-const firebaseConfig = {
-  apiKey: "AIzaSyBiAUbsufN76rYFKq1SXjbgu1uuSiOpQ6w",
-  authDomain: "kaleysur-wiki.firebaseapp.com",
-  projectId: "kaleysur-wiki",
-  storageBucket: "kaleysur-wiki.firebasestorage.app",
-  messagingSenderId: "763900174837",
-  appId: "1:763900174837:web:4c0491bb45ae32c7cc40bc"
-};
-
-const app  = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-/* ── Firestore via REST API (plus fiable que le SDK sur GitHub Pages) ── */
-const FS_BASE = `https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents`;
-
-async function fsToken() {
-  if (!currentUser) throw new Error('Non connecté');
-  return await currentUser.getIdToken();
-}
-
-async function loadData(uid) {
-  const token = await fsToken();
-  const resp = await withTimeout(
-    fetch(`${FS_BASE}/users/${uid}`, { headers: { Authorization: `Bearer ${token}` } }),
-    10000
-  );
-  if (resp.status === 404) return null;
-  if (!resp.ok) {
-    const err = await resp.json().catch(() => ({}));
-    throw new Error(`HTTP ${resp.status} — ${err?.error?.message || ''}`);
-  }
-  const doc = await resp.json();
-  if (!doc.fields?.json) return null;
-  return JSON.parse(doc.fields.json.stringValue);
-}
-
-async function saveData(uid, data) {
-  const token = await fsToken();
-  const resp = await withTimeout(
-    fetch(`${FS_BASE}/users/${uid}`, {
-      method: 'PATCH',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fields: { json: { stringValue: JSON.stringify(data) } } })
-    }),
-    10000
-  );
-  if (!resp.ok) {
-    const err = await resp.json().catch(() => ({}));
-    throw new Error(`HTTP ${resp.status} — ${err?.error?.message || ''}`);
-  }
-}
-
-async function loadAllPlayers() {
-  const token = await fsToken();
-  const resp = await fetch(`${FS_BASE}/users`, { headers: { Authorization: `Bearer ${token}` } });
-  if (!resp.ok) return [];
-  const data = await resp.json();
-  if (!data.documents) return [];
-  return data.documents.map(d => {
-    const uid = d.name.split('/').pop();
-    try { return { uid, ...JSON.parse(d.fields.json.stringValue) }; }
-    catch { return { uid }; }
-  });
-}
-
-/* ── Diagnostic visible ──────────────────────────────────── */
-function setStatus(msg, color) {
-  const el = document.getElementById('firebase-status');
-  if (el) { el.textContent = msg; el.style.color = color || 'var(--text-muted)'; }
-}
-setStatus('⏳ Connexion à Firebase…');
-// Vérifie si Firebase Auth répond dans les 5s
-const authCheck = new Promise(res => {
-  const unsub = onAuthStateChanged(auth, user => { unsub(); res(user); });
-});
-Promise.race([
-  authCheck.then(() => setStatus('✅ Firebase prêt', '#6abf69')),
-  new Promise((_, r) => setTimeout(() => r('timeout'), 5000))
-]).catch(() => setStatus('❌ Firebase inaccessible — vérifie ta connexion ou la Console Firebase', '#e07070'));
-
-/* ── Constantes ──────────────────────────────────────────── */
-const FAKE_DOMAIN = '@kaleysur.wiki';
+/* ── Config Supabase ──────────────────────────────────────── */
+const SB_URL = 'https://hevwgdsvgepiieuvhclg.supabase.co';
+const SB_KEY = 'sb_publishable_TDTCogCSFP-Lvus2x3rAAg_60l036tq';
+const SB_HEADERS = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' };
+const ADMIN_USER = 'dm';
 const AVATARS = ['⚔','🧙','🏹','🛡','🔮','⚡','🌿','🔥','❄','🐉','🗡','🎭','🐺','🦅','💀','⚜'];
-const PROF_BONUS = [0,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6];
-const ABILITIES = [
-  {key:'for',label:'FOR'},{key:'dex',label:'DEX'},{key:'con',label:'CON'},
-  {key:'int',label:'INT'},{key:'sag',label:'SAG'},{key:'cha',label:'CHA'}
-];
-const SKILLS = [
-  {key:'acrobaties',label:'Acrobaties',attr:'dex'},
-  {key:'animaux',label:'Dressage',attr:'sag'},
-  {key:'arcanes',label:'Arcanes',attr:'int'},
-  {key:'athletisme',label:'Athlétisme',attr:'for'},
-  {key:'discret',label:'Discrétion',attr:'dex'},
-  {key:'duperie',label:'Duperie',attr:'cha'},
-  {key:'histoire',label:'Histoire',attr:'int'},
-  {key:'intimidation',label:'Intimidation',attr:'cha'},
-  {key:'investigation',label:'Investigation',attr:'int'},
-  {key:'medecine',label:'Médecine',attr:'sag'},
-  {key:'nature',label:'Nature',attr:'int'},
-  {key:'perception',label:'Perception',attr:'sag'},
-  {key:'performance',label:'Performance',attr:'cha'},
-  {key:'persuasion',label:'Persuasion',attr:'cha'},
-  {key:'prestidig',label:'Prestidigitation',attr:'dex'},
-  {key:'religion',label:'Religion',attr:'int'},
-  {key:'survie',label:'Survie',attr:'sag'},
-  {key:'perspicacite',label:'Perspicacité',attr:'sag'}
-];
 
-/* ── Timeout helper ──────────────────────────────────────── */
-function withTimeout(promise, ms) {
-  return Promise.race([
-    promise,
-    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
-  ]);
-}
-
-/* ── État ────────────────────────────────────────────────── */
-let currentUser = null;
-let playerData  = null;
+/* ── État ──────────────────────────────────────────────────── */
+let currentUser = null;  // username string
+let playerData  = null;  // object
 let saveTimer   = null;
 
-/* ── Helpers ─────────────────────────────────────────────── */
-const toEmail   = u => u.toLowerCase().trim() + FAKE_DOMAIN;
-const mod       = s => Math.floor((s - 10) / 2);
-const fmtMod    = n => (n >= 0 ? '+' : '') + n;
-const pb        = lv => PROF_BONUS[Math.min(parseInt(lv)||1, 20)] || 2;
-const abilScore = (c, a) => parseInt(c[a]) || 10;
+/* ── Supabase helpers ──────────────────────────────────────── */
+async function sbFetch(path, options = {}) {
+  const resp = await fetch(SB_URL + path, { ...options, headers: { ...SB_HEADERS, ...(options.headers || {}) } });
+  return resp;
+}
 
-function skillBonus(c, sk) {
-  const m = mod(abilScore(c, sk.attr)), p = pb(c.niveau);
-  const lv = c[sk.key];
-  return lv === 'e' ? m + p*2 : lv === 'p' ? m + p : m;
+async function sbGetPlayer(username) {
+  const resp = await sbFetch(`/rest/v1/players?username=eq.${encodeURIComponent(username)}&select=*`);
+  if (!resp.ok) throw new Error('Erreur réseau : ' + resp.status);
+  const rows = await resp.json();
+  return rows[0] || null;
 }
-function saveBonus(c, ab) {
-  const key = 'sv' + ab.charAt(0).toUpperCase() + ab.slice(1);
-  return mod(abilScore(c, ab)) + (c[key] ? pb(c.niveau) : 0);
+
+async function sbCreatePlayer(username, passwordHash, data) {
+  const resp = await sbFetch('/rest/v1/players', {
+    method: 'POST',
+    headers: { 'Prefer': 'return=minimal' },
+    body: JSON.stringify({ username, password_hash: passwordHash, data })
+  });
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    throw new Error(err.message || 'Erreur création : ' + resp.status);
+  }
 }
+
+async function sbUpdateData(username, data) {
+  const resp = await sbFetch(`/rest/v1/players?username=eq.${encodeURIComponent(username)}`, {
+    method: 'PATCH',
+    headers: { 'Prefer': 'return=minimal' },
+    body: JSON.stringify({ data })
+  });
+  if (!resp.ok) throw new Error('Erreur sauvegarde : ' + resp.status);
+}
+
+async function sbUpdatePassword(username, passwordHash) {
+  const resp = await sbFetch(`/rest/v1/players?username=eq.${encodeURIComponent(username)}`, {
+    method: 'PATCH',
+    headers: { 'Prefer': 'return=minimal' },
+    body: JSON.stringify({ password_hash: passwordHash })
+  });
+  if (!resp.ok) throw new Error('Erreur changement mot de passe : ' + resp.status);
+}
+
+async function sbGetAllPlayers() {
+  const resp = await sbFetch('/rest/v1/players?select=username,data');
+  if (!resp.ok) return [];
+  return await resp.json();
+}
+
+/* ── Hachage mot de passe ─────────────────────────────────── */
+async function hashPwd(password) {
+  const data = new TextEncoder().encode(password + ':kaleysur_v3');
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+/* ── Session ───────────────────────────────────────────────── */
+function saveSession(username) { localStorage.setItem('kaleysur_user', username); }
+function loadSession() { return localStorage.getItem('kaleysur_user'); }
+function clearSession() { localStorage.removeItem('kaleysur_user'); }
+
+/* ── Données vides ─────────────────────────────────────────── */
+function newCharId() { return 'c' + Date.now(); }
 
 function emptyCharacter() {
   return {
     characterName:'', species:'', classe:'', sousClasse:'', niveau:1,
     background:'', alignement:'', xp:0, inspiration:false,
     for:10, dex:10, con:10, int:10, sag:10, cha:10,
-    svFor:false,svDex:false,svCon:false,svInt:false,svSag:false,svCha:false,
-    acrobaties:'',animaux:'',arcanes:'',athletisme:'',discret:'',duperie:'',
-    histoire:'',intimidation:'',investigation:'',medecine:'',nature:'',perception:'',
-    performance:'',persuasion:'',prestidig:'',religion:'',survie:'',perspicacite:'',
-    ca:10,initiative:0,vitesse:30,pvMax:0,pvActuel:0,pvTemp:0,
-    deVie:'1d8',nbDeVie:1,mortSucces:0,mortEchecs:0,epuisement:0,
-    maitrisesArmes:[],attaques:[],
-    classeSort:'',caractSort:'',
-    emplacements:{1:{max:0,used:0},2:{max:0,used:0},3:{max:0,used:0},4:{max:0,used:0},5:{max:0,used:0},6:{max:0,used:0},7:{max:0,used:0},8:{max:0,used:0},9:{max:0,used:0}},
-    sorts:'',langues:'',outils:'',armures:'',armesProficiencies:'',capacites:'',
-    traits:'',ideaux:'',liens:'',defauts:'',apparence:'',historique:''
+    saveFor:false, saveDex:false, saveCon:false, saveInt:false, saveSag:false, saveCha:false,
+    acrobaties:false, animaux:false, arcanes:false, athletisme:false,
+    discret:false, duperie:false, histoire:false, intimidation:false,
+    investigation:false, medecine:false, nature:false, perception:false,
+    performance:false, persuasion:false, prestidig:false, religion:false,
+    survie:false, perspicacite:false,
+    ca:10, initiative:0, vitesse:30, pvMax:0, pvActuel:0, pvTemp:0,
+    deVie:'1d8', nbDeVie:1, mortSucces:0, mortEchecs:0,
+    attaques:[], classeSort:'', caractSort:'',
+    emplacementsSort:{1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0},
+    emplacementsUtilises:{1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0},
+    sortListe:'', capacites:'',
+    traits:'', ideaux:'', liens:'', defauts:'', apparence:'', historique:''
   };
-}
-
-function newCharId() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2,6);
 }
 
 function emptyCharSlot(name) {
-  return { name: name||'Nouveau personnage', character: emptyCharacter(), inventory: { items:[], currency:{pp:0,gp:0,ep:0,sp:0,cp:0} }, notes: '' };
+  return { name, character: emptyCharacter(), inventory: { items:[], currency:{pp:0,gp:0,ep:0,sp:0,cp:0} }, notes:'' };
 }
 
-function emptyData(username) {
+function emptyPlayerData(username) {
   const id = newCharId();
-  return {
-    username, avatar: '⚔',
-    activeCharId: id,
-    characters: { [id]: emptyCharSlot('Personnage 1') }
-  };
+  return { username, avatar:'⚔', activeCharId:id, characters:{ [id]: emptyCharSlot('Personnage 1') } };
 }
 
-// Raccourcis vers le personnage actif
+/* ── Accesseurs ────────────────────────────────────────────── */
 function activeSlot() {
-  if (!playerData || !playerData.activeCharId) return null;
-  return (playerData.characters || {})[playerData.activeCharId] || null;
+  if (!playerData?.activeCharId) return null;
+  return playerData.characters?.[playerData.activeCharId] || null;
 }
-function C() { const s = activeSlot(); return s ? s.character : {}; }
-function INV() { const s = activeSlot(); return s ? s.inventory : { items:[], currency:{pp:0,gp:0,ep:0,sp:0,cp:0} }; }
-function NOTES() { const s = activeSlot(); return s ? (s.notes||'') : ''; }
+function C() { return activeSlot()?.character || {}; }
+function INV() { return activeSlot()?.inventory || { items:[], currency:{pp:0,gp:0,ep:0,sp:0,cp:0} }; }
+function NOTES() { return activeSlot()?.notes || ''; }
 
-/* ── Firestore : voir fonctions REST loadData/saveData plus haut ── */
+/* ── Calculs D&D ───────────────────────────────────────────── */
+function mod(score) { return Math.floor((score - 10) / 2); }
+function modStr(score) { const m = mod(score); return (m >= 0 ? '+' : '') + m; }
+function pb(niveau) { return Math.ceil(niveau / 4) + 1; }
+function abilScore(key) { return parseInt(C()[key]) || 10; }
 
-/* ── Autosave ────────────────────────────────────────────── */
+/* ── Autosave ──────────────────────────────────────────────── */
 function triggerSave() {
-  const badge = document.getElementById('autosave-badge');
-  badge.textContent = 'Sauvegarde…';
-  badge.classList.remove('saved');
+  const badge = document.getElementById('save-badge');
+  badge.textContent = 'Sauvegarde…'; badge.className = 'save-badge';
   clearTimeout(saveTimer);
   saveTimer = setTimeout(async () => {
     if (!currentUser || !playerData) return;
     try {
-      await saveData(currentUser.uid, playerData);
-      badge.textContent = 'Sauvegardé ✓';
-      badge.classList.add('saved');
-      setTimeout(() => badge.classList.remove('saved'), 2000);
+      await sbUpdateData(currentUser, playerData);
+      badge.textContent = 'Sauvegardé ✓'; badge.className = 'save-badge ok';
+      setTimeout(() => { badge.textContent = ''; badge.className = 'save-badge'; }, 2500);
     } catch(e) {
-      badge.textContent = '⚠ Erreur de sauvegarde : ' + (e.message || e);
-      badge.style.color = '#e07070';
+      badge.textContent = '⚠ ' + e.message; badge.className = 'save-badge err';
     }
-  }, 800);
+  }, 900);
 }
 
-/* ── Écrans ──────────────────────────────────────────────── */
-function showScreen(id) {
-  document.querySelectorAll('.jscreen').forEach(s => s.classList.toggle('active', s.id === id));
-}
+/* ── Auth UI ───────────────────────────────────────────────── */
 function showAuthError(msg) {
   const el = document.getElementById('auth-error');
   el.textContent = msg; el.classList.add('show');
 }
-function clearAuthError() {
-  document.getElementById('auth-error').classList.remove('show');
+function clearAuthError() { document.getElementById('auth-error').classList.remove('show'); }
+
+function showScreen(id) {
+  document.querySelectorAll('.j-screen').forEach(s => s.classList.toggle('active', s.id === id));
 }
 
-/* ── Auth ────────────────────────────────────────────────── */
+/* ── Login ─────────────────────────────────────────────────── */
 async function doLogin() {
-  const username = document.getElementById('login-username').value.trim();
-  const password = document.getElementById('login-password').value;
+  const username = document.getElementById('login-user').value.trim().toLowerCase();
+  const password = document.getElementById('login-pass').value;
   if (!username || !password) { showAuthError('Remplis tous les champs.'); return; }
   clearAuthError();
   const btn = document.getElementById('btn-login');
-  btn.disabled = true; btn.innerHTML = '<span class="auth-spinner"></span>Connexion…';
+  btn.disabled = true; btn.innerHTML = '<span class="auth-spinner"></span> Connexion…';
   try {
-    await withTimeout(signInWithEmailAndPassword(auth, toEmail(username), password), 10000);
+    const row = await sbGetPlayer(username);
+    if (!row) { showAuthError('Pseudo introuvable. Crée un compte d\'abord.'); return; }
+    const hash = await hashPwd(password);
+    if (hash !== row.password_hash) { showAuthError('Mot de passe incorrect.'); return; }
+    saveSession(username);
+    currentUser = username;
+    playerData = row.data;
+    await openDashboard();
   } catch(e) {
+    showAuthError('Erreur : ' + e.message);
+  } finally {
     btn.disabled = false; btn.textContent = 'Se connecter';
-    if (e.message === 'timeout') {
-      showAuthError('Connexion impossible — vérifie ta connexion internet ou que Firebase est bien configuré.');
-    } else if (e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found') {
-      showAuthError('Pseudo ou mot de passe incorrect.');
-    } else if (e.code === 'auth/operation-not-allowed') {
-      showAuthError('Connexion par email/mot de passe désactivée dans Firebase Console.');
-    } else {
-      showAuthError('Erreur (' + (e.code || e.message) + ')');
-    }
   }
 }
 
+/* ── Inscription ───────────────────────────────────────────── */
 async function doRegister() {
-  const username = document.getElementById('reg-username').value.trim();
-  const password = document.getElementById('reg-password').value;
-  const password2 = document.getElementById('reg-password2').value;
+  const username = document.getElementById('reg-user').value.trim().toLowerCase();
+  const password = document.getElementById('reg-pass').value;
+  const password2 = document.getElementById('reg-pass2').value;
   clearAuthError();
   if (!username) { showAuthError('Entre un pseudo.'); return; }
   if (username.length < 2) { showAuthError('Le pseudo doit faire au moins 2 caractères.'); return; }
-  if (password.length < 6) { showAuthError('Le mot de passe doit faire au moins 6 caractères.'); return; }
+  if (!/^[a-z0-9_-]+$/.test(username)) { showAuthError('Pseudo : lettres, chiffres, _ et - seulement.'); return; }
+  if (password.length < 6) { showAuthError('Mot de passe : au moins 6 caractères.'); return; }
   if (password !== password2) { showAuthError('Les mots de passe ne correspondent pas.'); return; }
   const btn = document.getElementById('btn-register');
-  btn.disabled = true; btn.innerHTML = '<span class="auth-spinner"></span>Création…';
+  btn.disabled = true; btn.innerHTML = '<span class="auth-spinner"></span> Création…';
   try {
-    // On crée juste le compte — openDashboard (via onAuthStateChanged) s'occupera de créer la fiche
-    await withTimeout(createUserWithEmailAndPassword(auth, toEmail(username), password), 10000);
-    // Stocker le pseudo pour que openDashboard puisse l'utiliser
-    window._pendingUsername = username;
+    const existing = await sbGetPlayer(username);
+    if (existing) { showAuthError('Ce pseudo est déjà pris.'); return; }
+    const hash = await hashPwd(password);
+    const data = emptyPlayerData(username);
+    await sbCreatePlayer(username, hash, data);
+    saveSession(username);
+    currentUser = username;
+    playerData = data;
+    await openDashboard();
   } catch(e) {
+    showAuthError('Erreur : ' + e.message);
+  } finally {
     btn.disabled = false; btn.textContent = 'Créer le compte';
-    if (e.message === 'timeout') {
-      showAuthError('Connexion impossible — vérifie ta connexion internet ou que Firebase est bien configuré.');
-    } else if (e.code === 'auth/email-already-in-use') {
-      showAuthError('Ce pseudo est déjà pris. Choisis-en un autre.');
-    } else if (e.code === 'auth/operation-not-allowed') {
-      showAuthError('Connexion par email/mot de passe désactivée dans Firebase Console.');
-    } else {
-      showAuthError('Erreur (' + (e.code || e.message) + ')');
-    }
   }
 }
 
-/* ── Dashboard ───────────────────────────────────────────── */
-async function openDashboard(user) {
-  currentUser = user;
-  try {
-    playerData = await loadData(user.uid);
-  } catch(e) {
-    // Firestore inaccessible — déconnecte et affiche erreur
-    await signOut(auth);
-    showScreen('screen-auth');
-    const code = e.code || e.message || 'inconnu';
-    if (code.includes('permission-denied') || code.includes('PERMISSION_DENIED')) {
-      showAuthError('Accès refusé par Firestore (permission-denied). Publie les règles dans Firebase Console → Firestore → Règles.');
-    } else if (code === 'timeout') {
-      showAuthError('Firestore ne répond pas. Vérifie que la base de données est créée dans Firebase Console.');
-    } else {
-      showAuthError('Erreur Firestore : ' + code);
-    }
-    return;
-  }
-  if (!playerData) {
-    const username = window._pendingUsername || user.email.replace(FAKE_DOMAIN, '');
-    window._pendingUsername = null;
-    playerData = emptyData(username);
-    try {
-      await saveData(user.uid, playerData);
-    } catch(e) {
-      await signOut(auth);
-      showScreen('screen-auth');
-      showAuthError('Compte créé mais impossible de sauvegarder la fiche : ' + (e.message || e));
-      return;
-    }
-  }
-  // Migration : ancien format avec playerData.character → nouveau format multi-personnages
-  if (playerData.character && !playerData.characters) {
+/* ── Dashboard ─────────────────────────────────────────────── */
+async function openDashboard() {
+  // Migration ancien format (si besoin)
+  if (playerData && playerData.character && !playerData.characters) {
     const id = newCharId();
-    const name = playerData.character.characterName || 'Personnage 1';
-    playerData.characters = { [id]: { name, character: playerData.character, inventory: playerData.inventory || {items:[],currency:{pp:0,gp:0,ep:0,sp:0,cp:0}}, notes: playerData.notes || '' } };
+    playerData.characters = { [id]: { name: playerData.character.characterName || 'Personnage 1', character: playerData.character, inventory: playerData.inventory || { items:[], currency:{pp:0,gp:0,ep:0,sp:0,cp:0} }, notes: playerData.notes || '' } };
     playerData.activeCharId = id;
     delete playerData.character; delete playerData.inventory; delete playerData.notes;
-    await saveData(user.uid, playerData);
+    await sbUpdateData(currentUser, playerData);
   }
+  if (!playerData) playerData = emptyPlayerData(currentUser);
+
   showScreen('screen-dashboard');
   renderDashboard();
-  // Afficher onglet admin si DM
-  const adminTabBtn = document.getElementById('tab-btn-admin');
-  if (isAdmin()) {
-    adminTabBtn.style.display = '';
-  } else {
-    adminTabBtn.style.display = 'none';
-  }
+
+  // Onglet admin visible uniquement pour le DM
+  document.getElementById('tab-admin-btn').style.display = currentUser === ADMIN_USER ? '' : 'none';
 }
 
 function renderDashboard() {
-  document.getElementById('dash-avatar').textContent = playerData.avatar;
-  document.getElementById('dash-player-name').textContent = playerData.username;
+  document.getElementById('dash-avatar').textContent = playerData.avatar || '⚔';
+  document.getElementById('dash-name').textContent = playerData.username || currentUser;
   renderCharSelector();
-  updateCharSummary();
-  updateProfBonusDisplay();
-  fillCharacterFields();
-  renderAbilityGrid();
-  renderSavesGrid();
-  renderSkillsGrid();
-  renderSpellSlots();
-  renderAttacks();
-  renderMasteries();
-  fillDeathSaves();
-  fillExhaustion();
-  renderInventory();
-  fillCurrency();
-  document.getElementById('notes-editor').value = NOTES();
+  renderAll();
   renderAvatarPicker();
 }
 
+/* ── Sélecteur de personnage ───────────────────────────────── */
 function renderCharSelector() {
   const sel = document.getElementById('char-select');
   sel.innerHTML = '';
   const chars = playerData.characters || {};
   Object.entries(chars).forEach(([id, slot]) => {
     const opt = document.createElement('option');
-    opt.value = id;
-    opt.textContent = slot.name || 'Sans nom';
+    opt.value = id; opt.textContent = slot.name || 'Sans nom';
     opt.selected = id === playerData.activeCharId;
     sel.appendChild(opt);
   });
-}
-
-function switchToChar(id) {
-  if (!playerData.characters[id]) return;
-  playerData.activeCharId = id;
-  updateCharSummary();
-  updateProfBonusDisplay();
-  fillCharacterFields();
-  renderAbilityGrid();
-  renderSavesGrid();
-  renderSkillsGrid();
-  renderSpellSlots();
-  renderAttacks();
-  renderMasteries();
-  fillDeathSaves();
-  fillExhaustion();
-  renderInventory();
-  fillCurrency();
-  document.getElementById('notes-editor').value = NOTES();
-  triggerSave();
-}
-
-function createNewChar() {
-  const name = prompt('Nom de ce personnage :', 'Nouveau personnage');
-  if (!name) return;
-  const id = newCharId();
-  playerData.characters[id] = emptyCharSlot(name);
-  playerData.activeCharId = id;
-  renderCharSelector();
-  switchToChar(id);
-}
-
-function deleteCurrentChar() {
-  const chars = playerData.characters || {};
-  const ids = Object.keys(chars);
-  if (ids.length <= 1) { alert('Tu dois garder au moins un personnage.'); return; }
-  const slot = activeSlot();
-  if (!confirm(`Supprimer "${slot ? slot.name : 'ce personnage'}" ? Cette action est irréversible.`)) return;
-  delete playerData.characters[playerData.activeCharId];
-  playerData.activeCharId = Object.keys(playerData.characters)[0];
-  renderCharSelector();
-  switchToChar(playerData.activeCharId);
 }
 
 function updateCharSummary() {
@@ -1438,342 +983,532 @@ function updateCharSummary() {
   if (c.characterName) parts.push(c.characterName);
   if (c.classe) parts.push(c.classe + (c.niveau ? ' niv.' + c.niveau : ''));
   if (c.species) parts.push(c.species);
-  document.getElementById('dash-char-summary').textContent = parts.join(' · ') || 'Aucun personnage';
-}
-function updateProfBonusDisplay() {
-  document.getElementById('prof-bonus-display').textContent = '+' + pb(C().niveau||1);
+  document.getElementById('dash-info').textContent = parts.join(' · ') || 'Aucun personnage';
 }
 
-/* ── Fiche ───────────────────────────────────────────────── */
-function fillCharacterFields() {
+/* ── Rendu complet ─────────────────────────────────────────── */
+function renderAll() {
+  fillFields();
+  renderAbilities();
+  renderSaves();
+  renderSkills();
+  renderCombat();
+  renderSpellSlots();
+  renderAttacks();
+  renderInventory();
+  fillCurrency();
+  document.getElementById('notes-editor').value = NOTES();
+  updateCharSummary();
+  updateProfBonus();
+}
+
+/* ── Remplissage des champs data-f ────────────────────────── */
+function fillFields() {
   const c = C();
-  document.querySelectorAll('[data-field]').forEach(el => {
-    const f = el.dataset.field;
+  document.querySelectorAll('[data-f]').forEach(el => {
+    const f = el.dataset.f;
     if (!(f in c)) return;
-    el.type === 'checkbox' ? (el.checked = !!c[f]) : (el.value = c[f] ?? '');
+    if (el.type === 'checkbox') el.checked = !!c[f];
+    else el.value = c[f] ?? '';
   });
+  updateSpellCalcs();
 }
 
-function renderAbilityGrid() {
+function updateProfBonus() {
+  document.getElementById('prof-bonus').textContent = '+' + pb(C().niveau || 1);
+}
+
+/* ── Caractéristiques ──────────────────────────────────────── */
+const ABILITIES = [
+  { key:'for', label:'FOR' }, { key:'dex', label:'DEX' }, { key:'con', label:'CON' },
+  { key:'int', label:'INT' }, { key:'sag', label:'SAG' }, { key:'cha', label:'CHA' }
+];
+
+function renderAbilities() {
   const grid = document.getElementById('ability-grid');
   grid.innerHTML = '';
   ABILITIES.forEach(ab => {
-    const score = abilScore(C(), ab.key);
+    const score = abilScore(ab.key);
     const box = document.createElement('div');
     box.className = 'ability-box';
-    box.innerHTML = `<span class="ability-name">${ab.label}</span>
-      <input type="number" class="ability-score" data-field="${ab.key}" value="${score}" min="1" max="30">
-      <span class="ability-mod">${fmtMod(mod(score))}</span>`;
+    box.innerHTML = `
+      <div class="ability-name">${ab.label}</div>
+      <input type="number" class="ability-score-input" data-f="${ab.key}" value="${score}" min="1" max="30">
+      <div class="ability-mod" id="mod-${ab.key}">${modStr(score)}</div>
+    `;
     grid.appendChild(box);
-    box.querySelector('input').addEventListener('input', function() {
-      C()[ab.key] = parseInt(this.value) || 10;
-      box.querySelector('.ability-mod').textContent = fmtMod(mod(C()[ab.key]));
-      renderSavesGrid(); renderSkillsGrid();
-      triggerSave();
+  });
+}
+
+function updateModifier(key) {
+  const el = document.getElementById('mod-' + key);
+  if (el) el.textContent = modStr(abilScore(key));
+}
+
+/* ── Sauvegardes ───────────────────────────────────────────── */
+const SAVES = [
+  { key:'saveFor', attr:'for', label:'Force' },
+  { key:'saveDex', attr:'dex', label:'Dextérité' },
+  { key:'saveCon', attr:'con', label:'Constitution' },
+  { key:'saveInt', attr:'int', label:'Intelligence' },
+  { key:'saveSag', attr:'sag', label:'Sagesse' },
+  { key:'saveCha', attr:'cha', label:'Charisme' }
+];
+
+function renderSaves() {
+  const col = document.getElementById('saves-col');
+  col.innerHTML = '<div style="font-size:0.7rem;text-transform:uppercase;color:#666;letter-spacing:0.05em;margin-bottom:0.35rem;">Sauvegardes</div>';
+  const c = C(); const bonus = pb(c.niveau || 1);
+  SAVES.forEach(sv => {
+    const prof = !!c[sv.key];
+    const val = mod(abilScore(sv.attr)) + (prof ? bonus : 0);
+    const row = document.createElement('div');
+    row.className = 'sv-row';
+    row.innerHTML = `
+      <div class="prof-dot ${prof ? 'on' : ''}" data-sv="${sv.key}" title="Maîtrise"></div>
+      <span class="sv-val">${val >= 0 ? '+' : ''}${val}</span>
+      <span>${sv.label}</span>
+    `;
+    col.appendChild(row);
+  });
+}
+
+/* ── Compétences ───────────────────────────────────────────── */
+const SKILLS = [
+  { key:'acrobaties', attr:'dex', label:'Acrobaties' },
+  { key:'animaux', attr:'sag', label:'Dressage' },
+  { key:'arcanes', attr:'int', label:'Arcanes' },
+  { key:'athletisme', attr:'for', label:'Athlétisme' },
+  { key:'discret', attr:'dex', label:'Discrétion' },
+  { key:'duperie', attr:'cha', label:'Tromperie' },
+  { key:'histoire', attr:'int', label:'Histoire' },
+  { key:'intimidation', attr:'cha', label:'Intimidation' },
+  { key:'investigation', attr:'int', label:'Investigation' },
+  { key:'medecine', attr:'sag', label:'Médecine' },
+  { key:'nature', attr:'int', label:'Nature' },
+  { key:'perception', attr:'sag', label:'Perception' },
+  { key:'performance', attr:'cha', label:'Représentation' },
+  { key:'persuasion', attr:'cha', label:'Persuasion' },
+  { key:'prestidig', attr:'dex', label:'Prestidigitation' },
+  { key:'religion', attr:'int', label:'Religion' },
+  { key:'survie', attr:'sag', label:'Survie' },
+  { key:'perspicacite', attr:'sag', label:'Perspicacité' }
+];
+
+function renderSkills() {
+  const col = document.getElementById('skills-col');
+  col.innerHTML = '<div style="font-size:0.7rem;text-transform:uppercase;color:#666;letter-spacing:0.05em;margin-bottom:0.35rem;">Compétences</div>';
+  const c = C(); const bonus = pb(c.niveau || 1);
+  SKILLS.sort((a,b) => a.label.localeCompare(b.label)).forEach(sk => {
+    const prof = !!c[sk.key];
+    const val = mod(abilScore(sk.attr)) + (prof ? bonus : 0);
+    const row = document.createElement('div');
+    row.className = 'sk-row';
+    row.innerHTML = `
+      <div class="prof-dot ${prof ? 'on' : ''}" data-sk="${sk.key}" title="Maîtrise"></div>
+      <span class="sk-val">${val >= 0 ? '+' : ''}${val}</span>
+      <span>${sk.label} <span style="color:#555;font-size:0.72rem;">(${sk.attr.toUpperCase()})</span></span>
+    `;
+    col.appendChild(row);
+  });
+}
+
+/* ── Combat ────────────────────────────────────────────────── */
+function renderCombat() {
+  // Jets de mort
+  const c = C();
+  ['success','fail'].forEach(type => {
+    const count = type === 'success' ? (c.mortSucces || 0) : (c.mortEchecs || 0);
+    document.querySelectorAll(`.death-dot[data-type="${type}"]`).forEach((dot, i) => {
+      dot.classList.toggle(type + '-on', i < count);
     });
   });
 }
 
-function renderSavesGrid() {
-  const grid = document.getElementById('saves-grid');
-  grid.innerHTML = '';
-  ABILITIES.forEach(ab => {
-    const svKey = 'sv' + ab.key.charAt(0).toUpperCase() + ab.key.slice(1);
-    const row = document.createElement('div'); row.className = 'save-row';
-    const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = !!C()[svKey]; cb.dataset.sv = ab.key;
-    const bonusSpan = document.createElement('span'); bonusSpan.className = 'save-bonus'; bonusSpan.textContent = fmtMod(saveBonus(C(), ab.key));
-    const label = document.createElement('span'); label.textContent = ab.label;
-    row.append(cb, bonusSpan, label);
-    grid.appendChild(row);
-    cb.addEventListener('change', () => {
-      C()[svKey] = cb.checked;
-      bonusSpan.textContent = fmtMod(saveBonus(C(), ab.key));
-      triggerSave();
-    });
-  });
-}
-
-function renderSkillsGrid() {
-  const grid = document.getElementById('skills-grid');
-  grid.innerHTML = '';
-  SKILLS.forEach(sk => {
-    const level = C()[sk.key] || '';
-    const row = document.createElement('div'); row.className = 'skill-row';
-    const pip = document.createElement('div'); pip.className = 'skill-prof'; pip.dataset.level = level;
-    const bonusSpan = document.createElement('span'); bonusSpan.className = 'skill-bonus'; bonusSpan.textContent = fmtMod(skillBonus(C(), sk));
-    const nameSpan = document.createElement('span'); nameSpan.textContent = sk.label;
-    const attrSpan = document.createElement('span'); attrSpan.className = 'skill-attr'; attrSpan.textContent = sk.attr.toUpperCase();
-    row.append(pip, bonusSpan, nameSpan, attrSpan);
-    grid.appendChild(row);
-    pip.addEventListener('click', () => {
-      const cur = C()[sk.key] || '';
-      const next = cur === '' ? 'p' : cur === 'p' ? 'e' : '';
-      C()[sk.key] = next;
-      pip.dataset.level = next;
-      bonusSpan.textContent = fmtMod(skillBonus(C(), sk));
-      triggerSave();
-    });
-  });
-}
-
+/* ── Sorts ─────────────────────────────────────────────────── */
 function renderSpellSlots() {
   const grid = document.getElementById('spell-slots-grid');
   grid.innerHTML = '';
-  for (let i = 1; i <= 9; i++) {
-    const slot = playerData.character.emplacements?.[i] || {max:0,used:0};
-    const box = document.createElement('div'); box.className = 'spell-slot-box';
-    const lvlSpan = document.createElement('span'); lvlSpan.className = 'spell-slot-lvl'; lvlSpan.textContent = 'Niv.' + i;
-    const usedInp = document.createElement('input'); usedInp.type='number'; usedInp.className='spell-slot-input'; usedInp.value=slot.used||0; usedInp.min=0;
-    const sep = document.createElement('span'); sep.className='spell-slot-sep'; sep.textContent='/';
-    const maxInp = document.createElement('input'); maxInp.type='number'; maxInp.className='spell-slot-input'; maxInp.value=slot.max||0; maxInp.min=0;
-    box.append(lvlSpan, usedInp, sep, maxInp);
-    grid.appendChild(box);
-    [['used',usedInp],['max',maxInp]].forEach(([tp,inp]) => {
-      inp.addEventListener('input', () => {
-        if (!C().emplacements) C().emplacements = {};
-        if (!C().emplacements[i]) C().emplacements[i] = {max:0,used:0};
-        C().emplacements[i][tp] = parseInt(inp.value)||0;
-        triggerSave();
-      });
-    });
+  const c = C();
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:0.5rem;';
+  for (let lvl = 1; lvl <= 9; lvl++) {
+    const total = parseInt(c.emplacementsSort?.[lvl]) || 0;
+    const used = parseInt(c.emplacementsUtilises?.[lvl]) || 0;
+    const cell = document.createElement('div');
+    cell.style.cssText = 'background:#13131a;border:1px solid #2a2a3a;border-radius:6px;padding:0.45rem;text-align:center;';
+    cell.innerHTML = `
+      <div style="font-size:0.65rem;color:#888;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:0.3rem;">Niv.${lvl}</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:0.3rem;">
+        <input type="number" style="width:36px;background:#0d0d14;border:1px solid #2a2a3a;border-radius:4px;color:#e8e0d0;font-size:0.78rem;text-align:center;padding:0.15rem;" data-slot="${lvl}" value="${total}" min="0" max="9" title="Emplacements totaux">
+        <span style="color:#555;font-size:0.72rem;">/</span>
+        <input type="number" style="width:36px;background:#0d0d14;border:1px solid #2a2a3a;border-radius:4px;color:var(--danger);font-size:0.78rem;text-align:center;padding:0.15rem;" data-used="${lvl}" value="${used}" min="0" max="9" title="Utilisés">
+      </div>
+    `;
+    wrap.appendChild(cell);
   }
+  grid.appendChild(wrap);
 }
 
+function updateSpellCalcs() {
+  const c = C();
+  if (!c.caractSort || !c.niveau) { document.getElementById('sort-dd').textContent = '—'; document.getElementById('sort-atk').textContent = '—'; return; }
+  const attrMap = { FOR:'for', DEX:'dex', CON:'con', INT:'int', SAG:'sag', CHA:'cha' };
+  const attr = attrMap[c.caractSort];
+  if (!attr) return;
+  const bonus = pb(c.niveau || 1);
+  const m = mod(abilScore(attr));
+  document.getElementById('sort-dd').textContent = 8 + bonus + m;
+  document.getElementById('sort-atk').textContent = (bonus + m >= 0 ? '+' : '') + (bonus + m);
+}
+
+/* ── Attaques ──────────────────────────────────────────────── */
 function renderAttacks() {
-  const tbody = document.getElementById('attacks-tbody');
+  const tbody = document.getElementById('attack-tbody');
   tbody.innerHTML = '';
-  (C().attaques || []).forEach((atk, idx) => {
+  const attacks = C().attaques || [];
+  attacks.forEach((atk, i) => {
     const tr = document.createElement('tr');
-    ['nom','bonus','degats','type','maitrise'].forEach(f => {
-      const td = document.createElement('td');
-      const inp = document.createElement('input');
-      inp.value = atk[f]||'';
-      inp.placeholder = {nom:'Épée longue',bonus:'+5',degats:'1d8+3',type:'Tranchant',maitrise:'Cleave'}[f]||'';
-      td.appendChild(inp); tr.appendChild(td);
-      inp.addEventListener('input', () => { C().attaques[idx][f] = inp.value; triggerSave(); });
-    });
-    const delTd = document.createElement('td');
-    const delBtn = document.createElement('button'); delBtn.className='del-btn'; delBtn.textContent='✕';
-    delBtn.addEventListener('click', () => { C().attaques.splice(idx,1); renderAttacks(); triggerSave(); });
-    delTd.appendChild(delBtn); tr.appendChild(delTd);
+    tr.innerHTML = `
+      <td><input class="atk-inp" data-atk="${i}" data-ak="name" value="${atk.name||''}" placeholder="Nom"></td>
+      <td><input class="atk-inp" data-atk="${i}" data-ak="bonus" value="${atk.bonus||''}" placeholder="+5" style="width:70px;"></td>
+      <td><input class="atk-inp" data-atk="${i}" data-ak="degats" value="${atk.degats||''}" placeholder="1d6+3 tranchant"></td>
+      <td><button class="atk-del" data-del="${i}" title="Supprimer">✕</button></td>
+    `;
     tbody.appendChild(tr);
   });
 }
 
-function renderMasteries() {
-  const sel = C().maitrisesArmes || [];
-  document.querySelectorAll('.mastery-tag').forEach(tag => tag.classList.toggle('selected', sel.includes(tag.dataset.mastery)));
-}
-
-function fillDeathSaves() {
-  const s = C().mortSucces || 0;
-  const f = C().mortEchecs || 0;
-  document.querySelectorAll('.death-check[data-death="success"]').forEach(el => el.classList.toggle('success-checked', parseInt(el.dataset.idx) < s));
-  document.querySelectorAll('.death-check[data-death="fail"]').forEach(el => el.classList.toggle('fail-checked', parseInt(el.dataset.idx) < f));
-}
-
-function fillExhaustion() {
-  const lv = C().epuisement || 0;
-  document.querySelectorAll('.exhaustion-pip').forEach(pip => pip.classList.toggle('active', parseInt(pip.dataset.lv) <= lv));
-}
-
-/* ── Inventaire ──────────────────────────────────────────── */
+/* ── Inventaire ────────────────────────────────────────────── */
 function renderInventory() {
+  const search = document.getElementById('inv-search').value.toLowerCase();
+  const tbody = document.getElementById('inv-tbody');
+  tbody.innerHTML = '';
   const items = INV().items || [];
-  const filter = (document.getElementById('items-search').value||'').toLowerCase();
-  const filtered = filter ? items.filter(it => (it.name||'').toLowerCase().includes(filter)) : items;
-  const list = document.getElementById('items-list');
-  const empty = document.getElementById('items-empty');
-  list.innerHTML = ''; empty.style.display = filtered.length ? 'none' : '';
-  filtered.forEach(item => {
-    const realIdx = items.indexOf(item);
-    const row = document.createElement('div'); row.className = 'item-row';
-    const qtyInp = Object.assign(document.createElement('input'), {type:'number',className:'item-qty',value:item.qty??1,min:0,title:'Quantité'});
-    const nameInp = Object.assign(document.createElement('input'), {type:'text',className:'item-name',value:item.name||'',placeholder:"Nom de l'objet"});
-    const notesInp = Object.assign(document.createElement('input'), {type:'text',className:'item-notes-input',value:item.notes||'',placeholder:'Notes…'});
-    const weightInp = Object.assign(document.createElement('input'), {type:'text',className:'item-weight',value:item.weight||'',placeholder:'Poids',title:'Poids'});
-    const delBtn = Object.assign(document.createElement('button'), {className:'item-del',textContent:'✕'});
-    row.append(qtyInp, nameInp, notesInp, weightInp, delBtn);
-    list.appendChild(row);
-    const update = () => { INV().items[realIdx].qty=parseInt(qtyInp.value)||0; INV().items[realIdx].name=nameInp.value; INV().items[realIdx].notes=notesInp.value; INV().items[realIdx].weight=weightInp.value; updateEncumbrance(); triggerSave(); };
-    [qtyInp,nameInp,notesInp,weightInp].forEach(el => el.addEventListener('input', update));
-    delBtn.addEventListener('click', () => { INV().items.splice(realIdx,1); renderInventory(); triggerSave(); });
+  items.forEach((item, i) => {
+    if (search && !item.name?.toLowerCase().includes(search) && !item.notes?.toLowerCase().includes(search)) return;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input class="inv-inp" style="width:55px;text-align:center;" data-item="${i}" data-ik="qty" type="number" value="${item.qty||1}" min="0"></td>
+      <td><input class="inv-inp" data-item="${i}" data-ik="name" value="${item.name||''}" placeholder="Nom de l'objet"></td>
+      <td><input class="inv-inp" data-item="${i}" data-ik="notes" value="${item.notes||''}" placeholder="Description"></td>
+      <td><button class="atk-del" data-del-item="${i}" title="Supprimer">✕</button></td>
+    `;
+    tbody.appendChild(tr);
   });
-  updateEncumbrance();
-}
-
-function updateEncumbrance() {
-  const items = INV().items || [];
-  let total = 0, hasW = false;
-  items.forEach(it => { const w=parseFloat(it.weight); if(!isNaN(w)){total+=w*(parseInt(it.qty)||1);hasW=true;} });
-  const info = document.getElementById('encumbrance-info');
-  info.textContent = hasW ? `Poids total : ${total.toFixed(1)} lb · Capacité max : ${abilScore(C(),'for')*15} lb` : '';
 }
 
 function fillCurrency() {
   const cur = INV().currency || {};
-  ['pp','gp','ep','sp','cp'].forEach(c => { const inp=document.querySelector(`[data-currency="${c}"]`); if(inp) inp.value=cur[c]||0; });
+  document.querySelectorAll('[data-currency]').forEach(inp => {
+    inp.value = cur[inp.dataset.currency] || 0;
+  });
 }
 
-/* ── Avatar picker ───────────────────────────────────────── */
+/* ── Avatar picker ─────────────────────────────────────────── */
 function renderAvatarPicker() {
-  const container = document.getElementById('settings-avatar-picker');
-  container.innerHTML = '';
+  const grid = document.getElementById('avatar-picker');
+  grid.innerHTML = '';
   AVATARS.forEach(av => {
-    const btn = document.createElement('div');
-    btn.className = 'avatar-option' + (av === playerData.avatar ? ' selected' : '');
+    const btn = document.createElement('button');
+    btn.className = 'av-btn' + (av === playerData.avatar ? ' selected' : '');
     btn.textContent = av;
-    btn.addEventListener('click', () => {
-      container.querySelectorAll('.avatar-option').forEach(b => b.classList.remove('selected'));
+    btn.onclick = () => {
+      grid.querySelectorAll('.av-btn').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
       playerData.avatar = av;
       document.getElementById('dash-avatar').textContent = av;
       triggerSave();
-    });
-    container.appendChild(btn);
+    };
+    grid.appendChild(btn);
   });
 }
 
-/* ── Listeners ───────────────────────────────────────────── */
-function bindListeners() {
+/* ── Panel Admin ───────────────────────────────────────────── */
+async function renderAdminPanel() {
+  const grid = document.getElementById('admin-grid');
+  const loading = document.getElementById('admin-loading');
+  grid.innerHTML = ''; loading.style.display = '';
+  try {
+    const rows = await sbGetAllPlayers();
+    loading.style.display = 'none';
+    if (!rows.length) { loading.textContent = 'Aucun joueur.'; loading.style.display = ''; return; }
+    rows.filter(r => r.username !== ADMIN_USER).forEach(row => {
+      const data = row.data || {};
+      const chars = data.characters || {};
+      const charCount = Object.keys(chars).length;
+      const activeChar = chars[data.activeCharId]?.character || {};
+      const card = document.createElement('div');
+      card.className = 'admin-card';
+      card.innerHTML = `
+        <div class="admin-card-name">${data.avatar||'⚔'} ${row.username}</div>
+        <div class="admin-card-info">${activeChar.characterName || '—'} · ${activeChar.classe || '—'} niv.${activeChar.niveau||1}</div>
+        <div class="admin-card-info" style="margin-top:0.2rem;">${charCount} personnage(s)</div>
+      `;
+      card.onclick = () => showPlayerModal(row.username, data);
+      grid.appendChild(card);
+    });
+  } catch(e) {
+    loading.textContent = 'Erreur : ' + e.message;
+  }
+}
 
-  // Auth
+function showPlayerModal(username, data) {
+  document.getElementById('modal-title').textContent = (data.avatar||'⚔') + ' ' + username;
+  const chars = data.characters || {};
+  let html = '';
+  Object.values(chars).forEach(slot => {
+    const c = slot.character || {};
+    html += `
+      <div style="background:#13131a;border:1px solid #2a2a3a;border-radius:6px;padding:0.85rem;margin-bottom:0.75rem;">
+        <div style="font-family:'Cinzel',serif;color:var(--gold);margin-bottom:0.5rem;">${c.characterName||'Sans nom'}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.35rem;font-size:0.82rem;color:#bbb;">
+          <div>Classe : ${c.classe||'—'} ${c.sousClasse ? '('+c.sousClasse+')' : ''}</div>
+          <div>Niveau : ${c.niveau||1}</div>
+          <div>Espèce : ${c.species||'—'}</div>
+          <div>Background : ${c.background||'—'}</div>
+          <div>PV : ${c.pvActuel||0} / ${c.pvMax||0}</div>
+          <div>CA : ${c.ca||10}</div>
+          <div>FOR ${c.for||10} · DEX ${c.dex||10} · CON ${c.con||10}</div>
+          <div>INT ${c.int||10} · SAG ${c.sag||10} · CHA ${c.cha||10}</div>
+        </div>
+        ${c.traits ? '<div style="margin-top:0.5rem;font-size:0.78rem;color:#888;font-style:italic;">'+c.traits+'</div>' : ''}
+        ${slot.notes ? '<div style="margin-top:0.5rem;font-size:0.8rem;color:#999;border-top:1px solid #2a2a3a;padding-top:0.5rem;">📜 '+slot.notes.substring(0,200)+(slot.notes.length>200?'…':'')+'</div>' : ''}
+      </div>
+    `;
+  });
+  document.getElementById('modal-body').innerHTML = html || '<p style="color:#666;">Aucun personnage.</p>';
+  document.getElementById('admin-modal').classList.add('open');
+}
+
+/* ════════════════════════════════════════════════════════════
+   LISTENERS
+   ════════════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+
+  /* ── Auth ── */
   document.getElementById('btn-login').addEventListener('click', doLogin);
   document.getElementById('btn-register').addEventListener('click', doRegister);
-  document.getElementById('login-password').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
-  document.getElementById('reg-password2').addEventListener('keydown', e => { if(e.key==='Enter') doRegister(); });
+  document.getElementById('login-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  document.getElementById('reg-pass2').addEventListener('keydown', e => { if (e.key === 'Enter') doRegister(); });
+
   document.getElementById('btn-go-register').addEventListener('click', () => {
     document.getElementById('mode-login').style.display = 'none';
     document.getElementById('mode-register').style.display = '';
     clearAuthError();
-    document.getElementById('btn-register').disabled = false;
-    document.getElementById('btn-register').textContent = 'Créer le compte';
   });
   document.getElementById('btn-go-login').addEventListener('click', () => {
     document.getElementById('mode-register').style.display = 'none';
     document.getElementById('mode-login').style.display = '';
     clearAuthError();
-    document.getElementById('btn-login').disabled = false;
-    document.getElementById('btn-login').textContent = 'Se connecter';
   });
 
-  // Logout
-  document.getElementById('btn-logout').addEventListener('click', async () => {
-    await signOut(auth);
-    currentUser = null; playerData = null;
+  /* ── Déconnexion ── */
+  document.getElementById('btn-logout').addEventListener('click', () => {
+    clearSession(); currentUser = null; playerData = null;
     showScreen('screen-auth');
   });
 
-  // Tabs
-  document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b===btn));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id==='tab-'+btn.dataset.tab));
-    if (btn.dataset.tab === 'admin') renderAdminPanel();
-  }));
+  /* ── Onglets ── */
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + btn.dataset.tab));
+      if (btn.dataset.tab === 'admin') renderAdminPanel();
+    });
+  });
 
-  // Sélecteur de personnage
+  /* ── Sélecteur personnage ── */
   document.getElementById('char-select').addEventListener('change', e => {
     if (!playerData) return;
-    switchToChar(e.target.value);
+    playerData.activeCharId = e.target.value;
+    renderAll();
+    triggerSave();
   });
-  document.getElementById('btn-new-char').addEventListener('click', () => { if(playerData) createNewChar(); });
-  document.getElementById('btn-del-char').addEventListener('click', () => { if(playerData) deleteCurrentChar(); });
 
-  // Champs fiche — délégation
+  document.getElementById('btn-new-char').addEventListener('click', () => {
+    if (!playerData) return;
+    const name = prompt('Nom du nouveau personnage :', 'Nouveau personnage');
+    if (!name) return;
+    const id = newCharId();
+    playerData.characters[id] = emptyCharSlot(name);
+    playerData.activeCharId = id;
+    renderCharSelector();
+    renderAll();
+    triggerSave();
+  });
+
+  document.getElementById('btn-del-char').addEventListener('click', () => {
+    if (!playerData) return;
+    const chars = playerData.characters || {};
+    if (Object.keys(chars).length <= 1) { alert('Tu dois garder au moins un personnage.'); return; }
+    const slot = activeSlot();
+    if (!confirm('Supprimer "' + (slot?.name || 'ce personnage') + '" ? Irréversible.')) return;
+    delete playerData.characters[playerData.activeCharId];
+    playerData.activeCharId = Object.keys(playerData.characters)[0];
+    renderCharSelector();
+    renderAll();
+    triggerSave();
+  });
+
+  /* ── Champs fiche (délégation) ── */
   document.getElementById('tab-personnage').addEventListener('input', e => {
-    const el = e.target; const f = el.dataset.field;
-    if (!f || !playerData) return;
-    if (el.type === 'checkbox') C()[f] = el.checked;
-    else if (el.type === 'number') C()[f] = parseInt(el.value)||0;
-    else C()[f] = el.value;
-    // Mettre à jour le nom du perso dans le sélecteur si on change characterName
-    if (f === 'characterName') {
-      activeSlot().name = el.value || 'Sans nom';
-      renderCharSelector();
+    const el = e.target;
+    // data-f (champs character)
+    if (el.dataset.f && el.dataset.f in C()) {
+      if (el.type === 'checkbox') C()[el.dataset.f] = el.checked;
+      else if (el.type === 'number') C()[el.dataset.f] = parseFloat(el.value) || 0;
+      else C()[el.dataset.f] = el.value;
+      if (el.dataset.f === 'characterName') { activeSlot().name = el.value || 'Sans nom'; renderCharSelector(); }
+      if (el.dataset.f === 'niveau') { updateProfBonus(); renderSaves(); renderSkills(); }
+      if (['for','dex','con','int','sag','cha'].includes(el.dataset.f)) { updateModifier(el.dataset.f); renderSaves(); renderSkills(); updateSpellCalcs(); }
+      if (el.dataset.f === 'caractSort' || el.dataset.f === 'niveau') updateSpellCalcs();
+      updateCharSummary();
+      triggerSave();
     }
-    if (f === 'niveau') { updateProfBonusDisplay(); renderSavesGrid(); renderSkillsGrid(); }
-    updateCharSummary();
-    triggerSave();
+    // Emplacements de sorts
+    if (el.dataset.slot) { C().emplacementsSort = C().emplacementsSort || {}; C().emplacementsSort[el.dataset.slot] = parseInt(el.value)||0; triggerSave(); }
+    if (el.dataset.used) { C().emplacementsUtilises = C().emplacementsUtilises || {}; C().emplacementsUtilises[el.dataset.used] = parseInt(el.value)||0; triggerSave(); }
+    // Attaques
+    if (el.dataset.atk !== undefined && el.dataset.ak) { C().attaques = C().attaques || []; C().attaques[el.dataset.atk][el.dataset.ak] = el.value; triggerSave(); }
   });
 
-  // Monnaie
-  document.querySelectorAll('[data-currency]').forEach(inp => inp.addEventListener('input', () => {
-    if (!playerData) return;
-    INV().currency[inp.dataset.currency] = parseInt(inp.value)||0;
-    triggerSave();
-  }));
-
-  // Inventaire
-  document.getElementById('items-search').addEventListener('input', () => { if(playerData) renderInventory(); });
-  document.getElementById('btn-add-item').addEventListener('click', () => {
-    if (!playerData) return;
-    INV().items.push({qty:1,name:'',notes:'',weight:''});
-    renderInventory();
-    const rows = document.querySelectorAll('.item-row');
-    if (rows.length) rows[rows.length-1].querySelector('.item-name')?.focus();
-    triggerSave();
+  // Sauvegardes — clic sur les dots de maîtrise
+  document.getElementById('saves-col').addEventListener('click', e => {
+    const dot = e.target.closest('[data-sv]');
+    if (!dot) return;
+    C()[dot.dataset.sv] = !C()[dot.dataset.sv];
+    renderSaves(); triggerSave();
+  });
+  document.getElementById('skills-col').addEventListener('click', e => {
+    const dot = e.target.closest('[data-sk]');
+    if (!dot) return;
+    C()[dot.dataset.sk] = !C()[dot.dataset.sk];
+    renderSkills(); triggerSave();
   });
 
-  // Attaques
+  // Jets de mort
+  ['death-success','death-fail'].forEach(id => {
+    document.getElementById(id).addEventListener('click', e => {
+      const dot = e.target.closest('.death-dot');
+      if (!dot) return;
+      const type = dot.dataset.type; const idx = parseInt(dot.dataset.idx);
+      const key = type === 'success' ? 'mortSucces' : 'mortEchecs';
+      const cur = C()[key] || 0;
+      C()[key] = cur > idx ? idx : idx + 1;
+      renderCombat(); triggerSave();
+    });
+  });
+
+  // Bouton ajouter attaque
   document.getElementById('btn-add-attack').addEventListener('click', () => {
     if (!playerData) return;
-    C().attaques.push({nom:'',bonus:'',degats:'',type:'',maitrise:''});
+    C().attaques = C().attaques || [];
+    C().attaques.push({ name:'', bonus:'', degats:'' });
+    renderAttacks(); triggerSave();
+  });
+  // Supprimer attaque (délégation)
+  document.getElementById('attack-tbody').addEventListener('click', e => {
+    const btn = e.target.closest('[data-del]');
+    if (!btn) return;
+    C().attaques.splice(parseInt(btn.dataset.del), 1);
     renderAttacks(); triggerSave();
   });
 
-  // Maîtrises d'armes
-  document.querySelectorAll('.mastery-tag').forEach(tag => tag.addEventListener('click', () => {
+  /* ── Inventaire ── */
+  document.getElementById('inv-search').addEventListener('input', renderInventory);
+  document.getElementById('btn-add-item').addEventListener('click', () => {
     if (!playerData) return;
-    const m = tag.dataset.mastery;
-    const arr = C().maitrisesArmes || [];
-    const idx = arr.indexOf(m);
-    idx === -1 ? arr.push(m) : arr.splice(idx,1);
-    C().maitrisesArmes = arr;
-    tag.classList.toggle('selected', arr.includes(m));
-    triggerSave();
-  }));
-
-  // Jets de mort
-  document.querySelectorAll('.death-check').forEach(el => el.addEventListener('click', () => {
-    if (!playerData) return;
-    const type = el.dataset.death, idx = parseInt(el.dataset.idx);
-    const field = type === 'success' ? 'mortSucces' : 'mortEchecs';
-    const cur = C()[field] || 0;
-    C()[field] = cur === idx+1 ? idx : idx+1;
-    fillDeathSaves(); triggerSave();
-  }));
-
-  // Épuisement
-  document.querySelectorAll('.exhaustion-pip').forEach(pip => pip.addEventListener('click', () => {
-    if (!playerData) return;
-    const lv = parseInt(pip.dataset.lv);
-    C().epuisement = C().epuisement === lv ? lv-1 : lv;
-    fillExhaustion(); triggerSave();
-  }));
-
-  // Notes
-  document.getElementById('notes-editor').addEventListener('input', function() {
-    if (!playerData) return;
-    activeSlot().notes = this.value; triggerSave();
+    INV().items.push({ qty:1, name:'', notes:'' });
+    renderInventory(); triggerSave();
+  });
+  document.getElementById('inv-tbody').addEventListener('input', e => {
+    const el = e.target;
+    if (el.dataset.item !== undefined && el.dataset.ik) {
+      const i = parseInt(el.dataset.item);
+      INV().items[i][el.dataset.ik] = el.dataset.ik === 'qty' ? parseInt(el.value)||0 : el.value;
+      triggerSave();
+    }
+  });
+  document.getElementById('inv-tbody').addEventListener('click', e => {
+    const btn = e.target.closest('[data-del-item]');
+    if (!btn) return;
+    INV().items.splice(parseInt(btn.dataset.delItem), 1);
+    renderInventory(); triggerSave();
+  });
+  document.querySelectorAll('[data-currency]').forEach(inp => {
+    inp.addEventListener('input', () => {
+      if (!playerData) return;
+      INV().currency[inp.dataset.currency] = parseInt(inp.value)||0;
+      triggerSave();
+    });
   });
 
-  // Changer mot de passe
+  /* ── Notes ── */
+  document.getElementById('notes-editor').addEventListener('input', e => {
+    if (!playerData) return;
+    activeSlot().notes = e.target.value;
+    triggerSave();
+  });
+
+  /* ── Paramètres ── */
   document.getElementById('btn-change-pwd').addEventListener('click', async () => {
-    const newPwd = document.getElementById('settings-newpwd').value;
+    const pwd = document.getElementById('new-pwd').value;
     const msg = document.getElementById('pwd-msg');
-    if (newPwd.length < 6) { msg.textContent = 'Au moins 6 caractères requis.'; msg.style.color='#e08080'; msg.style.display=''; return; }
+    if (pwd.length < 6) { msg.textContent = 'Mot de passe trop court (6 car. min).'; msg.style.color='var(--danger)'; msg.style.display='block'; return; }
     try {
-      await updatePassword(auth.currentUser, newPwd);
-      msg.textContent = 'Mot de passe mis à jour.'; msg.style.color='#6aba6a'; msg.style.display='';
-      document.getElementById('settings-newpwd').value = '';
+      const hash = await hashPwd(pwd);
+      await sbUpdatePassword(currentUser, hash);
+      msg.textContent = 'Mot de passe changé ✓'; msg.style.color='var(--success)'; msg.style.display='block';
+      document.getElementById('new-pwd').value = '';
       setTimeout(() => { msg.style.display='none'; }, 3000);
     } catch(e) {
-      msg.textContent = 'Erreur : reconnecte-toi puis réessaie.'; msg.style.color='#e08080'; msg.style.display='';
+      msg.textContent = 'Erreur : ' + e.message; msg.style.color='var(--danger)'; msg.style.display='block';
     }
   });
 
-  // Admin — fermer modal
-  document.getElementById('admin-modal-close').addEventListener('click', () => {
+  document.getElementById('btn-export').addEventListener('click', () => {
+    if (!playerData) return;
+    const blob = new Blob([JSON.stringify(playerData, null, 2)], { type:'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'kaleysur_' + (playerData.username||currentUser) + '.json';
+    a.click();
+  });
+
+  document.getElementById('btn-import').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file || !currentUser) return;
+    const reader = new FileReader();
+    reader.onload = async ev => {
+      try {
+        const imported = JSON.parse(ev.target.result);
+        if (!imported.characters) throw new Error('Format de fichier invalide.');
+        if (!confirm('Importer cette fiche ? Tes données actuelles seront remplacées.')) return;
+        playerData = imported;
+        await sbUpdateData(currentUser, playerData);
+        renderDashboard();
+        alert('Fiche importée avec succès !');
+      } catch(err) { alert('Erreur : ' + err.message); }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+
+  document.getElementById('btn-reset-char').addEventListener('click', async () => {
+    const slot = activeSlot();
+    if (!slot) return;
+    if (!confirm('Réinitialiser "' + (slot.name||'ce personnage') + '" ? Irréversible.')) return;
+    slot.character = emptyCharacter();
+    slot.inventory = { items:[], currency:{pp:0,gp:0,ep:0,sp:0,cp:0} };
+    slot.notes = '';
+    await sbUpdateData(currentUser, playerData);
+    renderAll();
+  });
+
+  /* ── Admin ── */
+  document.getElementById('btn-admin-refresh').addEventListener('click', renderAdminPanel);
+  document.getElementById('modal-close').addEventListener('click', () => {
     document.getElementById('admin-modal').classList.remove('open');
   });
   document.getElementById('admin-modal').addEventListener('click', e => {
@@ -1781,187 +1516,22 @@ function bindListeners() {
       document.getElementById('admin-modal').classList.remove('open');
   });
 
-  // Admin — actualiser
-  document.getElementById('btn-admin-refresh').addEventListener('click', renderAdminPanel);
-
-  // Effacer données du personnage actif
-  document.getElementById('btn-clear-data').addEventListener('click', async () => {
-    if (!confirm('Effacer les données de jeu de ce personnage ? Cette action est irréversible.')) return;
-    if (!currentUser || !playerData) return;
-    const slot = activeSlot();
-    if (!slot) return;
-    slot.character = emptyCharacter();
-    slot.inventory = {items:[],currency:{pp:0,gp:0,ep:0,sp:0,cp:0}};
-    slot.notes = '';
-    await saveData(currentUser.uid, playerData);
-    renderDashboard();
-  });
-}
-
-/* ── Admin ───────────────────────────────────────────────── */
-const ADMIN_USERNAME = 'dm'; // pseudo admin (en minuscules)
-
-function isAdmin() {
-  return playerData && playerData.username && playerData.username.toLowerCase() === ADMIN_USERNAME;
-}
-
-// loadAllPlayers est défini plus haut via REST API
-
-async function renderAdminPanel() {
-  const grid = document.getElementById('admin-grid');
-  const loading = document.getElementById('admin-loading');
-  grid.innerHTML = ''; loading.style.display = '';
-  try {
-    const players = await loadAllPlayers();
-    loading.style.display = 'none';
-    const others = players.filter(p => (p.username||'').toLowerCase() !== ADMIN_USERNAME);
-    if (others.length === 0) {
-      grid.innerHTML = '<div class="admin-empty">Aucun joueur inscrit pour le moment.</div>';
-      return;
-    }
-    others.forEach(p => {
-      const c = p.character || {};
-      const card = document.createElement('div');
-      card.className = 'admin-player-card';
-      const charLine = [c.characterName, c.classe ? c.classe + (c.niveau ? ' niv.'+c.niveau : '') : '', c.species].filter(Boolean).join(' · ') || 'Aucun personnage';
-      card.innerHTML = `
-        <div class="admin-player-avatar">${p.avatar || '⚔'}</div>
-        <span class="admin-player-username">${escHtml(p.username || '?')}</span>
-        <span class="admin-player-info">${escHtml(charLine)}</span>`;
-      card.addEventListener('click', () => openAdminView(p));
-      grid.appendChild(card);
-    });
-  } catch(e) {
-    loading.textContent = '⚠ Erreur de chargement. Vérifie les règles Firestore.';
-  }
-}
-
-function escHtml(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-function openAdminView(p) {
-  const c = p.character || {};
-  const inv = p.inventory || {};
-
-  document.getElementById('admin-view-avatar').textContent = p.avatar || '⚔';
-  document.getElementById('admin-view-name').textContent = p.username || '?';
-  const charLine = [c.characterName, c.classe ? c.classe+(c.niveau?' niv.'+c.niveau:'') : '', c.species].filter(Boolean).join(' · ') || 'Aucun personnage';
-  document.getElementById('admin-view-char').textContent = charLine;
-
-  // Stats rapides
-  const statGrid = document.getElementById('admin-stat-grid');
-  statGrid.innerHTML = '';
-  const stats = [
-    {label:'Niveau', value: c.niveau||1},
-    {label:'CA', value: c.ca||10},
-    {label:'PV', value: `${c.pvActuel||0}/${c.pvMax||0}`},
-    {label:'Vitesse', value: (c.vitesse||30)+' pi'},
-    {label:'Initiative', value: fmtMod(c.initiative||0)},
-    {label:'Épuisement', value: c.epuisement||0},
-    {label:'XP', value: c.xp||0},
-    {label:'Background', value: c.background||'—'},
-  ];
-  stats.forEach(s => {
-    const box = document.createElement('div'); box.className = 'admin-stat-box';
-    box.innerHTML = `<span class="admin-stat-label">${s.label}</span><span class="admin-stat-value">${escHtml(String(s.value))}</span>`;
-    statGrid.appendChild(box);
-  });
-
-  // Caractéristiques
-  const abilGrid = document.getElementById('admin-ability-grid');
-  abilGrid.innerHTML = '';
-  ABILITIES.forEach(ab => {
-    const score = parseInt(c[ab.key])||10;
-    const box = document.createElement('div'); box.className = 'admin-stat-box';
-    box.innerHTML = `<span class="admin-stat-label">${ab.label}</span><span class="admin-stat-value">${score}</span><span style="font-size:0.75rem;color:var(--text-muted);">${fmtMod(mod(score))}</span>`;
-    abilGrid.appendChild(box);
-  });
-
-  // Jets de sauvegarde
-  const savesGrid = document.getElementById('admin-saves-grid');
-  savesGrid.innerHTML = '';
-  ABILITIES.forEach(ab => {
-    const bonus = saveBonus(c, ab.key);
-    const svKey = 'sv' + ab.key.charAt(0).toUpperCase() + ab.key.slice(1);
-    const hasSv = !!c[svKey];
-    const box = document.createElement('div'); box.className = 'admin-stat-box';
-    box.innerHTML = `<span class="admin-stat-label">${ab.label}</span><span class="admin-stat-value" style="${hasSv?'color:var(--gold)':''}">${fmtMod(bonus)}</span>`;
-    abilGrid.appendChild(box);
-    savesGrid.appendChild(box);
-  });
-
-  // Compétences
-  const skillsList = document.getElementById('admin-skills-list');
-  skillsList.innerHTML = '';
-  SKILLS.forEach(sk => {
-    const lv = c[sk.key];
-    if (!lv) return;
-    const tag = document.createElement('span');
-    tag.className = 'admin-skill-tag ' + (lv === 'e' ? 'expert' : 'prof');
-    tag.textContent = sk.label + ' ' + fmtMod(skillBonus(c, sk)) + (lv==='e'?' ★':'');
-    skillsList.appendChild(tag);
-  });
-  if (!skillsList.children.length) skillsList.innerHTML = '<span class="admin-empty">Aucune maîtrise</span>';
-
-  // Attaques
-  const atkList = document.getElementById('admin-attacks-list');
-  atkList.innerHTML = '';
-  const attacks = c.attaques || [];
-  if (attacks.length === 0) {
-    atkList.innerHTML = '<div class="admin-empty">Aucune attaque</div>';
-  } else {
-    attacks.forEach(atk => {
-      const row = document.createElement('div'); row.className = 'admin-item-row';
-      row.innerHTML = `<strong style="color:var(--gold);min-width:120px;">${escHtml(atk.nom||'—')}</strong> <span>${escHtml(atk.bonus||'')}</span> <span>${escHtml(atk.degats||'')}</span> <span style="color:var(--text-muted);">${escHtml(atk.type||'')} ${escHtml(atk.maitrise||'')}</span>`;
-      atkList.appendChild(row);
-    });
+  /* ── Restauration de session ── */
+  const savedUser = loadSession();
+  if (savedUser) {
+    sbGetPlayer(savedUser).then(row => {
+      if (row) {
+        currentUser = savedUser;
+        playerData = row.data;
+        openDashboard();
+      } else {
+        clearSession();
+      }
+    }).catch(() => clearSession());
   }
 
-  // Monnaie
-  const cur = inv.currency || {};
-  const parts = [];
-  if (cur.pp) parts.push(cur.pp+' PP');
-  if (cur.gp) parts.push(cur.gp+' PO');
-  if (cur.ep) parts.push(cur.ep+' PE');
-  if (cur.sp) parts.push(cur.sp+' PA');
-  if (cur.cp) parts.push(cur.cp+' PC');
-  document.getElementById('admin-currency-display').textContent = parts.length ? parts.join(' · ') : 'Aucune monnaie';
-
-  // Inventaire
-  const itemsList = document.getElementById('admin-items-list');
-  itemsList.innerHTML = '';
-  const items = inv.items || [];
-  if (items.length === 0) {
-    itemsList.innerHTML = '<div class="admin-empty">Inventaire vide</div>';
-  } else {
-    items.forEach(it => {
-      const row = document.createElement('div'); row.className = 'admin-item-row';
-      row.innerHTML = `<span class="admin-item-qty">×${it.qty||1}</span> <span>${escHtml(it.name||'?')}</span> ${it.notes?`<span style="color:var(--text-muted);font-style:italic;">${escHtml(it.notes)}</span>`:''}`;
-      itemsList.appendChild(row);
-    });
-  }
-
-  // Notes
-  const notesBox = document.getElementById('admin-notes-box');
-  notesBox.textContent = p.notes || '(aucune note)';
-
-  document.getElementById('admin-modal').classList.add('open');
-  document.getElementById('admin-modal').scrollTop = 0;
-}
-
-/* ── Init ────────────────────────────────────────────────── */
-bindListeners();
-
-onAuthStateChanged(auth, async user => {
-  setStatus(''); // efface le statut de diagnostic
-  if (user) {
-    await openDashboard(user);
-  } else {
-    showScreen('screen-auth');
-  }
-});
-
+}); // DOMContentLoaded
 </script>
+
 </body>
 </html>
