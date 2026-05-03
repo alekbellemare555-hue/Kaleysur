@@ -298,6 +298,26 @@
     /* ── Maîtrises & Langues ── */
     .mait-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.65rem; }
 
+    /* ── Thèmes de couleur ── */
+    .theme-swatches { display:flex; flex-wrap:wrap; gap:0.55rem; margin-top:0.25rem; }
+    .theme-swatch { width:32px; height:32px; border-radius:50%; border:3px solid transparent; cursor:pointer; transition:transform 0.15s, border-color 0.15s; position:relative; }
+    .theme-swatch:hover { transform:scale(1.15); }
+    .theme-swatch.active { border-color:#fff; box-shadow:0 0 0 1px #000; }
+    .theme-swatch-label { font-size:0.7rem; color:#888; margin-top:0.5rem; }
+
+    /* ── Canvas notes à la main ── */
+    .canvas-toolbar { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.6rem; padding:0.5rem 0.6rem; background:#0d0d14; border:1px solid #2a2a3a; border-radius:6px; }
+    .canvas-tool-btn { background:#1a1a24; border:1px solid #2a2a3a; border-radius:5px; color:#aaa; cursor:pointer; font-size:0.72rem; padding:0.25rem 0.55rem; transition:all var(--transition); font-family:'Cinzel',serif; letter-spacing:0.03em; }
+    .canvas-tool-btn:hover { border-color:var(--gold-dark); color:var(--gold-dark); }
+    .canvas-tool-btn.active { border-color:var(--gold); background:rgba(201,169,110,0.12); color:var(--gold); }
+    .canvas-tool-sep { width:1px; height:22px; background:#2a2a3a; margin:0 0.1rem; }
+    .ink-dot { width:20px; height:20px; border-radius:50%; border:2px solid transparent; cursor:pointer; transition:border-color 0.15s, transform 0.15s; }
+    .ink-dot:hover { transform:scale(1.2); }
+    .ink-dot.active { border-color:#fff; box-shadow:0 0 0 1px #555; }
+    .canvas-size-btn { width:28px; height:28px; border-radius:50%; border:1px solid #2a2a3a; background:#1a1a24; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:border-color var(--transition); }
+    .canvas-size-btn:hover, .canvas-size-btn.active { border-color:var(--gold-dark); }
+    #handnote-canvas { width:100%; border-radius:6px; cursor:crosshair; touch-action:none; display:block; }
+
     /* ── Responsive ── */
     @media (max-width:700px) {
       .ability-grid { grid-template-columns:repeat(3,1fr); }
@@ -782,6 +802,39 @@
         <textarea class="notes-editor" id="notes-editor" placeholder="Tes notes de session, quêtes, PNJ importants…"></textarea>
         <div style="font-size:0.72rem;color:#666;text-align:right;margin-top:0.3rem;font-style:italic;">Sauvegarde automatique</div>
       </div>
+
+      <div class="sheet-section">
+        <div class="sheet-section-title">Notes à la main ✍</div>
+        <div class="canvas-toolbar">
+          <!-- Outil -->
+          <button class="canvas-tool-btn active" id="ctool-pen" title="Crayon">✏ Crayon</button>
+          <button class="canvas-tool-btn" id="ctool-eraser" title="Gomme">◻ Gomme</button>
+          <div class="canvas-tool-sep"></div>
+          <!-- Taille -->
+          <div class="canvas-size-btn active" id="csize-s" data-size="3" title="Fin" style="border-color:var(--gold-dark);">
+            <svg viewBox="0 0 20 20" width="8" height="8"><circle cx="10" cy="10" r="3" fill="currentColor"/></svg>
+          </div>
+          <div class="canvas-size-btn" id="csize-m" data-size="6" title="Moyen">
+            <svg viewBox="0 0 20 20" width="12" height="12"><circle cx="10" cy="10" r="5" fill="currentColor"/></svg>
+          </div>
+          <div class="canvas-size-btn" id="csize-l" data-size="12" title="Épais">
+            <svg viewBox="0 0 20 20" width="16" height="16"><circle cx="10" cy="10" r="8" fill="currentColor"/></svg>
+          </div>
+          <div class="canvas-tool-sep"></div>
+          <!-- Couleurs d'encre -->
+          <div class="ink-dot active" data-ink="#1a1212" style="background:#1a1212;" title="Noir encre"></div>
+          <div class="ink-dot" data-ink="#7a1a1a" style="background:#7a1a1a;" title="Rouge"></div>
+          <div class="ink-dot" data-ink="#1a2a6a" style="background:#1a2a6a;" title="Bleu"></div>
+          <div class="ink-dot" data-ink="#1a4a2a" style="background:#1a4a2a;" title="Vert"></div>
+          <div class="ink-dot" data-ink="#5a3a0a" style="background:#5a3a0a;" title="Sépia"></div>
+          <div class="canvas-tool-sep"></div>
+          <!-- Actions -->
+          <button class="canvas-tool-btn" id="ctool-undo" title="Annuler">↩ Annuler</button>
+          <button class="canvas-tool-btn" id="ctool-clear" title="Effacer tout" style="color:var(--danger);border-color:#3a1a1a;">✕ Tout effacer</button>
+          <div style="margin-left:auto;font-size:0.65rem;color:#444;font-style:italic;">Sauvegardé localement</div>
+        </div>
+        <canvas id="handnote-canvas" height="700"></canvas>
+      </div>
     </div>
 
     <!-- ── Onglet Paramètres ── -->
@@ -791,6 +844,16 @@
         <div class="settings-row">
           <div class="settings-label">Avatar</div>
           <div class="avatar-grid" id="avatar-picker"></div>
+        </div>
+      </div>
+      <div class="settings-section">
+        <h3>Couleur de thème</h3>
+        <div class="settings-row">
+          <div class="settings-label">Accent<div class="settings-desc">Couleur principale de ta fiche</div></div>
+          <div>
+            <div class="theme-swatches" id="theme-swatches"></div>
+            <div class="theme-swatch-label" id="theme-label">Or (défaut)</div>
+          </div>
         </div>
       </div>
       <div class="settings-section">
@@ -2059,6 +2122,48 @@ const CLASS_RESOURCES = {
   ]
 };
 
+/* ── Thèmes de couleur ── */
+const THEMES = [
+  { id:'or',        name:'Or',        gold:'#c9a96e', dark:'#a07840' },
+  { id:'rubis',     name:'Rubis',     gold:'#d96060', dark:'#a83030' },
+  { id:'saphir',    name:'Saphir',    gold:'#6090e0', dark:'#3060b0' },
+  { id:'emeraude',  name:'Émeraude',  gold:'#50b870', dark:'#308040' },
+  { id:'amethyste', name:'Améthyste', gold:'#9870e0', dark:'#6040b0' },
+  { id:'argent',    name:'Argent',    gold:'#a0b0c0', dark:'#708090' },
+  { id:'cuivre',    name:'Cuivre',    gold:'#c87840', dark:'#904820' },
+  { id:'turquoise', name:'Turquoise', gold:'#40b8a8', dark:'#208878' },
+];
+function applyTheme(id) {
+  const t = THEMES.find(x => x.id === id) || THEMES[0];
+  document.documentElement.style.setProperty('--gold', t.gold);
+  document.documentElement.style.setProperty('--gold-dark', t.dark);
+  // Mettre à jour l'UI des swatches
+  document.querySelectorAll('.theme-swatch').forEach(s => {
+    s.classList.toggle('active', s.dataset.theme === t.id);
+  });
+  const lbl = document.getElementById('theme-label');
+  if (lbl) lbl.textContent = t.name;
+}
+function buildThemeSwatches() {
+  const container = document.getElementById('theme-swatches');
+  if (!container) return;
+  container.innerHTML = '';
+  THEMES.forEach(t => {
+    const s = document.createElement('div');
+    s.className = 'theme-swatch';
+    s.dataset.theme = t.id;
+    s.title = t.name;
+    s.style.background = `linear-gradient(135deg, ${t.gold}, ${t.dark})`;
+    s.addEventListener('click', () => {
+      if (!playerData) return;
+      playerData.theme = t.id;
+      applyTheme(t.id);
+      triggerSave();
+    });
+    container.appendChild(s);
+  });
+}
+
 /* ── Conditions D&D 2024 ── */
 const ALL_CONDITIONS = [
   'Aveuglé','Charmé','Assourdi','Effrayé','Agrippé',
@@ -2462,6 +2567,10 @@ async function openDashboard() {
     await sbUpdateData(currentUser, playerData);
   }
   if (!playerData) playerData = emptyPlayerData(currentUser);
+  // Appliquer le thème sauvegardé
+  if (playerData.theme) applyTheme(playerData.theme);
+  buildThemeSwatches();
+  if (playerData.theme) applyTheme(playerData.theme); // re-apply pour marquer le swatch actif
   showScreen('screen-dashboard');
   renderDashboard();
   document.getElementById('tab-admin-btn').style.display = currentUser === ADMIN_USER ? '' : 'none';
@@ -2519,6 +2628,8 @@ function renderCharCards() {
       playerData.activeCharId = id;
       renderCharCards();
       renderAll();
+      // Recharger le canvas pour ce personnage
+      setTimeout(initCanvas, 50);
       triggerSave();
     });
     grid.appendChild(card);
@@ -2761,6 +2872,104 @@ function renderAttacks() {
     `;
     tbody.appendChild(tr);
   });
+}
+
+/* ── Canvas notes à la main ── */
+const canvasState = { tool:'pen', size:3, ink:'#1a1212', drawing:false, history:[] };
+
+function canvasKey() {
+  return 'handnote-' + (currentUser||'?') + '-' + (playerData?.activeCharId||'0');
+}
+function initCanvas() {
+  const cv = document.getElementById('handnote-canvas');
+  if (!cv) return;
+  const dpr = window.devicePixelRatio || 1;
+  const w = cv.offsetWidth || cv.parentElement?.offsetWidth || 800;
+  cv.width  = w * dpr;
+  cv.height = 700 * dpr;
+  const ctx = cv.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.fillStyle = '#f5f0e8';
+  ctx.fillRect(0, 0, w, 700);
+  ctx.strokeStyle = 'rgba(180,160,120,0.25)';
+  ctx.lineWidth = 0.5;
+  for (let y = 40; y < 700; y += 32) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+  }
+  canvasState.history = [];
+  loadCanvas();
+}
+function saveCanvas() {
+  const cv = document.getElementById('handnote-canvas');
+  if (!cv) return;
+  try { localStorage.setItem(canvasKey(), cv.toDataURL()); } catch(e) {}
+}
+function loadCanvas() {
+  const cv = document.getElementById('handnote-canvas');
+  if (!cv || !currentUser) return;
+  const data = localStorage.getItem(canvasKey());
+  if (!data) return;
+  const img = new Image();
+  img.onload = () => {
+    const ctx = cv.getContext('2d');
+    ctx.drawImage(img, 0, 0, cv.offsetWidth, 700);
+  };
+  img.src = data;
+}
+function pushHistory() {
+  const cv = document.getElementById('handnote-canvas');
+  if (!cv) return;
+  canvasState.history.push(cv.toDataURL());
+  if (canvasState.history.length > 20) canvasState.history.shift();
+}
+function undoCanvas() {
+  const cv = document.getElementById('handnote-canvas');
+  if (!cv || !canvasState.history.length) return;
+  const ctx = cv.getContext('2d');
+  const prev = canvasState.history.pop();
+  const img = new Image();
+  img.onload = () => { ctx.drawImage(img, 0, 0, cv.offsetWidth, 700); saveCanvas(); };
+  img.src = prev;
+}
+function getCanvasPos(cv, e) {
+  const rect = cv.getBoundingClientRect();
+  return {
+    x: (e.clientX - rect.left) * (cv.offsetWidth  / rect.width),
+    y: (e.clientY - rect.top)  * (cv.offsetHeight / rect.height),
+  };
+}
+function initCanvasEvents() {
+  const cv = document.getElementById('handnote-canvas');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  cv.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    pushHistory();
+    canvasState.drawing = true;
+    cv.setPointerCapture(e.pointerId);
+    const p = getCanvasPos(cv, e);
+    ctx.beginPath(); ctx.moveTo(p.x, p.y);
+    if (canvasState.tool === 'eraser') {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.lineWidth = canvasState.size * 5;
+    } else {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = canvasState.ink;
+      ctx.lineWidth = canvasState.size * (e.pressure && e.pointerType === 'pen' ? (0.5 + e.pressure * 1.5) : 1);
+    }
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  });
+  cv.addEventListener('pointermove', e => {
+    if (!canvasState.drawing) return;
+    e.preventDefault();
+    const p = getCanvasPos(cv, e);
+    if (canvasState.tool === 'pen' && e.pointerType === 'pen' && e.pressure)
+      ctx.lineWidth = canvasState.size * (0.5 + e.pressure * 1.5);
+    ctx.lineTo(p.x, p.y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(p.x, p.y);
+  });
+  cv.addEventListener('pointerup',     () => { canvasState.drawing = false; ctx.globalCompositeOperation = 'source-over'; saveCanvas(); });
+  cv.addEventListener('pointercancel', () => { canvasState.drawing = false; });
 }
 
 /* ── Compétences passives ── */
@@ -3628,6 +3837,54 @@ document.addEventListener('DOMContentLoaded', () => {
       else clearSession();
     }).catch(() => clearSession());
   }
+
+  /* ── Canvas toolbar ── */
+  initCanvasEvents();
+  document.getElementById('ctool-pen').addEventListener('click', () => {
+    canvasState.tool = 'pen';
+    document.getElementById('ctool-pen').classList.add('active');
+    document.getElementById('ctool-eraser').classList.remove('active');
+  });
+  document.getElementById('ctool-eraser').addEventListener('click', () => {
+    canvasState.tool = 'eraser';
+    document.getElementById('ctool-eraser').classList.add('active');
+    document.getElementById('ctool-pen').classList.remove('active');
+  });
+  document.getElementById('ctool-undo').addEventListener('click', undoCanvas);
+  document.getElementById('ctool-clear').addEventListener('click', () => {
+    if (!confirm('Effacer tout le dessin ?')) return;
+    pushHistory(); initCanvas();
+  });
+  // Taille de trait
+  document.querySelectorAll('.canvas-size-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      canvasState.size = parseInt(btn.dataset.size);
+      document.querySelectorAll('.canvas-size-btn').forEach(b => { b.classList.remove('active'); b.style.borderColor = ''; });
+      btn.classList.add('active'); btn.style.borderColor = 'var(--gold-dark)';
+    });
+  });
+  // Couleurs d'encre
+  document.querySelectorAll('.ink-dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      canvasState.tool = 'pen';
+      canvasState.ink = dot.dataset.ink;
+      document.getElementById('ctool-pen').classList.add('active');
+      document.getElementById('ctool-eraser').classList.remove('active');
+      document.querySelectorAll('.ink-dot').forEach(d => d.classList.remove('active'));
+      dot.classList.add('active');
+    });
+  });
+  // Init canvas quand on active l'onglet Notes
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.tab === 'notes') {
+        setTimeout(() => { if (!document.getElementById('handnote-canvas').width) initCanvas(); }, 50);
+      }
+    });
+  });
+
+  /* ── Thèmes ── */
+  buildThemeSwatches();
 
   /* ── Sections réductibles ── */
   document.querySelectorAll('#tab-personnage .sheet-section-title').forEach((title, idx) => {
