@@ -97,7 +97,13 @@
 
     /* ── Sections fiche ── */
     .sheet-section { background:#1a1a24; border:1px solid #2a2a3a; border-radius:var(--radius); padding:1.1rem 1.25rem; margin-bottom:1rem; }
-    .sheet-section-title { font-family:'Cinzel',serif; font-size:0.78rem; color:var(--gold-dark); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:0.85rem; padding-bottom:0.4rem; border-bottom:1px solid #2a2a3a; }
+    .sheet-section-title { font-family:'Cinzel',serif; font-size:0.78rem; color:var(--gold-dark); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:0.85rem; padding-bottom:0.4rem; border-bottom:1px solid #2a2a3a; cursor:pointer; user-select:none; transition:color var(--transition); }
+    .sheet-section-title:hover { color:var(--gold); }
+    .sec-chevron { float:right; font-size:0.7rem; color:#555; margin-left:0.5rem; transition:color var(--transition); font-style:normal; }
+    .sheet-section-title:hover .sec-chevron { color:var(--gold-dark); }
+    .sheet-section.collapsed > *:not(:first-child) { display:none !important; }
+    .sheet-section.collapsed .sheet-section-title { margin-bottom:0; border-bottom:none; padding-bottom:0; }
+    .sheet-section.collapsed { padding-bottom:0.75rem; }
     .sheet-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:0.75rem; }
     .sheet-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
     .field-group { display:flex; flex-direction:column; gap:0.2rem; }
@@ -3358,6 +3364,30 @@ document.addEventListener('DOMContentLoaded', () => {
       else clearSession();
     }).catch(() => clearSession());
   }
+
+  /* ── Sections réductibles ── */
+  document.querySelectorAll('#tab-personnage .sheet-section-title').forEach((title, idx) => {
+    const section = title.closest('.sheet-section');
+    if (!section) return;
+    const key = 'sec-collapse-' + idx;
+    // Ajouter chevron
+    const chev = document.createElement('span');
+    chev.className = 'sec-chevron';
+    chev.textContent = '▾';
+    title.appendChild(chev);
+    // Restaurer l'état sauvegardé
+    if (localStorage.getItem(key) === '1') {
+      section.classList.add('collapsed');
+      chev.textContent = '▸';
+    }
+    // Clic pour ouvrir/fermer
+    title.addEventListener('click', e => {
+      if (e.target.closest('button')) return; // ignorer les clics sur boutons internes
+      const isCollapsed = section.classList.toggle('collapsed');
+      chev.textContent = isCollapsed ? '▸' : '▾';
+      localStorage.setItem(key, isCollapsed ? '1' : '0');
+    });
+  });
 
 }); // DOMContentLoaded
 </script>
