@@ -202,6 +202,28 @@
     .death-dot.success-on { background:var(--success); border-color:var(--success); }
     .death-dot.fail-on { background:var(--danger); border-color:var(--danger); }
 
+    /* ── Class Features ── */
+    .cf-level-group { margin-bottom:0.45rem; border:1px solid #2a2a3a; border-radius:6px; overflow:hidden; }
+    .cf-level-header { display:flex; align-items:center; gap:0.6rem; padding:0.5rem 0.75rem; background:#13131a; cursor:pointer; user-select:none; transition:background var(--transition); }
+    .cf-level-header:hover { background:#1a1a28; }
+    .cf-level-title { font-family:'Cinzel',serif; font-size:0.75rem; color:var(--gold-dark); letter-spacing:0.06em; text-transform:uppercase; flex:1; }
+    .cf-level-header.cf-current .cf-level-title { color:var(--gold); }
+    .cf-chevron { font-size:0.62rem; color:#555; transition:transform var(--transition); display:inline-block; }
+    .cf-level-header.cf-collapsed .cf-chevron { transform:rotate(-90deg); }
+    .cf-level-body { padding:0.5rem 0.65rem; display:flex; flex-direction:column; gap:0.35rem; background:#0d0d14; }
+    .cf-level-body.cf-hidden { display:none; }
+    .cf-feature { padding:0.45rem 0.65rem; background:#13131a; border-radius:5px; border-left:2px solid #2a2a3a; }
+    .cf-feature.cf-new { border-left-color:rgba(201,169,110,0.55); }
+    .cf-feature-row { display:flex; align-items:center; gap:0.45rem; flex-wrap:wrap; margin-bottom:0.15rem; }
+    .cf-feature-name { font-size:0.82rem; color:#e8e0d0; font-weight:600; }
+    .cf-feature-desc { font-size:0.76rem; color:#999; line-height:1.55; }
+    .cf-badge { font-size:0.58rem; padding:0.1rem 0.35rem; border-radius:3px; font-family:'Cinzel',serif; letter-spacing:0.04em; white-space:nowrap; }
+    .cf-badge-new { background:rgba(201,169,110,0.2); color:var(--gold); border:1px solid rgba(201,169,110,0.3); }
+    .cf-badge-sub { background:rgba(140,80,200,0.2); color:#c9a6ff; border:1px solid rgba(140,80,200,0.3); }
+    .cf-badge-asi { background:rgba(80,140,220,0.2); color:#8ab8e8; border:1px solid rgba(80,140,220,0.3); }
+    .cf-badge-epic { background:rgba(200,160,40,0.25); color:#f0c040; border:1px solid rgba(200,160,40,0.4); }
+    .cf-slots-note { font-size:0.72rem; color:#6abaaa; font-style:italic; margin-top:0.35rem; padding:0.35rem 0.5rem; background:rgba(80,180,160,0.08); border-radius:4px; border:1px solid rgba(80,180,160,0.2); }
+
     /* ── Responsive ── */
     @media (max-width:700px) {
       .ability-grid { grid-template-columns:repeat(3,1fr); }
@@ -348,20 +370,20 @@
           <div class="field-group">
             <label class="field-label">Classe</label>
             <select class="field-input" data-f="classe">
-              <option value="">— Choisir une classe —</option>
-              <option>Artificier</option>
-              <option>Barbare</option>
-              <option>Barde</option>
-              <option>Clerc</option>
-              <option>Druide</option>
-              <option>Guerrier</option>
-              <option>Moine</option>
+              <option value="">— Choose a class —</option>
+              <option>Artificer</option>
+              <option>Barbarian</option>
+              <option>Bard</option>
+              <option>Cleric</option>
+              <option>Druid</option>
+              <option>Fighter</option>
+              <option>Monk</option>
               <option>Paladin</option>
-              <option>Rôdeur</option>
-              <option>Roublard</option>
-              <option>Ensorceleur</option>
-              <option>Occultiste</option>
-              <option>Magicien</option>
+              <option>Ranger</option>
+              <option>Rogue</option>
+              <option>Sorcerer</option>
+              <option>Warlock</option>
+              <option>Wizard</option>
             </select>
           </div>
           <div class="field-group">
@@ -397,6 +419,16 @@
           </label>
           <span style="margin-left:1rem;font-size:0.82rem;color:#888;">Bonus de maîtrise : <strong id="prof-bonus" style="color:var(--gold);">+2</strong></span>
         </div>
+      </div>
+
+      <!-- Class Features (auto-populated) -->
+      <div class="sheet-section" id="cf-section" style="display:none;">
+        <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
+          <span id="cf-title">Class Features</span>
+          <span style="font-size:0.7rem;color:#555;font-style:italic;">D&D 2024 PHB</span>
+        </div>
+        <div id="cf-slots-note" class="cf-slots-note" style="display:none;margin-bottom:0.65rem;"></div>
+        <div id="cf-body"></div>
       </div>
 
       <!-- Caractéristiques -->
@@ -704,22 +736,548 @@ const SB_HEADERS = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Con
 const ADMIN_USER = 'dm';
 const AVATARS = ['⚔','🧙','🏹','🛡','🔮','⚡','🌿','🔥','❄','🐉','🗡','🎭','🐺','🦅','💀','⚜'];
 
-/* ── Classes D&D 2024 — dé de vie + caract. de sort ── */
+/* ── Classes D&D 2024 — hit die + spellcasting ability ── */
 const DND_CLASSES = {
-  'Artificier':  { de: '1d8',  sort: 'INT' },
-  'Barbare':     { de: '1d12', sort: '' },
-  'Barde':       { de: '1d8',  sort: 'CHA' },
-  'Clerc':       { de: '1d8',  sort: 'SAG' },
-  'Druide':      { de: '1d8',  sort: 'SAG' },
-  'Guerrier':    { de: '1d10', sort: '' },
-  'Moine':       { de: '1d8',  sort: '' },
-  'Paladin':     { de: '1d10', sort: 'CHA' },
-  'Rôdeur':      { de: '1d10', sort: 'SAG' },
-  'Roublard':    { de: '1d8',  sort: '' },
-  'Ensorceleur': { de: '1d6',  sort: 'CHA' },
-  'Occultiste':  { de: '1d8',  sort: 'CHA' },
-  'Magicien':    { de: '1d6',  sort: 'INT' },
+  'Artificer': { de: '1d8',  sort: 'INT' },
+  'Barbarian': { de: '1d12', sort: '' },
+  'Bard':      { de: '1d8',  sort: 'CHA' },
+  'Cleric':    { de: '1d8',  sort: 'SAG' },
+  'Druid':     { de: '1d8',  sort: 'SAG' },
+  'Fighter':   { de: '1d10', sort: '' },
+  'Monk':      { de: '1d8',  sort: '' },
+  'Paladin':   { de: '1d10', sort: 'CHA' },
+  'Ranger':    { de: '1d10', sort: 'SAG' },
+  'Rogue':     { de: '1d8',  sort: '' },
+  'Sorcerer':  { de: '1d6',  sort: 'CHA' },
+  'Warlock':   { de: '1d8',  sort: 'CHA' },
+  'Wizard':    { de: '1d6',  sort: 'INT' },
 };
+
+/* ── Spell Slot Tables ── */
+const FULL_CASTER_SLOTS = {
+  1:[2,0,0,0,0,0,0,0,0], 2:[3,0,0,0,0,0,0,0,0], 3:[4,2,0,0,0,0,0,0,0],
+  4:[4,3,0,0,0,0,0,0,0], 5:[4,3,2,0,0,0,0,0,0], 6:[4,3,3,0,0,0,0,0,0],
+  7:[4,3,3,1,0,0,0,0,0], 8:[4,3,3,2,0,0,0,0,0], 9:[4,3,3,3,1,0,0,0,0],
+  10:[4,3,3,3,2,0,0,0,0], 11:[4,3,3,3,2,1,0,0,0], 12:[4,3,3,3,2,1,0,0,0],
+  13:[4,3,3,3,2,1,1,0,0], 14:[4,3,3,3,2,1,1,0,0], 15:[4,3,3,3,2,1,1,1,0],
+  16:[4,3,3,3,2,1,1,1,0], 17:[4,3,3,3,2,1,1,1,1], 18:[4,3,3,3,3,1,1,1,1],
+  19:[4,3,3,3,3,2,1,1,1], 20:[4,3,3,3,3,2,2,1,1]
+};
+const HALF_CASTER_SLOTS = {
+  1:[0,0,0,0,0,0,0,0,0], 2:[2,0,0,0,0,0,0,0,0], 3:[3,0,0,0,0,0,0,0,0],
+  4:[3,0,0,0,0,0,0,0,0], 5:[4,2,0,0,0,0,0,0,0], 6:[4,2,0,0,0,0,0,0,0],
+  7:[4,3,0,0,0,0,0,0,0], 8:[4,3,0,0,0,0,0,0,0], 9:[4,3,2,0,0,0,0,0,0],
+  10:[4,3,2,0,0,0,0,0,0], 11:[4,3,3,0,0,0,0,0,0], 12:[4,3,3,0,0,0,0,0,0],
+  13:[4,3,3,1,0,0,0,0,0], 14:[4,3,3,1,0,0,0,0,0], 15:[4,3,3,2,0,0,0,0,0],
+  16:[4,3,3,2,0,0,0,0,0], 17:[4,3,3,3,1,0,0,0,0], 18:[4,3,3,3,1,0,0,0,0],
+  19:[4,3,3,3,2,0,0,0,0], 20:[4,3,3,3,2,0,0,0,0]
+};
+const WARLOCK_SLOTS = {
+  1:[1,0,0,0,0,0,0,0,0], 2:[2,0,0,0,0,0,0,0,0], 3:[0,2,0,0,0,0,0,0,0],
+  4:[0,2,0,0,0,0,0,0,0], 5:[0,0,2,0,0,0,0,0,0], 6:[0,0,2,0,0,0,0,0,0],
+  7:[0,0,0,2,0,0,0,0,0], 8:[0,0,0,2,0,0,0,0,0], 9:[0,0,0,0,2,0,0,0,0],
+  10:[0,0,0,0,2,0,0,0,0], 11:[0,0,0,0,3,0,0,0,0], 12:[0,0,0,0,3,0,0,0,0],
+  13:[0,0,0,0,3,0,0,0,0], 14:[0,0,0,0,3,0,0,0,0], 15:[0,0,0,0,3,0,0,0,0],
+  16:[0,0,0,0,3,0,0,0,0], 17:[0,0,0,0,4,0,0,0,0], 18:[0,0,0,0,4,0,0,0,0],
+  19:[0,0,0,0,4,0,0,0,0], 20:[0,0,0,0,4,0,0,0,0]
+};
+const ARTIFICER_SLOTS = {
+  1:[2,0,0,0,0,0,0,0,0], 2:[2,0,0,0,0,0,0,0,0], 3:[3,0,0,0,0,0,0,0,0],
+  4:[3,0,0,0,0,0,0,0,0], 5:[4,2,0,0,0,0,0,0,0], 6:[4,2,0,0,0,0,0,0,0],
+  7:[4,3,0,0,0,0,0,0,0], 8:[4,3,0,0,0,0,0,0,0], 9:[4,3,2,0,0,0,0,0,0],
+  10:[4,3,2,0,0,0,0,0,0], 11:[4,3,3,0,0,0,0,0,0], 12:[4,3,3,0,0,0,0,0,0],
+  13:[4,3,3,1,0,0,0,0,0], 14:[4,3,3,1,0,0,0,0,0], 15:[4,3,3,2,0,0,0,0,0],
+  16:[4,3,3,2,0,0,0,0,0], 17:[4,3,3,3,1,0,0,0,0], 18:[4,3,3,3,1,0,0,0,0],
+  19:[4,3,3,3,2,0,0,0,0], 20:[4,3,3,3,2,0,0,0,0]
+};
+
+/* ════════════════════════════════════════════════════════════
+   D&D 2024 CLASS DATA  (PHB, base classes)
+   Each feature: { name, desc, type }
+   type: 'feature' | 'asi' | 'subclass' | 'epic'
+   ════════════════════════════════════════════════════════════ */
+const CLASS_DATA = {
+
+'Barbarian': {
+  saves: ['for','con'],
+  armorProf: 'Light, Medium, Shields',
+  weaponProf: 'Simple and Martial weapons',
+  features: {
+    1: [
+      { name:'Rage', type:'feature', desc:"Bonus action. Gain advantage on STR checks and saves, resistance to Bludgeoning/Piercing/Slashing damage, and a damage bonus. You can't cast or concentrate spells while raging. Ends if you don't attack or take damage. Uses: 2/Long Rest, scaling with level." },
+      { name:'Unarmored Defense', type:'feature', desc:"While wearing no armor, your AC = 10 + DEX modifier + CON modifier. You can use a shield and still gain this benefit." },
+      { name:'Weapon Mastery', type:'feature', desc:"Use the Mastery property of 2 Simple or Martial weapons, choosing them on Long Rest." }
+    ],
+    2: [
+      { name:'Danger Sense', type:'feature', desc:"Advantage on DEX saving throws against effects you can see (traps, spells, etc.), as long as you are not Incapacitated." },
+      { name:'Reckless Attack', type:'feature', desc:"Before making your first attack on your turn, choose to attack recklessly. You gain advantage on STR-based attacks this turn, but attack rolls against you have advantage until your next turn." }
+    ],
+    3: [
+      { name:'Barbarian Subclass', type:'subclass', desc:"Choose a subclass: Berserker, Wild Heart, World Tree, or Zealot. You gain the first subclass feature." },
+      { name:'Primal Knowledge', type:'feature', desc:"Gain proficiency in one skill from the Barbarian list: Athletics, Intimidation, Nature, Perception, or Survival." }
+    ],
+    4: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    5: [
+      { name:'Extra Attack', type:'feature', desc:"You can attack twice instead of once whenever you take the Attack action on your turn." },
+      { name:'Fast Movement', type:'feature', desc:"While not wearing heavy armor, your walking speed increases by 10 feet." }
+    ],
+    6: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Barbarian subclass." }],
+    7: [
+      { name:'Feral Instinct', type:'feature', desc:"You have advantage on Initiative rolls. If surprised, you can act normally on your first turn after entering your Rage as a Bonus Action." },
+      { name:'Instinctive Pounce', type:'feature', desc:"When you enter your Rage, you can move up to half your speed as part of the same Bonus Action." }
+    ],
+    8: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    9: [{ name:'Brutal Strike', type:'feature', desc:"When you use Reckless Attack, you can forgo advantage on one attack to make a Brutal Strike: deal extra 1d10 damage and choose an effect (Forceful Blow: push 15 ft; Hamstring Blow: target speed −15 ft until your next turn)." }],
+    10: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Barbarian subclass." }],
+    11: [{ name:'Relentless Rage', type:'feature', desc:"If reduced to 0 HP while Raging, make a DC 10 CON save to drop to 1 HP instead. DC increases by 5 each time you succeed; resets on Long Rest." }],
+    12: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    13: [{ name:'Improved Brutal Strike', type:'feature', desc:"Brutal Strike damage increases to 2d10, and you can choose two effects on a Brutal Strike." }],
+    14: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Barbarian subclass." }],
+    15: [{ name:'Persistent Rage', type:'feature', desc:"Your Rage can only end early if you choose to end it or you fall Unconscious. You no longer need to attack or take damage to maintain it." }],
+    16: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    17: [{ name:'Improved Brutal Strike', type:'feature', desc:"Brutal Strike damage increases to 3d10." }],
+    18: [{ name:'Indomitable Might', type:'feature', desc:"If your total on a STR check is less than your STR score, use your STR score instead." }],
+    19: [{ name:'Epic Boon', type:'epic', desc:"Gain an Epic Boon feat or another feat of your choice." }],
+    20: [{ name:'Primal Champion', type:'feature', desc:"Your STR score increases by 4 and your CON score increases by 4. Your maximum for those scores is also increased by 4." }]
+  }
+},
+
+'Bard': {
+  saves: ['dex','cha'],
+  armorProf: 'Light armor',
+  weaponProf: 'Simple weapons, Hand crossbow, Longsword, Rapier, Shortsword',
+  features: {
+    1: [
+      { name:'Bardic Inspiration', type:'feature', desc:"Bonus action: give one creature within 60 ft a Bardic Inspiration die (d6). They can roll it and add it to one ability check, attack roll, or saving throw within the next 10 minutes. You can use this CHA modifier times (minimum 1), regaining uses on Long Rest." },
+      { name:'Spellcasting', type:'feature', desc:"You are a full spellcaster using Charisma. You know 2 cantrips and 4 spells at 1st level. You prepare spells by learning them from any class's list (Magical Secrets at 10th)." }
+    ],
+    2: [
+      { name:'Expertise', type:'feature', desc:"Choose 2 skills you are proficient in. Your proficiency bonus is doubled for any check using those skills." },
+      { name:'Jack of All Trades', type:'feature', desc:"Add half your proficiency bonus (rounded down) to ability checks that don't already use your proficiency bonus." }
+    ],
+    3: [{ name:'Bard Subclass', type:'subclass', desc:"Choose a Bard College: Dance, Glamour, Lore, Valor, or Whispers. You gain the first subclass feature." }],
+    4: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    5: [{ name:'Font of Inspiration', type:'feature', desc:"You now regain expended Bardic Inspiration uses when you finish a Short or Long Rest." }],
+    6: [
+      { name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Bard College." },
+      { name:'Countercharm', type:'feature', desc:"As an action, start a performance. Until you stop, each creature within 30 ft of you has advantage on saving throws against being Frightened or Charmed." }
+    ],
+    7: [{ name:'Expertise', type:'feature', desc:"Choose 2 more skills. Your proficiency bonus is doubled for checks using those skills (4 total)." }],
+    8: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    9: [{ name:'Superior Bardic Inspiration', type:'feature', desc:"When you roll initiative and have no Bardic Inspiration uses remaining, you regain 1 use." }],
+    10: [
+      { name:'Magical Secrets', type:'feature', desc:"You can choose spells from any class's spell list when you learn or swap Bard spells." },
+      { name:'Bardic Inspiration — d8', type:'feature', desc:"Your Bardic Inspiration die increases to a d8." }
+    ],
+    12: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    14: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Bard College." }],
+    15: [{ name:'Bardic Inspiration — d10', type:'feature', desc:"Your Bardic Inspiration die increases to a d10." }],
+    16: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    18: [
+      { name:'Superior Inspiration', type:'feature', desc:"When you roll Initiative and have no Bardic Inspiration uses, you regain 2 uses." },
+      { name:'Bardic Inspiration — d12', type:'feature', desc:"Your Bardic Inspiration die increases to a d12." }
+    ],
+    19: [{ name:'Epic Boon', type:'epic', desc:"Gain an Epic Boon feat or another feat of your choice." }],
+    20: [{ name:'Words of Creation', type:'feature', desc:"Power Word Heal and Power Word Kill are always prepared for you and don't count against your prepared spells. You can cast each once without expending a spell slot, regaining those casts on a Long Rest." }]
+  }
+},
+
+'Cleric': {
+  saves: ['sag','cha'],
+  armorProf: 'Light, Medium, Shields',
+  weaponProf: 'Simple weapons',
+  features: {
+    1: [
+      { name:'Divine Order', type:'feature', desc:"Choose Protector (proficiency with Martial weapons, Heavy armor) or Thaumaturge (one additional Cleric cantrip, Expertise in Arcana or Religion)." },
+      { name:'Spellcasting', type:'feature', desc:"You are a full spellcaster using Wisdom. You prepare spells from the Cleric spell list equal to your WIS modifier + Cleric level." }
+    ],
+    2: [{ name:'Channel Divinity', type:'feature', desc:"You gain Channel Divinity (2/Long Rest). Turn Undead: action, each Undead within 30 ft makes a WIS save or is Turned for 1 minute. Your subclass grants additional Channel Divinity options." }],
+    3: [{ name:'Cleric Subclass', type:'subclass', desc:"Choose a Divine Domain: Life, Light, Trickery, War, Knowledge, Nature, Tempest, or others. You gain the domain spells and first subclass feature." }],
+    4: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    5: [{ name:'Smite Undead', type:'feature', desc:"When you use Turn Undead, any Undead that fails its save also takes Radiant damage equal to 2d8 + your WIS modifier." }],
+    6: [
+      { name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Divine Domain." },
+      { name:'Channel Divinity (3/Long Rest)', type:'feature', desc:"You can now use Channel Divinity 3 times per Long Rest." }
+    ],
+    7: [{ name:'Blessed Strikes', type:'feature', desc:"Once per turn when you hit a creature with a weapon or deal damage with a Cleric cantrip, you deal an extra 1d8 Radiant damage." }],
+    8: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    10: [{ name:'Divine Intervention', type:'feature', desc:"As an action, call on your deity. You can cast any Cleric spell of 5th level or lower without expending a spell slot. After use, you must finish a Long Rest before using it again." }],
+    12: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    14: [{ name:'Improved Blessed Strikes', type:'feature', desc:"Blessed Strikes now deals 2d8 extra Radiant damage instead of 1d8." }],
+    16: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    18: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Divine Domain." }],
+    19: [{ name:'Epic Boon', type:'epic', desc:"Gain an Epic Boon feat or another feat of your choice." }],
+    20: [{ name:'Greater Divine Intervention', type:'feature', desc:"Your Divine Intervention now works automatically — no roll required. In addition, you can cast any Cleric spell without preparing it. You can't use Divine Intervention again until 2d4 days have passed." }]
+  }
+},
+
+'Druid': {
+  saves: ['int','sag'],
+  armorProf: 'Light, Medium, Shields (non-metal)',
+  weaponProf: 'Simple weapons',
+  features: {
+    1: [
+      { name:'Druidic', type:'feature', desc:"You know Druidic, the secret language of druids. You can speak it and use it to leave hidden messages. Creatures who don't know Druidic can detect a message exists with a DC 15 Perception check." },
+      { name:'Primal Order', type:'feature', desc:"Choose Magician (one extra cantrip from any list, Nature spell always prepared per level) or Warden (proficiency with Martial weapons and Medium Armor)." },
+      { name:'Spellcasting', type:'feature', desc:"You are a full spellcaster using Wisdom. You prepare spells from the Druid spell list equal to your WIS modifier + Druid level." },
+      { name:'Wild Shape', type:'feature', desc:"Bonus action: transform into a Beast you've seen, CR 1/4 or lower. Lasts 1 hour or until you drop to 0 HP. Regain uses (equal to WIS mod) on Long Rest, or 1 use on Short Rest." }
+    ],
+    2: [
+      { name:'Wild Companion', type:'feature', desc:"You can cast Find Familiar as a Ritual without spell slot or components. The familiar is Fey, not a spirit." },
+      { name:'Druid Subclass', type:'subclass', desc:"Choose a Druid Circle: Land, Moon, Sea, Stars, or Wildfire. You gain subclass features that expand your Wild Shape and spellcasting." }
+    ],
+    4: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Also, Wild Shape now allows CR 1/2 Beasts." }],
+    5: [{ name:'Wild Resurgence', type:'feature', desc:"Once per Long Rest: spend a spell slot to regain 1 use of Wild Shape, or use Wild Shape to regain one 1st-level spell slot." }],
+    6: [
+      { name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Druid Circle." },
+      { name:'Elemental Fury', type:'feature', desc:"Choose Primal Strike (your Wild Shape melee attacks count as Magical for overcoming resistances) or Potent Spellcasting (add your WIS modifier to the damage of Druid cantrips)." }
+    ],
+    8: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Wild Shape now allows CR 1 Beasts." }],
+    10: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Druid Circle." }],
+    12: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    14: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Druid Circle. Wild Shape now allows CR 2 Beasts." }],
+    15: [{ name:'Improved Elemental Fury', type:'feature', desc:"The damage from your Elemental Fury choice improves: Primal Strike adds +1d6 Elemental damage; Potent Spellcasting adds WIS modifier twice to cantrip damage." }],
+    16: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    18: [{ name:'Beast Spells', type:'feature', desc:"While in Wild Shape, you can cast Druid spells that don't require a free hand for material components. You can perform somatic components in Wild Shape form." }],
+    19: [{ name:'Epic Boon', type:'epic', desc:"Gain an Epic Boon feat or another feat of your choice." }],
+    20: [{ name:'Archdruid', type:'feature', desc:"Your Wild Shape uses are unlimited. Choose Primal Beast (powerful Beast form with enhanced attacks) or Mighty Summoner (summoned creatures gain extra HP and attacks count as Magical)." }]
+  }
+},
+
+'Fighter': {
+  saves: ['for','con'],
+  armorProf: 'All armor, Shields',
+  weaponProf: 'Simple and Martial weapons',
+  features: {
+    1: [
+      { name:'Fighting Style', type:'feature', desc:"Choose a fighting style: Archery (+2 ranged attack rolls), Defense (+1 AC in armor), Dueling (+2 damage with one-handed weapon), Great Weapon Fighting (reroll 1s and 2s on damage), Protection (impose disadvantage on attacker vs ally), or Two-Weapon Fighting (add ability mod to off-hand)." },
+      { name:'Second Wind', type:'feature', desc:"Bonus action: regain 1d10 + Fighter level HP. You can use this twice per Short Rest. Also, as a Bonus Action on your turn in combat, you can expend a Second Wind use without healing but to add 1d10 to a failed ability check (Tactical Mind)." },
+      { name:'Weapon Mastery', type:'feature', desc:"Use the Mastery property of 3 Simple or Martial weapons. You can swap your choices on Long Rest." }
+    ],
+    2: [
+      { name:'Action Surge', type:'feature', desc:"Once per Short Rest, on your turn you can take one additional Action. This extra action cannot be another Action Surge." },
+      { name:'Tactical Mind', type:'feature', desc:"On a failed ability check, you can expend a Second Wind use to add 1d10 to the check. If this causes the check to succeed, you don't regain HP from Second Wind." }
+    ],
+    3: [{ name:'Fighter Subclass', type:'subclass', desc:"Choose a Martial Archetype: Battle Master, Champion, Eldritch Knight, Psi Warrior, or others. You gain your first subclass feature." }],
+    4: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    5: [{ name:'Extra Attack', type:'feature', desc:"You can attack twice instead of once whenever you take the Attack action on your turn." }],
+    6: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    7: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Fighter subclass." }],
+    8: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    9: [
+      { name:'Indomitable', type:'feature', desc:"When you fail a saving throw, you can reroll it and must use the new result. 1/Long Rest (increases at higher levels)." },
+      { name:'Tactical Shift', type:'feature', desc:"Whenever you use Action Surge, you can also move up to your speed and take one Object Interaction without using an action." }
+    ],
+    10: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Fighter subclass." }],
+    11: [{ name:'Two Extra Attacks', type:'feature', desc:"You can attack three times whenever you take the Attack action on your turn." }],
+    12: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    13: [{ name:'Studied Attacks', type:'feature', desc:"When you miss an attack roll, you gain advantage on your next attack roll against the same target before the end of your turn." }],
+    14: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    15: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Fighter subclass." }],
+    16: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    17: [
+      { name:'Action Surge (2/Short Rest)', type:'feature', desc:"You can now use Action Surge twice per Short Rest." },
+      { name:'Indomitable (2/Long Rest)', type:'feature', desc:"You can now use Indomitable twice per Long Rest." }
+    ],
+    18: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Fighter subclass." }],
+    19: [{ name:'Epic Boon', type:'epic', desc:"Gain an Epic Boon feat or another feat of your choice." }],
+    20: [{ name:'Three Extra Attacks', type:'feature', desc:"You can attack four times whenever you take the Attack action on your turn." }]
+  }
+},
+
+'Monk': {
+  saves: ['for','dex'],
+  armorProf: 'None',
+  weaponProf: 'Simple weapons, Shortsword',
+  features: {
+    1: [
+      { name:'Martial Arts', type:'feature', desc:"Gain these benefits while unarmored or wearing monk weapons: use DEX for attacks/damage, use the Martial Arts damage die (d6) for unarmed strikes, and make one Unarmed Strike as a Bonus Action after an Attack action." },
+      { name:'Unarmored Defense', type:'feature', desc:"While wearing no armor and not using a shield, your AC = 10 + DEX modifier + WIS modifier." }
+    ],
+    2: [
+      { name:"Monk's Focus", type:'feature', desc:"You have Focus Points = your Monk level. Spend them on: Flurry of Blows (2 pts, 2 extra Unarmed Strikes after Attack), Patient Defense (1 pt, Dodge as Bonus Action), Step of the Wind (1 pt, Disengage/Dash as Bonus Action; jump distance doubled)." },
+      { name:'Unarmored Movement', type:'feature', desc:"Your speed increases by 10 ft while not wearing armor. This bonus increases at higher levels." },
+      { name:'Uncanny Metabolism', type:'feature', desc:"When you roll Initiative and have no Focus Points, regain Focus Points equal to your Proficiency Bonus, and regain HP equal to one Martial Arts die roll." }
+    ],
+    3: [
+      { name:'Deflect Attacks', type:'feature', desc:"Reaction: when hit by an attack, reduce damage by 1d10 + DEX modifier + Monk level. If damage is reduced to 0, you can spend 1 Focus Point to redirect it: make a ranged attack (20/60 ft) using the absorbed energy, dealing the original damage type." },
+      { name:'Monk Subclass', type:'subclass', desc:"Choose a Monastic Tradition: Mercy, Open Hand, Shadow, or Four Elements. You gain the first subclass feature." }
+    ],
+    4: [
+      { name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." },
+      { name:'Slow Fall', type:'feature', desc:"Reaction: reduce fall damage by 5 × your Monk level." }
+    ],
+    5: [
+      { name:'Extra Attack', type:'feature', desc:"You can attack twice instead of once when you take the Attack action. Martial Arts die increases to d8." },
+      { name:'Stunning Strike', type:'feature', desc:"After hitting a creature with a Monk weapon or Unarmed Strike, spend 1 Focus Point to attempt to stun it. Target makes a CON save (DC = 8 + PB + WIS modifier) or is Stunned until the start of your next turn." }
+    ],
+    6: [
+      { name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Monastic Tradition." },
+      { name:'Empowered Strikes', type:'feature', desc:"Your Unarmed Strikes now count as Magical for the purpose of overcoming resistance and immunity." }
+    ],
+    7: [{ name:'Evasion', type:'feature', desc:"When you are subjected to an effect that allows a DEX save for half damage: success = no damage, failure = half damage. You must not be Incapacitated." }],
+    8: [
+      { name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." },
+      { name:'Self-Restoration', type:'feature', desc:"At the end of your turn, end one effect on yourself: Frightened, Poisoned, or Stunned (free). Spend 1 Focus Point to also end Paralyzed, Poisoned (stronger), or remove disease." }
+    ],
+    9: [{ name:'Acrobatic Movement', type:'feature', desc:"While not Incapacitated, you can move across vertical surfaces and across liquids on your turn without falling. Martial Arts die increases to d10." }],
+    10: [{ name:'Heightened Focus', type:'feature', desc:"Flurry of Blows can now impose effects: Burning (ongoing fire damage), Pushing (move target 15 ft), or Toppling (knock Prone)." }],
+    11: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Monastic Tradition." }],
+    12: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    13: [{ name:'Deflect Energy', type:'feature', desc:"Deflect Attacks can now be used against all damage types, not just physical weapon attacks. Martial Arts die increases to d10." }],
+    14: [{ name:'Disciplined Survivor', type:'feature', desc:"You are proficient in all saving throws. Additionally, when you succeed on a saving throw, you have advantage on the next saving throw you make before the start of your next turn." }],
+    15: [{ name:'Perfect Focus', type:'feature', desc:"When you roll Initiative and have fewer than 4 Focus Points remaining, you regain points up to 4." }],
+    16: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    17: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Monastic Tradition. Martial Arts die increases to d12." }],
+    18: [{ name:'Superior Defense', type:'feature', desc:"When you spend a Focus Point, you gain resistance to all damage except Force until the start of your next turn." }],
+    19: [{ name:'Epic Boon', type:'epic', desc:"Gain an Epic Boon feat or another feat of your choice." }],
+    20: [{ name:'Body and Mind', type:'feature', desc:"Your DEX score increases by 4 and your WIS score increases by 4. Your maximum for those scores is also increased by 4." }]
+  }
+},
+
+'Paladin': {
+  saves: ['sag','cha'],
+  armorProf: 'All armor, Shields',
+  weaponProf: 'Simple and Martial weapons',
+  features: {
+    1: [
+      { name:'Lay on Hands', type:'feature', desc:"You have a pool of HP = 5 × your Paladin level. As a Bonus Action, restore HP to a creature you touch (any amount from your pool), or expend 5 HP to cure one disease or poison." },
+      { name:'Spellcasting', type:'feature', desc:"You are a half-caster using Charisma. You prepare spells from the Paladin list equal to your CHA modifier + half your Paladin level (rounded up)." },
+      { name:'Weapon Mastery', type:'feature', desc:"Use the Mastery property of 2 weapons. You can swap choices on Long Rest." }
+    ],
+    2: [
+      { name:'Fighting Style', type:'feature', desc:"Choose a fighting style: Defense, Dueling, Great Weapon Fighting, or Protection. Blessed Warrior grants two Cleric cantrips." },
+      { name:"Paladin's Smite", type:'feature', desc:"When you hit a creature with a melee or thrown weapon, you can expend a spell slot (no action required) to deal extra Radiant damage: 2d8 + 1d8 per slot level above 1st. Extra 1d8 vs Undead/Fiends. This is not a spell — no concentration. 1/turn." }
+    ],
+    3: [
+      { name:'Channel Divinity', type:'feature', desc:"Use Channel Divinity 2/Short Rest. Sacred Weapon: bonus action, weapon sheds bright light 20 ft and dim 20 ft more, add CHA modifier to attack rolls for 1 minute. Your subclass grants additional options." },
+      { name:'Paladin Subclass', type:'subclass', desc:"Swear your sacred oath: Ancients, Devotion, Glory, or Vengeance. You gain Oath Spells (always prepared) and the first subclass feature." }
+    ],
+    4: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    5: [
+      { name:'Extra Attack', type:'feature', desc:"You can attack twice instead of once whenever you take the Attack action." },
+      { name:'Faithful Steed', type:'feature', desc:"Find Steed is always prepared for you. You can cast it as a Ritual without expending a spell slot." }
+    ],
+    6: [{ name:'Aura of Protection', type:'feature', desc:"While conscious, you and friendly creatures within 10 ft add your CHA modifier (minimum +1) to all saving throws." }],
+    7: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your sacred Oath." }],
+    8: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    9: [{ name:'Abjure Foes', type:'feature', desc:"As an action, use Channel Divinity. Up to CHA modifier creatures within 60 ft must make a WIS save or become Frightened and have their speed reduced to 0 for 1 minute. Affected creatures repeat the save each turn." }],
+    10: [{ name:'Aura of Courage', type:'feature', desc:"While conscious, you and friendly creatures within 10 ft cannot be Frightened." }],
+    11: [{ name:'Radiant Strikes', type:'feature', desc:"Your weapon attacks (melee and Unarmed Strikes) deal an extra 1d8 Radiant damage on hit." }],
+    12: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    14: [{ name:'Restoring Touch', type:'feature', desc:"When you use Lay on Hands, you can also remove one condition affecting the target: Blinded, Deafened, Frightened, Paralyzed, Poisoned, or Stunned." }],
+    15: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your sacred Oath." }],
+    16: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    18: [{ name:'Aura Expansion', type:'feature', desc:"Your Aura of Protection and Aura of Courage now extend to 30 ft radius instead of 10 ft." }],
+    19: [{ name:'Epic Boon', type:'epic', desc:"Gain an Epic Boon feat or another feat of your choice." }],
+    20: [{ name:'Holy Nimbus', type:'feature', desc:"As an action: aura 10 ft emits bright light 10 ft and dim 10 ft more. Enemies starting their turn in the aura take 10 Radiant damage. You have advantage on saving throws against spells cast by Fiends and Undead. 1/Long Rest." }]
+  }
+},
+
+'Ranger': {
+  saves: ['for','dex'],
+  armorProf: 'Light, Medium, Shields',
+  weaponProf: 'Simple and Martial weapons',
+  features: {
+    1: [
+      { name:'Expertise', type:'feature', desc:"Choose 2 skills you are proficient in. Your proficiency bonus is doubled for those skills." },
+      { name:'Favored Enemy', type:'feature', desc:"Hunter's Mark is always prepared for you. You can cast it without expending a spell slot a number of times equal to your WIS modifier (minimum 1)/Long Rest." },
+      { name:'Spellcasting', type:'feature', desc:"You are a half-caster using Wisdom. Spells start at 2nd level." },
+      { name:'Weapon Mastery', type:'feature', desc:"Use the Mastery property of 2 weapons. You can swap choices on Long Rest." }
+    ],
+    2: [
+      { name:'Deft Explorer', type:'feature', desc:"Choose Expertise (double prof in one more skill) or Canny (learn one extra language and one additional Ranger spell of 1st level, always prepared)." },
+      { name:'Fighting Style', type:'feature', desc:"Choose a fighting style: Archery, Defense, Druidic Warrior (2 Druid cantrips), or Two-Weapon Fighting." }
+    ],
+    3: [{ name:'Ranger Subclass', type:'subclass', desc:"Choose a Ranger Archetype: Beast Master, Fey Wanderer, Gloom Stalker, or Hunter. You gain subclass features." }],
+    4: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    5: [{ name:'Extra Attack', type:'feature', desc:"You can attack twice instead of once whenever you take the Attack action." }],
+    6: [{ name:'Roving', type:'feature', desc:"Your walking speed increases by 10 ft. You gain a Climb speed equal to your walking speed and a Swim speed equal to your walking speed." }],
+    7: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Ranger Archetype." }],
+    8: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    9: [{ name:'Expertise', type:'feature', desc:"Double your proficiency bonus in 2 more skills (4 total)." }],
+    10: [{ name:'Tireless', type:'feature', desc:"As an action, give yourself temporary HP equal to 1d8 + WIS modifier. Use this WIS modifier times/Long Rest. On Short Rest, reduce your exhaustion level by 1." }],
+    11: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Ranger Archetype." }],
+    12: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    13: [{ name:'Relentless Hunter', type:'feature', desc:"Hunter's Mark no longer requires concentration from you." }],
+    14: [{ name:"Nature's Veil", type:'feature', desc:"Bonus action: you become Invisible until the start of your next turn. You can use this WIS modifier times/Long Rest." }],
+    15: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Ranger Archetype." }],
+    16: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    17: [{ name:'Precise Hunter', type:'feature', desc:"You have advantage on attack rolls against creatures marked by Hunter's Mark." }],
+    18: [{ name:'Feral Senses', type:'feature', desc:"You are aware of Invisible creatures within 30 ft of you, provided you aren't Blinded or Deafened. You also don't need to see a creature to avoid disadvantage on attack rolls against it." }],
+    19: [{ name:'Epic Boon', type:'epic', desc:"Gain an Epic Boon feat or another feat of your choice." }],
+    20: [{ name:'Foe Slayer', type:'feature', desc:"Hunter's Mark deals extra damage equal to your WIS modifier (instead of 1d6), and when it ends it no longer requires concentration." }]
+  }
+},
+
+'Rogue': {
+  saves: ['dex','int'],
+  armorProf: 'Light armor',
+  weaponProf: 'Simple weapons, Hand crossbow, Longsword, Rapier, Shortsword',
+  features: {
+    1: [
+      { name:'Expertise', type:'feature', desc:"Choose 2 skills you are proficient in. Your proficiency bonus is doubled for those skills." },
+      { name:'Sneak Attack', type:'feature', desc:"Once per turn, deal 1d6 extra damage to one creature you hit with a Finesse or ranged weapon attack if you have advantage, or if an ally is adjacent to the target. Scales by 1d6 every odd level." },
+      { name:"Thieves' Cant", type:'feature', desc:"You know Thieves' Cant, a secret mix of slang and signals used by criminals. You can also hide messages in conversation only other Cant speakers recognize." },
+      { name:'Weapon Mastery', type:'feature', desc:"Use the Mastery property of 2 Finesse or Ranged weapons. Change choices on Long Rest." }
+    ],
+    2: [{ name:'Cunning Action', type:'feature', desc:"Bonus action: Dash, Disengage, or Hide." }],
+    3: [
+      { name:'Rogue Subclass', type:'subclass', desc:"Choose a Roguish Archetype: Arcane Trickster, Assassin, Soulknife, Swashbuckler, or Thief. You gain the first subclass feature." },
+      { name:'Steady Aim', type:'feature', desc:"Bonus action: give yourself advantage on your next attack roll this turn. Your speed becomes 0 for the rest of the turn if you use this." }
+    ],
+    4: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    5: [
+      { name:'Cunning Strike', type:'feature', desc:"When you deal Sneak Attack damage, replace 1d6 of it to impose one effect: Disarm (target drops held item, STR save), Poison (target is Poisoned 1 min, CON save), Trip (target is Prone, DEX save), or Withdraw (Disengage as part of the attack)." },
+      { name:'Uncanny Dodge', type:'feature', desc:"Reaction: when an attacker you can see hits you, halve the attack's damage." }
+    ],
+    6: [{ name:'Expertise', type:'feature', desc:"Double your proficiency bonus in 2 more skills (4 total)." }],
+    7: [
+      { name:'Evasion', type:'feature', desc:"When you are subjected to an effect that allows a DEX save for half damage: success = no damage, failure = half damage." },
+      { name:'Reliable Talent', type:'feature', desc:"Whenever you make an ability check using a skill or tool you are proficient in, treat any d20 roll of 9 or lower as a 10." }
+    ],
+    8: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    9: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Roguish Archetype." }],
+    10: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    11: [{ name:'Improved Cunning Strike', type:'feature', desc:"You can now use two Cunning Strike effects on the same Sneak Attack by replacing 2d6 instead of 1d6." }],
+    12: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    13: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Roguish Archetype." }],
+    14: [{ name:'Devious Strikes', type:'feature', desc:"New Cunning Strike options: Daze (target is Incapacitated until end of your next turn, CON save), Knock Out (target is Unconscious for 1 min or until damaged, CON save; works only on Sneak Attacks dealing damage), Obscure (target is Blinded until start of your next turn, DEX save)." }],
+    15: [{ name:'Slippery Mind', type:'feature', desc:"You gain proficiency in WIS and CHA saving throws." }],
+    16: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    17: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Roguish Archetype." }],
+    18: [{ name:'Elusive', type:'feature', desc:"No attack roll has advantage against you while you are not Incapacitated." }],
+    19: [{ name:'Epic Boon', type:'epic', desc:"Gain an Epic Boon feat or another feat of your choice." }],
+    20: [{ name:'Stroke of Luck', type:'feature', desc:"If you fail an ability check, you can turn the roll into a 20. If you miss an attack roll, you can turn the miss into a hit. Once used, you regain this ability after a Short or Long Rest." }]
+  }
+},
+
+'Sorcerer': {
+  saves: ['con','cha'],
+  armorProf: 'None',
+  weaponProf: 'Simple weapons',
+  features: {
+    1: [
+      { name:'Innate Sorcery', type:'feature', desc:"Bonus action: unleash your inner power for 1 minute. Your spell save DC increases by 1 and you have advantage on Concentration saving throws. Uses = your Sorcerer level; regain all on Long Rest." },
+      { name:'Spellcasting', type:'feature', desc:"You are a full spellcaster using Charisma. You know a fixed number of spells from the Sorcerer list (fewer than a Wizard, but always available)." },
+      { name:'Sorcerous Origin', type:'subclass', desc:"Choose your magical origin: Aberrant Mind, Clockwork Soul, Draconic Bloodline, Shadow Magic, or Wild Magic. You gain spells and the first subclass feature." }
+    ],
+    2: [
+      { name:'Font of Magic', type:'feature', desc:"You have Sorcery Points = your Sorcerer level. Flexible Casting: create spell slots from Sorcery Points (2 pts = 1st, 3 = 2nd, 4 = 3rd, 5 = 4th, 6 = 5th) or convert spell slots into Sorcery Points (slot level = points gained)." },
+      { name:'Metamagic', type:'feature', desc:"Choose 2 Metamagic options: Careful (protect allies from spells), Distant (double range), Empowered (reroll damage dice), Extended (double duration), Heightened (disadvantage on save), Quickened (cast with Bonus Action), Seeking (reroll missed attacks), Subtle (no verbal/somatic components), Transmuted (change damage type), or Twinned (target two creatures)." }
+    ],
+    3: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Sorcerous Origin." }],
+    4: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    5: [{ name:'Sorcerous Restoration', type:'feature', desc:"When you roll Initiative and have fewer Sorcery Points than half your Sorcerer level (rounded up), you regain Sorcery Points up to half your Sorcerer level. 1/Long Rest." }],
+    6: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Sorcerous Origin." }],
+    7: [{ name:'Sorcery Incarnate', type:'feature', desc:"While Innate Sorcery is active: you can use one Metamagic option that costs Sorcery Points without expending points once per turn. You can also apply one additional Metamagic option to a spell simultaneously." }],
+    8: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    10: [{ name:'Metamagic (2 more)', type:'feature', desc:"You learn 2 more Metamagic options (4 total)." }],
+    12: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    14: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Sorcerous Origin." }],
+    16: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    18: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Sorcerous Origin." }],
+    19: [{ name:'Epic Boon', type:'epic', desc:"Gain an Epic Boon feat or another feat of your choice." }],
+    20: [{ name:'Arcane Apotheosis', type:'feature', desc:"While Innate Sorcery is active, once per turn when you cast a spell, you can apply a Metamagic option to the spell without expending Sorcery Points." }]
+  }
+},
+
+'Warlock': {
+  saves: ['sag','cha'],
+  armorProf: 'Light armor',
+  weaponProf: 'Simple weapons',
+  features: {
+    1: [
+      { name:'Eldritch Invocations', type:'feature', desc:"You gain 1 Eldritch Invocation (gaining more at higher levels). Invocations grant permanent magical abilities such as Agonizing Blast (add CHA to Eldritch Blast damage), Devil's Sight (see in magical darkness), or Mask of Many Faces (cast Disguise Self at will)." },
+      { name:'Pact Magic', type:'feature', desc:"You are a spellcaster using Charisma with a unique slot system. All your spell slots are the same level (ascending with your level). Slots recharge on a Short or Long Rest. Slot level scales as you level up." }
+    ],
+    2: [{ name:'Magical Cunning', type:'feature', desc:"As an action (once per Long Rest), if you have expended all your Pact Magic slots, you can regain half your maximum Pact Magic slots (rounded up)." }],
+    3: [{ name:'Warlock Subclass', type:'subclass', desc:"Choose your Otherworldly Patron: Archfey, Celestial, Fiend, Great Old One, or others. You gain Patron spells (always prepared) and the first subclass feature." }],
+    4: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    5: [{ name:'Contact Patron', type:'feature', desc:"Contact Other Plane is always prepared for you. You can cast it as a ritual targeting your patron without the risk of damage, once per Long Rest without expending a spell slot." }],
+    6: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Otherworldly Patron." }],
+    7: [{ name:'Eldritch Invocations', type:'feature', desc:"You gain additional Eldritch Invocations (total of 5). New invocations become available, including some that require a Pact Boon." }],
+    8: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    10: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Otherworldly Patron." }],
+    11: [{ name:'Mystic Arcanum — 6th Level', type:'feature', desc:"Choose one 6th-level spell from the Warlock spell list. You can cast it once per Long Rest without expending a spell slot." }],
+    12: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    13: [{ name:'Mystic Arcanum — 7th Level', type:'feature', desc:"Choose one 7th-level Warlock spell. Cast it once per Long Rest without a spell slot." }],
+    14: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Otherworldly Patron." }],
+    15: [{ name:'Mystic Arcanum — 8th Level', type:'feature', desc:"Choose one 8th-level Warlock spell. Cast it once per Long Rest without a spell slot." }],
+    16: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    17: [{ name:'Mystic Arcanum — 9th Level', type:'feature', desc:"Choose one 9th-level Warlock spell. Cast it once per Long Rest without a spell slot." }],
+    19: [{ name:'Epic Boon', type:'epic', desc:"Gain an Epic Boon feat or another feat of your choice." }],
+    20: [{ name:'Eldritch Master', type:'feature', desc:"By spending 1 minute entreating your patron, you regain all expended Pact Magic slots. 1/Long Rest." }]
+  }
+},
+
+'Wizard': {
+  saves: ['int','sag'],
+  armorProf: 'None',
+  weaponProf: 'Simple weapons',
+  features: {
+    1: [
+      { name:'Arcane Recovery', type:'feature', desc:"Once per day when you finish a Short Rest, recover expended spell slots with a total level equal to half your Wizard level (rounded up). Can't recover 6th-level or higher slots this way." },
+      { name:'Spellcasting', type:'feature', desc:"You are a full spellcaster using Intelligence. You have a spellbook of known spells and prepare spells equal to your INT modifier + Wizard level each day." }
+    ],
+    2: [
+      { name:'Scholar', type:'feature', desc:"You gain Expertise in your choice of Arcana or History. You also learn one additional language of your choice." },
+      { name:'Wizard Subclass', type:'subclass', desc:"Choose an Arcane Tradition: Abjuration, Conjuration, Divination, Enchantment, Evocation, Illusion, Necromancy, or Transmutation. You gain the first subclass feature." }
+    ],
+    3: [{ name:'Cantrip Formulas', type:'feature', desc:"When you finish a Long Rest, you can study your spellbook for 1 minute to swap one Wizard cantrip you know for another Wizard cantrip." }],
+    4: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    5: [{ name:'Memorize Spell', type:'feature', desc:"When you finish a Long Rest, choose one spell from your spellbook. That spell is always prepared and doesn't count against your number of prepared spells. You can change it each Long Rest." }],
+    6: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Arcane Tradition." }],
+    8: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    10: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Arcane Tradition." }],
+    12: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    14: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Arcane Tradition." }],
+    16: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    18: [{ name:'Spell Mastery', type:'feature', desc:"Choose one 1st-level and one 2nd-level Wizard spell. You can cast each of them at their lowest level without expending a spell slot. You can change these spells on a Long Rest (taking 8 hours of study)." }],
+    19: [{ name:'Epic Boon', type:'epic', desc:"Gain an Epic Boon feat or another feat of your choice." }],
+    20: [{ name:'Signature Spells', type:'feature', desc:"Choose two 3rd-level Wizard spells. They are always prepared and don't count against your prepared spells. You can cast each once per turn without expending a spell slot; regain these free casts on a Short or Long Rest." }]
+  }
+},
+
+'Artificer': {
+  saves: ['con','int'],
+  armorProf: 'Light, Medium, Shields',
+  weaponProf: 'Simple weapons, Hand crossbow, Heavy crossbow',
+  features: {
+    1: [
+      { name:'Magical Tinkering', type:'feature', desc:"Touch a Tiny nonmagical object and give it a magical property: emit light, emit a recorded message, emit an odor, or display a static visual. You can have INT modifier such objects active at once." },
+      { name:'Spellcasting', type:'feature', desc:"You are a spellcaster using Intelligence. You prepare spells from the Artificer list equal to your INT modifier + half your Artificer level (rounded up)." }
+    ],
+    2: [
+      { name:'Infuse Item', type:'feature', desc:"You gain 4 Infusion recipes (more at higher levels). After a Long Rest, infuse up to 2 items simultaneously (increasing as you level). Infused items count as magic items." },
+      { name:'The Right Tool for the Job', type:'feature', desc:"In 1 hour, you can produce any artisan's tool in an unoccupied space using your own tools. It vanishes when you use this feature again." }
+    ],
+    3: [
+      { name:'Artificer Subclass', type:'subclass', desc:"Choose your Artificer Specialist: Alchemist, Armorer, Artillerist, or Battle Smith. You gain Replicate Magic Item infusions and subclass features." },
+      { name:'Subclass Feature', type:'subclass', desc:"You gain the first feature of your Artificer Specialist." }
+    ],
+    4: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    5: [{ name:'Arcane Armament', type:'feature', desc:"You can now attune to up to 4 magic items at once (instead of the normal 3)." }],
+    6: [
+      { name:'Tool Expertise', type:'feature', desc:"Your Proficiency Bonus is doubled for any ability check you make that uses your proficiency with a tool." },
+      { name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Artificer Specialist." }
+    ],
+    7: [{ name:'Flash of Genius', type:'feature', desc:"Reaction: when you or a creature you can see within 30 ft makes an ability check or saving throw, add your INT modifier to the roll. Uses = INT modifier/Long Rest." }],
+    8: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    9: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Artificer Specialist." }],
+    10: [{ name:'Magic Item Adept', type:'feature', desc:"You can attune to up to 5 magic items. If you craft a Common or Uncommon magic item, it takes 1/4 the normal time and costs 1/2 the gold." }],
+    11: [{ name:'Spell-Storing Item', type:'feature', desc:"After a Long Rest, cast a 1st or 2nd level Artificer spell (1-action casting time) into an item you hold. A creature holding the item can use an action to cast the spell using your spell save DC. The item holds the spell until you use this feature again." }],
+    12: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    14: [{ name:'Magic Item Savant', type:'feature', desc:"Attune to up to 6 magic items. You can ignore class, race, spell, and level requirements for attuning to or using magic items." }],
+    15: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Artificer Specialist." }],
+    16: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    18: [{ name:'Magic Item Master', type:'feature', desc:"You can now attune to up to 7 magic items at once." }],
+    19: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    20: [{ name:'Soul of Artifice', type:'feature', desc:"You gain a +1 bonus to all saving throws for each magic item you are currently attuned to. If reduced to 0 HP, use your Reaction to end one Artificer Infusion and drop to 1 HP instead." }]
+  }
+}
+
+}; // end CLASS_DATA
 
 /* ── État ── */
 let currentUser = null;
@@ -1380,7 +1938,7 @@ function renderAdminModalTab() {
             <label class="field-label">Classe</label>
             <select class="field-input" id="ae-classe">
               <option value="">— Choisir —</option>
-              ${['Artificier','Barbare','Barde','Clerc','Druide','Guerrier','Moine','Paladin','Rôdeur','Roublard','Ensorceleur','Occultiste','Magicien']
+              ${['Artificer','Barbarian','Bard','Cleric','Druid','Fighter','Monk','Paladin','Ranger','Rogue','Sorcerer','Warlock','Wizard']
                 .map(cl => `<option ${c.classe === cl ? 'selected' : ''}>${cl}</option>`).join('')}
             </select>
           </div>
