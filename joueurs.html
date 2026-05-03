@@ -606,9 +606,12 @@
           </div>
           <table class="exp-table">
             <thead><tr>
-              <th style="width:60px;">Niveau</th>
+              <th style="width:52px;">Niveau</th>
               <th>Nom du sort</th>
-              <th style="width:90px;">Action</th>
+              <th style="width:80px;">Dégât</th>
+              <th style="width:90px;">Type</th>
+              <th style="width:70px;">Portée</th>
+              <th style="width:80px;">Action</th>
               <th style="width:32px;"></th>
               <th style="width:28px;"></th>
             </tr></thead>
@@ -2648,8 +2651,11 @@ function renderSpells() {
     const tr = document.createElement('tr');
     tr.className = 'exp-row';
     tr.innerHTML = `
-      <td style="text-align:center;"><input class="atk-inp" data-spell="${i}" data-sk="level" value="${esc(s.level||'')}" placeholder="1" style="width:50px;text-align:center;font-size:0.78rem;"></td>
+      <td style="text-align:center;"><input class="atk-inp" data-spell="${i}" data-sk="level"  value="${esc(s.level||'')}"  placeholder="1" style="width:44px;text-align:center;font-size:0.78rem;"></td>
       <td><input class="atk-inp" data-spell="${i}" data-sk="name"   value="${esc(s.name||'')}"   placeholder="Nom du sort"></td>
+      <td><input class="atk-inp" data-spell="${i}" data-sk="degat"  value="${esc(s.degat||'')}"  placeholder="2d6" style="font-size:0.75rem;"></td>
+      <td><input class="atk-inp" data-spell="${i}" data-sk="typeDegat" value="${esc(s.typeDegat||'')}" placeholder="feu…" style="font-size:0.75rem;"></td>
+      <td><input class="atk-inp" data-spell="${i}" data-sk="portee" value="${esc(s.portee||'')}" placeholder="18m" style="font-size:0.75rem;"></td>
       <td><input class="atk-inp" data-spell="${i}" data-sk="action" value="${esc(s.action||'')}" placeholder="Action" style="font-size:0.75rem;"></td>
       <td style="text-align:center;"><button class="exp-toggle${s._open?' open':''}" data-spell-toggle="${i}" title="Description">▾</button></td>
       <td><button class="atk-del" data-del-spell="${i}" title="Supprimer">✕</button></td>
@@ -2658,7 +2664,7 @@ function renderSpells() {
     if (s._open) {
       const dr = document.createElement('tr');
       dr.className = 'exp-desc-row';
-      dr.innerHTML = `<td colspan="5"><textarea class="exp-desc-area" data-spell="${i}" data-sk="desc" placeholder="Description, composantes, portée…">${esc(s.desc||'')}</textarea></td>`;
+      dr.innerHTML = `<td colspan="8"><textarea class="exp-desc-area" data-spell="${i}" data-sk="desc" placeholder="Description, composantes, concentration…">${esc(s.desc||'')}</textarea></td>`;
       tbody.appendChild(dr);
     }
   });
@@ -3225,7 +3231,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-add-spell').addEventListener('click', () => {
     if (!playerData) return;
     C().spells = C().spells || [];
-    C().spells.push({ level:'', name:'', action:'Action', desc:'', _open:false });
+    C().spells.push({ level:'', name:'', degat:'', typeDegat:'', portee:'', action:'Action', desc:'', _open:false });
     renderSpells(); triggerSave();
   });
   document.getElementById('spell-tbody').addEventListener('click', e => {
