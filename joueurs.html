@@ -224,6 +224,21 @@
     .cf-badge-epic { background:rgba(200,160,40,0.25); color:#f0c040; border:1px solid rgba(200,160,40,0.4); }
     .cf-slots-note { font-size:0.72rem; color:#6abaaa; font-style:italic; margin-top:0.35rem; padding:0.35rem 0.5rem; background:rgba(80,180,160,0.08); border-radius:4px; border:1px solid rgba(80,180,160,0.2); }
 
+    /* ── Class Features Extended ── */
+    .cf-profs { background:#0d0d14; border:1px solid #1e1e2e; border-radius:5px; padding:0.55rem 0.85rem; margin-bottom:0.65rem; display:flex; flex-direction:column; gap:0.2rem; }
+    .cf-prof-item { font-size:0.76rem; color:#aaa; line-height:1.5; }
+    .cf-prof-label { color:var(--gold-dark); font-weight:600; margin-right:0.3rem; }
+    .cf-level-preview { font-size:0.66rem; color:#555; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:220px; padding-right:0.4rem; }
+    .cf-level-header.cf-current .cf-level-preview { color:#999; }
+    .cf-level-header.cf-collapsed .cf-level-preview { color:#444; }
+    .cf-locked .cf-level-header { opacity:0.45; }
+    .cf-locked .cf-feature-name { color:#555; }
+    .cf-locked .cf-feature-desc { color:#3a3a4a; }
+    .cf-lock-icon { font-size:0.62rem; color:#3a3a4a; flex-shrink:0; }
+    .cf-progress-bar { height:4px; background:#1a1a24; border-radius:2px; margin-bottom:0.6rem; overflow:hidden; }
+    .cf-progress-fill { height:100%; border-radius:2px; background:linear-gradient(90deg, var(--gold-dark), var(--gold)); transition:width 0.4s ease; }
+    .cf-progress-label { font-size:0.68rem; color:#666; text-align:right; margin-bottom:0.6rem; margin-top:-0.4rem; font-style:italic; }
+
     /* ── Responsive ── */
     @media (max-width:700px) {
       .ability-grid { grid-template-columns:repeat(3,1fr); }
@@ -1400,8 +1415,129 @@ function autoFillClass(classe) {
   C().deVie = info.de;
   if (info.sort) C().caractSort = info.sort;
   C().nbDeVie = C().niveau || 1;
+  // Auto-set saving throw proficiencies from class
+  if (CLASS_DATA[classe]) {
+    const classSaves = CLASS_DATA[classe].saves;
+    const saveMap = { for:'saveFor', dex:'saveDex', con:'saveCon', int:'saveInt', sag:'saveSag', cha:'saveCha' };
+    Object.entries(saveMap).forEach(([attr, key]) => { C()[key] = classSaves.includes(attr); });
+  }
   fillFields();
+  renderSaves();
+  renderClassFeatures();
   updateSpellCalcs();
+}
+
+/* ════════════════════════════════════════════════════════════
+   CLASS FEATURES — Render automatique par niveau
+   ════════════════════════════════════════════════════════════ */
+function renderClassFeatures() {
+  const c       = C();
+  const classe  = c.classe;
+  const niveau  = Math.max(1, Math.min(20, parseInt(c.niveau) || 1));
+  const section = document.getElementById('cf-section');
+  const body    = document.getElementById('cf-body');
+  const title   = document.getElementById('cf-title');
+  const slotsNote = document.getElementById('cf-slots-note');
+
+  if (!classe || !CLASS_DATA[classe]) { section.style.display = 'none'; return; }
+
+  section.style.display = '';
+  const data = CLASS_DATA[classe];
+  title.textContent = classe + ' — Class Features';
+
+  /* ── Spell slots note ── */
+  let slotTable = null;
+  const FULL_CAST = ['Bard','Cleric','Druid','Sorcerer','Wizard'];
+  const HALF_CAST = ['Paladin','Ranger'];
+  if (FULL_CAST.includes(classe))       slotTable = FULL_CASTER_SLOTS[niveau];
+  else if (HALF_CAST.includes(classe))  slotTable = HALF_CASTER_SLOTS[niveau];
+  else if (classe === 'Warlock')        slotTable = WARLOCK_SLOTS[niveau];
+  else if (classe === 'Artificer')      slotTable = ARTIFICER_SLOTS[niveau];
+
+  if (slotTable) {
+    const ordinals = ['1st','2nd','3rd','4th','5th','6th','7th','8th','9th'];
+    const parts = slotTable.map((s,i) => s > 0 ? `${s} × ${ordinals[i]}` : null).filter(Boolean);
+    if (parts.length) {
+      const extra = classe === 'Warlock' ? ' <em style="color:#888;">(restore on Short Rest)</em>' : '';
+      slotsNote.style.display = '';
+      slotsNote.innerHTML = `<strong>Spell Slots — Level ${niveau}${extra}:</strong> ${parts.join(' · ')}`;
+    } else { slotsNote.style.display = 'none'; }
+  } else { slotsNote.style.display = 'none'; }
+
+  /* ── Count total levels with features for progress ── */
+  const allLevels = Object.keys(data.features).map(Number).sort((a,b)=>a-b);
+  const unlockedCount = allLevels.filter(l => l <= niveau).length;
+  const pct = Math.round(niveau / 20 * 100);
+
+  /* ── Body ── */
+  body.innerHTML = `
+    <div class="cf-profs">
+      <div class="cf-prof-item"><span class="cf-prof-label">Saving Throws:</span> ${data.saves.map(s=>s.toUpperCase()).join(' &amp; ')}</div>
+      ${data.armorProf  ? `<div class="cf-prof-item"><span class="cf-prof-label">Armor:</span> ${data.armorProf}</div>` : ''}
+      ${data.weaponProf ? `<div class="cf-prof-item"><span class="cf-prof-label">Weapons:</span> ${data.weaponProf}</div>` : ''}
+    </div>
+    <div class="cf-progress-bar"><div class="cf-progress-fill" style="width:${pct}%"></div></div>
+    <div class="cf-progress-label">Level ${niveau} / 20 — ${unlockedCount} feature group${unlockedCount!==1?'s':''} unlocked</div>
+  `;
+
+  /* ── Features by level ── */
+  for (let lvl = 1; lvl <= 20; lvl++) {
+    const feats = data.features[lvl];
+    if (!feats || !feats.length) continue;
+
+    const isLocked  = lvl > niveau;
+    const isCurrent = lvl === niveau;
+    const isPast    = lvl < niveau;
+
+    const group = document.createElement('div');
+    group.className = 'cf-level-group' + (isLocked ? ' cf-locked' : '');
+
+    const preview = feats.map(f => f.name).join(', ');
+    const startCollapsed = isLocked || isPast;
+
+    const header = document.createElement('div');
+    header.className = 'cf-level-header'
+      + (isCurrent ? ' cf-current' : '')
+      + (startCollapsed ? ' cf-collapsed' : '');
+    header.innerHTML = `
+      <span class="cf-level-title">Level ${lvl}</span>
+      <span class="cf-level-preview">${preview}</span>
+      ${isLocked ? '<span class="cf-lock-icon">🔒</span>' : ''}
+      <span class="cf-chevron">▼</span>
+    `;
+
+    const levelBody = document.createElement('div');
+    levelBody.className = 'cf-level-body' + (startCollapsed ? ' cf-hidden' : '');
+
+    feats.forEach(feat => {
+      const div = document.createElement('div');
+      div.className = 'cf-feature' + (isCurrent ? ' cf-new' : '');
+
+      let badges = '';
+      if (isCurrent)              badges += '<span class="cf-badge cf-badge-new">NEW</span>';
+      if (feat.type === 'subclass') badges += '<span class="cf-badge cf-badge-sub">Subclass</span>';
+      if (feat.type === 'asi')      badges += '<span class="cf-badge cf-badge-asi">ASI / Feat</span>';
+      if (feat.type === 'epic')     badges += '<span class="cf-badge cf-badge-epic">Epic Boon</span>';
+
+      div.innerHTML = `
+        <div class="cf-feature-row">
+          <span class="cf-feature-name">${feat.name}</span>
+          ${badges}
+        </div>
+        <div class="cf-feature-desc">${feat.desc}</div>
+      `;
+      levelBody.appendChild(div);
+    });
+
+    header.addEventListener('click', () => {
+      const wasCollapsed = header.classList.toggle('cf-collapsed');
+      levelBody.classList.toggle('cf-hidden', wasCollapsed);
+    });
+
+    group.appendChild(header);
+    group.appendChild(levelBody);
+    body.appendChild(group);
+  }
 }
 
 /* ── Barre de PV ── */
@@ -1607,6 +1743,7 @@ function renderAll() {
   renderSkills();
   renderCombat();
   renderSpellSlots();
+  renderClassFeatures();
   renderAttacks();
   renderInventory();
   fillCurrency();
@@ -2239,7 +2376,7 @@ document.addEventListener('DOMContentLoaded', () => {
       else C()[el.dataset.f] = el.value;
 
       if (el.dataset.f === 'characterName') { activeSlot().name = el.value || 'Sans nom'; renderCharCards(); }
-      if (el.dataset.f === 'niveau') { updateProfBonus(); renderSaves(); renderSkills(); autoFillClass(C().classe); }
+      if (el.dataset.f === 'niveau') { updateProfBonus(); renderSaves(); renderSkills(); renderClassFeatures(); autoFillClass(C().classe); }
       if (el.dataset.f === 'classe') { autoFillClass(el.value); updateCharSummary(); renderCharCards(); }
       if (['for','dex','con','int','sag','cha'].includes(el.dataset.f)) { updateModifier(el.dataset.f); renderSaves(); renderSkills(); updateSpellCalcs(); }
       if (el.dataset.f === 'caractSort' || el.dataset.f === 'niveau') updateSpellCalcs();
