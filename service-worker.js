@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kaleysur-v2';
+const CACHE_NAME = 'kaleysur-v3';
 
 const ASSETS = [
   'index.html',
@@ -177,7 +177,8 @@ self.addEventListener('fetch', event => {
       }).catch(() => {
         // Hors ligne et pas en cache → page de fallback
         if (event.request.destination === 'document') {
-          return caches.match('index.html');
+          const indexUrl = new URL('index.html', self.registration.scope).href;
+          return caches.match(indexUrl);
         }
       });
     })

@@ -159,9 +159,31 @@
     .currency-item { text-align:center; }
     .currency-label { font-size:0.7rem; color:#888; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.2rem; }
 
-    /* ── Notes ── */
-    .notes-editor { width:100%; background:#0d0d14; border:1px solid #2a2a3a; border-radius:6px; color:#e8e0d0; font-size:0.9rem; padding:0.75rem; box-sizing:border-box; font-family:'Lora',serif; line-height:1.6; resize:vertical; min-height:300px; }
+    /* ── Notes multi-pages ── */
+    .notes-editor { width:100%; background:#0d0d14; border:1px solid #2a2a3a; border-radius:6px; color:#e8e0d0; font-size:0.9rem; padding:0.75rem; box-sizing:border-box; font-family:'Lora',serif; line-height:1.6; resize:vertical; min-height:260px; flex:1; }
     .notes-editor:focus { outline:none; border-color:var(--gold-dark); }
+    .notes-section-wrap { display:flex; gap:0; padding:0 !important; overflow:hidden; min-height:380px; }
+    .notes-pages-sidebar { width:155px; min-width:130px; background:#0a0a10; border-right:1px solid #2a2a3a; display:flex; flex-direction:column; flex-shrink:0; }
+    .notes-pages-header { display:flex; justify-content:space-between; align-items:center; padding:0.55rem 0.7rem; border-bottom:1px solid #2a2a3a; font-family:'Cinzel',serif; font-size:0.65rem; color:var(--gold); letter-spacing:0.08em; text-transform:uppercase; }
+    .notes-add-page-btn { background:none; border:1px solid var(--gold-dark); border-radius:4px; color:var(--gold); cursor:pointer; font-size:1rem; line-height:1; padding:0 0.38rem 0.1rem; transition:all var(--transition); }
+    .notes-add-page-btn:hover { background:rgba(201,169,110,0.15); }
+    .notes-pages-list { flex:1; overflow-y:auto; padding:0.3rem 0; }
+    .notes-page-item { padding:0.42rem 0.7rem; cursor:pointer; font-size:0.78rem; color:#aaa; border-left:2px solid transparent; transition:all var(--transition); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .notes-page-item:hover { background:#1a1a24; color:#ddd; }
+    .notes-page-item.active { color:var(--gold); border-left-color:var(--gold); background:#15151e; }
+    .notes-editor-wrap { flex:1; display:flex; flex-direction:column; padding:0.75rem; min-width:0; }
+    .notes-page-title-row { display:flex; gap:0.5rem; align-items:center; margin-bottom:0.6rem; }
+    .notes-page-title-input { flex:1; background:#0d0d14; border:1px solid #2a2a3a; border-radius:5px; color:var(--gold); font-family:'Cinzel',serif; font-size:0.82rem; padding:0.32rem 0.6rem; letter-spacing:0.04em; }
+    .notes-page-title-input:focus { outline:none; border-color:var(--gold-dark); }
+    .notes-del-page-btn { background:none; border:1px solid #3a1a1a; border-radius:4px; color:var(--danger); cursor:pointer; font-size:0.78rem; padding:0.2rem 0.45rem; opacity:0.65; transition:opacity var(--transition); }
+    .notes-del-page-btn:hover { opacity:1; }
+    @media (max-width:600px) {
+      .notes-section-wrap { flex-direction:column; min-height:unset; }
+      .notes-pages-sidebar { width:100%; border-right:none; border-bottom:1px solid #2a2a3a; }
+      .notes-pages-list { display:flex; flex-direction:row; flex-wrap:wrap; gap:0.3rem; padding:0.4rem; max-height:70px; overflow-x:auto; overflow-y:hidden; }
+      .notes-page-item { border-left:none; border-bottom:2px solid transparent; padding:0.3rem 0.6rem; white-space:nowrap; flex-shrink:0; }
+      .notes-page-item.active { border-left:none; border-bottom-color:var(--gold); }
+    }
 
     /* ── Paramètres ── */
     .settings-section { background:#1a1a24; border:1px solid #2a2a3a; border-radius:var(--radius); padding:1.1rem 1.25rem; margin-bottom:1rem; }
@@ -824,10 +846,24 @@
 
     <!-- ── Onglet Notes ── -->
     <div class="tab-panel" id="tab-notes">
-      <div class="sheet-section">
-        <div class="sheet-section-title">Notes personnelles</div>
-        <textarea class="notes-editor" id="notes-editor" placeholder="Tes notes de session, quêtes, PNJ importants…"></textarea>
-        <div style="font-size:0.72rem;color:#666;text-align:right;margin-top:0.3rem;font-style:italic;">Sauvegarde automatique</div>
+      <div class="sheet-section notes-section-wrap">
+        <!-- Sidebar pages -->
+        <div class="notes-pages-sidebar">
+          <div class="notes-pages-header">
+            <span>Pages</span>
+            <button class="notes-add-page-btn" id="btn-add-note-page" title="Nouvelle page">+</button>
+          </div>
+          <div class="notes-pages-list" id="notes-pages-list"></div>
+        </div>
+        <!-- Éditeur -->
+        <div class="notes-editor-wrap">
+          <div class="notes-page-title-row">
+            <input class="notes-page-title-input" id="notes-page-title" placeholder="Nom de la page…" />
+            <button class="notes-del-page-btn" id="btn-del-note-page" title="Supprimer cette page">🗑</button>
+          </div>
+          <textarea class="notes-editor" id="notes-editor" placeholder="Tes notes de session, quêtes, PNJ importants…"></textarea>
+          <div style="font-size:0.72rem;color:#555;text-align:right;margin-top:0.3rem;font-style:italic;">Sauvegarde automatique</div>
+        </div>
       </div>
 
       <div class="sheet-section">
@@ -2278,8 +2314,9 @@ function emptyCharacter() {
     traits:'', ideaux:'', liens:'', defauts:'', apparence:'', historique:''
   };
 }
+function emptyNotesPages() { return [{ name: 'Notes de session', content: '' }]; }
 function emptyCharSlot(name) {
-  return { name, character: emptyCharacter(), inventory: { items:[], currency:{pp:0,gp:0,ep:0,sp:0,cp:0} }, notes:'' };
+  return { name, character: emptyCharacter(), inventory: { items:[], currency:{pp:0,gp:0,ep:0,sp:0,cp:0} }, notes: emptyNotesPages() };
 }
 function emptyPlayerData(username) {
   const id = newCharId();
@@ -2293,7 +2330,61 @@ function activeSlot() {
 }
 function C()    { return activeSlot()?.character || {}; }
 function INV()  { return activeSlot()?.inventory || { items:[], currency:{pp:0,gp:0,ep:0,sp:0,cp:0} }; }
-function NOTES(){ return activeSlot()?.notes || ''; }
+
+/* ── Notes multi-pages ── */
+let activeNotesPageIdx = 0;
+function getNotePages() {
+  const slot = activeSlot();
+  if (!slot) return [];
+  // Compatibilité ascendante : convertir l'ancien format string en tableau
+  if (typeof slot.notes === 'string') {
+    slot.notes = slot.notes ? [{ name: 'Notes de session', content: slot.notes }] : emptyNotesPages();
+  }
+  if (!Array.isArray(slot.notes) || slot.notes.length === 0) slot.notes = emptyNotesPages();
+  return slot.notes;
+}
+function currentNotePage() {
+  const pages = getNotePages();
+  if (activeNotesPageIdx >= pages.length) activeNotesPageIdx = 0;
+  return pages[activeNotesPageIdx] || pages[0];
+}
+function NOTES() { return currentNotePage()?.content || ''; }
+
+function renderNotesPages() {
+  const pages = getNotePages();
+  const list = document.getElementById('notes-pages-list');
+  if (!list) return;
+  list.innerHTML = '';
+  pages.forEach((page, i) => {
+    const item = document.createElement('div');
+    item.className = 'notes-page-item' + (i === activeNotesPageIdx ? ' active' : '');
+    item.textContent = page.name || `Page ${i + 1}`;
+    item.title = page.name || `Page ${i + 1}`;
+    item.addEventListener('click', () => {
+      saveCurrentNoteContent();
+      activeNotesPageIdx = i;
+      renderNotesPages();
+      loadCurrentNoteInEditor();
+    });
+    list.appendChild(item);
+  });
+}
+function loadCurrentNoteInEditor() {
+  const page = currentNotePage();
+  const editor = document.getElementById('notes-editor');
+  const titleInput = document.getElementById('notes-page-title');
+  if (editor) editor.value = page?.content || '';
+  if (titleInput) titleInput.value = page?.name || '';
+}
+function saveCurrentNoteContent() {
+  const pages = getNotePages();
+  const editor = document.getElementById('notes-editor');
+  const titleInput = document.getElementById('notes-page-title');
+  if (editor && pages[activeNotesPageIdx]) pages[activeNotesPageIdx].content = editor.value;
+  if (titleInput && pages[activeNotesPageIdx]) {
+    pages[activeNotesPageIdx].name = titleInput.value.trim() || `Page ${activeNotesPageIdx + 1}`;
+  }
+}
 
 /* ── Calculs D&D ── */
 function mod(score)   { return Math.floor((score - 10) / 2); }
@@ -2728,7 +2819,8 @@ function renderAll() {
   renderSpells();
   renderInventory();
   fillCurrency();
-  document.getElementById('notes-editor').value = NOTES();
+  renderNotesPages();
+  loadCurrentNoteInEditor();
   updateCharSummary();
   updateProfBonus();
   updateHpBar();
@@ -3589,10 +3681,20 @@ function renderAdminModalTab() {
     });
 
   } else if (adminActiveTab === 'notes') {
+    // Normaliser le format (compatibilité ascendante)
+    let pages = slot.notes;
+    if (typeof pages === 'string') pages = pages ? [{ name: 'Notes de session', content: pages }] : [{ name: 'Notes de session', content: '' }];
+    if (!Array.isArray(pages) || pages.length === 0) pages = [{ name: 'Notes de session', content: '' }];
+    const pagesHtml = pages.map((page, i) => `
+      <div style="margin-bottom:1.2rem;">
+        <div style="font-size:0.75rem;color:var(--gold);font-family:'Cinzel',serif;letter-spacing:0.06em;margin-bottom:0.4rem;padding-bottom:0.3rem;border-bottom:1px solid #2a2a3a;">${esc(page.name || `Page ${i + 1}`)}</div>
+        <textarea class="notes-editor ae-notes-page" data-page-idx="${i}" style="min-height:140px;">${esc(page.content || '')}</textarea>
+      </div>
+    `).join('');
     body.innerHTML = `
       <div class="sheet-section">
         <div class="sheet-section-title">Notes du joueur (éditables par le MJ)</div>
-        <textarea class="notes-editor" id="ae-notes" style="min-height:250px;">${esc(slot.notes)}</textarea>
+        ${pagesHtml}
       </div>
     `;
   }
@@ -3694,8 +3796,14 @@ async function adminSaveEdit() {
     });
 
   } else if (adminActiveTab === 'notes') {
-    const notesEl = document.getElementById('ae-notes');
-    if (notesEl) slot.notes = notesEl.value;
+    let pages = slot.notes;
+    if (typeof pages === 'string') pages = pages ? [{ name: 'Notes de session', content: pages }] : [{ name: 'Notes de session', content: '' }];
+    if (!Array.isArray(pages) || pages.length === 0) pages = [{ name: 'Notes de session', content: '' }];
+    document.querySelectorAll('.ae-notes-page').forEach(ta => {
+      const i = parseInt(ta.dataset.pageIdx);
+      if (!isNaN(i) && pages[i]) pages[i].content = ta.value;
+    });
+    slot.notes = pages;
   }
 
   const btn = document.getElementById('btn-admin-save');
@@ -3970,10 +4078,38 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  /* ── Notes ── */
+  /* ── Notes multi-pages ── */
   document.getElementById('notes-editor').addEventListener('input', e => {
     if (!playerData) return;
-    activeSlot().notes = e.target.value;
+    const pages = getNotePages();
+    if (pages[activeNotesPageIdx]) pages[activeNotesPageIdx].content = e.target.value;
+    triggerSave();
+  });
+  document.getElementById('notes-page-title').addEventListener('input', e => {
+    if (!playerData) return;
+    const pages = getNotePages();
+    if (pages[activeNotesPageIdx]) pages[activeNotesPageIdx].name = e.target.value.trim() || `Page ${activeNotesPageIdx + 1}`;
+    renderNotesPages();
+    triggerSave();
+  });
+  document.getElementById('btn-add-note-page').addEventListener('click', () => {
+    if (!playerData) return;
+    saveCurrentNoteContent();
+    const pages = getNotePages();
+    pages.push({ name: `Page ${pages.length + 1}`, content: '' });
+    activeNotesPageIdx = pages.length - 1;
+    renderNotesPages();
+    loadCurrentNoteInEditor();
+    triggerSave();
+  });
+  document.getElementById('btn-del-note-page').addEventListener('click', () => {
+    if (!playerData) return;
+    const pages = getNotePages();
+    if (pages.length <= 1) return;
+    pages.splice(activeNotesPageIdx, 1);
+    if (activeNotesPageIdx >= pages.length) activeNotesPageIdx = pages.length - 1;
+    renderNotesPages();
+    loadCurrentNoteInEditor();
     triggerSave();
   });
 
@@ -4027,7 +4163,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!confirm('Réinitialiser "' + (slot.name || 'ce personnage') + '" ? Irréversible.')) return;
     slot.character = emptyCharacter();
     slot.inventory = { items:[], currency:{pp:0,gp:0,ep:0,sp:0,cp:0} };
-    slot.notes = '';
+    slot.notes = emptyNotesPages();
     await sbUpdateData(currentUser, playerData);
     renderAll();
     renderCharCards();
@@ -4088,11 +4224,15 @@ document.addEventListener('DOMContentLoaded', () => {
       dot.classList.add('active');
     });
   });
-  // Init canvas quand on active l'onglet Notes
+  // Init canvas + notes pages quand on active l'onglet Notes
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       if (btn.dataset.tab === 'notes') {
-        setTimeout(() => { if (!document.getElementById('handnote-canvas').width) initCanvas(); }, 50);
+        setTimeout(() => {
+          if (!document.getElementById('handnote-canvas').width) initCanvas();
+          renderNotesPages();
+          loadCurrentNoteInEditor();
+        }, 50);
       }
     });
   });
