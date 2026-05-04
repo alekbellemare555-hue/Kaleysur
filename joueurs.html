@@ -353,11 +353,15 @@
     }
 
     /* ── Mise en page deux colonnes ── */
+    .sheet-section-full { margin-bottom:1rem; }
     .layout-wrapper { display:flex; gap:1.25rem; align-items:flex-start; }
     .layout-col { flex:1; min-width:0; display:flex; flex-direction:column; gap:0; min-height:60px; }
     .layout-col .sheet-section { margin-bottom:1rem; }
     .layout-col .sheet-section:last-child { margin-bottom:0; }
     @media (max-width:900px) { .layout-wrapper { flex-direction:column; } }
+    /* Grille de caract pleine largeur : toujours 6 colonnes même en pleine largeur */
+    .sheet-section-full .ability-grid { grid-template-columns:repeat(6,1fr); }
+    @media (max-width:600px) { .sheet-section-full .ability-grid { grid-template-columns:repeat(3,1fr); } }
 
     /* ── Drag & drop ── */
     .sheet-section.dragging { opacity:0.3; }
@@ -549,6 +553,12 @@
         <button class="btn btn-sm" id="btn-reset-layout" style="margin-left:auto;">↺ Défaut</button>
       </div>
 
+      <!-- Caractéristiques : pleine largeur au-dessus des colonnes -->
+      <div class="sheet-section sheet-section-full" data-sec="caracteristiques">
+        <div class="sheet-section-title">Caractéristiques</div>
+        <div class="ability-grid" id="ability-grid"></div>
+      </div>
+
       <div class="layout-wrapper" id="layout-wrapper">
 
         <!-- ── Colonne gauche ── -->
@@ -638,11 +648,6 @@
   
         <!-- Class Features (auto-populated) -->
 
-        <div class="sheet-section" data-sec="caracteristiques">
-          <div class="sheet-section-title">Caractéristiques</div>
-          <div class="ability-grid" id="ability-grid"></div>
-        </div>
-  
         <!-- Sauvegardes & Compétences -->
 
         <div class="sheet-section" data-sec="saves">
@@ -3948,11 +3953,13 @@ const SECTION_LABELS = {
 };
 const DEFAULT_LAYOUT = {
   columns:[
-    ['identite','caracteristiques','saves','passives'],
+    ['identite','saves','passives'],
     ['cf','combat','ressources','conditions','attaques','sorts','features','perso']
   ],
   hidden:[]
 };
+// Sections ancrées hors des colonnes (pleine largeur) — ne jamais les déplacer
+const FIXED_SECTIONS = ['caracteristiques'];
 
 let layoutEditMode = false;
 let dragSrcLayout  = null;
@@ -3991,15 +3998,25 @@ function captureCurrentLayout() {
 function applyLayout() {
   // Le layout 2-colonnes est déjà dans le HTML statique.
   // Cette fonction applique uniquement : l'ordre sauvegardé + les sections masquées.
+  const panel = document.getElementById('tab-personnage');
   const wrapper = document.getElementById('layout-wrapper');
   if (!wrapper) return;
 
   const cols = wrapper.querySelectorAll('.layout-col');
   if (!cols.length) return;
 
-  // Construire la map data-sec → élément
+  // Sections fixes (hors colonnes) — visibilité uniquement, pas de déplacement
+  panel.querySelectorAll('.sheet-section-full[data-sec]').forEach(sec => {
+    const hidden = playerData?.layout?.hidden || [];
+    if (hidden.includes(sec.dataset.sec)) sec.classList.add('sec-hidden');
+    else sec.classList.remove('sec-hidden');
+  });
+
+  // Construire la map data-sec → élément (seulement dans les colonnes)
   const sectionMap = {};
-  wrapper.querySelectorAll('.sheet-section[data-sec]').forEach(s => { sectionMap[s.dataset.sec] = s; });
+  wrapper.querySelectorAll('.sheet-section[data-sec]').forEach(s => {
+    if (!FIXED_SECTIONS.includes(s.dataset.sec)) sectionMap[s.dataset.sec] = s;
+  });
 
   const layout = getLayout();
   const hidden = layout.hidden || [];
@@ -4021,6 +4038,7 @@ function applyLayout() {
       const col = cols[ci];
       if (!col) return;
       ids.forEach(id => {
+        if (FIXED_SECTIONS.includes(id)) return; // ignorer sections fixes
         const sec = sectionMap[id];
         if (!sec) return;
         col.appendChild(sec);
