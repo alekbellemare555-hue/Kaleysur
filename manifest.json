@@ -1,0 +1,47 @@
+{
+  "name": "Kaleysur — Wiki",
+  "short_name": "Kaleysur",
+  "description": "Wiki et fiches de personnage pour le monde de Kaleysur",
+  "start_url": "/wiki/index.html",
+  "scope": "/wiki/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0d0d12",
+  "theme_color": "#0d0d12",
+  "lang": "fr",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Fiche de personnage",
+      "short_name": "Personnage",
+      "url": "/wiki/joueurs.html",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Carte de Kaleysur",
+      "short_name": "Carte",
+      "url": "/wiki/carte.html",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Chronologie",
+      "short_name": "Chronologie",
+      "url": "/wiki/chronologie.html",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
