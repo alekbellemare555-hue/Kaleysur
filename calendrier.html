@@ -402,6 +402,12 @@
       color: var(--gold);
     }
     .no-events { font-size: .8rem; color: var(--text-muted); font-style: italic; }
+
+    /* ── Sync badge ── */
+    .sync-badge { font-size:.7rem; padding:.2rem .6rem; border-radius:99px; border:1px solid #2a3a2a; background:#0d160d; color:#5a8a5a; font-family:var(--font-title); letter-spacing:.04em; transition:all .4s; white-space:nowrap; }
+    .sync-badge.syncing { color:#8ab8e8; border-color:#2a3a5a; background:#0d0d1a; }
+    .sync-badge.error   { color:#e08080; border-color:#5a2a2a; background:#1a0d0d; }
+    .sync-badge.offline { color:#888;    border-color:#2a2a2a; background:#0d0d12; }
   </style>
 
   <!-- PWA -->
@@ -511,6 +517,7 @@
         <input class="year-input" type="number" id="year-input" value="1" min="0" max="9999">
         <span class="year-era">EdT</span>
       </div>
+      <div id="sync-badge" class="sync-badge">⟳ Connexion…</div>
     </div>
 
     <!-- Moon phases -->
@@ -677,24 +684,112 @@ const MONTH_FIRST_DAY = (() => {
 })();
 
 // ════════════════════════════════════════════════════════
-//  STATE  (persisted in localStorage)
+//  SUPABASE SYNC
+// ════════════════════════════════════════════════════════
+const SB_URL     = 'https://hevwgdsvgepiieuvhclg.supabase.co';
+const SB_KEY     = 'sb_publishable_TDTCogCSFP-Lvus2x3rAAg_60l036tq';
+const SB_HEADERS = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' };
+const CAL_ID     = '__calendar__'; // ligne partagée dans la table players
+
+let syncTimer = null;
+let lastServerHash = null;
+
+function setSyncBadge(status, text) {
+  const b = document.getElementById('sync-badge');
+  if (!b) return;
+  b.className = 'sync-badge ' + status;
+  b.textContent = text;
+}
+
+async function sbCalFetch(method, body) {
+  return fetch(SB_URL + `/rest/v1/players?username=eq.${CAL_ID}`, {
+    method,
+    headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
+    body: body ? JSON.stringify(body) : undefined
+  });
+}
+
+async function loadFromServer() {
+  try {
+    const r = await fetch(SB_URL + `/rest/v1/players?username=eq.${CAL_ID}&select=data`, { headers: SB_HEADERS });
+    if (!r.ok) return null;
+    const rows = await r.json();
+    return rows[0]?.data || null;
+  } catch { return null; }
+}
+
+async function saveToServer() {
+  setSyncBadge('syncing', '⟳ Synchro…');
+  const data = { currentDay: state.currentDay, currentYear: state.currentYear, events: state.events };
+  try {
+    // PATCH d'abord
+    let r = await sbCalFetch('PATCH', { data });
+    if (r.status === 404 || r.status === 0) {
+      // Créer la ligne si elle n'existe pas
+      r = await fetch(SB_URL + '/rest/v1/players', {
+        method: 'POST',
+        headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ username: CAL_ID, password_hash: 'calendar-shared', data })
+      });
+    }
+    if (r.ok || r.status === 204) {
+      lastServerHash = JSON.stringify(data);
+      setSyncBadge('', '✓ Synchronisé');
+      setTimeout(() => setSyncBadge('', '✓ En ligne'), 2000);
+    } else {
+      setSyncBadge('error', '✗ Erreur sync');
+    }
+  } catch {
+    setSyncBadge('offline', '○ Hors ligne');
+  }
+}
+
+function applyServerData(data) {
+  if (!data) return;
+  const hash = JSON.stringify(data);
+  if (hash === lastServerHash) return; // Rien de nouveau
+  lastServerHash = hash;
+  // Appliquer sans écraser si modal ouverte
+  const modalOpen = document.getElementById('modal-backdrop')?.classList.contains('open');
+  state.currentDay  = data.currentDay  ?? state.currentDay;
+  state.currentYear = data.currentYear ?? state.currentYear;
+  state.events      = data.events      ?? state.events;
+  localStorage.setItem('kaleysur-calendrier', JSON.stringify(state));
+  if (!modalOpen) {
+    viewMonth = monthOfDay(state.currentDay);
+    render();
+  }
+}
+
+async function pollServer() {
+  const data = await loadFromServer();
+  if (data) {
+    applyServerData(data);
+    setSyncBadge('', '✓ En ligne');
+  } else {
+    setSyncBadge('offline', '○ Hors ligne');
+  }
+}
+
+// ════════════════════════════════════════════════════════
+//  STATE  (localStorage + Supabase)
 // ════════════════════════════════════════════════════════
 const STORAGE_KEY = 'kaleysur-calendrier';
 
-function loadState() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-  } catch { return {}; }
+function loadLocalState() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
 }
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(saveToServer, 600); // debounce 600ms
 }
 
-const saved = loadState();
+const saved = loadLocalState();
 const state = {
   currentDay:  saved.currentDay  ?? 1,
   currentYear: saved.currentYear ?? 1,
-  events:      saved.events      ?? {},  // key: "Y-D" → { note, tag }
+  events:      saved.events      ?? {},
 };
 
 let viewMonth = 0; // 0-8
@@ -1026,6 +1121,15 @@ document.addEventListener('keydown', e => {
 // Start on current month
 viewMonth = monthOfDay(state.currentDay);
 render();
+
+// ── Synchronisation Supabase ──
+loadFromServer().then(data => {
+  if (data) applyServerData(data);
+  setSyncBadge('', '✓ En ligne');
+}).catch(() => setSyncBadge('offline', '○ Hors ligne'));
+
+// Polling toutes les 8 secondes
+setInterval(pollServer, 8000);
 </script>
 
   <script>
