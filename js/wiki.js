@@ -411,16 +411,12 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 
 // --- Les Trois Lunes — Logo & Icônes sidebar ----------------
 (function initMoonIcons() {
-  // 1. Remplacer l'icône ⚜ de la barre de navigation par les 3 lunes SVG
+  // 1. Remplacer l'icône ⚜ de la barre de navigation par l'icône officielle de l'app
   var brandIcon = document.querySelector('.nav-brand-icon');
   if (brandIcon) {
+    var root = getWikiRoot();
     brandIcon.style.cssText = 'display:flex;align-items:center;font-size:0;line-height:1';
-    // Trefoil : lune bleue bas-gauche, rouge bas-droite, blanche haut-centre
-    brandIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 22" width="22" height="20" aria-label="Les Trois Lunes de Kaleysur">'
-      + '<circle cx="7"  cy="15" r="6" fill="#2e5496"/>'
-      + '<circle cx="17" cy="15" r="6" fill="#8a1a1a"/>'
-      + '<circle cx="12" cy="7"  r="6" fill="#6e6248"/>'
-      + '</svg>';
+    brandIcon.innerHTML = '<img src="' + root + 'icons/icon-192.png" alt="Les Trois Lunes de Kaleysur" width="28" height="28" style="border-radius:50%;display:block;">';
   }
 
   // 2. Appliquer data-moon à chaque section de la sidebar

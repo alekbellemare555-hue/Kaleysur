@@ -79,8 +79,15 @@ body {
 }
 
 .nav-brand-icon {
-  font-size: 1.5rem;
-  filter: drop-shadow(0 0 6px var(--gold));
+  display: flex;
+  align-items: center;
+  font-size: 0;
+  line-height: 1;
+  filter: drop-shadow(0 0 5px rgba(201,162,39,0.5));
+  transition: filter var(--transition);
+}
+.nav-brand:hover .nav-brand-icon {
+  filter: drop-shadow(0 0 9px rgba(201,162,39,0.85));
 }
 
 .nav-brand-text {
