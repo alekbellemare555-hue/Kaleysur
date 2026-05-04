@@ -398,6 +398,44 @@ if (hamburger && sidebar && overlay) {
   toc.innerHTML = html;
 })();
 
+// --- Bouton Page Aléatoire dans la sidebar -------------
+(function initRandomPageBtn() {
+  const sidebar = document.getElementById('sidebar');
+  if (!sidebar) return;
+
+  // Ne cibler que les vraies pages HTML (pas les ancres #fragment)
+  const pages = SEARCH_INDEX
+    .filter(p => p.url.endsWith('.html') && !p.url.includes('#'))
+    .filter((p, i, arr) => arr.findIndex(x => x.url === p.url) === i);
+
+  const root = getWikiRoot();
+
+  const btn = document.createElement('a');
+  btn.className = 'sidebar-link random-page-btn';
+  btn.href = '#';
+  btn.innerHTML = '<span style="margin-right:.4em">⚄</span>Page Aléatoire';
+  btn.title = 'Ouvrir une page au hasard';
+
+  btn.addEventListener('click', e => {
+    e.preventDefault();
+    const page = pages[Math.floor(Math.random() * pages.length)];
+    window.location.href = root + page.url;
+  });
+
+  // Insérer dans la section Navigation (toujours visible)
+  const navSection = Array.from(sidebar.querySelectorAll('.sidebar-section')).find(s => {
+    const t = s.querySelector('.sidebar-section-title');
+    return t && t.textContent.trim() === 'Navigation';
+  });
+
+  if (navSection) {
+    navSection.appendChild(btn);
+  } else {
+    // Fallback : ajouter en haut de la sidebar
+    sidebar.insertBefore(btn, sidebar.firstChild);
+  }
+})();
+
 // --- Smooth scroll for anchor links --------------------
 document.querySelectorAll('a[href^="#"]').forEach(a => {
   a.addEventListener('click', e => {
