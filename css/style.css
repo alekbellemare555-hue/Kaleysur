@@ -169,6 +169,33 @@ body {
   letter-spacing: 0.05em;
 }
 
+/* Badge utilisateur connecté */
+.nav-user-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.28rem 0.65rem;
+  background: rgba(201,169,110,0.1);
+  border: 1px solid rgba(201,169,110,0.25);
+  border-radius: 20px;
+  color: var(--gold);
+  font-size: 0.75rem;
+  font-family: var(--font-title);
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background var(--transition), border-color var(--transition);
+  cursor: pointer;
+}
+.nav-user-badge:hover {
+  background: rgba(201,169,110,0.2);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+@media (max-width: 480px) {
+  .nav-user-badge span { display: none; }
+}
+
 /* Hamburger */
 .hamburger {
   display: none;

@@ -2,8 +2,8 @@
   "name": "Kaleysur — Wiki",
   "short_name": "Kaleysur",
   "description": "Wiki et fiches de personnage pour le monde de Kaleysur",
-  "start_url": "/wiki/index.html",
-  "scope": "/wiki/",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#0d0d12",
@@ -28,19 +28,19 @@
     {
       "name": "Fiche de personnage",
       "short_name": "Personnage",
-      "url": "/wiki/joueurs.html",
+      "url": "./joueurs.html",
       "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Carte de Kaleysur",
       "short_name": "Carte",
-      "url": "/wiki/carte.html",
+      "url": "./carte.html",
       "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Chronologie",
       "short_name": "Chronologie",
-      "url": "/wiki/chronologie.html",
+      "url": "./chronologie.html",
       "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
     }
   ]

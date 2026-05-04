@@ -340,6 +340,23 @@
 </head>
 <body>
 
+<nav class="top-nav">
+  <a href="index.html" class="nav-brand">
+    <span class="nav-brand-icon">⚜</span>
+    <span class="nav-brand-text">Kaleysur</span>
+  </a>
+  <div class="nav-right">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="search-input" type="text" placeholder="Rechercher…" autocomplete="off">
+      <div class="search-results" id="search-results"></div>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
 <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
 <!-- ▸ Barre latérale -->
@@ -924,6 +941,8 @@
     <!-- Tabs -->
     <div class="modal-tabs">
       <button class="modal-tab-btn active" data-mtab="fiche">⚔ Fiche</button>
+      <button class="modal-tab-btn" data-mtab="competences">🎯 Compétences</button>
+      <button class="modal-tab-btn" data-mtab="sorts">✨ Sorts</button>
       <button class="modal-tab-btn" data-mtab="inventaire">🎒 Inventaire</button>
       <button class="modal-tab-btn" data-mtab="notes">📜 Notes</button>
     </div>
@@ -2147,6 +2166,8 @@ function applyTheme(id) {
   const t = THEMES.find(x => x.id === id) || THEMES[0];
   document.documentElement.style.setProperty('--gold', t.gold);
   document.documentElement.style.setProperty('--gold-dark', t.dark);
+  // Persister le thème pour toutes les pages du wiki
+  try { localStorage.setItem('kaleysur_theme', JSON.stringify({ gold: t.gold, dark: t.dark })); } catch(e) {}
   // Mettre à jour l'UI des swatches
   document.querySelectorAll('.theme-swatch').forEach(s => {
     s.classList.toggle('active', s.dataset.theme === t.id);
@@ -3371,7 +3392,152 @@ function renderAdminModalTab() {
         <div class="field-group" style="margin-top:0.75rem;"><label class="field-label">Apparence</label><textarea class="field-input" id="ae-apparence" rows="2">${esc(c.apparence)}</textarea></div>
         <div class="field-group" style="margin-top:0.75rem;"><label class="field-label">Historique</label><textarea class="field-input" id="ae-historique" rows="3">${esc(c.historique)}</textarea></div>
       </div>
+
+      <!-- Maîtrises & Langues -->
+      <div class="sheet-section">
+        <div class="sheet-section-title">Maîtrises &amp; Langues</div>
+        <div class="sheet-grid-2">
+          <div class="field-group"><label class="field-label">Maîtrises</label><textarea class="field-input" id="ae-maitrises" rows="3" placeholder="ex. Armures légères, épées…">${esc(c.maitrises)}</textarea></div>
+          <div class="field-group"><label class="field-label">Langues</label><textarea class="field-input" id="ae-langues" rows="3" placeholder="ex. Commun, Elfique…">${esc(c.langues)}</textarea></div>
+        </div>
+      </div>
+
+      <!-- Conditions actives -->
+      <div class="sheet-section">
+        <div class="sheet-section-title">Conditions actives</div>
+        <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.25rem;">
+          ${['Aveuglé','Charmé','Effrayé','Empoisonné','Étourdi','Entravé','Incapacité','Invisible','Paralysé','Pétrifié','Prone','Ralenti','Sourd'].map(cond => `
+            <label style="display:flex;align-items:center;gap:0.35rem;font-size:0.82rem;color:#bbb;cursor:pointer;background:#13131a;border:1px solid #2a2a3a;border-radius:6px;padding:0.3rem 0.6rem;">
+              <input type="checkbox" class="ae-condition" data-cond="${cond}" ${(c.conditions||[]).includes(cond)?'checked':''} style="accent-color:var(--danger);">
+              ${cond}
+            </label>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Ressources -->
+      <div class="sheet-section">
+        <div class="sheet-section-title">Ressources de classe</div>
+        <div style="font-size:0.8rem;color:#888;font-style:italic;margin-bottom:0.5rem;">Valeurs actuelles (les maximums sont calculés automatiquement selon la classe et le niveau)</div>
+        <div id="ae-resources-wrap" style="display:flex;flex-wrap:wrap;gap:0.75rem;">
+          ${(c.resources||[]).map((r,i) => `
+            <div style="background:#13131a;border:1px solid #2a2a3a;border-radius:6px;padding:0.5rem 0.75rem;min-width:120px;">
+              <div style="font-size:0.75rem;color:var(--gold);font-family:'Cinzel',serif;margin-bottom:0.3rem;">${esc(r.name)}</div>
+              <div style="display:flex;align-items:center;gap:0.4rem;">
+                <input type="number" class="field-input ae-resource-cur" data-ri="${i}" value="${r.current||0}" min="0" max="${r.max||99}" style="width:55px;text-align:center;">
+                <span style="color:#555;">/</span>
+                <span style="color:#888;font-size:0.82rem;">${r.max||0}</span>
+              </div>
+            </div>
+          `).join('') || '<span style="color:#555;font-size:0.82rem;">Aucune ressource (dépend de la classe/niveau)</span>'}
+        </div>
+      </div>
     `;
+
+  } else if (adminActiveTab === 'competences') {
+    const SKILLS_LIST = [
+      { key:'acrobaties',   label:'Acrobaties',   stat:'DEX' },
+      { key:'animaux',      label:'Dressage',      stat:'SAG' },
+      { key:'arcanes',      label:'Arcanes',       stat:'INT' },
+      { key:'athletisme',   label:'Athlétisme',    stat:'FOR' },
+      { key:'discret',      label:'Discrétion',    stat:'DEX' },
+      { key:'duperie',      label:'Duperie',       stat:'CHA' },
+      { key:'histoire',     label:'Histoire',      stat:'INT' },
+      { key:'intimidation', label:'Intimidation',  stat:'CHA' },
+      { key:'investigation',label:'Investigation', stat:'INT' },
+      { key:'medecine',     label:'Médecine',      stat:'SAG' },
+      { key:'nature',       label:'Nature',        stat:'INT' },
+      { key:'perception',   label:'Perception',    stat:'SAG' },
+      { key:'performance',  label:'Performance',   stat:'CHA' },
+      { key:'persuasion',   label:'Persuasion',    stat:'CHA' },
+      { key:'prestidig',    label:'Prestidigitation', stat:'DEX' },
+      { key:'religion',     label:'Religion',      stat:'INT' },
+      { key:'perspicacite', label:'Perspicacité',  stat:'SAG' },
+      { key:'survie',       label:'Survie',        stat:'SAG' },
+    ];
+    const SAVES = ['for','dex','con','int','sag','cha'];
+    const SAVE_LABELS = { for:'Force', dex:'Dextérité', con:'Constitution', int:'Intelligence', sag:'Sagesse', cha:'Charisme' };
+
+    body.innerHTML = `
+      <!-- Jets de sauvegarde -->
+      <div class="sheet-section">
+        <div class="sheet-section-title">Jets de sauvegarde</div>
+        <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
+          ${SAVES.map(s => `
+            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;color:#bbb;cursor:pointer;background:#13131a;border:1px solid #2a2a3a;border-radius:6px;padding:0.3rem 0.65rem;">
+              <input type="checkbox" class="ae-save" data-save="${s}" ${c['save'+s.charAt(0).toUpperCase()+s.slice(1)]?'checked':''} style="accent-color:var(--gold-dark);">
+              ${SAVE_LABELS[s]}
+            </label>
+          `).join('')}
+        </div>
+      </div>
+      <!-- Compétences -->
+      <div class="sheet-section">
+        <div class="sheet-section-title">Compétences</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.4rem;">
+          ${SKILLS_LIST.map(sk => `
+            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;color:#bbb;cursor:pointer;padding:0.25rem 0.35rem;border-radius:5px;background:rgba(255,255,255,0.02);">
+              <input type="checkbox" class="ae-skill" data-skill="${sk.key}" ${c[sk.key]?'checked':''} style="accent-color:var(--gold-dark);">
+              <span style="flex:1;">${sk.label}</span>
+              <span style="font-size:0.7rem;color:#666;">${sk.stat}</span>
+            </label>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+  } else if (adminActiveTab === 'sorts') {
+    const spells = c.spells || [];
+    const spellRows = spells.map((sp, i) => `
+      <tr>
+        <td style="text-align:center;color:var(--gold);">${sp.niveau||0}</td>
+        <td><input class="inv-inp ae-spell" data-si="${i}" data-sk="nom" value="${esc(sp.nom)}" style="min-width:100px;"></td>
+        <td><input class="inv-inp ae-spell" data-si="${i}" data-sk="degat" value="${esc(sp.degat)}" style="width:70px;"></td>
+        <td><input class="inv-inp ae-spell" data-si="${i}" data-sk="typeDegat" value="${esc(sp.typeDegat)}" style="width:70px;"></td>
+        <td><input class="inv-inp ae-spell" data-si="${i}" data-sk="portee" value="${esc(sp.portee)}" style="width:70px;"></td>
+        <td style="color:#888;font-size:0.8rem;">${esc(sp.action||'Action')}</td>
+        <td><button class="atk-del ae-del-spell" data-del-spell="${i}" title="Supprimer">✕</button></td>
+      </tr>
+    `).join('');
+
+    body.innerHTML = `
+      <div class="sheet-section">
+        <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
+          <span>Sorts (${spells.length})</span>
+          <button class="btn btn-sm btn-gold" id="ae-add-spell">+ Ajouter</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="inv-table" style="min-width:500px;">
+            <thead><tr>
+              <th style="width:8%">Niv.</th>
+              <th style="width:28%">Nom</th>
+              <th style="width:12%">Dégât</th>
+              <th style="width:14%">Type</th>
+              <th style="width:12%">Portée</th>
+              <th style="width:14%">Action</th>
+              <th style="width:12%"></th>
+            </tr></thead>
+            <tbody id="ae-spell-tbody">${spellRows}</tbody>
+          </table>
+        </div>
+        ${spells.length === 0 ? '<p style="color:#555;font-style:italic;font-size:0.82rem;margin-top:0.5rem;">Aucun sort enregistré par ce joueur.</p>' : ''}
+      </div>
+    `;
+
+    document.getElementById('ae-add-spell').addEventListener('click', () => {
+      const slot = (adminEditData.characters || {})[adminEditCharId];
+      if (!slot.character.spells) slot.character.spells = [];
+      slot.character.spells.push({ niveau:0, nom:'', degat:'', typeDegat:'', portee:'', action:'Action', desc:'' });
+      renderAdminModalTab();
+    });
+
+    document.getElementById('ae-spell-tbody').addEventListener('click', e => {
+      const btn = e.target.closest('.ae-del-spell');
+      if (!btn) return;
+      const slot = (adminEditData.characters || {})[adminEditCharId];
+      slot.character.spells.splice(parseInt(btn.dataset.delSpell), 1);
+      renderAdminModalTab();
+    });
 
   } else if (adminActiveTab === 'inventaire') {
     const itemRows = items.map((item, i) => `
@@ -3471,8 +3637,46 @@ async function adminSaveEdit() {
     const inspEl = document.getElementById('ae-inspiration');
     if (inspEl) c.inspiration = inspEl.checked;
 
+    // Maîtrises & Langues
+    const maitrEl = document.getElementById('ae-maitrises');
+    if (maitrEl) c.maitrises = maitrEl.value;
+    const langEl = document.getElementById('ae-langues');
+    if (langEl) c.langues = langEl.value;
+
+    // Conditions
+    c.conditions = [];
+    document.querySelectorAll('.ae-condition').forEach(cb => {
+      if (cb.checked) c.conditions.push(cb.dataset.cond);
+    });
+
+    // Ressources — uniquement les valeurs actuelles
+    document.querySelectorAll('.ae-resource-cur').forEach(inp => {
+      const i = parseInt(inp.dataset.ri);
+      if (c.resources && c.resources[i]) c.resources[i].current = parseInt(inp.value) || 0;
+    });
+
     // Mettre à jour le nom du slot
     slot.name = c.characterName || 'Sans nom';
+
+  } else if (adminActiveTab === 'competences') {
+    // Jets de sauvegarde
+    document.querySelectorAll('.ae-save').forEach(cb => {
+      const s = cb.dataset.save;
+      c['save' + s.charAt(0).toUpperCase() + s.slice(1)] = cb.checked;
+    });
+    // Compétences
+    document.querySelectorAll('.ae-skill').forEach(cb => {
+      c[cb.dataset.skill] = cb.checked;
+    });
+
+  } else if (adminActiveTab === 'sorts') {
+    // Sorts — collecter les inputs
+    if (!c.spells) c.spells = [];
+    document.querySelectorAll('.ae-spell').forEach(inp => {
+      const i = parseInt(inp.dataset.si);
+      const k = inp.dataset.sk;
+      if (c.spells[i]) c.spells[i][k] = inp.value;
+    });
 
   } else if (adminActiveTab === 'inventaire') {
     // Collecte inventaire

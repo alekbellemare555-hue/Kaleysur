@@ -291,6 +291,32 @@ if (searchInput && searchResults) {
   });
 }
 
+// --- Thème sauvegardé (par joueurs.html) ---------------
+(function applyStoredTheme() {
+  try {
+    const t = JSON.parse(localStorage.getItem('kaleysur_theme') || 'null');
+    if (t && t.gold) document.documentElement.style.setProperty('--gold', t.gold);
+    if (t && t.dark) document.documentElement.style.setProperty('--gold-dark', t.dark);
+  } catch(e) {}
+})();
+
+// --- Indicateur utilisateur connecté ------------------
+(function showUserBadge() {
+  const kUser = localStorage.getItem('kaleysur_user');
+  if (!kUser) return;
+  const navRight = document.querySelector('.nav-right');
+  if (!navRight) return;
+  const root = getWikiRoot();
+  const badge = document.createElement('a');
+  badge.href = root + 'joueurs.html';
+  badge.className = 'nav-user-badge';
+  badge.innerHTML = `👤 <span>${kUser}</span>`;
+  badge.title = 'Ma fiche joueur · ' + kUser;
+  const ham = document.getElementById('hamburger');
+  if (ham) navRight.insertBefore(badge, ham);
+  else navRight.appendChild(badge);
+})();
+
 // --- Sidebar mobile -------------------------------------
 const hamburger = document.getElementById('hamburger');
 const sidebar = document.getElementById('sidebar');
