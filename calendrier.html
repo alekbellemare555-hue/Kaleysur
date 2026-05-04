@@ -873,6 +873,7 @@ function renderHeader() {
 }
 
 function renderMoons() {
+  // Show moon phases for the current campaign day
   const d = state.currentDay;
   MOONS.forEach(moon => {
     const phase = moonPhase(d, moon.cycle);
@@ -882,6 +883,13 @@ function renderMoons() {
     document.getElementById(`moon-${moon.id}-day`).textContent = `Jour ${dayInCycle} / ${moon.cycle}`;
     document.getElementById(`moon-${moon.id}-bar`).style.width = Math.round(phase * 100) + '%';
   });
+}
+
+function moonTooltipForDay(absDay) {
+  return MOONS.map(moon => {
+    const phase = moonPhase(absDay, moon.cycle);
+    return `${moon.name} : ${moonPhaseName(phase)}`;
+  }).join('\n');
 }
 
 function renderMonth() {
@@ -934,10 +942,28 @@ function renderMonth() {
       cell.appendChild(marker);
     }
 
+    // Top row: day number + moon icon for this day's governing moon
+    const topRow = document.createElement('div');
+    topRow.style.cssText = 'display:flex;justify-content:space-between;align-items:flex-start;';
     const num = document.createElement('div');
     num.className = 'day-num';
     num.textContent = d;
-    cell.appendChild(num);
+    topRow.appendChild(num);
+
+    // Governing moon for this day (weekday position 0-8)
+    const wdGroup = WEEK_DAYS[(absDay - 1) % 9].group; // blanche / bleue / rouge
+    const govMoon = MOONS.find(m => m.id === wdGroup);
+    if (govMoon) {
+      const phase = moonPhase(absDay, govMoon.cycle);
+      const emoji = moonEmoji(phase);
+      const phaseName = moonPhaseName(phase);
+      const moonSpan = document.createElement('span');
+      moonSpan.title = `${govMoon.name} · ${phaseName}`;
+      moonSpan.style.cssText = 'font-size:.75rem;line-height:1;opacity:.75;';
+      moonSpan.textContent = emoji;
+      topRow.appendChild(moonSpan);
+    }
+    cell.appendChild(topRow);
 
     if (isSpecial && SPECIAL_DAYS[absDay]) {
       const badge = document.createElement('div');
@@ -951,6 +977,26 @@ function renderMonth() {
       badge.textContent = ev.tag ? `[${ev.tag}] ${ev.note}` : ev.note;
       badge.style.opacity = '.85';
       cell.appendChild(badge);
+    }
+    // Show full/new moon indicators for non-governing moons
+    const govGroup = WEEK_DAYS[(absDay - 1) % 9].group;
+    const moonHighlights = [];
+    MOONS.forEach(moon => {
+      if (moon.id === govGroup) return; // already shown in top row
+      const phase = moonPhase(absDay, moon.cycle);
+      if (phase < 0.04 || phase > 0.96) moonHighlights.push({ moon, label: 'Nouvelle lune', emoji: '🌑' });
+      else if (phase > 0.46 && phase < 0.54) moonHighlights.push({ moon, label: 'Pleine lune', emoji: '🌕' });
+    });
+    if (moonHighlights.length > 0) {
+      const mhl = document.createElement('div');
+      mhl.style.cssText = 'font-size:.62rem;display:flex;gap:2px;margin-top:1px;';
+      moonHighlights.forEach(h => {
+        const s = document.createElement('span');
+        s.title = `${h.moon.name} · ${h.label}`;
+        s.textContent = h.emoji;
+        mhl.appendChild(s);
+      });
+      cell.appendChild(mhl);
     }
 
     cell.addEventListener('click', () => openModal(absDay));
