@@ -547,16 +547,18 @@
         <span class="hero-corner hero-corner-tr">✦</span>
         <span class="hero-corner hero-corner-bl">✦</span>
         <span class="hero-corner hero-corner-br">✦</span>
-        <span class="hero-emblem" style="font-size:0;display:flex;justify-content:center;align-items:center;gap:14px;margin-bottom:1.25rem;padding-top:0.25rem">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 82" width="110" height="90" aria-label="Les Trois Lunes">
-            <defs><filter id="hglow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-            <!-- Trefoil : bleue bas-gauche · rouge bas-droite · blanche haut-centre -->
-            <circle cx="30" cy="58" r="22" fill="#2e5496" filter="url(#hglow)" opacity="0.35"/>
-            <circle cx="70" cy="58" r="22" fill="#8a1a1a" filter="url(#hglow)" opacity="0.35"/>
-            <circle cx="50" cy="24" r="22" fill="#6e6248" filter="url(#hglow)" opacity="0.25"/>
-            <circle cx="30" cy="58" r="22" fill="#2e5496"/>
-            <circle cx="70" cy="58" r="22" fill="#8a1a1a"/>
-            <circle cx="50" cy="24" r="22" fill="#6e6248"/>
+        <span class="hero-emblem">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 88" width="100" height="88" aria-label="Logo Kaleysur">
+            <defs>
+              <mask id="klogo-mask">
+                <rect width="100" height="88" fill="white"/>
+                <circle cx="50" cy="8"  r="14" fill="black"/>
+                <circle cx="87" cy="74" r="14" fill="black"/>
+                <circle cx="13" cy="74" r="14" fill="black"/>
+                <circle cx="50" cy="52" r="10" fill="black"/>
+              </mask>
+            </defs>
+            <polygon points="50,8 87,74 13,74" fill="#c9a227" mask="url(#klogo-mask)"/>
           </svg>
         </span>
         <h1 class="hero-title">Kaleysur</h1>
@@ -646,14 +648,24 @@
         </div>
       </a>
 
-      <a href="lore/journal-arzi.html" class="feature-card feature-card-wide">
-        <span class="feature-card-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" fill="none"><path d="M20 4c-3 0-9 5-11 14l-2 4 4-2C14 17 19 11 20 4z" stroke="#8a1a1a" stroke-width="1.5" stroke-linejoin="round"/><line x1="6" y1="18" x2="9" y2="15" stroke="#8a1a1a" stroke-width="1.5" stroke-linecap="round"/></svg></span>
-        <div class="feature-card-body">
-          <span class="feature-badge">Nouveau</span>
-          <span class="feature-card-name">Journal d'Arzi Barmene — An 1700 à 2000</span>
-          <span class="feature-card-desc">Le témoignage complet de la résistance contre les Illithids, en 37 entrées réparties sur trois siècles. La voix de la Plume de l'Orage, du premier soupçon à la Victoire Finale.</span>
+      <!-- ══ CARTE PAGE ALÉATOIRE ══ -->
+      <div class="feature-card feature-card-wide" id="random-page-card" style="flex-direction:column;gap:0;cursor:default;">
+        <div style="display:flex;align-items:flex-start;gap:1rem;">
+          <span class="feature-card-icon" id="rp-icon" style="font-size:1.8rem;padding-top:0.1rem;transition:transform 0.2s;">⋯</span>
+          <div class="feature-card-body" style="flex:1;min-width:0;">
+            <span class="feature-badge" style="color:var(--gold-dark);border-color:rgba(201,162,39,0.3);">⚄ Page Aléatoire</span>
+            <div style="display:flex;align-items:baseline;gap:0.6rem;margin:0.2rem 0 0.1rem;">
+              <span class="feature-card-name" id="rp-name">Chargement…</span>
+              <span id="rp-tag" style="font-size:0.65rem;color:var(--text-muted);font-style:italic;flex-shrink:0;"></span>
+            </div>
+            <span class="feature-card-desc" id="rp-desc" style="display:block;min-height:2.8em;line-height:1.55;"></span>
+          </div>
         </div>
-      </a>
+        <div style="display:flex;align-items:center;gap:1rem;margin-top:0.75rem;padding-left:58px;">
+          <a id="rp-link" href="#" class="pull-quote-link" style="font-size:0.7rem;margin-top:0;">Lire la page →</a>
+          <button id="rp-shuffle-btn" style="background:none;border:1px solid var(--border);color:var(--gold-dark);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.2rem 0.65rem;border-radius:3px;cursor:pointer;font-family:var(--font-ui);transition:color 0.15s,border-color 0.15s;" onmouseover="this.style.color='var(--gold)';this.style.borderColor='var(--gold-dark)'" onmouseout="this.style.color='var(--gold-dark)';this.style.borderColor='var(--border)'">↻ Autre page</button>
+        </div>
+      </div>
 
     </div>
 
@@ -859,6 +871,181 @@
 </footer>
 
 <script src="js/wiki.js"></script>
+
+  <!-- ══ PAGE ALÉATOIRE ══ -->
+  <script>
+  (function() {
+    const WIKI_PAGES = [
+      // Astoryem
+      { url:'astoryem/astoryem.html',       name:'Astoryem',            icon:'🌐', tag:'Astoryem' },
+      { url:'astoryem/feymundi.html',        name:'Feymundi',            icon:'🏰', tag:'Astoryem' },
+      { url:'astoryem/waterflow.html',       name:'Waterflow',           icon:'🌊', tag:'Astoryem' },
+      { url:'astoryem/ville-tempete.html',   name:'Ville Tempête',       icon:'⚡', tag:'Astoryem' },
+      { url:'astoryem/arcanumbra.html',      name:'Arcanumbra',          icon:'⌛', tag:'Astoryem' },
+      { url:'astoryem/cite-ombres.html',     name:'Cité des Ombres',     icon:'🌑', tag:'Astoryem' },
+      // Ayakan
+      { url:'ayakan/ayakan.html',            name:'Ayakan',              icon:'🌐', tag:'Ayakan' },
+      { url:'ayakan/comhan-de-na.html',      name:'Comhan De Na',        icon:'⚙️', tag:'Ayakan' },
+      { url:'ayakan/grand-plateau.html',     name:'Grand Plateau',       icon:'⚒️', tag:'Ayakan' },
+      { url:'ayakan/armalak.html',           name:'Armalak',             icon:'🛡️', tag:'Ayakan' },
+      { url:'ayakan/fios.html',              name:'Fios',                icon:'🔬', tag:'Ayakan' },
+      { url:'ayakan/indelair.html',          name:'Indelair',            icon:'⚗️', tag:'Ayakan' },
+      { url:'ayakan/lukd-oigrid.html',       name:'Lukd Oigrid',         icon:'⛏️', tag:'Ayakan' },
+      { url:'ayakan/lukd-naek.html',         name:'Lukd Naek',           icon:'🪡', tag:'Ayakan' },
+      { url:'ayakan/lukd-tagil.html',        name:'Lukd Tagil',          icon:'🏗️', tag:'Ayakan' },
+      { url:'ayakan/lukd-trenay.html',       name:'Lukd Trenay',         icon:'🐎', tag:'Ayakan' },
+      { url:'ayakan/lukd-tuanak.html',       name:'Lukd Tuanak',         icon:'🌾', tag:'Ayakan' },
+      { url:'ayakan/creidak.html',           name:'Creidak',             icon:'🕊️', tag:'Ayakan' },
+      { url:'ayakan/curcodak.html',          name:'Curcodak',            icon:'🎪', tag:'Ayakan' },
+      { url:'ayakan/ouestvir.html',          name:'Ouestvir',            icon:'✨', tag:'Ayakan' },
+      { url:'ayakan/yokoki.html',            name:'Yokoki',              icon:'🌿', tag:'Ayakan' },
+      { url:'ayakan/laryok.html',            name:'Laryok',              icon:'🏛️', tag:'Ayakan' },
+      { url:'ayakan/yoklar.html',            name:'Yoklar',              icon:'🏙️', tag:'Ayakan' },
+      { url:'ayakan/kasvir.html',            name:'Kasvir',              icon:'📚', tag:'Ayakan' },
+      { url:'ayakan/rusvar.html',            name:'Rusvar',              icon:'🎭', tag:'Ayakan' },
+      { url:'ayakan/sordas.html',            name:'Sordas',              icon:'🔔', tag:'Ayakan' },
+      { url:'ayakan/sunkur.html',            name:'Sunkur',              icon:'🌊', tag:'Ayakan' },
+      { url:'ayakan/portlune.html',          name:'Portlune',            icon:'⚓', tag:'Ayakan' },
+      { url:'ayakan/kayadur.html',           name:'Kayadur',             icon:'🌋', tag:'Ayakan' },
+      { url:'ayakan/zodory.html',            name:'Zodory',              icon:'💎', tag:'Ayakan' },
+      { url:'ayakan/kolandur.html',          name:'Kolandur',            icon:'🌊', tag:'Ayakan' },
+      { url:'ayakan/staurdur.html',          name:'Staurdur',            icon:'💨', tag:'Ayakan' },
+      { url:'ayakan/creve-glace.html',       name:'Crève Glace',         icon:'❄️', tag:'Ayakan' },
+      { url:'ayakan/varask.html',            name:'Varask',              icon:'❄️', tag:'Ayakan' },
+      { url:'ayakan/mornea.html',            name:'Mornea',              icon:'🚢', tag:'Ayakan' },
+      { url:'ayakan/thyrne.html',            name:'Thyrne',              icon:'♨️', tag:'Ayakan' },
+      { url:'ayakan/selvend.html',           name:'Selvend',             icon:'🛒', tag:'Ayakan' },
+      { url:'ayakan/frayakin.html',          name:'Frayakin',            icon:'🔥', tag:'Ayakan' },
+      { url:'ayakan/solcara.html',           name:'Solcara',             icon:'🌟', tag:'Ayakan' },
+      { url:'ayakan/pyrael.html',            name:'Pyraël',              icon:'🔶', tag:'Ayakan' },
+      { url:'ayakan/leth.html',              name:'Leth',                icon:'💧', tag:'Ayakan' },
+      { url:'ayakan/faran.html',             name:'Faran',               icon:'🏰', tag:'Ayakan' },
+      { url:'ayakan/chaines-verre.html',     name:'Chaînes de Verre',    icon:'🎶', tag:'Ayakan' },
+      // Musiyav
+      { url:'musiyav/musiyav.html',          name:'Musiyav',             icon:'🌐', tag:'Musiyav' },
+      { url:'musiyav/terres-gelees.html',    name:'Terres Gelées',       icon:'❄️', tag:'Musiyav' },
+      { url:'musiyav/munabenn.html',         name:'Munabenn',            icon:'⛏️', tag:'Musiyav' },
+      { url:'musiyav/creastail.html',        name:'Creastail',           icon:'⚡', tag:'Musiyav' },
+      { url:'musiyav/stasmoc.html',          name:'Stasmoc',             icon:'🔥', tag:'Musiyav' },
+      { url:'musiyav/clagrayn.html',         name:'Clagrayn',            icon:'⚓', tag:'Musiyav' },
+      { url:'musiyav/fedhidom.html',         name:'Fedhidom',            icon:'🌑', tag:'Musiyav' },
+      { url:'musiyav/cricrosal.html',        name:'Cricrosal',           icon:'💎', tag:'Musiyav' },
+      { url:'musiyav/ellirhom.html',         name:'Éllirhom',            icon:'🍃', tag:'Musiyav' },
+      { url:'musiyav/murblan.html',          name:'Murblan',             icon:'⚖️', tag:'Musiyav' },
+      { url:'musiyav/bekai-keal.html',       name:'Bekai Keal',          icon:'🏙️', tag:'Musiyav' },
+      { url:'musiyav/thylkarok.html',        name:'Thylkarok',           icon:'🎨', tag:'Musiyav' },
+      { url:'musiyav/carroval.html',         name:'Carroval',            icon:'🗿', tag:'Musiyav' },
+      { url:'musiyav/caudherra.html',        name:'Caudherra',           icon:'🐘', tag:'Musiyav' },
+      { url:'musiyav/saldromil.html',        name:'Saldromil',           icon:'🎵', tag:'Musiyav' },
+      { url:'musiyav/kandor-zei.html',       name:'Kandor-Zeï',          icon:'🛡️', tag:'Musiyav' },
+      { url:'musiyav/mirsha-lu.html',        name:'Mirsha Lû',           icon:'🐘', tag:'Musiyav' },
+      { url:'musiyav/ukar-tal.html',         name:'Ukar Tal',            icon:'📜', tag:'Musiyav' },
+      { url:'musiyav/brastelma.html',        name:'Brastelma',           icon:'🌿', tag:'Musiyav' },
+      { url:'musiyav/xalatlal.html',         name:'Xalatlal',            icon:'🐆', tag:'Musiyav' },
+      { url:'musiyav/tochion.html',          name:'Tochion',             icon:'🌊', tag:'Musiyav' },
+      { url:'musiyav/yabalta.html',          name:'Yabalta',             icon:'🌋', tag:'Musiyav' },
+      { url:'musiyav/solgirne.html',         name:'Solgirne',            icon:'🌾', tag:'Musiyav' },
+      { url:'musiyav/varnestal.html',        name:'Varnestal',           icon:'⚔️', tag:'Musiyav' },
+      { url:'musiyav/linvelar.html',         name:'Linvelar',            icon:'🌲', tag:'Musiyav' },
+      { url:'musiyav/eldmire.html',          name:'Eldmire',             icon:'🐟', tag:'Musiyav' },
+      { url:'musiyav/cairondel.html',        name:'Cairondel',           icon:'🗿', tag:'Musiyav' },
+      { url:'musiyav/gravantempe.html',      name:'Gravantempe',         icon:'🏔️', tag:'Musiyav' },
+      { url:'musiyav/treufloran.html',       name:'Treufloran',          icon:'🌿', tag:'Musiyav' },
+      { url:'musiyav/valtendre.html',        name:'Valtendre',           icon:'💧', tag:'Musiyav' },
+      { url:'musiyav/valacorra.html',        name:'Valacorra',           icon:'⚜️', tag:'Musiyav' },
+      { url:'musiyav/aunthrevin.html',       name:'Aunthrevin',          icon:'🏛️', tag:'Musiyav' },
+      { url:'musiyav/vendrolis.html',        name:'Vendrolis',           icon:'🎭', tag:'Musiyav' },
+      { url:'musiyav/darn-merath.html',      name:'Darn Merath',         icon:'⚔️', tag:'Musiyav' },
+      { url:'musiyav/dusalain.html',         name:'Dusalain',            icon:'🏜️', tag:'Musiyav' },
+      { url:'musiyav/sarathiil.html',        name:'Sarathiil',           icon:'🌊', tag:'Musiyav' },
+      { url:'musiyav/akalima.html',          name:'Akalima',             icon:'⚓', tag:'Musiyav' },
+      { url:'musiyav/yndarev.html',          name:'Yndarev',             icon:'💨', tag:'Musiyav' },
+      { url:'musiyav/sillu.html',            name:'Sillu',               icon:'🌾', tag:'Musiyav' },
+      { url:'musiyav/xamaris.html',          name:'Xamaris',             icon:'🚫', tag:'Musiyav' },
+      { url:'musiyav/xakaril.html',          name:'Xakaril',             icon:'🏰', tag:'Musiyav' },
+      { url:'musiyav/marolzhad.html',        name:'Marolzhad',           icon:'⚖️', tag:'Musiyav' },
+      { url:'musiyav/dorvenkar.html',        name:'Dorvenkar',           icon:'⚒️', tag:'Musiyav' },
+      { url:'musiyav/naskarrem.html',        name:'Naskarrem',           icon:'⛏️', tag:'Musiyav' },
+      { url:'musiyav/khaelbar.html',         name:'Khaëlbar',            icon:'⚔️', tag:'Musiyav' },
+      { url:'musiyav/tol-vekrah.html',       name:'Tol Vekrah',          icon:'📖', tag:'Musiyav' },
+      { url:'musiyav/krelsum.html',          name:'Krelsum',             icon:'🧱', tag:'Musiyav' },
+      { url:'musiyav/falstrein.html',        name:'Falstrein',           icon:'🚢', tag:'Musiyav' },
+      { url:'musiyav/terres-pieuses.html',   name:'Terres Pieuses',      icon:'✨', tag:'Musiyav' },
+      { url:'musiyav/templum-triarii.html',  name:'Templum Triarii',     icon:'⛪', tag:'Musiyav' },
+      { url:'musiyav/forge-vivante.html',    name:'Forge Vivante',       icon:'🔥', tag:'Musiyav' },
+      { url:'musiyav/isvarun.html',          name:'Isvarun',             icon:'🌅', tag:'Musiyav' },
+      { url:'musiyav/callafhar.html',        name:'Callafhar',           icon:'📚', tag:'Musiyav' },
+      { url:'musiyav/auranthil.html',        name:'Auranthil',           icon:'🌲', tag:'Musiyav' },
+      { url:'musiyav/elvar-tyl.html',        name:'Elvarë Tyl',          icon:'🌳', tag:'Musiyav' },
+      { url:'musiyav/lunemiral.html',        name:'Lunemiral',           icon:'🌙', tag:'Musiyav' },
+      { url:'musiyav/miriathael.html',       name:'Mirithaël',           icon:'🌿', tag:'Musiyav' },
+      { url:'musiyav/faelorrin.html',        name:'Faelorrin',           icon:'🛡️', tag:'Musiyav' },
+      { url:'musiyav/terres-sauvages.html',  name:'Terres Sauvages',     icon:'🌋', tag:'Musiyav' },
+      { url:'musiyav/kaelyth.html',          name:'Viremarche',          icon:'⚔️', tag:'Musiyav' },
+      { url:'musiyav/briseneige.html',       name:'Briseneige',          icon:'❄️', tag:'Musiyav' },
+      // Terres isolées / éloignées
+      { url:'musiyav/tinneas.html',          name:"Tinneas A'Bhàis",     icon:'🦴', tag:'Terres Isolées' },
+      { url:'musiyav/shurakai.html',         name:'Shurakai',            icon:'🌫️', tag:'Terres Isolées' },
+      { url:'musiyav/narkun.html',           name:'Narkûn',              icon:'🔥', tag:'Terres Isolées' },
+      { url:'musiyav/anneau-dieux.html',     name:'Anneau des Dieux',    icon:'⚫', tag:'Régions Éloignées' },
+      { url:'musiyav/archipel-ombres.html',  name:'Archipel des Ombres', icon:'🌙', tag:'Régions Éloignées' },
+      { url:'musiyav/darnobscur.html',       name:'Darnobscur',          icon:'🩸', tag:'Régions Éloignées' },
+      // Lore
+      { url:'lore/personnages.html',         name:'Personnages',         icon:'🧙', tag:'Lore' },
+      { url:'lore/journal-arzi.html',        name:"Journal d'Arzi",      icon:'📖', tag:'Lore' },
+      { url:'lore/organisations.html',       name:'Organisations',       icon:'⚔️', tag:'Lore' },
+      { url:'lore/dieux.html',               name:'Dieux & Trinités',    icon:'✨', tag:'Lore' },
+    ];
+
+    let lastIdx = -1;
+
+    function pickRandom() {
+      let idx;
+      do { idx = Math.floor(Math.random() * WIKI_PAGES.length); }
+      while (idx === lastIdx && WIKI_PAGES.length > 1);
+      lastIdx = idx;
+      return WIKI_PAGES[idx];
+    }
+
+    function animateIcon(el) {
+      el.style.transform = 'scale(0.7) rotate(-15deg)';
+      setTimeout(() => { el.style.transform = 'scale(1) rotate(0deg)'; }, 180);
+    }
+
+    function loadPage(page) {
+      const elIcon = document.getElementById('rp-icon');
+      const elName = document.getElementById('rp-name');
+      const elTag  = document.getElementById('rp-tag');
+      const elDesc = document.getElementById('rp-desc');
+      const elLink = document.getElementById('rp-link');
+
+      animateIcon(elIcon);
+      elIcon.textContent = page.icon;
+      elName.textContent = page.name;
+      elTag.textContent  = '— ' + page.tag;
+      elLink.href        = page.url;
+      elDesc.textContent = '…';
+
+      fetch(page.url)
+        .then(r => r.text())
+        .then(html => {
+          const doc = new DOMParser().parseFromString(html, 'text/html');
+          const candidates = Array.from(doc.querySelectorAll('.main-content p'));
+          const p = candidates.find(el => el.textContent.trim().length > 60);
+          if (p) {
+            const t = p.textContent.trim().replace(/\s+/g, ' ');
+            elDesc.textContent = t.length > 230 ? t.slice(0, 227) + '…' : t;
+          } else {
+            elDesc.textContent = '';
+          }
+        })
+        .catch(() => { elDesc.textContent = ''; });
+    }
+
+    document.getElementById('rp-shuffle-btn').addEventListener('click', () => loadPage(pickRandom()));
+    loadPage(pickRandom());
+  })();
+  </script>
 
   <script>
     if ('serviceWorker' in navigator) {
