@@ -353,9 +353,11 @@
     }
 
     /* ── Mise en page deux colonnes ── */
-    .layout-wrapper { display:flex; gap:1rem; align-items:flex-start; }
-    .layout-col { flex:1; min-width:0; display:flex; flex-direction:column; gap:1rem; min-height:60px; }
-    @media (max-width:840px) { .layout-wrapper { flex-direction:column; } }
+    .layout-wrapper { display:flex; gap:1.25rem; align-items:flex-start; }
+    .layout-col { flex:1; min-width:0; display:flex; flex-direction:column; gap:0; min-height:60px; }
+    .layout-col .sheet-section { margin-bottom:1rem; }
+    .layout-col .sheet-section:last-child { margin-bottom:0; }
+    @media (max-width:900px) { .layout-wrapper { flex-direction:column; } }
 
     /* ── Drag & drop ── */
     .sheet-section.dragging { opacity:0.3; }
@@ -547,319 +549,346 @@
         <button class="btn btn-sm" id="btn-reset-layout" style="margin-left:auto;">↺ Défaut</button>
       </div>
 
-      <!-- Identité -->
-      <div class="sheet-section">
-        <div class="sheet-section-title">Identité</div>
-        <div class="sheet-grid">
-          <div class="field-group" style="grid-column:span 2;">
-            <label class="field-label">Nom du personnage</label>
-            <input type="text" class="field-input" data-f="characterName" placeholder="Nom du héros">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Espèce (Species)</label>
-            <input type="text" class="field-input" data-f="species" placeholder="ex. Humain, Elfe…">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Classe</label>
-            <select class="field-input" data-f="classe">
-              <option value="">— Choose a class —</option>
-              <option>Artificer</option>
-              <option>Barbarian</option>
-              <option>Bard</option>
-              <option>Cleric</option>
-              <option>Druid</option>
-              <option>Fighter</option>
-              <option>Monk</option>
-              <option>Paladin</option>
-              <option>Ranger</option>
-              <option>Rogue</option>
-              <option>Sorcerer</option>
-              <option>Warlock</option>
-              <option>Wizard</option>
-            </select>
-          </div>
-          <div class="field-group">
-            <label class="field-label">Sous-classe</label>
-            <select class="field-input" data-f="sousClasse" id="sousclasse-select">
-              <option value="">— Choisir une classe d'abord —</option>
-            </select>
-            <div class="custom-sub-wrap" id="sousclasse-custom-wrap">
-              <label>Custom subclass name</label>
-              <input type="text" class="field-input" id="sousclasse-custom-input" placeholder="Enter your subclass name…">
+      <div class="layout-wrapper" id="layout-wrapper">
+
+        <!-- ── Colonne gauche ── -->
+        <div class="layout-col" data-col="0">
+          <div class="layout-col-label">Colonne gauche</div>
+
+        <div class="sheet-section" data-sec="identite">
+          <div class="sheet-section-title">Identité</div>
+          <div class="sheet-grid">
+            <div class="field-group" style="grid-column:span 2;">
+              <label class="field-label">Nom du personnage</label>
+              <input type="text" class="field-input" data-f="characterName" placeholder="Nom du héros">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Espèce (Species)</label>
+              <input type="text" class="field-input" data-f="species" placeholder="ex. Humain, Elfe…">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Classe</label>
+              <select class="field-input" data-f="classe">
+                <option value="">— Choose a class —</option>
+                <option>Artificer</option>
+                <option>Barbarian</option>
+                <option>Bard</option>
+                <option>Cleric</option>
+                <option>Druid</option>
+                <option>Fighter</option>
+                <option>Monk</option>
+                <option>Paladin</option>
+                <option>Ranger</option>
+                <option>Rogue</option>
+                <option>Sorcerer</option>
+                <option>Warlock</option>
+                <option>Wizard</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Sous-classe</label>
+              <select class="field-input" data-f="sousClasse" id="sousclasse-select">
+                <option value="">— Choisir une classe d'abord —</option>
+              </select>
+              <div class="custom-sub-wrap" id="sousclasse-custom-wrap">
+                <label>Custom subclass name</label>
+                <input type="text" class="field-input" id="sousclasse-custom-input" placeholder="Enter your subclass name…">
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Niveau</label>
+              <input type="number" class="field-input" data-f="niveau" min="1" max="20" value="1">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Background</label>
+              <input type="text" class="field-input" data-f="background" placeholder="ex. Acolyte…">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Alignement</label>
+              <select class="field-input" data-f="alignement">
+                <option value="">—</option>
+                <option>Loyal Bon</option><option>Neutre Bon</option><option>Chaotique Bon</option>
+                <option>Loyal Neutre</option><option>Neutre</option><option>Chaotique Neutre</option>
+                <option>Loyal Mauvais</option><option>Neutre Mauvais</option><option>Chaotique Mauvais</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Points d'XP</label>
+              <input type="number" class="field-input" data-f="xp" min="0" value="0">
             </div>
           </div>
-          <div class="field-group">
-            <label class="field-label">Niveau</label>
-            <input type="number" class="field-input" data-f="niveau" min="1" max="20" value="1">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Background</label>
-            <input type="text" class="field-input" data-f="background" placeholder="ex. Acolyte…">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Alignement</label>
-            <select class="field-input" data-f="alignement">
-              <option value="">—</option>
-              <option>Loyal Bon</option><option>Neutre Bon</option><option>Chaotique Bon</option>
-              <option>Loyal Neutre</option><option>Neutre</option><option>Chaotique Neutre</option>
-              <option>Loyal Mauvais</option><option>Neutre Mauvais</option><option>Chaotique Mauvais</option>
-            </select>
-          </div>
-          <div class="field-group">
-            <label class="field-label">Points d'XP</label>
-            <input type="number" class="field-input" data-f="xp" min="0" value="0">
-          </div>
-        </div>
-        <div class="mait-grid" style="margin-top:0.75rem;">
-          <div class="field-group">
-            <label class="field-label">Maîtrises (armures, armes, outils)</label>
-            <textarea class="field-input" data-f="maitrises" rows="2" placeholder="ex. Armures légères, épées, outils de forgeron…"></textarea>
-          </div>
-          <div class="field-group">
-            <label class="field-label">Langues</label>
-            <textarea class="field-input" data-f="langues" rows="2" placeholder="ex. Commun, Elfique, Draconique…"></textarea>
-          </div>
-        </div>
-        <div style="margin-top:0.75rem;display:flex;align-items:center;gap:0.5rem;">
-          <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.85rem;color:#bbb;">
-            <input type="checkbox" data-f="inspiration" style="accent-color:var(--gold-dark);width:15px;height:15px;">
-            Inspiration
-          </label>
-          <span style="margin-left:1rem;font-size:0.82rem;color:#888;">Bonus de maîtrise : <strong id="prof-bonus" style="color:var(--gold);">+2</strong></span>
-        </div>
-      </div>
-
-      <!-- Class Features (auto-populated) -->
-      <div class="sheet-section" id="cf-section" style="display:none;">
-        <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
-          <span id="cf-title">Class Features</span>
-          <span style="font-size:0.7rem;color:#555;font-style:italic;">D&D 2024 PHB</span>
-        </div>
-        <div id="cf-slots-note" class="cf-slots-note" style="display:none;margin-bottom:0.65rem;"></div>
-        <div id="cf-body"></div>
-      </div>
-
-      <!-- Caractéristiques -->
-      <div class="sheet-section">
-        <div class="sheet-section-title">Caractéristiques</div>
-        <div class="ability-grid" id="ability-grid"></div>
-      </div>
-
-      <!-- Sauvegardes & Compétences -->
-      <div class="sheet-section">
-        <div class="sheet-section-title">Sauvegardes &amp; Compétences</div>
-        <div class="save-skill-grid">
-          <div id="saves-col"></div>
-          <div id="skills-col"></div>
-        </div>
-      </div>
-
-      <!-- Compétences passives -->
-      <div class="sheet-section">
-        <div class="sheet-section-title">Compétences passives</div>
-        <div id="passive-skills"></div>
-      </div>
-
-      <!-- Combat -->
-      <div class="sheet-section">
-        <div class="sheet-section-title">Combat</div>
-        <div class="combat-grid">
-          <div class="combat-field">
-            <label class="field-label">Classe d'Armure</label>
-            <input type="number" class="field-input field-input-sm" data-f="ca" value="10" min="0">
-          </div>
-          <div class="combat-field">
-            <label class="field-label">Initiative</label>
-            <input type="number" class="field-input field-input-sm" data-f="initiative" value="0">
-          </div>
-          <div class="combat-field">
-            <label class="field-label">Vitesse (pi.)</label>
-            <input type="number" class="field-input field-input-sm" data-f="vitesse" value="30" min="0" step="5">
-          </div>
-          <div class="combat-field">
-            <label class="field-label">PV Maximum</label>
-            <input type="number" class="field-input field-input-sm" data-f="pvMax" value="0" min="0" id="inp-pvMax">
-          </div>
-          <div class="combat-field">
-            <label class="field-label">PV Actuels</label>
-            <input type="number" class="field-input field-input-sm" data-f="pvActuel" value="0" id="inp-pvActuel">
-          </div>
-          <div class="combat-field">
-            <label class="field-label">PV Temporaires</label>
-            <input type="number" class="field-input field-input-sm" data-f="pvTemp" value="0" min="0">
-          </div>
-          <div class="combat-field">
-            <label class="field-label">Dé de Vie</label>
-            <select class="field-input field-input-md" data-f="deVie">
-              <option>1d6</option><option selected>1d8</option><option>1d10</option><option>1d12</option>
-            </select>
-          </div>
-          <div class="combat-field">
-            <label class="field-label">Nb Dés de Vie</label>
-            <input type="number" class="field-input field-input-sm" data-f="nbDeVie" value="1" min="0">
-          </div>
-        </div>
-
-        <!-- Barre de PV -->
-        <div class="hp-bar-wrap">
-          <div class="hp-bar-row">
-            <span id="hp-bar-label">PV : 0 / 0</span>
-            <span id="hp-bar-pct">0%</span>
-          </div>
-          <div class="hp-bar-track"><div class="hp-bar-fill" id="hp-bar-fill" style="width:0%;"></div></div>
-        </div>
-
-        <!-- Jets de mort -->
-        <div style="display:flex;gap:2rem;margin-top:0.85rem;flex-wrap:wrap;">
-          <div>
-            <div class="field-label" style="margin-bottom:0.3rem;">Jets de mort — Succès</div>
-            <div class="death-dots" id="death-success">
-              <div class="death-dot" data-idx="0" data-type="success"></div>
-              <div class="death-dot" data-idx="1" data-type="success"></div>
-              <div class="death-dot" data-idx="2" data-type="success"></div>
+          <div class="mait-grid" style="margin-top:0.75rem;">
+            <div class="field-group">
+              <label class="field-label">Maîtrises (armures, armes, outils)</label>
+              <textarea class="field-input" data-f="maitrises" rows="2" placeholder="ex. Armures légères, épées, outils de forgeron…"></textarea>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Langues</label>
+              <textarea class="field-input" data-f="langues" rows="2" placeholder="ex. Commun, Elfique, Draconique…"></textarea>
             </div>
           </div>
-          <div>
-            <div class="field-label" style="margin-bottom:0.3rem;">Jets de mort — Échecs</div>
-            <div class="death-dots" id="death-fail">
-              <div class="death-dot" data-idx="0" data-type="fail"></div>
-              <div class="death-dot" data-idx="1" data-type="fail"></div>
-              <div class="death-dot" data-idx="2" data-type="fail"></div>
+          <div style="margin-top:0.75rem;display:flex;align-items:center;gap:0.5rem;">
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.85rem;color:#bbb;">
+              <input type="checkbox" data-f="inspiration" style="accent-color:var(--gold-dark);width:15px;height:15px;">
+              Inspiration
+            </label>
+            <span style="margin-left:1rem;font-size:0.82rem;color:#888;">Bonus de maîtrise : <strong id="prof-bonus" style="color:var(--gold);">+2</strong></span>
+          </div>
+        </div>
+  
+        <!-- Class Features (auto-populated) -->
+
+        <div class="sheet-section" data-sec="caracteristiques">
+          <div class="sheet-section-title">Caractéristiques</div>
+          <div class="ability-grid" id="ability-grid"></div>
+        </div>
+  
+        <!-- Sauvegardes & Compétences -->
+
+        <div class="sheet-section" data-sec="saves">
+          <div class="sheet-section-title">Sauvegardes &amp; Compétences</div>
+          <div class="save-skill-grid">
+            <div id="saves-col"></div>
+            <div id="skills-col"></div>
+          </div>
+        </div>
+  
+        <!-- Compétences passives -->
+
+        <div class="sheet-section" data-sec="passives">
+          <div class="sheet-section-title">Compétences passives</div>
+          <div id="passive-skills"></div>
+        </div>
+  
+        <!-- Combat -->
+
+        </div><!-- /col-gauche -->
+
+        <!-- ── Colonne droite ── -->
+        <div class="layout-col" data-col="1">
+          <div class="layout-col-label">Colonne droite</div>
+
+        <div class="sheet-section" data-sec="cf" id="cf-section" style="display:none;">
+          <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
+            <span id="cf-title">Class Features</span>
+            <span style="font-size:0.7rem;color:#555;font-style:italic;">D&D 2024 PHB</span>
+          </div>
+          <div id="cf-slots-note" class="cf-slots-note" style="display:none;margin-bottom:0.65rem;"></div>
+          <div id="cf-body"></div>
+        </div>
+  
+        <!-- Caractéristiques -->
+
+        <div class="sheet-section" data-sec="combat">
+          <div class="sheet-section-title">Combat</div>
+          <div class="combat-grid">
+            <div class="combat-field">
+              <label class="field-label">Classe d'Armure</label>
+              <input type="number" class="field-input field-input-sm" data-f="ca" value="10" min="0">
+            </div>
+            <div class="combat-field">
+              <label class="field-label">Initiative</label>
+              <input type="number" class="field-input field-input-sm" data-f="initiative" value="0">
+            </div>
+            <div class="combat-field">
+              <label class="field-label">Vitesse (pi.)</label>
+              <input type="number" class="field-input field-input-sm" data-f="vitesse" value="30" min="0" step="5">
+            </div>
+            <div class="combat-field">
+              <label class="field-label">PV Maximum</label>
+              <input type="number" class="field-input field-input-sm" data-f="pvMax" value="0" min="0" id="inp-pvMax">
+            </div>
+            <div class="combat-field">
+              <label class="field-label">PV Actuels</label>
+              <input type="number" class="field-input field-input-sm" data-f="pvActuel" value="0" id="inp-pvActuel">
+            </div>
+            <div class="combat-field">
+              <label class="field-label">PV Temporaires</label>
+              <input type="number" class="field-input field-input-sm" data-f="pvTemp" value="0" min="0">
+            </div>
+            <div class="combat-field">
+              <label class="field-label">Dé de Vie</label>
+              <select class="field-input field-input-md" data-f="deVie">
+                <option>1d6</option><option selected>1d8</option><option>1d10</option><option>1d12</option>
+              </select>
+            </div>
+            <div class="combat-field">
+              <label class="field-label">Nb Dés de Vie</label>
+              <input type="number" class="field-input field-input-sm" data-f="nbDeVie" value="1" min="0">
+            </div>
+          </div>
+  
+          <!-- Barre de PV -->
+          <div class="hp-bar-wrap">
+            <div class="hp-bar-row">
+              <span id="hp-bar-label">PV : 0 / 0</span>
+              <span id="hp-bar-pct">0%</span>
+            </div>
+            <div class="hp-bar-track"><div class="hp-bar-fill" id="hp-bar-fill" style="width:0%;"></div></div>
+          </div>
+  
+          <!-- Jets de mort -->
+          <div style="display:flex;gap:2rem;margin-top:0.85rem;flex-wrap:wrap;">
+            <div>
+              <div class="field-label" style="margin-bottom:0.3rem;">Jets de mort — Succès</div>
+              <div class="death-dots" id="death-success">
+                <div class="death-dot" data-idx="0" data-type="success"></div>
+                <div class="death-dot" data-idx="1" data-type="success"></div>
+                <div class="death-dot" data-idx="2" data-type="success"></div>
+              </div>
+            </div>
+            <div>
+              <div class="field-label" style="margin-bottom:0.3rem;">Jets de mort — Échecs</div>
+              <div class="death-dots" id="death-fail">
+                <div class="death-dot" data-idx="0" data-type="fail"></div>
+                <div class="death-dot" data-idx="1" data-type="fail"></div>
+                <div class="death-dot" data-idx="2" data-type="fail"></div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+  
+        <!-- Ressources de classe -->
 
-      <!-- Ressources de classe -->
-      <div class="sheet-section">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.65rem;">
-          <div class="sheet-section-title" style="margin-bottom:0;">Ressources</div>
-          <button class="btn btn-sm btn-gold" id="btn-add-resource">+ Ajouter</button>
-        </div>
-        <div class="res-grid" id="resource-grid"></div>
-        <div class="rest-btns">
-          <button class="btn-rest short" id="btn-short-rest">☽ Repos Court</button>
-          <button class="btn-rest long"  id="btn-long-rest">★ Repos Long</button>
-        </div>
-      </div>
-
-      <!-- Conditions -->
-      <div class="sheet-section">
-        <div class="sheet-section-title">Conditions</div>
-        <div class="cond-grid" id="conditions-grid"></div>
-      </div>
-
-      <!-- Attaques -->
-      <div class="sheet-section">
-        <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
-          <span>Attaques</span>
-          <button class="btn btn-sm btn-gold" id="btn-add-attack">+ Ajouter</button>
-        </div>
-        <table class="attack-table">
-          <thead><tr>
-            <th style="width:35%">Nom</th>
-            <th style="width:20%">Bonus att.</th>
-            <th style="width:30%">Dégâts / Type</th>
-            <th style="width:15%"></th>
-          </tr></thead>
-          <tbody id="attack-tbody"></tbody>
-        </table>
-      </div>
-
-      <!-- Sorts -->
-      <div class="sheet-section">
-        <div class="sheet-section-title">Sorts</div>
-        <div class="sheet-grid" style="margin-bottom:0.75rem;">
-          <div class="field-group">
-            <label class="field-label">Classe de sort</label>
-            <input type="text" class="field-input" data-f="classeSort" placeholder="ex. Magicien">
+        <div class="sheet-section" data-sec="ressources">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.65rem;">
+            <div class="sheet-section-title" style="margin-bottom:0;">Ressources</div>
+            <button class="btn btn-sm btn-gold" id="btn-add-resource">+ Ajouter</button>
           </div>
-          <div class="field-group">
-            <label class="field-label">Caractéristique</label>
-            <select class="field-input" data-f="caractSort">
-              <option value="">—</option>
-              <option>FOR</option><option>DEX</option><option>CON</option>
-              <option>INT</option><option>SAG</option><option>CHA</option>
-            </select>
-          </div>
-          <div class="combat-field">
-            <label class="field-label">Save DD</label>
-            <div class="field-input field-input-sm" id="sort-dd" style="padding:0.4rem;text-align:center;">—</div>
-          </div>
-          <div class="combat-field">
-            <label class="field-label">Bonus attaque</label>
-            <div class="field-input field-input-sm" id="sort-atk" style="padding:0.4rem;text-align:center;">—</div>
+          <div class="res-grid" id="resource-grid"></div>
+          <div class="rest-btns">
+            <button class="btn-rest short" id="btn-short-rest">☽ Repos Court</button>
+            <button class="btn-rest long"  id="btn-long-rest">★ Repos Long</button>
           </div>
         </div>
-        <div id="spell-slots-grid"></div>
-        <div style="margin-top:0.75rem;">
+  
+        <!-- Conditions -->
+
+        <div class="sheet-section" data-sec="conditions">
+          <div class="sheet-section-title">Conditions</div>
+          <div class="cond-grid" id="conditions-grid"></div>
+        </div>
+  
+        <!-- Attaques -->
+
+        <div class="sheet-section" data-sec="attaques">
+          <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
+            <span>Attaques</span>
+            <button class="btn btn-sm btn-gold" id="btn-add-attack">+ Ajouter</button>
+          </div>
+          <table class="attack-table">
+            <thead><tr>
+              <th style="width:35%">Nom</th>
+              <th style="width:20%">Bonus att.</th>
+              <th style="width:30%">Dégâts / Type</th>
+              <th style="width:15%"></th>
+            </tr></thead>
+            <tbody id="attack-tbody"></tbody>
+          </table>
+        </div>
+  
+        <!-- Sorts -->
+
+        <div class="sheet-section" data-sec="sorts">
+          <div class="sheet-section-title">Sorts</div>
+          <div class="sheet-grid" style="margin-bottom:0.75rem;">
+            <div class="field-group">
+              <label class="field-label">Classe de sort</label>
+              <input type="text" class="field-input" data-f="classeSort" placeholder="ex. Magicien">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Caractéristique</label>
+              <select class="field-input" data-f="caractSort">
+                <option value="">—</option>
+                <option>FOR</option><option>DEX</option><option>CON</option>
+                <option>INT</option><option>SAG</option><option>CHA</option>
+              </select>
+            </div>
+            <div class="combat-field">
+              <label class="field-label">Save DD</label>
+              <div class="field-input field-input-sm" id="sort-dd" style="padding:0.4rem;text-align:center;">—</div>
+            </div>
+            <div class="combat-field">
+              <label class="field-label">Bonus attaque</label>
+              <div class="field-input field-input-sm" id="sort-atk" style="padding:0.4rem;text-align:center;">—</div>
+            </div>
+          </div>
+          <div id="spell-slots-grid"></div>
+          <div style="margin-top:0.75rem;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
+              <div class="field-label">Sorts connus / préparés</div>
+              <button class="btn btn-sm btn-gold" id="btn-add-spell">+ Ajouter</button>
+            </div>
+            <table class="exp-table">
+              <thead><tr>
+                <th style="width:52px;">Niveau</th>
+                <th>Nom du sort</th>
+                <th style="width:80px;">Dégât</th>
+                <th style="width:90px;">Type</th>
+                <th style="width:70px;">Portée</th>
+                <th style="width:80px;">Action</th>
+                <th style="width:32px;"></th>
+                <th style="width:28px;"></th>
+              </tr></thead>
+              <tbody id="spell-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+  
+        <!-- Traits & capacités -->
+
+        <div class="sheet-section" data-sec="features">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
-            <div class="field-label">Sorts connus / préparés</div>
-            <button class="btn btn-sm btn-gold" id="btn-add-spell">+ Ajouter</button>
+            <div class="sheet-section-title" style="margin-bottom:0;">Traits &amp; Capacités</div>
+            <button class="btn btn-sm btn-gold" id="btn-add-feature">+ Ajouter</button>
           </div>
           <table class="exp-table">
             <thead><tr>
-              <th style="width:52px;">Niveau</th>
-              <th>Nom du sort</th>
-              <th style="width:80px;">Dégât</th>
-              <th style="width:90px;">Type</th>
-              <th style="width:70px;">Portée</th>
-              <th style="width:80px;">Action</th>
+              <th>Nom</th>
+              <th style="width:100px;">Source</th>
               <th style="width:32px;"></th>
               <th style="width:28px;"></th>
             </tr></thead>
-            <tbody id="spell-tbody"></tbody>
+            <tbody id="feature-tbody"></tbody>
           </table>
         </div>
-      </div>
+  
+        <!-- Personnalité -->
 
-      <!-- Traits & capacités -->
-      <div class="sheet-section">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
-          <div class="sheet-section-title" style="margin-bottom:0;">Traits &amp; Capacités</div>
-          <button class="btn btn-sm btn-gold" id="btn-add-feature">+ Ajouter</button>
+        <div class="sheet-section" data-sec="perso">
+          <div class="sheet-section-title">Personnalité</div>
+          <div class="sheet-grid-2">
+            <div class="field-group">
+              <label class="field-label">Traits de personnalité</label>
+              <textarea class="field-input" data-f="traits" rows="3"></textarea>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Idéaux</label>
+              <textarea class="field-input" data-f="ideaux" rows="3"></textarea>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Liens</label>
+              <textarea class="field-input" data-f="liens" rows="3"></textarea>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Défauts</label>
+              <textarea class="field-input" data-f="defauts" rows="3"></textarea>
+            </div>
+          </div>
+          <div class="field-group" style="margin-top:0.75rem;">
+            <label class="field-label">Apparence physique</label>
+            <textarea class="field-input" data-f="apparence" rows="2"></textarea>
+          </div>
+          <div class="field-group" style="margin-top:0.75rem;">
+            <label class="field-label">Histoire &amp; Contexte</label>
+            <textarea class="field-input" data-f="historique" rows="4"></textarea>
+          </div>
         </div>
-        <table class="exp-table">
-          <thead><tr>
-            <th>Nom</th>
-            <th style="width:100px;">Source</th>
-            <th style="width:32px;"></th>
-            <th style="width:28px;"></th>
-          </tr></thead>
-          <tbody id="feature-tbody"></tbody>
-        </table>
-      </div>
+  
 
-      <!-- Personnalité -->
-      <div class="sheet-section">
-        <div class="sheet-section-title">Personnalité</div>
-        <div class="sheet-grid-2">
-          <div class="field-group">
-            <label class="field-label">Traits de personnalité</label>
-            <textarea class="field-input" data-f="traits" rows="3"></textarea>
-          </div>
-          <div class="field-group">
-            <label class="field-label">Idéaux</label>
-            <textarea class="field-input" data-f="ideaux" rows="3"></textarea>
-          </div>
-          <div class="field-group">
-            <label class="field-label">Liens</label>
-            <textarea class="field-input" data-f="liens" rows="3"></textarea>
-          </div>
-          <div class="field-group">
-            <label class="field-label">Défauts</label>
-            <textarea class="field-input" data-f="defauts" rows="3"></textarea>
-          </div>
-        </div>
-        <div class="field-group" style="margin-top:0.75rem;">
-          <label class="field-label">Apparence physique</label>
-          <textarea class="field-input" data-f="apparence" rows="2"></textarea>
-        </div>
-        <div class="field-group" style="margin-top:0.75rem;">
-          <label class="field-label">Histoire &amp; Contexte</label>
-          <textarea class="field-input" data-f="historique" rows="4"></textarea>
-        </div>
-      </div>
+        </div><!-- /col-droite -->
+
+      </div><!-- /layout-wrapper -->
 
     </div><!-- /tab-personnage -->
 
@@ -3960,55 +3989,48 @@ function captureCurrentLayout() {
 }
 
 function applyLayout() {
-  const panel = document.getElementById('tab-personnage');
-  if (!panel) return;
-  assignSectionIds();
-
-  // Collecter toutes les sections
-  const sectionMap = {};
-  panel.querySelectorAll('.sheet-section[data-sec]').forEach(s => { sectionMap[s.dataset.sec] = s; });
-
-  // Créer (ou récupérer) le wrapper 2-colonnes
-  let wrapper = panel.querySelector('.layout-wrapper');
-  if (!wrapper) {
-    wrapper = document.createElement('div');
-    wrapper.className = 'layout-wrapper';
-    ['Colonne gauche','Colonne droite'].forEach((lbl,i) => {
-      const col = document.createElement('div');
-      col.className = 'layout-col'; col.dataset.col = i;
-      // label décoratif visible en mode edit
-      const l = document.createElement('div');
-      l.className = 'layout-col-label'; l.textContent = lbl;
-      col.appendChild(l);
-      wrapper.appendChild(col);
-    });
-    panel.appendChild(wrapper);
-  }
+  // Le layout 2-colonnes est déjà dans le HTML statique.
+  // Cette fonction applique uniquement : l'ordre sauvegardé + les sections masquées.
+  const wrapper = document.getElementById('layout-wrapper');
+  if (!wrapper) return;
 
   const cols = wrapper.querySelectorAll('.layout-col');
+  if (!cols.length) return;
+
+  // Construire la map data-sec → élément
+  const sectionMap = {};
+  wrapper.querySelectorAll('.sheet-section[data-sec]').forEach(s => { sectionMap[s.dataset.sec] = s; });
+
   const layout = getLayout();
   const hidden = layout.hidden || [];
 
-  // Vider les colonnes (sans supprimer les labels)
-  cols.forEach(c => {
-    Array.from(c.querySelectorAll('.sheet-section')).forEach(s => s.remove());
+  // Appliquer visibilité cachée
+  Object.entries(sectionMap).forEach(([id, sec]) => {
+    if (hidden.includes(id)) sec.classList.add('sec-hidden');
+    else sec.classList.remove('sec-hidden');
   });
 
-  // Placer les sections
-  layout.columns.forEach((ids, ci) => {
-    if (!cols[ci]) return;
-    ids.forEach(id => {
-      const sec = sectionMap[id];
-      if (!sec) return;
-      if (hidden.includes(id)) { sec.classList.add('sec-hidden'); }
-      else { sec.classList.remove('sec-hidden'); cols[ci].appendChild(sec); }
+  // Si layout personnalisé sauvegardé → réorganiser les sections dans les colonnes
+  if (playerData?.layout?.columns) {
+    // Vider colonnes (sans supprimer les labels .layout-col-label)
+    cols.forEach(col => {
+      Array.from(col.querySelectorAll('.sheet-section')).forEach(s => col.removeChild(s));
     });
-  });
-
-  // Sections non référencées → col gauche par défaut
-  Object.values(sectionMap).forEach(sec => {
-    if (!sec.closest('.layout-col')) { sec.classList.remove('sec-hidden'); cols[0]?.appendChild(sec); }
-  });
+    // Replacer selon l'ordre sauvegardé
+    layout.columns.forEach((ids, ci) => {
+      const col = cols[ci];
+      if (!col) return;
+      ids.forEach(id => {
+        const sec = sectionMap[id];
+        if (!sec) return;
+        col.appendChild(sec);
+      });
+    });
+    // Sections orphelines → col 0
+    Object.values(sectionMap).forEach(sec => {
+      if (!sec.parentElement?.closest('.layout-col')) cols[0]?.appendChild(sec);
+    });
+  }
 }
 
 function toggleLayoutEdit() {
