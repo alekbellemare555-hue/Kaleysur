@@ -300,21 +300,49 @@ if (searchInput && searchResults) {
   } catch(e) {}
 })();
 
-// --- Indicateur utilisateur connecté ------------------
-(function showUserBadge() {
-  const kUser = localStorage.getItem('kaleysur_user');
-  if (!kUser) return;
-  const navRight = document.querySelector('.nav-right');
+// --- Indicateur utilisateur connecté (nav badge) ------
+(function initAuthNav() {
+  var navRight = document.querySelector('.nav-right');
   if (!navRight) return;
-  const root = getWikiRoot();
-  const badge = document.createElement('a');
-  badge.href = root + 'joueurs.html';
-  badge.className = 'nav-user-badge';
-  badge.innerHTML = `👤 <span>${kUser}</span>`;
-  badge.title = 'Ma fiche joueur · ' + kUser;
-  const ham = document.getElementById('hamburger');
-  if (ham) navRight.insertBefore(badge, ham);
-  else navRight.appendChild(badge);
+
+  var user = localStorage.getItem('kaleysur_user');
+  var root = getWikiRoot();
+
+  var el = document.createElement('div');
+  el.className = 'nav-user';
+
+  if (user) {
+    // Connecté : badge cliquable → joueurs.html + bouton déconnexion
+    el.innerHTML =
+      '<a href="' + root + 'joueurs.html" class="nav-user-badge" title="' + user + ' — Fiche de personnage">' +
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="nav-user-icon"><path d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>' +
+        '<span class="nav-user-name">' + user + '</span>' +
+      '</a>' +
+      '<button class="nav-user-logout" title="Se déconnecter" id="nav-logout-btn">' +
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>' +
+      '</button>';
+
+    var ham = document.getElementById('hamburger');
+    navRight.insertBefore(el, ham || null);
+
+    document.getElementById('nav-logout-btn').addEventListener('click', function() {
+      localStorage.removeItem('kaleysur_user');
+      location.reload();
+    });
+
+  } else {
+    // Non connecté : lien "Connexion", sauf sur joueurs.html qui gère son propre écran
+    if (!document.getElementById('screen-auth')) {
+      el.innerHTML =
+        '<a href="' + root + 'joueurs.html" class="nav-login-btn" title="Se connecter">' +
+          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="nav-user-icon"><path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l3 3m0 0l-3 3m3-3H3.75"/></svg>' +
+          '<span class="nav-login-label">Connexion</span>' +
+        '</a>';
+
+      var ham2 = document.getElementById('hamburger');
+      navRight.insertBefore(el, ham2 || null);
+    }
+  }
 })();
 
 // --- Sidebar mobile -------------------------------------
@@ -885,5 +913,4 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   });
 
 })();
-
 console.log('✦ Kaleysur Wiki chargé ✦');

@@ -101,7 +101,74 @@ body {
 .nav-right {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.6rem;
+}
+
+/* ── Badge utilisateur (injecté par wiki.js) ── */
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  flex-shrink: 0;
+}
+.nav-user-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--gold-dark);
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.04em;
+  padding: 0.22rem 0.6rem 0.22rem 0.45rem;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--bg-secondary);
+  transition: border-color var(--transition), color var(--transition);
+  max-width: 130px;
+}
+.nav-user-badge:hover { border-color: var(--gold-dark); color: var(--gold); }
+.nav-user-icon { width: 14px; height: 14px; flex-shrink: 0; }
+.nav-user-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nav-user-logout {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.2rem;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  transition: color var(--transition);
+  line-height: 1;
+}
+.nav-user-logout:hover { color: #e06b6b; }
+.nav-user-logout svg { width: 14px; height: 14px; display: block; }
+.nav-login-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.75rem;
+  padding: 0.22rem 0.6rem 0.22rem 0.45rem;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  transition: color var(--transition), border-color var(--transition);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.nav-login-btn:hover { color: var(--gold); border-color: var(--gold-dark); }
+.nav-login-btn .nav-user-icon { width: 13px; height: 13px; }
+@media (max-width: 520px) {
+  .nav-user-name,
+  .nav-login-label { display: none; }
+  .nav-user-badge { padding: 0.22rem 0.45rem; }
+  .nav-login-btn  { padding: 0.22rem 0.45rem; }
 }
 
 /* Search bar */
