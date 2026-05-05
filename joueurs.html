@@ -20,6 +20,8 @@
     /* ── Écrans ── */
     .j-screen { display: none; }
     .j-screen.active { display: block; }
+    /* Force sidebar above all joueurs.html elements */
+    .sidebar { z-index: 1500 !important; }
 
     /* ── Auth ── */
     .auth-wrap { display:flex; justify-content:center; align-items:flex-start; padding:3rem 1rem; min-height:60vh; }
@@ -266,6 +268,21 @@
     /* ── Avatar picker ── */
     .avatar-grid { display:flex; flex-wrap:wrap; gap:0.4rem; }
     .av-btn { width:36px; height:36px; border-radius:6px; border:2px solid #2a2a3a; background:#0d0d14; font-size:1.3rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:border-color var(--transition); }
+    .avatar-img { width:36px; height:36px; border-radius:6px; object-fit:cover; display:block; }
+    .dash-avatar img { width:2.4rem; height:2.4rem; border-radius:50%; object-fit:cover; display:block; }
+    .char-card-avatar img { width:2.2rem; height:2.2rem; border-radius:50%; object-fit:cover; display:block; }
+    .av-btn.av-png { padding:0; overflow:hidden; }
+    .av-png-upload { display:flex; align-items:center; gap:0.4rem; margin-top:0.5rem; flex-wrap:wrap; }
+    .av-png-preview { width:48px; height:48px; border-radius:8px; object-fit:cover; border:2px solid var(--gold); display:none; }
+    .av-png-clear { font-size:0.7rem; color:var(--danger); background:none; border:none; cursor:pointer; padding:0.2rem 0.4rem; }
+    /* ── Character background image ── */
+    #char-bg-layer { position:fixed; inset:var(--nav-h) 0 0 var(--sidebar-w); z-index:0; pointer-events:none; background-size:cover; background-position:center; background-repeat:no-repeat; opacity:0; transition:opacity 0.4s ease; }
+    #char-bg-layer.visible { opacity:1; }
+    #char-bg-layer::after { content:''; position:absolute; inset:0; background:rgba(6,6,14,0.72); }
+    .page-wrapper { position:relative; z-index:1; }
+    .bg-upload-row { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
+    .bg-preview { width:60px; height:40px; border-radius:6px; object-fit:cover; border:1px solid #3a3a4a; display:none; }
+    .bg-clear-btn { font-size:0.7rem; color:var(--danger); background:none; border:none; cursor:pointer; padding:0.2rem 0.4rem; display:none; }
     .av-btn:hover { border-color:var(--gold-dark); }
     .av-btn.selected { border-color:var(--gold); background:rgba(201,162,39,0.1); }
 
@@ -763,7 +780,8 @@
 </aside>
 
 <!-- ▸ Contenu principal -->
-<div class="wiki-wrapper">
+<div id="char-bg-layer"></div>
+<div class="page-wrapper">
 <main class="main-content" style="max-width:900px;">
 
   <!-- ══ ÉCRAN AUTH ══ -->
@@ -1395,8 +1413,17 @@
       <div class="settings-section">
         <h3>Profil</h3>
         <div class="settings-row">
-          <div class="settings-label">Avatar</div>
-          <div class="avatar-grid" id="avatar-picker"></div>
+          <div class="settings-label">Icône du personnage<div class="settings-desc">Spécifique à chaque personnage</div></div>
+          <div>
+            <div class="avatar-grid" id="avatar-picker"></div>
+            <div class="av-png-upload">
+              <label class="btn btn-sm" style="cursor:pointer;" title="Uploader une image PNG/JPG">🖼 Portrait PNG
+                <input type="file" id="avatar-png-input" accept="image/*" style="display:none;">
+              </label>
+              <img id="av-png-preview" class="av-png-preview" alt="portrait">
+              <button id="av-png-clear" class="av-png-clear" style="display:none;">✕ Retirer</button>
+            </div>
+          </div>
         </div>
       </div>
       <div class="settings-section">
@@ -1423,6 +1450,19 @@
             <input type="range" class="font-size-slider" id="font-size-slider" min="85" max="115" value="100" step="5">
             <span style="font-size:1rem;color:#aaa;">A</span>
             <span id="font-size-label" style="font-size:0.72rem;color:#666;min-width:32px;">100%</span>
+          </div>
+        </div>
+      </div>
+      <div class="settings-section">
+        <h3>Image de fond<div style="font-size:0.72rem;font-weight:400;color:#888;font-family:sans-serif;margin-top:0.15rem;">Spécifique à chaque personnage</div></h3>
+        <div class="settings-row">
+          <div class="settings-label">Image de fond<div class="settings-desc">Apparaît derrière ta fiche avec un voile sombre</div></div>
+          <div class="bg-upload-row">
+            <label class="btn btn-sm" style="cursor:pointer;">🖼 Choisir une image
+              <input type="file" id="bg-img-input" accept="image/*" style="display:none;">
+            </label>
+            <img id="bg-preview" class="bg-preview" alt="fond">
+            <button id="bg-clear-btn" class="bg-clear-btn">✕ Retirer</button>
           </div>
         </div>
       </div>
@@ -1640,7 +1680,7 @@
   </div><!-- /screen-dashboard -->
 
 </main>
-</div><!-- /wiki-wrapper -->
+</div><!-- /page-wrapper -->
 
 <!-- ══ Modal édition admin ══ -->
 <div class="modal-overlay" id="admin-modal">
@@ -2920,7 +2960,8 @@ function buildThemeSwatches() {
     s.style.background = `linear-gradient(135deg, ${t.gold}, ${t.dark})`;
     s.addEventListener('click', () => {
       if (!playerData) return;
-      playerData.theme = t.id;
+      const _tc = C();
+      if (_tc) _tc.theme = t.id; else playerData.theme = t.id;
       applyTheme(t.id);
       triggerSave();
     });
@@ -2930,9 +2971,9 @@ function buildThemeSwatches() {
 
 /* ── Conditions D&D 2024 ── */
 const ALL_CONDITIONS = [
-  'Aveuglé','Charmé','Assourdi','Effrayé','Agrippé',
-  'Incapacité','Invisible','Empoisonné','Prostré',
-  'Entravé','Étourdi','Inconscient','Concentré'
+  'Blinded','Charmed','Deafened','Frightened','Grappled',
+  'Incapacitated','Invisible','Poisoned','Prone',
+  'Restrained','Stunned','Unconscious','Concentrating'
 ];
 
 /* ── État ── */
@@ -3462,9 +3503,8 @@ async function openDashboard() {
   }
   if (!playerData) playerData = emptyPlayerData(currentUser);
   // Appliquer le thème sauvegardé
-  if (playerData.theme) applyTheme(playerData.theme);
   buildThemeSwatches();
-  if (playerData.theme) applyTheme(playerData.theme); // re-apply pour marquer le swatch actif
+  applyCharTheme(); // appliquer le thème du personnage actif
   showScreen('screen-dashboard');
   renderDashboard();
   applyLayout();
@@ -3474,7 +3514,9 @@ async function openDashboard() {
 }
 
 function renderDashboard() {
-  document.getElementById('dash-avatar').textContent = playerData.avatar || '⚔';
+  const _dac = C(); const _daAv = document.getElementById('dash-avatar');
+  if (_dac && _dac.avatarPng) { _daAv.innerHTML = `<img src="${_dac.avatarPng}" alt="avatar">`; }
+  else { _daAv.textContent = (_dac && _dac.avatar) || playerData.avatar || '⚔'; }
   document.getElementById('dash-name').textContent = playerData.username || currentUser;
   renderCharCards();
   renderAll();
@@ -3522,7 +3564,7 @@ function renderCharCards() {
     const subClasse = c.sousClasse ? ' — ' + c.sousClasse : '';
     card.innerHTML = `
       <button class="char-card-del" data-del-char="${id}" title="Supprimer">✕</button>
-      <div class="char-card-avatar">${playerData.avatar || '⚔'}</div>
+      <div class="char-card-avatar">${c.avatarPng ? `<img src="${c.avatarPng}" alt="avatar">` : (c.avatar || playerData.avatar || '⚔')}</div>
       <div class="char-card-name">${c.characterName || 'Sans nom'}</div>
       <div class="char-card-sub">${getClasses(c).filter(cl=>cl.classe).map(cl=>cl.classe+' '+cl.niveau).join(' / ') || '—'}</div>
       ${c.species ? `<div class="char-card-species">${c.species}</div>` : ''}
@@ -3736,6 +3778,8 @@ function renderAll() {
   updateCharSummary();
   updateProfBonus();
   updateHpBar();
+  applyCharTheme();
+  applyCharBg(C());
 }
 
 /* ── Remplissage champs data-f ── */
@@ -4331,7 +4375,7 @@ function renderConditions() {
   const active = C().conditions || [];
   grid.innerHTML = ALL_CONDITIONS.map(cond => {
     const isActive = active.includes(cond);
-    const isConc = cond === 'Concentré';
+    const isConc = cond === 'Concentrating';
     return `<div class="cond-badge${isActive ? ' active' : ''}${isConc && isActive ? ' conc' : ''}" data-cond="${cond}">${cond}</div>`;
   }).join('');
   // Exhaustion pips
@@ -4339,7 +4383,7 @@ function renderConditions() {
   // Concentration badge in Sorts
   const concBadge = document.getElementById('conc-badge');
   if (concBadge) {
-    const isConc = active.includes('Concentré');
+    const isConc = active.includes('Concentrating');
     concBadge.classList.toggle('visible', isConc);
     if (isConc) {
       const concSpell = (C().spells || []).find(s => s.conc);
@@ -4366,10 +4410,10 @@ function renderExhaustion() {
 
 /* ── Import D&D Beyond ── */
 function parseDnDBeyondJSON(raw) {
-  const d = raw.data || raw; // handle API wrapper
-  if (!d.name && !d.classes) throw new Error('Format JSON non reconnu — assure-toi d\'utiliser l\'URL /character/ID/json');
+  const d = raw.data || raw;
+  if (!d.name && !d.classes) throw new Error("Format JSON non reconnu — assure-toi d'utiliser l'URL /character/ID/json");
 
-  const STAT_MAP = {1:'for',2:'dex',3:'con',4:'int',5:'sag',6:'cha'};
+  const STAT_MAP  = {1:'for',2:'dex',3:'con',4:'int',5:'sag',6:'cha'};
   const SKILL_MAP = {
     'acrobatics':'acrobaties','animal-handling':'animaux','arcana':'arcanes',
     'athletics':'athletisme','deception':'duperie','history':'histoire',
@@ -4388,7 +4432,7 @@ function parseDnDBeyondJSON(raw) {
     'Rogue':'1d8','Sorcerer':'1d6','Warlock':'1d8','Wizard':'1d6','Artificer':'1d8'};
   const SPELL_AB = {'Bard':'CHA','Cleric':'SAG','Druid':'SAG','Paladin':'CHA',
     'Ranger':'SAG','Sorcerer':'CHA','Warlock':'CHA','Wizard':'INT','Artificer':'INT'};
-  const INV_CAT = {'Weapon':'arme','Armor':'armure','Potion':'consommable',
+  const INV_CAT  = {'Weapon':'arme','Armor':'armure','Potion':'consommable',
     'Scroll':'consommable','Wondrous Item':'magique','Ring':'magique',
     'Rod':'magique','Staff':'magique','Wand':'magique'};
   const SLOT_TABLE = {
@@ -4401,126 +4445,225 @@ function parseDnDBeyondJSON(raw) {
     19:[4,3,3,3,3,2,1,1,1],20:[4,3,3,3,3,2,2,1,1]
   };
 
-  // Ability scores
+  const stripHtml = s => (s||'').replace(/<[^>]*>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/\s+/g,' ').trim().substring(0,600);
+
+  // ── Ability scores ──────────────────────────────────────────────
   const stats = {};
   Object.values(STAT_MAP).forEach(k => stats[k] = 10);
-  (d.stats || []).forEach(s => { if (STAT_MAP[s.id]) stats[STAT_MAP[s.id]] = s.value || 10; });
-  (d.bonusStats || []).forEach(s => { if (STAT_MAP[s.id] && s.value) stats[STAT_MAP[s.id]] += s.value; });
-  (d.overrideStats || []).forEach(s => { if (STAT_MAP[s.id] && s.value != null) stats[STAT_MAP[s.id]] = s.value; });
+  (d.stats||[]).forEach(s => { if (STAT_MAP[s.id]) stats[STAT_MAP[s.id]] = s.value||10; });
+  (d.bonusStats||[]).forEach(s => { if (STAT_MAP[s.id] && s.value) stats[STAT_MAP[s.id]] += s.value; });
+  (d.overrideStats||[]).forEach(s => { if (STAT_MAP[s.id] && s.value!=null) stats[STAT_MAP[s.id]] = s.value; });
 
-  // Class & level
-  const mainClass = d.classes?.[0];
-  const className = mainClass?.definition?.name || mainClass?.baseClassDefinition?.name || '';
-  const subClass  = mainClass?.subclassDefinition?.name || '';
-  const level = (d.classes || []).reduce((s,c) => s + (c.level || c.currentLevel || 0), 0) || 1;
+  // ── Classes (multiclass support) ────────────────────────────────
+  const classesArr = (d.classes||[]).map(cl => ({
+    classe:          cl.definition?.name || cl.baseClassDefinition?.name || '',
+    sousClasse:      cl.subclassDefinition?.name || '',
+    niveau:          cl.level || cl.currentLevel || 1,
+    customSousClasse: ''
+  }));
+  const mainClass = classesArr[0] || { classe:'', sousClasse:'', niveau:1 };
+  const className = mainClass.classe;
+  const subClass  = mainClass.sousClasse;
+  const level     = classesArr.reduce((s,c) => s + c.niveau, 0) || 1;
 
-  // HP
+  // ── HP ──────────────────────────────────────────────────────────
   const baseHP    = d.baseHitPoints || 0;
-  const currentHP = Math.max(0, baseHP - (d.removedHitPoints || 0));
+  const currentHP = Math.max(0, baseHP - (d.removedHitPoints||0));
   const tempHP    = d.temporaryHitPoints || 0;
 
-  // Proficiencies from all modifier sources
+  // ── All modifiers (class + race + background + feat + item) ─────
   const allMods = [
-    ...(d.modifiers?.class      || []),
-    ...(d.modifiers?.race       || []),
-    ...(d.modifiers?.background || []),
-    ...(d.modifiers?.feat       || []),
+    ...(d.modifiers?.class||[]), ...(d.modifiers?.race||[]),
+    ...(d.modifiers?.background||[]), ...(d.modifiers?.feat||[]),
+    ...(d.modifiers?.item||[]),
   ];
+
+  // Skill & save proficiencies
   const skillProfs = {}; const saveProfs = {};
   allMods.forEach(m => {
-    const sub = m.subType || '';
+    const sub = m.subType||'';
     if (SKILL_MAP[sub]) {
       const k = SKILL_MAP[sub];
-      if (m.type === 'expertise') skillProfs[k] = 2;
-      else if (m.type === 'proficiency' && !skillProfs[k]) skillProfs[k] = 1;
+      if (m.type==='expertise') skillProfs[k]=2;
+      else if (m.type==='proficiency' && !skillProfs[k]) skillProfs[k]=1;
     }
-    if (SAVE_MAP[sub] && m.type === 'proficiency') saveProfs[SAVE_MAP[sub]] = true;
+    if (SAVE_MAP[sub] && m.type==='proficiency') saveProfs[SAVE_MAP[sub]]=true;
   });
 
-  // Speed from race
-  let speed = 30;
-  (d.race?.racialTraits || []).forEach(t => {
-    if (t.definition?.name?.toLowerCase().includes('speed') || t.definition?.name?.toLowerCase().includes('movement'))
-      speed = t.definition?.snippet?.match(/(\d+)/)?.[1] ? parseInt(t.definition.snippet.match(/(\d+)/)[1]) : 30;
+  // ── Speed ────────────────────────────────────────────────────────
+  let speed = d.race?.weightSpeeds?.normal?.walk || 30;
+  allMods.forEach(m => {
+    if (m.type==='set-base' && m.subType==='speed') speed = m.value||speed;
+    if (m.type==='bonus'    && m.subType==='speed') speed += (m.value||0);
   });
 
-  // Spells (de-duplicate by name)
+  // ── AC from equipped armor ────────────────────────────────────────
+  let ac = 10;
+  const dexMod = Math.floor((stats.dex - 10) / 2);
+  const equippedArmor = (d.inventory||[]).filter(i => i.equipped && i.definition?.type==='Armor');
+  if (equippedArmor.length) {
+    const armor = equippedArmor[0].definition;
+    const base  = armor.armorClass || 10;
+    const maxDex = armor.armorTypeId === 3 ? 0 : (armor.armorTypeId === 2 ? 2 : 99); // heavy=0, medium=2, light=unlimited
+    ac = base + Math.min(dexMod, maxDex);
+    const shield = equippedArmor.find(i => i.definition?.type==='Shield' || i.definition?.name?.includes('Shield'));
+    if (shield) ac += 2;
+  } else {
+    // Unarmored: 10 + DEX mod (or class feature like Barbarian/Monk)
+    ac = 10 + dexMod;
+    allMods.forEach(m => {
+      if (m.type==='set' && m.subType==='unarmored-armor-class') ac = m.value||ac;
+    });
+  }
+
+  // ── Proficiency bonus ─────────────────────────────────────────────
+  const profBonus = Math.ceil(level / 4) + 1;
+
+  // ── Languages ────────────────────────────────────────────────────
+  const langSet = new Set();
+  allMods.forEach(m => {
+    if (m.type==='language') langSet.add(m.friendlySubtypeName || m.subType || '');
+  });
+  const langues = Array.from(langSet).filter(Boolean).join(', ');
+
+  // ── Proficiencies (armor, weapons, tools) ────────────────────────
+  const profArmor = new Set(); const profWeap = new Set(); const profTool = new Set();
+  allMods.forEach(m => {
+    if (m.type !== 'proficiency') return;
+    const sub = (m.subType||'').toLowerCase();
+    const name = m.friendlySubtypeName || m.subType || '';
+    if (sub.includes('armor') || sub.includes('shield')) profArmor.add(name);
+    else if (sub.includes('weapon') || sub.includes('sword') || sub.includes('bow') || sub.includes('axe') || sub.includes('hammer') || sub.includes('crossbow') || sub.includes('dagger') || sub.includes('mace') || sub.includes('staff') || sub.includes('spear') || sub.includes('lance') || sub.includes('rapier') || sub.includes('flail') || sub.includes('whip') || sub.includes('club') || sub.includes('pike') || sub.includes('trident')) profWeap.add(name);
+    else if (m.categoryId===5 || sub.includes('tool') || sub.includes("thieves") || sub.includes('kit') || sub.includes('instrument') || sub.includes('game')) profTool.add(name);
+  });
+  const maitriseParts = [];
+  if (profArmor.size) maitriseParts.push('Armor: ' + Array.from(profArmor).join(', '));
+  if (profWeap.size)  maitriseParts.push('Weapons: ' + Array.from(profWeap).join(', '));
+  if (profTool.size)  maitriseParts.push('Tools: ' + Array.from(profTool).join(', '));
+  const maitrises = maitriseParts.join('\n');
+
+  // ── Weapons → attacks ────────────────────────────────────────────
+  const attaques = [];
+  (d.inventory||[]).filter(i => i.equipped && i.definition?.type==='Weapon').forEach(item => {
+    const def   = item.definition;
+    const props = (def.properties||[]).map(p => (p.name||'').toLowerCase());
+    const isFinesse = props.includes('finesse');
+    const isRanged  = (def.attackType===2) || (def.weaponType||'').toLowerCase().includes('ranged');
+    let atkStat = isRanged ? 'dex' : isFinesse ? 'dex' : 'for';
+    // If character has higher STR, finesse might prefer STR — keep dex for simplicity
+    const dmg  = def.damage?.diceString || (def.damage?.diceCount ? `${def.damage.diceCount}d${def.damage.diceSize}` : '1d6');
+    const type = (def.damageType||'').toLowerCase();
+    const range = isRanged ? (def.range ? `${def.range}/${def.longRange||def.range*4}` : '80/320') : '5 ft.';
+    attaques.push({
+      nom: def.name||'', bonus:'', atkType: atkStat, prof: true,
+      degat: dmg, typeDegat: type, portee: range, notes: props.filter(p=>!['finesse','light','thrown','versatile','reach'].includes(p)).join(', ')
+    });
+  });
+
+  // ── Custom Features (racial traits, class features, background, feats) ──
+  const customFeatures = [];
+
+  // Racial traits
+  (d.race?.racialTraits||[]).forEach(t => {
+    const def = t.definition||{};
+    if (!def.name) return;
+    customFeatures.push({ name: def.name, source: d.race?.fullName||d.race?.baseName||'Race', desc: stripHtml(def.description||def.snippet||''), _open:false });
+  });
+
+  // Background feature
+  const bgFeatures = d.background?.definition?.featuresBackground || d.background?.definition?.features || [];
+  bgFeatures.forEach(f => {
+    customFeatures.push({ name: f.name||'', source: d.background?.definition?.name||'Background', desc: stripHtml(f.description||''), _open:false });
+  });
+  // Background feature (alternate location)
+  if (d.background?.definition?.feature) {
+    const bf = d.background.definition.feature;
+    customFeatures.push({ name: bf.name||'Background Feature', source: d.background?.definition?.name||'Background', desc: stripHtml(bf.description||''), _open:false });
+  }
+
+  // Class features from d.classFeatures (if present)
+  (d.classFeatures||[]).forEach(cf => {
+    const def = cf.definition||{};
+    if (!def.name) return;
+    customFeatures.push({ name: def.name, source: def.sourceType||className, desc: stripHtml(def.description||def.snippet||''), _open:false });
+  });
+
+  // Feats
+  (d.feats||[]).forEach(feat => {
+    const def = feat.definition||{};
+    if (!def.name) return;
+    customFeatures.push({ name: def.name, source: 'Feat', desc: stripHtml(def.description||''), _open:false });
+  });
+
+  // ── Spells ───────────────────────────────────────────────────────
   const seenSpells = new Set();
-  const stripHtml = s => (s || '').replace(/<[^>]*>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').trim().substring(0,600);
   const spellSources = [
-    ...(d.classSpells || []).flatMap(cs => cs.spells || []),
-    ...(d.spells?.race   || []),
-    ...(d.spells?.class  || []),
-    ...(d.spells?.feat   || []),
-    ...(d.spells?.item   || []),
+    ...(d.classSpells||[]).flatMap(cs => cs.spells||[]),
+    ...(d.spells?.race||[]), ...(d.spells?.class||[]),
+    ...(d.spells?.feat||[]), ...(d.spells?.item||[]),
   ];
   const spells = [];
   spellSources.forEach(sp => {
-    const def = sp.definition || sp;
+    const def = sp.definition||sp;
     if (!def?.name || seenSpells.has(def.name)) return;
     seenSpells.add(def.name);
     const actType = def.activation?.activationType;
-    const actTime = def.activation?.activationTime || 1;
-    const action  = actType === 1 ? 'Action' : actType === 2 ? 'Bonus Action' : actType === 3 ? 'Réaction' : actType === 6 ? 'Rituel' : 'Action';
+    const actTime = def.activation?.activationTime||1;
+    const action  = actType===1?'Action':actType===2?'Bonus Action':actType===3?'Reaction':actType===6?'Ritual':'Action';
     spells.push({
-      name: def.name,
-      level: String(def.level ?? 0),
-      degat: '',
-      typeDegat: '',
-      portee: def.range || '',
-      action: actTime > 1 ? `${actTime} ${action}` : action,
-      desc: stripHtml(def.description || def.snippet || ''),
-      _open: false, conc: false,
+      name: def.name, level: String(def.level??0), degat:'', typeDegat:'',
+      portee: def.range||'', action: actTime>1?`${actTime} ${action}`:action,
+      desc: stripHtml(def.description||def.snippet||''), _open:false, conc:!!(def.concentration),
     });
   });
-  spells.sort((a,b) => parseInt(a.level) - parseInt(b.level));
+  spells.sort((a,b) => parseInt(a.level)-parseInt(b.level));
 
-  // Inventory
-  const inventory = (d.inventory || []).map(item => {
-    const def = item.definition || {};
-    const cat = INV_CAT[def.type] || (def.magic ? 'magique' : 'equipement');
-    return { qty: item.quantity || 1, name: def.name || '', notes: stripHtml(def.description || '').substring(0,200), cat };
+  // ── Inventory ────────────────────────────────────────────────────
+  const inventory = (d.inventory||[]).map(item => {
+    const def = item.definition||{};
+    const cat = INV_CAT[def.type]||(def.magic?'magique':'equipement');
+    return { qty:item.quantity||1, name:def.name||'', notes:stripHtml(def.description||'').substring(0,200), cat };
   });
 
-  // Currency
-  const cur = d.currencies || {};
+  // ── Currency ─────────────────────────────────────────────────────
+  const cur = d.currencies||{};
   const currency = { pp:cur.pp||0, gp:cur.gp||0, ep:cur.ep||0, sp:cur.sp||0, cp:cur.cp||0 };
 
-  // Spell slots from level
-  const slotArr = SLOT_TABLE[Math.min(20, level)] || [0,0,0,0,0,0,0,0,0];
+  // ── Spell slots ──────────────────────────────────────────────────
+  const slotArr = SLOT_TABLE[Math.min(20,level)]||[0,0,0,0,0,0,0,0,0];
   const emplacementsSort = {};
   slotArr.forEach((n,i) => { emplacementsSort[i+1] = n; });
 
-  // Traits
-  const tr = d.traits || {};
-  const notes = d.notes || {};
+  // ── Traits / notes ───────────────────────────────────────────────
+  const tr = d.traits||{}; const notes = d.notes||{};
 
   const character = {
-    characterName: d.name || '',
-    species: d.race?.fullName || d.race?.baseName || '',
+    characterName: d.name||'',
+    species: d.race?.fullName||d.race?.baseName||'',
     classe: className, sousClasse: subClass, niveau: level,
-    background: d.background?.definition?.name || '',
-    alignement: '', xp: d.currentXp || 0, inspiration: false,
+    background: d.background?.definition?.name||'',
+    alignement:'', xp: d.currentXp||0, inspiration:false,
     ...stats, ...saveProfs, ...skillProfs,
-    ca: 10, initiative: 0, vitesse: speed,
+    ca: ac, initiative:0, vitesse: speed,
     pvMax: baseHP, pvActuel: currentHP, pvTemp: tempHP,
-    deVie: HIT_DIE[className] || '1d8', nbDeVie: level, nbDeVieUtilises: 0,
-    mortSucces: 0, mortEchecs: 0,
-    attaques: [],
-    classeSort: className, caractSort: SPELL_AB[className] || '',
+    deVie: HIT_DIE[className]||'1d8', nbDeVie: level, nbDeVieUtilises:0,
+    mortSucces:0, mortEchecs:0,
+    attaques,
+    classeSort: className, caractSort: SPELL_AB[className]||'',
     emplacementsSort,
     emplacementsUtilises: {1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0},
-    spells, customFeatures: [], resources: [], conditions: [],
-    maitrises: '', langues: '',
-    traits: tr.personalityTraits || '', ideaux: tr.ideals || '',
-    liens: tr.bonds || '', defauts: tr.flaws || '',
-    apparence: tr.appearance || '', historique: notes.backstory || '',
-    classes: [{ classe: className, sousClasse: '', niveau: level, customSousClasse: '' }],
+    spells, customFeatures, resources:[], conditions:[],
+    maitrises, langues,
+    traits: tr.personalityTraits||'', ideaux: tr.ideals||'',
+    liens: tr.bonds||'', defauts: tr.flaws||'',
+    apparence: tr.appearance||'', historique: notes.backstory||'',
+    classes: classesArr.length ? classesArr : [{ classe:className, sousClasse:subClass, niveau:level, customSousClasse:'' }],
   };
 
   return { character, inventory, currency,
     _meta: { name:d.name, classe:className, level, spells:spells.length, items:inventory.length,
-             skills: Object.keys(skillProfs).length, saves: Object.keys(saveProfs).length } };
+             skills:Object.keys(skillProfs).length, saves:Object.keys(saveProfs).length,
+             attacks:attaques.length, features:customFeatures.length } };
 }
 
 let _ddbParsed = null;
@@ -4532,10 +4675,12 @@ function openDdbModal(parsed) {
   document.getElementById('ddb-preview').innerHTML = [
     ['Personnage', m.name || '—'],
     ['Classe / Niveau', `${m.classe || '—'} niv. ${m.level}`],
-    ['Sorts importés', m.spells + ' sorts'],
-    ['Objets importés', m.items + ' objets'],
-    ['Compétences maîtrisées', m.skills + ' compétences'],
-    ['Sauvegardes maîtrisées', m.saves + ' sauvegardes'],
+    ['Spells imported', m.spells + ' spells'],
+    ['Items imported', m.items + ' items'],
+    ['Attacks', m.attacks + ' weapons'],
+    ['Features/Traits', m.features + ' features'],
+    ['Skills proficient', m.skills + ' skills'],
+    ['Saves proficient', m.saves + ' saves'],
   ].map(([l,v]) => `<div class="ddb-preview-row"><span class="ddb-preview-label">${l}</span><span class="ddb-preview-val">${v}</span></div>`).join('');
   // Items summary
   const tags = [
@@ -4788,24 +4933,89 @@ function fillCurrency() {
   document.querySelectorAll('[data-currency]').forEach(inp => { inp.value = cur[inp.dataset.currency] || 0; });
 }
 
-/* ── Avatar picker ── */
+/* ── Avatar picker (per-character) ── */
+function getCharAvatarDisplay(c) {
+  if (c && c.avatarPng) return `<img src="${c.avatarPng}" alt="avatar">`;
+  return (c && c.avatar) || playerData.avatar || '⚔';
+}
 function renderAvatarPicker() {
+  const c    = C();
   const grid = document.getElementById('avatar-picker');
+  if (!grid) return;
   grid.innerHTML = '';
+  const curAv  = (c && c.avatar) || '';
+  const curPng = (c && c.avatarPng) || '';
+
+  // Emoji grid
   AVATARS.forEach(av => {
     const btn = document.createElement('button');
-    btn.className = 'av-btn' + (av === playerData.avatar ? ' selected' : '');
+    btn.className = 'av-btn' + (av === curAv && !curPng ? ' selected' : '');
     btn.textContent = av;
     btn.onclick = () => {
       grid.querySelectorAll('.av-btn').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
-      playerData.avatar = av;
-      document.getElementById('dash-avatar').textContent = av;
+      if (c) { c.avatar = av; delete c.avatarPng; }
+      else playerData.avatar = av;
+      syncAvatarDisplay();
       renderCharCards();
+      updatePngPreviewUI();
       triggerSave();
     };
     grid.appendChild(btn);
   });
+
+  // PNG preview + clear button
+  updatePngPreviewUI();
+
+  // PNG file input handler
+  const fileInput = document.getElementById('avatar-png-input');
+  if (fileInput) {
+    fileInput.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const dataUrl = ev.target.result;
+        if (c) { c.avatarPng = dataUrl; c.avatar = ''; }
+        syncAvatarDisplay();
+        renderCharCards();
+        updatePngPreviewUI();
+        triggerSave();
+      };
+      reader.readAsDataURL(file);
+      fileInput.value = '';
+    };
+  }
+  const clearBtn = document.getElementById('av-png-clear');
+  if (clearBtn) {
+    clearBtn.onclick = () => {
+      if (c) { delete c.avatarPng; c.avatar = c.avatar || '⚔'; }
+      syncAvatarDisplay();
+      renderCharCards();
+      updatePngPreviewUI();
+      grid.querySelectorAll('.av-btn').forEach(b => {
+        b.classList.toggle('selected', b.textContent === ((c && c.avatar) || '⚔'));
+      });
+      triggerSave();
+    };
+  }
+}
+function syncAvatarDisplay() {
+  const c = C();
+  const el = document.getElementById('dash-avatar');
+  if (!el) return;
+  if (c && c.avatarPng) { el.innerHTML = `<img src="${c.avatarPng}" alt="avatar">`; }
+  else { el.textContent = (c && c.avatar) || playerData.avatar || '⚔'; }
+}
+function updatePngPreviewUI() {
+  const c   = C();
+  const img = document.getElementById('av-png-preview');
+  const btn = document.getElementById('av-png-clear');
+  if (!img || !btn) return;
+  const png = c && c.avatarPng;
+  img.style.display = png ? 'block' : 'none';
+  btn.style.display  = png ? 'inline-block' : 'none';
+  if (png) img.src = png;
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -5019,9 +5229,9 @@ function renderAdminModalTab() {
 
       <!-- Conditions actives -->
       <div class="sheet-section">
-        <div class="sheet-section-title">Conditions actives</div>
+        <div class="sheet-section-title">Active Conditions</div>
         <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.25rem;">
-          ${['Aveuglé','Charmé','Effrayé','Empoisonné','Étourdi','Entravé','Incapacité','Invisible','Paralysé','Pétrifié','Prone','Ralenti','Sourd'].map(cond => `
+          ${['Blinded','Charmed','Frightened','Poisoned','Stunned','Restrained','Incapacitated','Invisible','Paralyzed','Petrified','Prone','Slowed','Deafened'].map(cond => `
             <label style="display:flex;align-items:center;gap:0.35rem;font-size:0.82rem;color:#bbb;cursor:pointer;background:#13131a;border:1px solid #2a2a3a;border-radius:6px;padding:0.3rem 0.6rem;">
               <input type="checkbox" class="ae-condition" data-cond="${cond}" ${(c.conditions||[]).includes(cond)?'checked':''} style="accent-color:var(--danger);">
               ${cond}
@@ -5621,13 +5831,39 @@ function applyCustomColor(hex) {
   if(!/^#[0-9a-f]{6}$/i.test(hex))return;
   const[h,s,l]=hexToHsl(hex);
   const dark=hslToHex(h,Math.min(100,s+5),Math.max(10,l-18));
-  if(playerData){ playerData.theme={custom:true,gold:hex,dark}; triggerSave(); }
+  const _cc = C(); if (_cc) { _cc.theme={custom:true,gold:hex,dark}; } else if(playerData){ playerData.theme={custom:true,gold:hex,dark}; } triggerSave();
   applyTheme({custom:true,gold:hex,dark});
 }
 
 /* ════════════════════════════════════════════════════════════
    TAILLE DU TEXTE
    ════════════════════════════════════════════════════════════ */
+function applyCharTheme() {
+  const c = C();
+  const theme = (c && c.theme) || playerData.theme;
+  if (theme) applyTheme(theme);
+}
+function applyCharBg(c) {
+  const layer = document.getElementById('char-bg-layer');
+  if (!layer) return;
+  if (c && c.bgImage) {
+    layer.style.backgroundImage = `url(${c.bgImage})`;
+    layer.classList.add('visible');
+  } else {
+    layer.classList.remove('visible');
+    setTimeout(() => { layer.style.backgroundImage = ''; }, 400);
+  }
+}
+function renderBgPreviewUI() {
+  const c   = C();
+  const img = document.getElementById('bg-preview');
+  const btn = document.getElementById('bg-clear-btn');
+  if (!img || !btn) return;
+  const bg  = c && c.bgImage;
+  img.style.display = bg ? 'block' : 'none';
+  btn.style.display  = bg ? 'inline-block' : 'none';
+  if (bg) img.src = bg;
+}
 function applyFontSizeValue(pct) {
   const main = document.querySelector('main.main-content');
   if (main) main.style.fontSize = pct + '%';
@@ -5958,10 +6194,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!wasConc) {
         if (spells[idx]) spells[idx].conc = true;
         const conds = C().conditions || [];
-        if (!conds.includes('Concentré')) conds.push('Concentré');
+        if (!conds.includes('Concentrating')) conds.push('Concentrating');
         C().conditions = conds;
       } else {
-        C().conditions = (C().conditions || []).filter(c => c !== 'Concentré');
+        C().conditions = (C().conditions || []).filter(c => c !== 'Concentrating');
       }
       renderSpells(); renderConditions(); triggerSave();
     }
@@ -6255,6 +6491,22 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-apply-custom-color')?.addEventListener('click', () => {
     const hex = document.getElementById('custom-color-hex')?.value || '';
     applyCustomColor(hex);
+  });
+  // Background image per character
+  document.getElementById('bg-img-input')?.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const c = C();
+      if (c) { c.bgImage = ev.target.result; applyCharBg(c); renderBgPreviewUI(); triggerSave(); }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  });
+  document.getElementById('bg-clear-btn')?.addEventListener('click', () => {
+    const c = C();
+    if (c) { delete c.bgImage; applyCharBg(c); renderBgPreviewUI(); triggerSave(); }
   });
 
   /* ── Taille du texte ── */
