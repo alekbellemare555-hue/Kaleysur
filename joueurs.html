@@ -130,6 +130,24 @@
     .sv-row:nth-child(even), .sk-row:nth-child(even) { background:rgba(255,255,255,0.025); }
     .prof-dot { width:11px; height:11px; border-radius:50%; border:2px solid #3a3a4a; background:transparent; cursor:pointer; flex-shrink:0; transition:background var(--transition), border-color var(--transition); }
     .prof-dot.on { background:var(--gold-dark); border-color:var(--gold); }
+    .prof-dot.expert { background:var(--gold); border-color:var(--gold); box-shadow:0 0 0 2px #0d0d14, 0 0 0 3.5px var(--gold); }
+    /* ── Concentration spell button ── */
+    .spell-conc-btn { background:none; border:1px solid #2a2a3a; border-radius:4px; color:#555; cursor:pointer; font-size:0.78rem; padding:0.15rem 0.35rem; transition:all var(--transition); line-height:1; }
+    .spell-conc-btn:hover { border-color:#a070e0; color:#a070e0; }
+    .spell-conc-btn.active { border-color:#a070e0; background:rgba(160,112,224,0.18); color:#c090f8; box-shadow:0 0 6px rgba(160,112,224,0.3); }
+    /* ── Spell prep counter ── */
+    .spell-prep-counter { font-size:0.75rem; padding:0.15rem 0.55rem; border-radius:5px; background:#0d0d14; border:1px solid #2a2a3a; color:#888; font-family:'Cinzel',serif; }
+    .spell-prep-counter.ok  { border-color:#3a6a3a; color:#8aba8a; }
+    .spell-prep-counter.over { border-color:#6a3a3a; color:#e07070; }
+    /* ── Jack of All Trades ── */
+    .jat-toggle { display:flex; align-items:center; gap:0.35rem; margin-top:0.3rem; font-size:0.68rem; color:#555; cursor:pointer; user-select:none; }
+    .jat-toggle input { accent-color:var(--gold-dark); width:12px; height:12px; cursor:pointer; }
+    .jat-toggle.active { color:var(--gold-dark); }
+    /* ── Spell level group header ── */
+    .spell-lvl-header td { padding:0.45rem 0.4rem 0.2rem; font-family:'Cinzel',serif; font-size:0.62rem; color:var(--gold-dark); letter-spacing:0.08em; text-transform:uppercase; border-bottom:1px solid #1e1e2e; }
+    .spell-lvl-count { font-size:0.58rem; color:#555; font-style:normal; margin-left:0.35rem; }
+    /* ── Attack table auto-bonus ── */
+    .atk-bonus-cell { font-family:'Cinzel',serif; font-size:0.82rem; color:var(--gold); text-align:center; min-width:40px; }
     .sv-val, .sk-val { font-size:0.78rem; color:var(--gold); min-width:26px; text-align:right; font-weight:600; }
 
     /* ── Combat ── */
@@ -779,6 +797,10 @@
           <div class="sheet-section-title">Sauvegardes &amp; Compétences</div>
           <div class="save-skill-grid">
             <div id="saves-col"></div>
+          <label class="jat-toggle" id="jat-label" title="Barde niv.2+ : ajoute la moitié du bonus de maîtrise aux compétences sans maîtrise">
+            <input type="checkbox" id="jat-check">
+            Jack of All Trades
+          </label>
             <div id="skills-col"></div>
           </div>
         </div>
@@ -942,10 +964,13 @@
           </div>
           <table class="attack-table">
             <thead><tr>
-              <th style="width:35%">Nom</th>
-              <th style="width:20%">Bonus att.</th>
-              <th style="width:30%">Dégâts / Type</th>
-              <th style="width:15%"></th>
+              <th style="width:26%">Nom</th>
+              <th style="width:18%">Dégâts</th>
+              <th style="width:14%">Type</th>
+              <th style="width:10%">Stat</th>
+              <th style="width:7%" title="Maîtrise">Maît.</th>
+              <th style="width:12%">Bonus</th>
+              <th style="width:13%"></th>
             </tr></thead>
             <tbody id="attack-tbody"></tbody>
           </table>
@@ -984,19 +1009,23 @@
           <div id="spell-slots-grid"></div>
           <div style="margin-top:0.75rem;">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
-              <div class="field-label">Sorts connus / préparés</div>
+              <div style="display:flex;align-items:center;gap:0.6rem;">
+                <div class="field-label">Sorts préparés</div>
+                <span class="spell-prep-counter" id="spell-prep-counter">—</span>
+              </div>
               <button class="btn btn-sm btn-gold" id="btn-add-spell">+ Ajouter</button>
             </div>
             <table class="exp-table">
               <thead><tr>
-                <th style="width:52px;">Niveau</th>
+                <th style="width:44px;">Niv.</th>
                 <th>Nom du sort</th>
-                <th style="width:80px;">Dégât</th>
-                <th style="width:90px;">Type</th>
-                <th style="width:70px;">Portée</th>
-                <th style="width:80px;">Action</th>
-                <th style="width:32px;"></th>
+                <th style="width:70px;">Dégât</th>
+                <th style="width:80px;">Type</th>
+                <th style="width:60px;">Portée</th>
+                <th style="width:70px;">Action</th>
+                <th style="width:28px;" title="Concentration">◉</th>
                 <th style="width:28px;"></th>
+                <th style="width:24px;"></th>
               </tr></thead>
               <tbody id="spell-tbody"></tbody>
             </table>
@@ -3462,15 +3491,25 @@ const SKILLS = [
 ];
 function renderSkills() {
   const col = document.getElementById('skills-col');
-  col.innerHTML = '<div style="font-size:0.7rem;text-transform:uppercase;color:#666;letter-spacing:0.05em;margin-bottom:0.35rem;">Compétences</div>';
+  col.innerHTML = '<div style="font-size:0.7rem;text-transform:uppercase;color:#666;letter-spacing:0.05em;margin-bottom:0.35rem;">Compétences <span style="font-size:0.6rem;color:#444;font-style:italic;">(clic=maîtrise, 2×=expertise)</span></div>';
   const c = C(); const bonus = pb(c.niveau || 1);
+  const jat = !!c.jackOfAllTrades;
+  const halfBonus = Math.floor(bonus / 2);
+  // Sync JAT checkbox
+  const jatCheck = document.getElementById('jat-check');
+  const jatLabel = document.getElementById('jat-label');
+  if (jatCheck) { jatCheck.checked = jat; }
+  if (jatLabel) jatLabel.classList.toggle('active', jat);
   [...SKILLS].sort((a,b) => a.label.localeCompare(b.label)).forEach(sk => {
-    const prof = !!c[sk.key];
-    const val  = mod(abilScore(sk.attr)) + (prof ? bonus : 0);
+    const profLevel = Math.min(2, Math.max(0, parseInt(c[sk.key]) || (c[sk.key] === true ? 1 : 0)));
+    const jatBonus = (jat && profLevel === 0) ? halfBonus : 0;
+    const val = mod(abilScore(sk.attr)) + (profLevel >= 1 ? bonus : 0) + (profLevel >= 2 ? bonus : 0) + jatBonus;
+    const dotClass = profLevel === 2 ? 'on expert' : profLevel === 1 ? 'on' : '';
+    const title = profLevel === 2 ? 'Expertise (double maîtrise)' : profLevel === 1 ? 'Maîtrise' : 'Aucune maîtrise';
     const row  = document.createElement('div');
     row.className = 'sk-row';
     row.innerHTML = `
-      <div class="prof-dot ${prof ? 'on' : ''}" data-sk="${sk.key}" title="Maîtrise"></div>
+      <div class="prof-dot ${dotClass}" data-sk="${sk.key}" title="${title}"></div>
       <span class="sk-val">${val >= 0 ? '+' : ''}${val}</span>
       <span>${sk.label} <span style="color:#555;font-size:0.72rem;">(${sk.attr.toUpperCase()})</span></span>
     `;
@@ -3530,7 +3569,13 @@ function renderSpellSlots() {
 }
 function updateSpellCalcs() {
   const c = C();
-  if (!c.caractSort || !c.niveau) { document.getElementById('sort-dd').textContent = '—'; document.getElementById('sort-atk').textContent = '—'; return; }
+  const prepEl = document.getElementById('spell-prep-counter');
+  if (!c.caractSort || !c.niveau) {
+    document.getElementById('sort-dd').textContent = '—';
+    document.getElementById('sort-atk').textContent = '—';
+    if (prepEl) { prepEl.textContent = '—'; prepEl.className = 'spell-prep-counter'; }
+    return;
+  }
   const attrMap = { FOR:'for', DEX:'dex', CON:'con', INT:'int', SAG:'sag', CHA:'cha' };
   const attr = attrMap[c.caractSort];
   if (!attr) return;
@@ -3538,19 +3583,50 @@ function updateSpellCalcs() {
   const m = mod(abilScore(attr));
   document.getElementById('sort-dd').textContent  = 8 + bonus + m;
   document.getElementById('sort-atk').textContent = (bonus + m >= 0 ? '+' : '') + (bonus + m);
+  // Spell prep counter (leveled spells only, not cantrips)
+  if (prepEl) {
+    const spells = c.spells || [];
+    const leveled = spells.filter(s => s.level && s.level !== '0' && s.level !== 0);
+    const maxPrep = Math.max(1, parseInt(c.niveau || 1) + m);
+    prepEl.textContent = `${leveled.length} / ${maxPrep}`;
+    prepEl.className = 'spell-prep-counter' + (leveled.length > maxPrep ? ' over' : leveled.length > 0 ? ' ok' : '');
+  }
 }
 
 /* ── Attaques ── */
+function calcAtkBonus(atk) {
+  const c = C(); const bonus = pb(c.niveau || 1);
+  const t = (atk.atkType || '').toLowerCase();
+  if (t === 'sort') {
+    const el = document.getElementById('sort-atk');
+    return el ? el.textContent : '—';
+  }
+  const abilMap = {for:'for',dex:'dex',int:'int',sag:'sag',cha:'cha'};
+  if (abilMap[t]) {
+    const m = mod(abilScore(abilMap[t]));
+    const total = m + (atk.prof ? bonus : 0);
+    return (total >= 0 ? '+' : '') + total;
+  }
+  return atk.bonus || '—';
+}
 function renderAttacks() {
   const tbody = document.getElementById('attack-tbody');
   tbody.innerHTML = '';
-  const attacks = C().attaques || [];
+  const c = C();
+  const attacks = c.attaques || [];
   attacks.forEach((atk, i) => {
+    const atkBonus = calcAtkBonus(atk);
+    const statSelOpts = [['','—'],['for','FOR'],['dex','DEX'],['int','INT'],['sag','SAG'],['cha','CHA'],['sort','Sort']].map(([val, lbl]) =>
+      `<option value="${val}"${(atk.atkType||'') === val ? ' selected' : ''}>${lbl}</option>`
+    ).join('');
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td><input class="atk-inp" data-atk="${i}" data-ak="name"   value="${atk.name||''}"   placeholder="Nom"></td>
-      <td><input class="atk-inp" data-atk="${i}" data-ak="bonus"  value="${atk.bonus||''}"  placeholder="+5" style="width:70px;"></td>
-      <td><input class="atk-inp" data-atk="${i}" data-ak="degats" value="${atk.degats||''}" placeholder="1d6+3 tranchant"></td>
+      <td><input class="atk-inp" data-atk="${i}" data-ak="name" value="${esc(atk.name||'')}" placeholder="Nom de l'arme"></td>
+      <td><input class="atk-inp" data-atk="${i}" data-ak="degats" value="${esc(atk.degats||'')}" placeholder="1d8+3" style="font-size:0.75rem;"></td>
+      <td><input class="atk-inp" data-atk="${i}" data-ak="typeDegat" value="${esc(atk.typeDegat||'')}" placeholder="tranchant" style="font-size:0.75rem;"></td>
+      <td><select class="atk-inp" data-atk="${i}" data-ak="atkType" style="padding:0.18rem 0.2rem;font-size:0.74rem;">${statSelOpts}</select></td>
+      <td style="text-align:center;"><input type="checkbox" data-atk="${i}" data-ak="prof" ${atk.prof ? 'checked' : ''} style="accent-color:var(--gold-dark);width:14px;height:14px;cursor:pointer;" title="Maîtrise"></td>
+      <td class="atk-bonus-cell">${atkBonus}</td>
       <td><button class="atk-del" data-del="${i}" title="Supprimer">✕</button></td>
     `;
     tbody.appendChild(tr);
@@ -3898,7 +3974,15 @@ function renderConditions() {
   renderExhaustion();
   // Concentration badge in Sorts
   const concBadge = document.getElementById('conc-badge');
-  if (concBadge) concBadge.classList.toggle('visible', active.includes('Concentré'));
+  if (concBadge) {
+    const isConc = active.includes('Concentré');
+    concBadge.classList.toggle('visible', isConc);
+    if (isConc) {
+      const concSpell = (C().spells || []).find(s => s.conc);
+      const span = concBadge.querySelector('span');
+      if (span) span.textContent = concSpell ? `Concentration — ${concSpell.name}` : 'Concentrating — breaking concentration ends this spell';
+    }
+  }
 }
 
 function renderExhaustion() {
@@ -3990,8 +4074,9 @@ function doLongRest() {
   // PV max
   c.pvActuel = c.pvMax || 0;
   c.pvTemp = 0;
-  // Conditions off
+  // Conditions off + clear concentration
   c.conditions = [];
+  (c.spells || []).forEach(s => { s.conc = false; });
   // Exhaustion -1 level
   if (c.exhaustion > 0) c.exhaustion = c.exhaustion - 1;
   renderAll(); triggerSave();
@@ -4036,27 +4121,48 @@ function renderSpells() {
   if (!tbody) return;
   tbody.innerHTML = '';
   const spells = C().spells || [];
+  // Group by level
+  const groups = {};
   spells.forEach((s, i) => {
-    const lvlBadge = s.level ? `<span class="spell-level-badge">${s.level}</span>` : `<span class="spell-level-badge">—</span>`;
-    const tr = document.createElement('tr');
-    tr.className = 'exp-row';
-    tr.innerHTML = `
-      <td style="text-align:center;"><input class="atk-inp" data-spell="${i}" data-sk="level"  value="${esc(s.level||'')}"  placeholder="1" style="width:44px;text-align:center;font-size:0.78rem;"></td>
-      <td><input class="atk-inp" data-spell="${i}" data-sk="name"   value="${esc(s.name||'')}"   placeholder="Nom du sort"></td>
-      <td><input class="atk-inp" data-spell="${i}" data-sk="degat"  value="${esc(s.degat||'')}"  placeholder="2d6" style="font-size:0.75rem;"></td>
-      <td><input class="atk-inp" data-spell="${i}" data-sk="typeDegat" value="${esc(s.typeDegat||'')}" placeholder="feu…" style="font-size:0.75rem;"></td>
-      <td><input class="atk-inp" data-spell="${i}" data-sk="portee" value="${esc(s.portee||'')}" placeholder="18m" style="font-size:0.75rem;"></td>
-      <td><input class="atk-inp" data-spell="${i}" data-sk="action" value="${esc(s.action||'')}" placeholder="Action" style="font-size:0.75rem;"></td>
-      <td style="text-align:center;"><button class="exp-toggle${s._open?' open':''}" data-spell-toggle="${i}" title="Description">▾</button></td>
-      <td><button class="atk-del" data-del-spell="${i}" title="Supprimer">✕</button></td>
-    `;
-    tbody.appendChild(tr);
-    if (s._open) {
-      const dr = document.createElement('tr');
-      dr.className = 'exp-desc-row';
-      dr.innerHTML = `<td colspan="8"><textarea class="exp-desc-area" data-spell="${i}" data-sk="desc" placeholder="Description, composantes, concentration…">${esc(s.desc||'')}</textarea></td>`;
-      tbody.appendChild(dr);
-    }
+    const lvl = s.level === '0' || s.level === 0 || !s.level ? 'cantrip' : String(s.level);
+    if (!groups[lvl]) groups[lvl] = [];
+    groups[lvl].push({ s, i });
+  });
+  const ORDER = ['cantrip','1','2','3','4','5','6','7','8','9'];
+  // Also add any levels that exist but aren't in ORDER
+  Object.keys(groups).forEach(k => { if (!ORDER.includes(k)) ORDER.push(k); });
+  ORDER.forEach(lvl => {
+    const entries = groups[lvl];
+    if (!entries || !entries.length) return;
+    // Level header row
+    const hdr = document.createElement('tr');
+    hdr.className = 'spell-lvl-header';
+    const lvlLabel = lvl === 'cantrip' ? '✧ Cantrips' : `✦ Niveau ${lvl}`;
+    hdr.innerHTML = `<td colspan="8">${lvlLabel}<span class="spell-lvl-count">${entries.length} sort${entries.length > 1 ? 's' : ''}</span></td>`;
+    tbody.appendChild(hdr);
+    entries.forEach(({ s, i }) => {
+      const isConc = !!s.conc;
+      const tr = document.createElement('tr');
+      tr.className = 'exp-row';
+      tr.innerHTML = `
+        <td style="text-align:center;"><input class="atk-inp" data-spell="${i}" data-sk="level" value="${esc(s.level||'0')}" placeholder="0" style="width:38px;text-align:center;font-size:0.78rem;"></td>
+        <td><input class="atk-inp" data-spell="${i}" data-sk="name"   value="${esc(s.name||'')}"   placeholder="Nom du sort"></td>
+        <td><input class="atk-inp" data-spell="${i}" data-sk="degat"  value="${esc(s.degat||'')}"  placeholder="2d6" style="font-size:0.75rem;"></td>
+        <td><input class="atk-inp" data-spell="${i}" data-sk="typeDegat" value="${esc(s.typeDegat||'')}" placeholder="feu…" style="font-size:0.75rem;"></td>
+        <td><input class="atk-inp" data-spell="${i}" data-sk="portee" value="${esc(s.portee||'')}" placeholder="18m" style="font-size:0.75rem;"></td>
+        <td><input class="atk-inp" data-spell="${i}" data-sk="action" value="${esc(s.action||'')}" placeholder="Action" style="font-size:0.75rem;"></td>
+        <td style="text-align:center;"><button class="spell-conc-btn${isConc?' active':''}" data-conc-spell="${i}" title="Concentrer sur ce sort">◉</button></td>
+        <td style="text-align:center;"><button class="exp-toggle${s._open?' open':''}" data-spell-toggle="${i}" title="Description">▾</button></td>
+        <td><button class="atk-del" data-del-spell="${i}" title="Supprimer">✕</button></td>
+      `;
+      tbody.appendChild(tr);
+      if (s._open) {
+        const dr = document.createElement('tr');
+        dr.className = 'exp-desc-row';
+        dr.innerHTML = `<td colspan="9"><textarea class="exp-desc-area" data-spell="${i}" data-sk="desc" placeholder="Description, composantes, concentration…">${esc(s.desc||'')}</textarea></td>`;
+        tbody.appendChild(dr);
+      }
+    });
   });
 }
 
@@ -5047,7 +5153,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (el.dataset.slot) { C().emplacementsSort = C().emplacementsSort || {}; C().emplacementsSort[el.dataset.slot] = parseInt(el.value)||0; triggerSave(); }
     if (el.dataset.used) { C().emplacementsUtilises = C().emplacementsUtilises || {}; C().emplacementsUtilises[el.dataset.used] = parseInt(el.value)||0; triggerSave(); }
     // Attaques
-    if (el.dataset.atk !== undefined && el.dataset.ak) { C().attaques = C().attaques || []; if (C().attaques[el.dataset.atk]) C().attaques[el.dataset.atk][el.dataset.ak] = el.value; triggerSave(); }
+    if (el.dataset.atk !== undefined && el.dataset.ak) {
+      C().attaques = C().attaques || [];
+      const atk = C().attaques[parseInt(el.dataset.atk)];
+      if (atk) {
+        if (el.type === 'checkbox') atk[el.dataset.ak] = el.checked;
+        else atk[el.dataset.ak] = el.value;
+        renderAttacks(); triggerSave();
+      }
+    }
     // Custom features
     if (el.dataset.feat !== undefined && el.dataset.fk) {
       C().customFeatures = C().customFeatures || [];
@@ -5074,7 +5188,8 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('skills-col').addEventListener('click', e => {
     const dot = e.target.closest('[data-sk]');
     if (!dot) return;
-    C()[dot.dataset.sk] = !C()[dot.dataset.sk];
+    const cur = Math.min(2, Math.max(0, parseInt(C()[dot.dataset.sk]) || (C()[dot.dataset.sk] === true ? 1 : 0)));
+    C()[dot.dataset.sk] = (cur + 1) % 3;
     renderSkills(); triggerSave();
   });
 
@@ -5095,7 +5210,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-add-attack').addEventListener('click', () => {
     if (!playerData) return;
     C().attaques = C().attaques || [];
-    C().attaques.push({ name:'', bonus:'', degats:'' });
+    C().attaques.push({ name:'', degats:'', typeDegat:'', atkType:'', prof:true, bonus:'' });
     renderAttacks(); triggerSave();
   });
   document.getElementById('attack-tbody').addEventListener('click', e => {
@@ -5103,6 +5218,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!btn) return;
     C().attaques.splice(parseInt(btn.dataset.del), 1);
     renderAttacks(); triggerSave();
+  });
+  document.getElementById('attack-tbody').addEventListener('change', e => {
+    const el = e.target;
+    if (el.dataset.atk !== undefined && el.dataset.ak) {
+      C().attaques = C().attaques || [];
+      const atk = C().attaques[parseInt(el.dataset.atk)];
+      if (atk) {
+        if (el.type === 'checkbox') atk[el.dataset.ak] = el.checked;
+        else atk[el.dataset.ak] = el.value;
+        renderAttacks(); triggerSave();
+      }
+    }
   });
 
   // Ressources
@@ -5129,6 +5256,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Repos
   document.getElementById('btn-short-rest').addEventListener('click', doShortRest);
+  // Jack of All Trades toggle
+  document.getElementById('jat-check')?.addEventListener('change', e => {
+    if (!playerData) return;
+    C().jackOfAllTrades = e.target.checked;
+    renderSkills(); triggerSave();
+  });
   document.getElementById('btn-long-rest').addEventListener('click', doLongRest);
 
   // Conditions
@@ -5175,13 +5308,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const delBtn = e.target.closest('[data-del-spell]');
     if (delBtn) {
       C().spells.splice(parseInt(delBtn.dataset.delSpell), 1);
-      renderSpells(); triggerSave(); return;
+      renderSpells(); updateSpellCalcs(); triggerSave(); return;
     }
     const togBtn = e.target.closest('[data-spell-toggle]');
     if (togBtn) {
       const si = parseInt(togBtn.dataset.spellToggle);
       C().spells[si]._open = !C().spells[si]._open;
       renderSpells(); return;
+    }
+    // Concentration button
+    const concBtn = e.target.closest('[data-conc-spell]');
+    if (concBtn) {
+      const idx = parseInt(concBtn.dataset.concSpell);
+      const spells = C().spells || [];
+      const wasConc = !!spells[idx]?.conc;
+      spells.forEach(s => { s.conc = false; });
+      if (!wasConc) {
+        if (spells[idx]) spells[idx].conc = true;
+        const conds = C().conditions || [];
+        if (!conds.includes('Concentré')) conds.push('Concentré');
+        C().conditions = conds;
+      } else {
+        C().conditions = (C().conditions || []).filter(c => c !== 'Concentré');
+      }
+      renderSpells(); renderConditions(); triggerSave();
     }
   });
 
