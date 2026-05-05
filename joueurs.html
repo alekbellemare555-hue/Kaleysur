@@ -5696,8 +5696,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  /* ── Custom subclass text input ── */
-  document.getElementById('sousclasse-custom-input').addEventListener('input', e => {
+  /* ── Custom subclass text input (legacy guard — element removed, handled per mc-row) ── */
+  document.getElementById('sousclasse-custom-input')?.addEventListener('input', e => {
     if (!playerData) return;
     C().sousClasse = e.target.value;
     renderClassFeatures();
@@ -5712,8 +5712,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const wrap = document.getElementById('sousclasse-custom-wrap');
       const inp  = document.getElementById('sousclasse-custom-input');
       if (el.value === '__custom__') {
-        wrap.style.display = 'block';
-        inp.focus();
+        if (wrap) wrap.style.display = 'block';
+        if (inp) inp.focus();
         // Don't save "__custom__" to data — wait for custom input
       } else {
         wrap.style.display = 'none';
