@@ -116,29 +116,59 @@
     .field-input-md { width:110px; text-align:center; }
 
     /* ── Caractéristiques ── */
-    .ability-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:0.6rem; margin-bottom:1rem; }
-    .ability-box { background:#13131a; border:1px solid #2a2a3a; border-radius:7px; text-align:center; padding:0.6rem 0.3rem; }
-    .ability-name { font-size:0.65rem; text-transform:uppercase; letter-spacing:0.06em; color:#888; margin-bottom:0.25rem; }
-    .ability-score-input { width:48px; background:#0d0d14; border:1px solid #2a2a3a; border-radius:4px; color:#e8e0d0; font-size:1.1rem; font-weight:600; text-align:center; padding:0.2rem; margin:0 auto; display:block; }
-    .ability-score-input:focus { outline:none; border-color:var(--gold-dark); }
-    .ability-mod { font-size:0.85rem; color:var(--gold); margin-top:0.2rem; font-weight:600; }
+    .ability-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:0.6rem; margin-bottom:0.5rem; }
+    .ability-box { background:#13131a; border:1px solid #2a2a3a; border-radius:8px; text-align:center; padding:0.7rem 0.3rem 0.55rem; transition:border-color var(--transition); }
+    .ability-box:hover { border-color:var(--gold-dark); }
+    .ability-name { font-size:0.6rem; text-transform:uppercase; letter-spacing:0.07em; color:#777; margin-bottom:0.15rem; font-family:'Cinzel',serif; }
+    .ability-mod { font-size:1.55rem; font-weight:700; color:var(--gold); line-height:1; margin-bottom:0.3rem; }
+    .ability-score-input { width:42px; background:#0d0d14; border:1px solid #2a2a3a; border-radius:4px; color:#aaa; font-size:0.82rem; text-align:center; padding:0.2rem; margin:0 auto; display:block; }
+    .ability-score-input:focus { outline:none; border-color:var(--gold-dark); color:#e8e0d0; }
 
     /* ── Sauvegardes & compétences ── */
     .save-skill-grid { display:grid; grid-template-columns:1fr 1fr; gap:0 1rem; }
-    .sv-row, .sk-row { display:flex; align-items:center; gap:0.4rem; padding:0.18rem 0; font-size:0.82rem; color:#ccc; }
-    .prof-dot { width:12px; height:12px; border-radius:50%; border:2px solid #3a3a4a; background:transparent; cursor:pointer; flex-shrink:0; transition:background var(--transition), border-color var(--transition); }
+    .sv-row, .sk-row { display:flex; align-items:center; gap:0.4rem; padding:0.22rem 0.35rem; font-size:0.82rem; color:#ccc; border-radius:3px; }
+    .sv-row:nth-child(even), .sk-row:nth-child(even) { background:rgba(255,255,255,0.025); }
+    .prof-dot { width:11px; height:11px; border-radius:50%; border:2px solid #3a3a4a; background:transparent; cursor:pointer; flex-shrink:0; transition:background var(--transition), border-color var(--transition); }
     .prof-dot.on { background:var(--gold-dark); border-color:var(--gold); }
-    .sv-val, .sk-val { font-size:0.78rem; color:var(--gold); min-width:22px; text-align:right; font-weight:600; }
+    .sv-val, .sk-val { font-size:0.78rem; color:var(--gold); min-width:26px; text-align:right; font-weight:600; }
 
     /* ── Combat ── */
-    .combat-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(100px,1fr)); gap:0.65rem; }
+    .combat-stats-bubbles { display:flex; gap:0.75rem; justify-content:center; flex-wrap:wrap; margin-bottom:1rem; }
+    .stat-bubble { width:80px; height:80px; border-radius:50%; border:2px solid #2a2a3a; background:#13131a; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; transition:border-color var(--transition), box-shadow var(--transition); flex-shrink:0; }
+    .stat-bubble:hover { border-color:var(--gold-dark); box-shadow:0 0 14px rgba(201,169,110,0.12); }
+    .stat-bubble-label { font-size:0.57rem; text-transform:uppercase; letter-spacing:0.07em; color:#777; font-family:'Cinzel',serif; margin-bottom:0.1rem; }
+    .stat-bubble input { width:48px; font-size:1.3rem; font-weight:700; color:#e8e0d0; text-align:center; background:transparent; border:none; outline:none; padding:0; }
+    .stat-bubble input:focus { color:var(--gold); }
+    .stat-bubble-sub { font-size:0.58rem; color:#555; margin-top:0.05rem; }
+    .combat-pv-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.65rem; margin-bottom:0.75rem; }
     .combat-field { display:flex; flex-direction:column; align-items:center; gap:0.2rem; text-align:center; }
+    .combat-dv-row { display:flex; gap:1rem; justify-content:center; align-items:center; flex-wrap:wrap; font-size:0.82rem; color:#aaa; margin-bottom:0.5rem; }
+    /* HP quick modify */
+    .hp-quick { display:flex; gap:0.5rem; align-items:center; justify-content:center; margin-top:0.65rem; flex-wrap:wrap; }
+    .hp-quick-input { width:58px; background:#0d0d14; border:1px solid #2a2a3a; border-radius:5px; color:#e8e0d0; font-size:1rem; text-align:center; padding:0.3rem; }
+    .hp-quick-input:focus { outline:none; border-color:var(--gold-dark); }
+    .btn-heal { background:rgba(106,186,106,0.12); border:1px solid rgba(106,186,106,0.35); color:var(--success) !important; }
+    .btn-heal:hover { background:rgba(106,186,106,0.22); }
+    .btn-dmg  { background:rgba(201,122,122,0.12); border:1px solid rgba(201,122,122,0.35); color:var(--danger) !important; }
+    .btn-dmg:hover  { background:rgba(201,122,122,0.22); }
+    /* Spell slot circles */
+    .spell-slots-wrap { display:flex; flex-direction:column; gap:0.35rem; margin-bottom:0.85rem; }
+    .spell-slot-row { display:flex; align-items:center; gap:0.55rem; padding:0.15rem 0; }
+    .spell-slot-level { font-size:0.65rem; color:#888; width:38px; text-transform:uppercase; letter-spacing:0.04em; flex-shrink:0; }
+    .spell-slot-circles { display:flex; gap:0.28rem; flex-wrap:wrap; flex:1; }
+    .spell-slot-circle { width:17px; height:17px; border-radius:50%; border:2px solid var(--gold-dark); background:transparent; cursor:pointer; transition:background var(--transition), border-color var(--transition), transform 0.1s; flex-shrink:0; }
+    .spell-slot-circle.used { background:var(--gold-dark); }
+    .spell-slot-circle:hover { border-color:var(--gold); transform:scale(1.15); }
+    .spell-slot-total-inp { width:30px; font-size:0.72rem; background:#0d0d14; border:1px solid #2a2a3a; border-radius:3px; color:#777; text-align:center; padding:0.1rem; flex-shrink:0; }
+    .spell-slot-total-inp:focus { outline:none; border-color:var(--gold-dark); color:#e8e0d0; }
 
     /* ── Barre HP ── */
     .hp-bar-wrap { margin:0.85rem 0 0.25rem; }
     .hp-bar-row { display:flex; justify-content:space-between; font-size:0.72rem; color:#888; margin-bottom:0.3rem; }
-    .hp-bar-track { height:11px; background:#13131a; border:1px solid #2a2a3a; border-radius:6px; overflow:hidden; }
-    .hp-bar-fill { height:100%; border-radius:6px; transition:width 0.45s ease, background 0.45s ease; background:var(--success); }
+    .hp-bar-track { position:relative; height:11px; background:#13131a; border:1px solid #2a2a3a; border-radius:6px; overflow:hidden; }
+    .hp-bar-fill { position:absolute; left:0; top:0; height:100%; border-radius:6px; transition:width 0.45s ease, background 0.45s ease; background:var(--success); z-index:1; }
+    .hp-bar-temp { position:absolute; right:0; top:0; height:100%; background:#3d7abf; border-radius:0 6px 6px 0; transition:width 0.45s ease; z-index:2; display:none; }
+    .hp-bar-temp-label { font-size:0.68rem; color:#5a9fd4; margin-left:0.4rem; font-style:italic; }
 
     /* ── Attaques ── */
     .attack-table { width:100%; border-collapse:collapse; font-size:0.82rem; }
@@ -398,6 +428,49 @@
     /* ── Toggle visibilité section ── */
     .sec-vis-btn { font-size:0.7rem !important; padding:0.18rem 0.55rem !important; opacity:0.6; }
     .sec-vis-btn.visible { opacity:1; border-color:var(--gold-dark); color:var(--gold); background:rgba(201,169,110,0.08); }
+
+    /* ── Inspiration ── */
+    .inspiration-btn { font-size:1.1rem; background:none; border:1px solid #3a3a4a; border-radius:6px; padding:0.25rem 0.55rem; cursor:pointer; transition:all var(--transition); color:#555; line-height:1; }
+    .inspiration-btn:hover { border-color:var(--gold-dark); color:var(--gold-dark); }
+    .inspiration-btn.active { color:#f0c040; border-color:#b08020; background:rgba(240,192,64,0.12); text-shadow:0 0 8px rgba(240,192,64,0.6); }
+    .inspiration-btn.active::after { content:' Inspiration'; font-size:0.65rem; font-family:'Cinzel',serif; letter-spacing:0.05em; vertical-align:middle; }
+
+    /* ── Épuisement ── */
+    .exhaustion-row { display:flex; align-items:center; gap:0.5rem; margin-top:0.65rem; flex-wrap:wrap; }
+    .exhaustion-label { font-size:0.72rem; color:#888; text-transform:uppercase; letter-spacing:0.05em; }
+    .exhaustion-pips { display:flex; gap:0.3rem; }
+    .exhaust-pip { width:16px; height:16px; border-radius:3px; border:1px solid #3a3a4a; background:#0f0f18; cursor:pointer; transition:all var(--transition); }
+    .exhaust-pip.on { background:#7a3030; border-color:#c04040; }
+    .exhaust-pip:hover { border-color:#888; }
+    .exhaustion-desc { font-size:0.68rem; color:#c04040; font-style:italic; margin-left:0.3rem; }
+
+    /* ── Badge Concentration ── */
+    .conc-badge { display:none; align-items:center; gap:0.4rem; background:rgba(120,60,200,0.15); border:1px solid rgba(140,80,220,0.4); border-radius:6px; padding:0.3rem 0.65rem; margin-bottom:0.75rem; font-size:0.78rem; color:#c0a0f0; font-style:italic; animation:conc-pulse 2.5s ease-in-out infinite; }
+    .conc-badge.visible { display:flex; }
+    .conc-badge-dot { width:8px; height:8px; border-radius:50%; background:#a070e0; flex-shrink:0; animation:conc-pulse 2.5s ease-in-out infinite; }
+    @keyframes conc-pulse { 0%,100%{opacity:1;box-shadow:0 0 4px rgba(160,112,224,0.3)} 50%{opacity:0.75;box-shadow:0 0 10px rgba(160,112,224,0.6)} }
+
+    /* ── Pulsation danger HP ── */
+    @keyframes hp-danger { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 16px rgba(201,100,100,0.35) inset} }
+    .hp-danger { animation:hp-danger 1.8s ease-in-out infinite; }
+
+    /* ── Onglet Aide (cheat sheet) ── */
+    .cheat-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    @media(max-width:700px){ .cheat-grid { grid-template-columns:1fr; } }
+    .cheat-section { background:#13131a; border:1px solid #2a2a3a; border-radius:var(--radius); padding:1rem 1.1rem; }
+    .cheat-section h3 { font-family:'Cinzel',serif; font-size:0.82rem; color:var(--gold); margin:0 0 0.75rem; letter-spacing:0.05em; text-transform:uppercase; padding-bottom:0.4rem; border-bottom:1px solid #2a2a3a; }
+    .cheat-item { margin-bottom:0.55rem; }
+    .cheat-item-name { font-family:'Cinzel',serif; font-size:0.75rem; color:#e8e0d0; letter-spacing:0.03em; }
+    .cheat-item-badge { display:inline-block; font-size:0.58rem; padding:0.05rem 0.35rem; border-radius:99px; margin-left:0.35rem; vertical-align:middle; font-family:sans-serif; letter-spacing:0.02em; text-transform:uppercase; }
+    .badge-action { background:rgba(106,186,106,0.15); border:1px solid rgba(106,186,106,0.3); color:#8aba8a; }
+    .badge-bonus  { background:rgba(201,169,110,0.15); border:1px solid rgba(201,169,110,0.3); color:var(--gold); }
+    .badge-react  { background:rgba(90,150,210,0.15);  border:1px solid rgba(90,150,210,0.3);  color:#7ab0e0; }
+    .badge-free   { background:rgba(150,150,150,0.12); border:1px solid rgba(150,150,150,0.25); color:#999; }
+    .cheat-item-desc { font-size:0.75rem; color:#777; margin-top:0.12rem; line-height:1.4; }
+    .cond-cheat-item { margin-bottom:0.5rem; padding-bottom:0.5rem; border-bottom:1px solid #1e1e28; }
+    .cond-cheat-item:last-child { border-bottom:none; margin-bottom:0; }
+    .cond-cheat-name { font-family:'Cinzel',serif; font-size:0.74rem; color:#e8e0d0; letter-spacing:0.03em; }
+    .cond-cheat-desc { font-size:0.73rem; color:#777; margin-top:0.1rem; line-height:1.4; }
   </style>
 
   <!-- PWA -->
@@ -529,6 +602,7 @@
       </div>
       <div class="dash-actions">
         <span class="save-badge" id="save-badge"></span>
+        <button class="inspiration-btn" id="btn-inspiration" title="Inspiration (avantage sur un jet)">✦</button>
         <button class="btn btn-sm" id="btn-layout-edit" title="Réorganiser les sections">⠿ Organiser</button>
         <button class="btn btn-sm btn-danger" id="btn-logout">Déconnexion</button>
       </div>
@@ -543,6 +617,7 @@
       <button class="tab-btn" data-tab="inventaire">🎒 Inventaire</button>
       <button class="tab-btn" data-tab="notes">📜 Notes</button>
       <button class="tab-btn" data-tab="parametres">⚙ Paramètres</button>
+      <button class="tab-btn" data-tab="aide">📋 Aide</button>
       <button class="tab-btn" data-tab="admin" id="tab-admin-btn" style="display:none;color:var(--danger);">👁 Admin</button>
     </div>
 
@@ -686,19 +761,27 @@
 
         <div class="sheet-section" data-sec="combat">
           <div class="sheet-section-title">Combat</div>
-          <div class="combat-grid">
-            <div class="combat-field">
-              <label class="field-label">Classe d'Armure</label>
-              <input type="number" class="field-input field-input-sm" data-f="ca" value="10" min="0">
+          <!-- Bulles CA / Initiative / Vitesse -->
+          <div class="combat-stats-bubbles">
+            <div class="stat-bubble" title="Classe d'Armure">
+              <div class="stat-bubble-label">CA</div>
+              <input type="number" data-f="ca" value="10" min="0">
+              <div class="stat-bubble-sub">Armure</div>
             </div>
-            <div class="combat-field">
-              <label class="field-label">Initiative</label>
-              <input type="number" class="field-input field-input-sm" data-f="initiative" value="0">
+            <div class="stat-bubble" title="Initiative (auto DEX mod)">
+              <div class="stat-bubble-label">Initiative</div>
+              <input type="number" data-f="initiative" value="0" id="inp-initiative">
+              <div class="stat-bubble-sub" id="init-auto-label">auto DEX</div>
             </div>
-            <div class="combat-field">
-              <label class="field-label">Vitesse (pi.)</label>
-              <input type="number" class="field-input field-input-sm" data-f="vitesse" value="30" min="0" step="5">
+            <div class="stat-bubble" title="Vitesse en pieds">
+              <div class="stat-bubble-label">Vitesse</div>
+              <input type="number" data-f="vitesse" value="30" min="0" step="5">
+              <div class="stat-bubble-sub">pieds</div>
             </div>
+          </div>
+
+          <!-- PV + Dés de vie -->
+          <div class="combat-pv-row">
             <div class="combat-field">
               <label class="field-label">PV Maximum</label>
               <input type="number" class="field-input field-input-sm" data-f="pvMax" value="0" min="0" id="inp-pvMax">
@@ -711,6 +794,29 @@
               <label class="field-label">PV Temporaires</label>
               <input type="number" class="field-input field-input-sm" data-f="pvTemp" value="0" min="0">
             </div>
+          </div>
+
+          <!-- Barre de PV -->
+          <div class="hp-bar-wrap">
+            <div class="hp-bar-row">
+              <span id="hp-bar-label">PV : 0 / 0</span>
+              <span id="hp-bar-pct">0%</span>
+            </div>
+            <div class="hp-bar-track">
+              <div class="hp-bar-fill" id="hp-bar-fill" style="width:0%;"></div>
+              <div class="hp-bar-temp" id="hp-bar-temp"></div>
+            </div>
+          </div>
+
+          <!-- ± PV rapide -->
+          <div class="hp-quick">
+            <button class="btn btn-sm btn-dmg" id="btn-apply-dmg">⚔ Blesser</button>
+            <input type="number" class="hp-quick-input" id="hp-quick-val" min="0" placeholder="0">
+            <button class="btn btn-sm btn-heal" id="btn-apply-heal">✚ Soigner</button>
+          </div>
+
+          <!-- Dés de vie -->
+          <div class="combat-dv-row" style="margin-top:0.85rem;">
             <div class="combat-field">
               <label class="field-label">Dé de Vie</label>
               <select class="field-input field-input-md" data-f="deVie">
@@ -721,15 +827,6 @@
               <label class="field-label">Nb Dés de Vie</label>
               <input type="number" class="field-input field-input-sm" data-f="nbDeVie" value="1" min="0">
             </div>
-          </div>
-  
-          <!-- Barre de PV -->
-          <div class="hp-bar-wrap">
-            <div class="hp-bar-row">
-              <span id="hp-bar-label">PV : 0 / 0</span>
-              <span id="hp-bar-pct">0%</span>
-            </div>
-            <div class="hp-bar-track"><div class="hp-bar-fill" id="hp-bar-fill" style="width:0%;"></div></div>
           </div>
   
           <!-- Jets de mort -->
@@ -772,6 +869,18 @@
         <div class="sheet-section" data-sec="conditions">
           <div class="sheet-section-title">Conditions</div>
           <div class="cond-grid" id="conditions-grid"></div>
+          <div class="exhaustion-row">
+            <span class="exhaustion-label">Exhaustion</span>
+            <div class="exhaustion-pips" id="exhaustion-pips">
+              <div class="exhaust-pip" data-ex="1" title="Level 1 — −1 to all d20 Tests"></div>
+              <div class="exhaust-pip" data-ex="2" title="Level 2 — −2 to all d20 Tests"></div>
+              <div class="exhaust-pip" data-ex="3" title="Level 3 — −3 to all d20 Tests"></div>
+              <div class="exhaust-pip" data-ex="4" title="Level 4 — −4 to all d20 Tests"></div>
+              <div class="exhaust-pip" data-ex="5" title="Level 5 — −5 + Speed halved"></div>
+              <div class="exhaust-pip" data-ex="6" title="Level 6 — Death"></div>
+            </div>
+            <span class="exhaustion-desc" id="exhaustion-desc"></span>
+          </div>
         </div>
   
         <!-- Attaques -->
@@ -796,6 +905,10 @@
 
         <div class="sheet-section" data-sec="sorts">
           <div class="sheet-section-title">Sorts</div>
+          <div class="conc-badge" id="conc-badge">
+            <div class="conc-badge-dot"></div>
+            <span>Concentrating — breaking concentration ends this spell</span>
+          </div>
           <div class="sheet-grid" style="margin-bottom:0.75rem;">
             <div class="field-group">
               <label class="field-label">Classe de sort</label>
@@ -1058,6 +1171,153 @@
     </div><!-- /tab-parametres -->
 
     <!-- ── Onglet Admin ── -->
+    <!-- ── Onglet Aide ── -->
+    <div class="tab-panel" id="tab-aide">
+      <div class="cheat-grid">
+
+        <!-- Actions de combat -->
+        <div class="cheat-section">
+          <h3>⚔ Combat Actions</h3>
+
+          <div class="cheat-item">
+            <div class="cheat-item-name">Attack <span class="cheat-item-badge badge-action">Action</span></div>
+            <div class="cheat-item-desc">Make one or more weapon/unarmed attack rolls. Extra Attack grants more.</div>
+          </div>
+          <div class="cheat-item">
+            <div class="cheat-item-name">Cast a Spell <span class="cheat-item-badge badge-action">Action</span><span class="cheat-item-badge badge-bonus">Bonus</span><span class="cheat-item-badge badge-react">Reaction</span></div>
+            <div class="cheat-item-desc">Cast a spell with a casting time of Action, Bonus Action, or Reaction.</div>
+          </div>
+          <div class="cheat-item">
+            <div class="cheat-item-name">Dash <span class="cheat-item-badge badge-action">Action</span></div>
+            <div class="cheat-item-desc">Gain extra movement equal to your Speed this turn (doubled if already dashing).</div>
+          </div>
+          <div class="cheat-item">
+            <div class="cheat-item-name">Disengage <span class="cheat-item-badge badge-action">Action</span></div>
+            <div class="cheat-item-desc">Your movement doesn't provoke opportunity attacks for the rest of the turn.</div>
+          </div>
+          <div class="cheat-item">
+            <div class="cheat-item-name">Dodge <span class="cheat-item-badge badge-action">Action</span></div>
+            <div class="cheat-item-desc">Until your next turn: attackers have disadvantage, you have advantage on DEX saves. Ends if Incapacitated or Speed = 0.</div>
+          </div>
+          <div class="cheat-item">
+            <div class="cheat-item-name">Grapple <span class="cheat-item-badge badge-action">Action</span></div>
+            <div class="cheat-item-desc">Attack roll vs. STR/DEX (Acrobatics or Athletics) check. On hit: target is Grappled (Speed 0). You must have a free hand.</div>
+          </div>
+          <div class="cheat-item">
+            <div class="cheat-item-name">Help <span class="cheat-item-badge badge-action">Action</span></div>
+            <div class="cheat-item-desc">Give one creature advantage on its next ability check, or on its next attack roll against a target within 5 ft of you.</div>
+          </div>
+          <div class="cheat-item">
+            <div class="cheat-item-name">Hide <span class="cheat-item-badge badge-action">Action</span></div>
+            <div class="cheat-item-desc">Stealth (DEX) check vs. passive Perception. Must be heavily obscured or behind cover. Become Invisible to those who fail.</div>
+          </div>
+          <div class="cheat-item">
+            <div class="cheat-item-name">Influence <span class="cheat-item-badge badge-action">Action</span></div>
+            <div class="cheat-item-desc">Make a Deception, Intimidation, Performance, or Persuasion check to alter a creature's attitude.</div>
+          </div>
+          <div class="cheat-item">
+            <div class="cheat-item-name">Ready <span class="cheat-item-badge badge-action">Action</span></div>
+            <div class="cheat-item-desc">Choose a trigger and an action/move. Use your Reaction to execute it when the trigger occurs before your next turn. Holding a spell requires Concentration.</div>
+          </div>
+          <div class="cheat-item">
+            <div class="cheat-item-name">Search <span class="cheat-item-badge badge-action">Action</span></div>
+            <div class="cheat-item-desc">Make a Perception or Investigation check to find something hidden.</div>
+          </div>
+          <div class="cheat-item">
+            <div class="cheat-item-name">Shove <span class="cheat-item-badge badge-action">Action</span></div>
+            <div class="cheat-item-desc">Attack roll vs. STR/DEX check. On hit: push 5 ft away or knock Prone.</div>
+          </div>
+          <div class="cheat-item">
+            <div class="cheat-item-name">Study <span class="cheat-item-badge badge-action">Action</span></div>
+            <div class="cheat-item-desc">Make an Arcana, History, Insight, Medicine, Nature, or Religion check to recall info or assess a creature's capabilities.</div>
+          </div>
+          <div class="cheat-item">
+            <div class="cheat-item-name">Utilize <span class="cheat-item-badge badge-action">Action</span></div>
+            <div class="cheat-item-desc">Activate a magic item or interact with an object beyond a simple free interaction.</div>
+          </div>
+          <div class="cheat-item">
+            <div class="cheat-item-name">Opportunity Attack <span class="cheat-item-badge badge-react">Reaction</span></div>
+            <div class="cheat-item-desc">Triggered when a creature you can see leaves your reach without Disengaging. Make one melee attack against it.</div>
+          </div>
+          <div class="cheat-item">
+            <div class="cheat-item-name">Free Object Interaction <span class="cheat-item-badge badge-free">Free</span></div>
+            <div class="cheat-item-desc">Draw/sheathe a weapon, open a door, pick up an item, etc. One free per turn; second costs an Action.</div>
+          </div>
+        </div>
+
+        <!-- Conditions -->
+        <div class="cheat-section">
+          <h3>🩻 Conditions</h3>
+
+          <div class="cond-cheat-item">
+            <div class="cond-cheat-name">Blinded</div>
+            <div class="cond-cheat-desc">Can't see. Attacks against you have advantage; your attacks have disadvantage. Auto-fail sight-based checks.</div>
+          </div>
+          <div class="cond-cheat-item">
+            <div class="cond-cheat-name">Charmed</div>
+            <div class="cond-cheat-desc">Can't attack or target the charmer with harmful abilities. Charmer has advantage on social checks against you.</div>
+          </div>
+          <div class="cond-cheat-item">
+            <div class="cond-cheat-name">Deafened</div>
+            <div class="cond-cheat-desc">Can't hear. Auto-fail hearing-based checks. Verbal spell components still work.</div>
+          </div>
+          <div class="cond-cheat-item">
+            <div class="cond-cheat-name">Exhaustion <span style="color:#666;font-size:0.68rem;">(levels 1–6)</span></div>
+            <div class="cond-cheat-desc">Each level: −1 to all d20 Tests (cumulative). Level 5: Speed halved. Level 6: death. Removed 1 level per Long Rest.</div>
+          </div>
+          <div class="cond-cheat-item">
+            <div class="cond-cheat-name">Frightened</div>
+            <div class="cond-cheat-desc">Disadvantage on ability checks and attacks while source of fear is in line of sight. Can't willingly move closer to the source.</div>
+          </div>
+          <div class="cond-cheat-item">
+            <div class="cond-cheat-name">Grappled</div>
+            <div class="cond-cheat-desc">Speed becomes 0. Ends if the grappler is Incapacitated or if you escape (STR/DEX vs. grappler's Athletics).</div>
+          </div>
+          <div class="cond-cheat-item">
+            <div class="cond-cheat-name">Incapacitated</div>
+            <div class="cond-cheat-desc">Can't take Actions or Reactions.</div>
+          </div>
+          <div class="cond-cheat-item">
+            <div class="cond-cheat-name">Invisible</div>
+            <div class="cond-cheat-desc">Can't be seen without special senses. Your attacks have advantage; attacks against you have disadvantage. Still detectable by sound, tracks, etc.</div>
+          </div>
+          <div class="cond-cheat-item">
+            <div class="cond-cheat-name">Paralyzed</div>
+            <div class="cond-cheat-desc">Incapacitated, can't move or speak. Auto-fail STR and DEX saves. Attacks against you have advantage. Hits within 5 ft are critical hits.</div>
+          </div>
+          <div class="cond-cheat-item">
+            <div class="cond-cheat-name">Petrified</div>
+            <div class="cond-cheat-desc">Turned to stone. Incapacitated, can't move or speak. Resistance to all damage. Immune to poison and disease. Auto-fail STR and DEX saves.</div>
+          </div>
+          <div class="cond-cheat-item">
+            <div class="cond-cheat-name">Poisoned</div>
+            <div class="cond-cheat-desc">Disadvantage on attack rolls and ability checks.</div>
+          </div>
+          <div class="cond-cheat-item">
+            <div class="cond-cheat-name">Prone</div>
+            <div class="cond-cheat-desc">Can only crawl (costs double movement) or stand up (costs half Speed). Melee attacks against you have advantage; ranged attacks have disadvantage. Your attacks have disadvantage.</div>
+          </div>
+          <div class="cond-cheat-item">
+            <div class="cond-cheat-name">Restrained</div>
+            <div class="cond-cheat-desc">Speed becomes 0. Attacks against you have advantage; your attacks have disadvantage. Disadvantage on DEX saves.</div>
+          </div>
+          <div class="cond-cheat-item">
+            <div class="cond-cheat-name">Stunned</div>
+            <div class="cond-cheat-desc">Incapacitated, can't move, can only speak falteringly. Auto-fail STR and DEX saves. Attacks against you have advantage.</div>
+          </div>
+          <div class="cond-cheat-item">
+            <div class="cond-cheat-name">Unconscious</div>
+            <div class="cond-cheat-desc">Incapacitated, can't move or speak. Unaware of surroundings. Prone. Auto-fail STR and DEX saves. Attacks have advantage. Hits within 5 ft are critical hits.</div>
+          </div>
+          <div class="cond-cheat-item">
+            <div class="cond-cheat-name">Concentration</div>
+            <div class="cond-cheat-desc">Taking damage: CON save (DC = 10 or half damage, whichever is higher). Failed save, being Incapacitated, or casting another Concentration spell breaks it.</div>
+          </div>
+        </div>
+
+      </div><!-- /cheat-grid -->
+    </div><!-- /tab-aide -->
+
     <div class="tab-panel" id="tab-admin">
       <div class="sheet-section">
         <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
@@ -2721,8 +2981,12 @@ function updateHpBar() {
   const c = C();
   const pvMax = parseInt(c.pvMax) || 0;
   const pvCur = parseInt(c.pvActuel) || 0;
+  const pvTemp = parseInt(c.pvTemp) || 0;
+  // La barre représente pvMax ; la portion bleue = pvTemp (capped à pvMax pour l'affichage)
   const pct = pvMax > 0 ? Math.min(100, Math.max(0, Math.round(pvCur / pvMax * 100))) : 0;
+  const tempPct = pvMax > 0 ? Math.min(40, Math.round(pvTemp / pvMax * 100)) : 0; // cap à 40% visuel
   const fill  = document.getElementById('hp-bar-fill');
+  const tempBar = document.getElementById('hp-bar-temp');
   const label = document.getElementById('hp-bar-label');
   const pctEl = document.getElementById('hp-bar-pct');
   if (!fill) return;
@@ -2731,8 +2995,41 @@ function updateHpBar() {
   if (pct < 50) color = '#c9a96e';
   if (pct < 25) color = '#c97a7a';
   fill.style.background = color;
-  if (label) label.textContent = 'PV : ' + pvCur + ' / ' + pvMax;
+  // Barre bleue PV temporaires
+  if (tempBar) {
+    if (pvTemp > 0) {
+      tempBar.style.display = 'block';
+      tempBar.style.width = tempPct + '%';
+    } else {
+      tempBar.style.display = 'none';
+    }
+  }
+  // Label
+  const tempStr = pvTemp > 0 ? ` +${pvTemp}✦` : '';
+  if (label) label.innerHTML = 'PV : ' + pvCur + ' / ' + pvMax + (pvTemp > 0 ? ` <span class="hp-bar-temp-label">+${pvTemp} temp</span>` : '');
   if (pctEl) pctEl.textContent = pct + '%';
+  // Sync champs PV
+  const inpCur = document.getElementById('inp-pvActuel');
+  if (inpCur && document.activeElement !== inpCur) inpCur.value = pvCur;
+  // Pulsation danger si PV < 25%
+  const combatSec = document.querySelector('.sheet-section[data-sec="combat"]');
+  if (combatSec) combatSec.classList.toggle('hp-danger', pct > 0 && pct < 25);
+}
+
+function applyHpChange(delta) {
+  if (!playerData) return;
+  const c = C();
+  const max = parseInt(c.pvMax) || 0;
+  c.pvActuel = Math.max(0, Math.min(max, (parseInt(c.pvActuel) || 0) + delta));
+  updateHpBar();
+  triggerSave();
+  // Flash feedback
+  const bar = document.getElementById('hp-bar-fill');
+  if (bar) {
+    bar.style.transition = 'none';
+    bar.style.filter = delta > 0 ? 'brightness(1.6)' : 'brightness(0.6)';
+    setTimeout(() => { bar.style.filter = ''; bar.style.transition = ''; }, 320);
+  }
 }
 
 /* ── Auth UI ── */
@@ -2823,6 +3120,15 @@ function renderDashboard() {
   renderCharCards();
   renderAll();
   renderAvatarPicker();
+  renderInspiration();
+}
+
+function renderInspiration() {
+  const btn = document.getElementById('btn-inspiration');
+  if (!btn || !playerData) return;
+  const active = !!playerData.inspiration;
+  btn.classList.toggle('active', active);
+  btn.title = active ? 'Inspiration active — cliquer pour utiliser' : 'Inspiration (avantage sur un jet)';
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -2975,8 +3281,8 @@ function renderAbilities() {
     box.className = 'ability-box';
     box.innerHTML = `
       <div class="ability-name">${ab.label}</div>
-      <input type="number" class="ability-score-input" data-f="${ab.key}" value="${score}" min="1" max="30">
       <div class="ability-mod" id="mod-${ab.key}">${modStr(score)}</div>
+      <input type="number" class="ability-score-input" data-f="${ab.key}" value="${score}" min="1" max="30" title="Score brut">
     `;
     grid.appendChild(box);
   });
@@ -2984,6 +3290,18 @@ function renderAbilities() {
 function updateModifier(key) {
   const el = document.getElementById('mod-' + key);
   if (el) el.textContent = modStr(abilScore(key));
+  // Initiative auto-DEX
+  if (key === 'dex') {
+    const c = C();
+    if (!c.initiativeManuelle) {
+      const dexMod = mod(abilScore('dex'));
+      c.initiative = dexMod;
+      const inp = document.getElementById('inp-initiative');
+      if (inp) inp.value = dexMod >= 0 ? '+' + dexMod : dexMod;
+      const lbl = document.getElementById('init-auto-label');
+      if (lbl) lbl.textContent = (dexMod >= 0 ? '+' : '') + dexMod + ' DEX';
+    }
+  }
 }
 
 /* ── Sauvegardes ── */
@@ -3055,6 +3373,21 @@ function renderSkills() {
 /* ── Combat ── */
 function renderCombat() {
   const c = C();
+  // Initiative auto-DEX si pas de valeur manuelle
+  if (!c.initiativeManuelle) {
+    const dexMod = mod(abilScore('dex'));
+    c.initiative = dexMod;
+    const inp = document.getElementById('inp-initiative');
+    if (inp) inp.value = dexMod >= 0 ? '+' + dexMod : String(dexMod);
+    const lbl = document.getElementById('init-auto-label');
+    if (lbl) lbl.textContent = (dexMod >= 0 ? '+' : '') + dexMod + ' DEX';
+  } else {
+    const inp = document.getElementById('inp-initiative');
+    if (inp) inp.value = c.initiative || 0;
+    const lbl = document.getElementById('init-auto-label');
+    if (lbl) lbl.textContent = 'manuel';
+  }
+  // Jets de mort
   ['success','fail'].forEach(type => {
     const count = type === 'success' ? (c.mortSucces || 0) : (c.mortEchecs || 0);
     document.querySelectorAll(`.death-dot[data-type="${type}"]`).forEach((dot, i) => {
@@ -3069,21 +3402,21 @@ function renderSpellSlots() {
   grid.innerHTML = '';
   const c = C();
   const wrap = document.createElement('div');
-  wrap.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:0.5rem;';
+  wrap.className = 'spell-slots-wrap';
   for (let lvl = 1; lvl <= 9; lvl++) {
     const total = parseInt(c.emplacementsSort?.[lvl]) || 0;
     const used  = parseInt(c.emplacementsUtilises?.[lvl]) || 0;
-    const cell  = document.createElement('div');
-    cell.style.cssText = 'background:#13131a;border:1px solid #2a2a3a;border-radius:6px;padding:0.45rem;text-align:center;';
-    cell.innerHTML = `
-      <div style="font-size:0.65rem;color:#888;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:0.3rem;">Niv.${lvl}</div>
-      <div style="display:flex;align-items:center;justify-content:center;gap:0.3rem;">
-        <input type="number" style="width:36px;background:#0d0d14;border:1px solid #2a2a3a;border-radius:4px;color:#e8e0d0;font-size:0.78rem;text-align:center;padding:0.15rem;" data-slot="${lvl}" value="${total}" min="0" max="9" title="Emplacements totaux">
-        <span style="color:#555;font-size:0.72rem;">/</span>
-        <input type="number" style="width:36px;background:#0d0d14;border:1px solid #2a2a3a;border-radius:4px;color:var(--danger);font-size:0.78rem;text-align:center;padding:0.15rem;" data-used="${lvl}" value="${used}" min="0" max="9" title="Utilisés">
-      </div>
+    const circles = Array.from({length: total}, (_,i) =>
+      `<div class="spell-slot-circle${i < used ? ' used' : ''}" data-slvl="${lvl}" data-sidx="${i}"></div>`
+    ).join('');
+    const row = document.createElement('div');
+    row.className = 'spell-slot-row';
+    row.innerHTML = `
+      <span class="spell-slot-level">Niv.${lvl}</span>
+      <input class="spell-slot-total-inp" type="number" data-slot="${lvl}" value="${total}" min="0" max="9" title="Total emplacements">
+      <div class="spell-slot-circles" data-circles="${lvl}">${circles}</div>
     `;
-    wrap.appendChild(cell);
+    wrap.appendChild(row);
   }
   grid.appendChild(wrap);
 }
@@ -3267,6 +3600,24 @@ function renderConditions() {
     const isConc = cond === 'Concentré';
     return `<div class="cond-badge${isActive ? ' active' : ''}${isConc && isActive ? ' conc' : ''}" data-cond="${cond}">${cond}</div>`;
   }).join('');
+  // Exhaustion pips
+  renderExhaustion();
+  // Concentration badge in Sorts
+  const concBadge = document.getElementById('conc-badge');
+  if (concBadge) concBadge.classList.toggle('visible', active.includes('Concentré'));
+}
+
+function renderExhaustion() {
+  const c = C();
+  const level = parseInt(c.exhaustion) || 0;
+  const pips = document.querySelectorAll('.exhaust-pip');
+  pips.forEach(pip => pip.classList.toggle('on', parseInt(pip.dataset.ex) <= level));
+  const desc = document.getElementById('exhaustion-desc');
+  if (!desc) return;
+  if (level === 0) { desc.textContent = ''; return; }
+  if (level >= 6)  { desc.textContent = 'Death'; return; }
+  const penalty = '−' + level + ' to all d20 Tests' + (level >= 5 ? ' · Speed halved' : '');
+  desc.textContent = 'Level ' + level + ' — ' + penalty;
 }
 
 /* ── Repos ── */
@@ -3286,8 +3637,11 @@ function doLongRest() {
   c.emplacementsUtilises = {1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
   // PV max
   c.pvActuel = c.pvMax || 0;
+  c.pvTemp = 0;
   // Conditions off
   c.conditions = [];
+  // Exhaustion -1 level
+  if (c.exhaustion > 0) c.exhaustion = c.exhaustion - 1;
   renderAll(); triggerSave();
   showToast('Repos long effectué — tout est restauré.');
 }
@@ -4697,43 +5051,60 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   })();
 
-  /* ── Sections réductibles ── */
-  assignSectionIds();
-  document.querySelectorAll('#tab-personnage .sheet-section-title').forEach((title, idx) => {
-    const section = title.closest('.sheet-section');
-    if (!section) return;
-    const key = 'sec-collapse-' + (section.dataset.sec || idx);
-    // Ajouter chevron
-    const chev = document.createElement('span');
-    chev.className = 'sec-chevron';
-    chev.textContent = '▾';
-    title.appendChild(chev);
-    // Restaurer l'état sauvegardé
-    if (localStorage.getItem(key) === '1') {
-      section.classList.add('collapsed');
-      chev.textContent = '▸';
-    }
-    // Clic pour ouvrir/fermer
-    title.addEventListener('click', e => {
-      if (e.target.closest('button')) return; // ignorer les clics sur boutons internes
-      const isCollapsed = section.classList.toggle('collapsed');
-      chev.textContent = isCollapsed ? '▸' : '▾';
-      localStorage.setItem(key, isCollapsed ? '1' : '0');
-    });
+  /* ── Inspiration ── */
+  document.getElementById('btn-inspiration')?.addEventListener('click', () => {
+    if (!playerData) return;
+    playerData.inspiration = !playerData.inspiration;
+    renderInspiration();
+    triggerSave();
+    showToast(playerData.inspiration ? '✦ Inspiration gagnée !' : '✦ Inspiration utilisée.');
   });
 
-}); // DOMContentLoaded
-</script>
+  /* ── Épuisement (pips) ── */
+  document.getElementById('exhaustion-pips')?.addEventListener('click', e => {
+    const pip = e.target.closest('.exhaust-pip');
+    if (!pip || !playerData) return;
+    const c = C();
+    const clicked = parseInt(pip.dataset.ex);
+    const current = parseInt(c.exhaustion) || 0;
+    // Clic sur le niveau actuel → retirer 1 niveau, sinon définir ce niveau
+    c.exhaustion = (clicked === current) ? Math.max(0, current - 1) : clicked;
+    renderExhaustion();
+    triggerSave();
+  });
 
-
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js')
-          .then(r => console.log('[SW] Enregistré:', r.scope))
-          .catch(e => console.warn('[SW] Erreur:', e));
-      });
+  /* ── HP rapide (Soigner / Blesser) ── */
+  document.getElementById('btn-apply-heal')?.addEventListener('click', () => {
+    const val = parseInt(document.getElementById('hp-quick-val')?.value) || 0;
+    if (val > 0) { applyHpChange(val); document.getElementById('hp-quick-val').value = ''; }
+  });
+  document.getElementById('btn-apply-dmg')?.addEventListener('click', () => {
+    const val = parseInt(document.getElementById('hp-quick-val')?.value) || 0;
+    if (val > 0) { applyHpChange(-val); document.getElementById('hp-quick-val').value = ''; }
+  });
+  document.getElementById('hp-quick-val')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const val = parseInt(e.target.value) || 0;
+      if (val !== 0) { applyHpChange(val); e.target.value = ''; }
     }
-  </script>
-</body>
-</html>
+  });
+
+  /* ── Initiative manuelle ── */
+  document.getElementById('inp-initiative')?.addEventListener('change', e => {
+    if (!playerData) return;
+    const c = C();
+    c.initiative = parseInt(e.target.value) || 0;
+    c.initiativeManuelle = true;
+    const lbl = document.getElementById('init-auto-label');
+    if (lbl) lbl.textContent = 'manuel';
+    triggerSave();
+  });
+
+  /* ── Emplacements de sorts — cercles cliquables ── */
+  document.getElementById('spell-slots-grid')?.addEventListener('click', e => {
+    const circle = e.target.closest('.spell-slot-circle');
+    if (!circle || !playerData) return;
+    const lvl = parseInt(circle.dataset.slvl);
+    const idx = parseInt(circle.dataset.sidx);
+    const c = C();
+    if (!c.emplacementsUtilises) c.em
