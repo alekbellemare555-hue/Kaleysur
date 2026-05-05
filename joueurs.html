@@ -361,7 +361,28 @@
     .theme-swatch-label { font-size:0.7rem; color:#888; margin-top:0.5rem; }
 
     /* ── Canvas notes à la main ── */
-    .canvas-toolbar { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.6rem; padding:0.5rem 0.6rem; background:#0d0d14; border:1px solid #2a2a3a; border-radius:6px; }
+    .canvas-section-wrap { padding:0 !important; overflow:hidden !important; }
+    .canvas-layout { display:flex; min-height:600px; }
+    .canvas-pages-sidebar { width:120px; flex-shrink:0; background:#080810; border-right:1px solid #1e1e2e; display:flex; flex-direction:column; overflow:hidden; }
+    .canvas-pages-header { display:flex; align-items:center; justify-content:space-between; padding:0.5rem 0.6rem; border-bottom:1px solid #1e1e2e; font-family:'Cinzel',serif; font-size:0.6rem; color:#555; letter-spacing:0.06em; text-transform:uppercase; }
+    .notes-add-page-btn { background:none; border:1px solid #2a2a3a; border-radius:4px; color:#888; cursor:pointer; font-size:1rem; line-height:1; width:20px; height:20px; display:flex; align-items:center; justify-content:center; transition:all var(--transition); }
+    .notes-add-page-btn:hover { border-color:var(--gold); color:var(--gold); }
+    .canvas-pages-list { flex:1; overflow-y:auto; padding:0.3rem 0; }
+    .canvas-page-thumb { padding:0.35rem 0.5rem; cursor:pointer; font-size:0.68rem; color:#666; border-left:2px solid transparent; transition:all var(--transition); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .canvas-page-thumb:hover { color:#aaa; background:rgba(255,255,255,0.03); }
+    .canvas-page-thumb.active { color:var(--gold); border-left-color:var(--gold); background:rgba(201,169,110,0.07); }
+    .canvas-main { flex:1; display:flex; flex-direction:column; padding:0.6rem; min-width:0; }
+    .canvas-page-title-row { display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem; }
+    .notes-page-title-input { flex:1; background:#0d0d14; border:1px solid #2a2a3a; border-radius:5px; color:#e8e0d0; font-family:'Cinzel',serif; font-size:0.8rem; padding:0.3rem 0.6rem; min-width:0; transition:border-color var(--transition); }
+    .notes-page-title-input:focus { outline:none; border-color:var(--gold-dark); }
+    .notes-del-page-btn { background:none; border:1px solid #3a1a1a; border-radius:5px; color:#7a3a3a; cursor:pointer; font-size:0.8rem; padding:0.25rem 0.45rem; transition:all var(--transition); }
+    .notes-del-page-btn:hover { border-color:var(--danger); color:var(--danger); }
+    .canvas-scroll-wrap { position:relative; flex:1; overflow:auto; border-radius:6px; }
+    #canvas-text-input-wrap { position:absolute; z-index:10; }
+    #canvas-text-input { background:rgba(245,240,232,0.92); border:1px dashed #b4a07a; border-radius:4px; color:#1a1212; font-family:'Cinzel',serif; font-size:0.88rem; padding:0.2rem 0.4rem; min-width:120px; outline:none; }
+    @media (max-width:700px) { .canvas-pages-sidebar { width:80px; } }
+
+    .canvas-toolbar { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.6rem; padding:0.5rem 0.6rem; background:#0d0d14; border:1px solid #2a2a3a; border-radius:6px; } display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.6rem; padding:0.5rem 0.6rem; background:#0d0d14; border:1px solid #2a2a3a; border-radius:6px; }
     .canvas-tool-btn { background:#1a1a24; border:1px solid #2a2a3a; border-radius:5px; color:#aaa; cursor:pointer; font-size:0.72rem; padding:0.25rem 0.55rem; transition:all var(--transition); font-family:'Cinzel',serif; letter-spacing:0.03em; }
     .canvas-tool-btn:hover { border-color:var(--gold-dark); color:var(--gold-dark); }
     .canvas-tool-btn.active { border-color:var(--gold); background:rgba(201,169,110,0.12); color:var(--gold); }
@@ -1062,37 +1083,64 @@
         </div>
       </div>
 
-      <div class="sheet-section">
-        <div class="sheet-section-title">Notes à la main ✍</div>
-        <div class="canvas-toolbar">
-          <!-- Outil -->
-          <button class="canvas-tool-btn active" id="ctool-pen" title="Crayon">✏ Crayon</button>
-          <button class="canvas-tool-btn" id="ctool-eraser" title="Gomme">◻ Gomme</button>
-          <div class="canvas-tool-sep"></div>
-          <!-- Taille -->
-          <div class="canvas-size-btn active" id="csize-s" data-size="3" title="Fin" style="border-color:var(--gold-dark);">
-            <svg viewBox="0 0 20 20" width="8" height="8"><circle cx="10" cy="10" r="3" fill="currentColor"/></svg>
+      <div class="sheet-section canvas-section-wrap" style="padding:0;overflow:hidden;">
+        <div class="canvas-layout">
+          <!-- Sidebar pages canvas -->
+          <div class="canvas-pages-sidebar">
+            <div class="canvas-pages-header">
+              <span>Pages</span>
+              <button class="notes-add-page-btn" id="btn-add-canvas-page" title="Nouvelle page">+</button>
+            </div>
+            <div class="canvas-pages-list" id="canvas-pages-list"></div>
           </div>
-          <div class="canvas-size-btn" id="csize-m" data-size="6" title="Moyen">
-            <svg viewBox="0 0 20 20" width="12" height="12"><circle cx="10" cy="10" r="5" fill="currentColor"/></svg>
+          <!-- Zone de dessin -->
+          <div class="canvas-main">
+            <div class="canvas-page-title-row">
+              <input class="notes-page-title-input" id="canvas-page-title" placeholder="Nom de la page…" />
+              <button class="canvas-tool-btn" id="ctool-download" title="Télécharger en PNG">⤓ PNG</button>
+              <button class="notes-del-page-btn" id="btn-del-canvas-page" title="Supprimer cette page">🗑</button>
+            </div>
+            <div class="canvas-toolbar">
+              <!-- Outils -->
+              <button class="canvas-tool-btn active" id="ctool-pen" title="Crayon">✏ Crayon</button>
+              <button class="canvas-tool-btn" id="ctool-highlight" title="Surligneur">▬ Surligneur</button>
+              <button class="canvas-tool-btn" id="ctool-line" title="Ligne droite">╱ Ligne</button>
+              <button class="canvas-tool-btn" id="ctool-text" title="Texte">T Texte</button>
+              <button class="canvas-tool-btn" id="ctool-eraser" title="Gomme">◻ Gomme</button>
+              <div class="canvas-tool-sep"></div>
+              <!-- Taille -->
+              <div class="canvas-size-btn active" id="csize-s" data-size="2" title="Fin" style="border-color:var(--gold-dark);">
+                <svg viewBox="0 0 20 20" width="8" height="8"><circle cx="10" cy="10" r="3" fill="currentColor"/></svg>
+              </div>
+              <div class="canvas-size-btn" id="csize-m" data-size="5" title="Moyen">
+                <svg viewBox="0 0 20 20" width="12" height="12"><circle cx="10" cy="10" r="5" fill="currentColor"/></svg>
+              </div>
+              <div class="canvas-size-btn" id="csize-l" data-size="10" title="Épais">
+                <svg viewBox="0 0 20 20" width="16" height="16"><circle cx="10" cy="10" r="8" fill="currentColor"/></svg>
+              </div>
+              <div class="canvas-tool-sep"></div>
+              <!-- Couleurs -->
+              <div class="ink-dot active" data-ink="#1a1212" style="background:#1a1212;" title="Noir encre"></div>
+              <div class="ink-dot" data-ink="#8b1a1a" style="background:#8b1a1a;" title="Rouge"></div>
+              <div class="ink-dot" data-ink="#1a2a8a" style="background:#1a2a8a;" title="Bleu"></div>
+              <div class="ink-dot" data-ink="#1a5a2a" style="background:#1a5a2a;" title="Vert"></div>
+              <div class="ink-dot" data-ink="#6a3a00" style="background:#6a3a00;" title="Sépia"></div>
+              <div class="ink-dot" data-ink="#7a007a" style="background:#7a007a;" title="Violet"></div>
+              <input type="color" id="ink-custom" value="#1a1212" title="Couleur personnalisée" style="width:24px;height:24px;border-radius:50%;border:2px solid #3a3a4a;background:none;cursor:pointer;padding:1px;">
+              <div class="canvas-tool-sep"></div>
+              <!-- Actions -->
+              <button class="canvas-tool-btn" id="ctool-undo" title="Annuler (Ctrl+Z)">↩</button>
+              <button class="canvas-tool-btn" id="ctool-clear" title="Effacer la page" style="color:var(--danger);border-color:#3a1a1a;">✕</button>
+              <div style="margin-left:auto;font-size:0.62rem;color:#444;font-style:italic;">Sauvegardé localement</div>
+            </div>
+            <div class="canvas-scroll-wrap" id="canvas-scroll-wrap">
+              <canvas id="handnote-canvas"></canvas>
+              <div id="canvas-text-input-wrap" style="display:none;position:absolute;">
+                <input id="canvas-text-input" type="text" placeholder="Taper + Entrée…" autocomplete="off">
+              </div>
+            </div>
           </div>
-          <div class="canvas-size-btn" id="csize-l" data-size="12" title="Épais">
-            <svg viewBox="0 0 20 20" width="16" height="16"><circle cx="10" cy="10" r="8" fill="currentColor"/></svg>
-          </div>
-          <div class="canvas-tool-sep"></div>
-          <!-- Couleurs d'encre -->
-          <div class="ink-dot active" data-ink="#1a1212" style="background:#1a1212;" title="Noir encre"></div>
-          <div class="ink-dot" data-ink="#7a1a1a" style="background:#7a1a1a;" title="Rouge"></div>
-          <div class="ink-dot" data-ink="#1a2a6a" style="background:#1a2a6a;" title="Bleu"></div>
-          <div class="ink-dot" data-ink="#1a4a2a" style="background:#1a4a2a;" title="Vert"></div>
-          <div class="ink-dot" data-ink="#5a3a0a" style="background:#5a3a0a;" title="Sépia"></div>
-          <div class="canvas-tool-sep"></div>
-          <!-- Actions -->
-          <button class="canvas-tool-btn" id="ctool-undo" title="Annuler">↩ Annuler</button>
-          <button class="canvas-tool-btn" id="ctool-clear" title="Effacer tout" style="color:var(--danger);border-color:#3a1a1a;">✕ Tout effacer</button>
-          <div style="margin-left:auto;font-size:0.65rem;color:#444;font-style:italic;">Sauvegardé localement</div>
         </div>
-        <canvas id="handnote-canvas" height="700"></canvas>
       </div>
     </div>
 
@@ -3176,7 +3224,7 @@ function renderCharCards() {
       renderCharCards();
       renderAll();
       // Recharger le canvas pour ce personnage
-      setTimeout(initCanvas, 50);
+      setTimeout(() => { loadCanvasPages(); initCanvas(); renderCanvasPagesSidebar(); }, 50);
       triggerSave();
     });
     grid.appendChild(card);
@@ -3450,12 +3498,103 @@ function renderAttacks() {
 }
 
 /* ── Canvas notes à la main ── */
-const canvasState = { tool:'pen', size:3, ink:'#1a1212', drawing:false, history:[] };
+const canvasState = {
+  tool:'pen', size:3, ink:'#1a1212', drawing:false, history:[],
+  lineStart:null,   // for line tool preview
+  snapshot:null,    // canvas snapshot before line preview
+};
+let canvasPages = [];        // [{id, title, data}]
+let currentCanvasPageId = 0; // index into canvasPages
 
-function canvasKey() {
-  return 'handnote-' + (currentUser||'?') + '-' + (playerData?.activeCharId||'0');
+function canvasPageStorageKey() {
+  return 'canvaspages-' + (currentUser||'?') + '-' + (playerData?.activeCharId||'0');
 }
-function initCanvas() {
+function loadCanvasPages() {
+  try {
+    const raw = localStorage.getItem(canvasPageStorageKey());
+    if (raw) { canvasPages = JSON.parse(raw); }
+  } catch(e) {}
+  if (!canvasPages.length) {
+    canvasPages = [{ id: Date.now(), title: 'Page 1', data: null }];
+  }
+  currentCanvasPageId = 0;
+}
+function saveCanvasPages() {
+  try { localStorage.setItem(canvasPageStorageKey(), JSON.stringify(canvasPages)); } catch(e) {}
+}
+function renderCanvasPagesSidebar() {
+  const list = document.getElementById('canvas-pages-list');
+  if (!list) return;
+  list.innerHTML = '';
+  canvasPages.forEach((pg, i) => {
+    const div = document.createElement('div');
+    div.className = 'canvas-page-thumb' + (i === currentCanvasPageId ? ' active' : '');
+    div.textContent = pg.title || ('Page ' + (i+1));
+    div.title = pg.title || ('Page ' + (i+1));
+    div.addEventListener('click', () => switchCanvasPage(i));
+    list.appendChild(div);
+  });
+  const titleInp = document.getElementById('canvas-page-title');
+  if (titleInp) titleInp.value = canvasPages[currentCanvasPageId]?.title || '';
+}
+function switchCanvasPage(idx) {
+  saveCurrentCanvasPage();
+  currentCanvasPageId = idx;
+  canvasState.history = [];
+  initCanvas(false); // re-draw without clearing storage
+  renderCanvasPagesSidebar();
+}
+function addCanvasPage() {
+  saveCurrentCanvasPage();
+  const n = canvasPages.length + 1;
+  canvasPages.push({ id: Date.now(), title: 'Page ' + n, data: null });
+  currentCanvasPageId = canvasPages.length - 1;
+  canvasState.history = [];
+  initCanvas(false);
+  renderCanvasPagesSidebar();
+  saveCanvasPages();
+}
+function deleteCanvasPage() {
+  if (canvasPages.length <= 1) return;
+  if (!confirm('Supprimer cette page ?')) return;
+  canvasPages.splice(currentCanvasPageId, 1);
+  if (currentCanvasPageId >= canvasPages.length) currentCanvasPageId = canvasPages.length - 1;
+  canvasState.history = [];
+  initCanvas(false);
+  renderCanvasPagesSidebar();
+  saveCanvasPages();
+}
+function saveCurrentCanvasPage() {
+  const cv = document.getElementById('handnote-canvas');
+  if (!cv || !currentUser) return;
+  if (canvasPages[currentCanvasPageId]) {
+    canvasPages[currentCanvasPageId].data = cv.toDataURL();
+    saveCanvasPages();
+  }
+}
+function loadCurrentCanvasPage() {
+  const cv = document.getElementById('handnote-canvas');
+  if (!cv) return;
+  const pg = canvasPages[currentCanvasPageId];
+  if (pg?.data) {
+    const img = new Image();
+    img.onload = () => {
+      const ctx = cv.getContext('2d');
+      ctx.drawImage(img, 0, 0, cv.offsetWidth, 700);
+    };
+    img.src = pg.data;
+  }
+}
+function downloadCanvas() {
+  const cv = document.getElementById('handnote-canvas');
+  if (!cv) return;
+  const a = document.createElement('a');
+  a.download = (canvasPages[currentCanvasPageId]?.title || 'notes') + '.png';
+  a.href = cv.toDataURL('image/png');
+  a.click();
+}
+
+function initCanvas(loadPage = true) {
   const cv = document.getElementById('handnote-canvas');
   if (!cv) return;
   const dpr = window.devicePixelRatio || 1;
@@ -3471,25 +3610,14 @@ function initCanvas() {
   for (let y = 40; y < 700; y += 32) {
     ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
   }
-  canvasState.history = [];
-  loadCanvas();
+  if (loadPage) loadCurrentCanvasPage();
 }
+
 function saveCanvas() {
-  const cv = document.getElementById('handnote-canvas');
-  if (!cv) return;
-  try { localStorage.setItem(canvasKey(), cv.toDataURL()); } catch(e) {}
+  saveCurrentCanvasPage();
 }
 function loadCanvas() {
-  const cv = document.getElementById('handnote-canvas');
-  if (!cv || !currentUser) return;
-  const data = localStorage.getItem(canvasKey());
-  if (!data) return;
-  const img = new Image();
-  img.onload = () => {
-    const ctx = cv.getContext('2d');
-    ctx.drawImage(img, 0, 0, cv.offsetWidth, 700);
-  };
-  img.src = data;
+  loadCurrentCanvasPage();
 }
 function pushHistory() {
   const cv = document.getElementById('handnote-canvas');
@@ -3513,40 +3641,146 @@ function getCanvasPos(cv, e) {
     y: (e.clientY - rect.top)  * (cv.offsetHeight / rect.height),
   };
 }
+function setActiveTool(tool) {
+  canvasState.tool = tool;
+  ['ctool-pen','ctool-highlight','ctool-line','ctool-text','ctool-eraser'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('active', id === 'ctool-' + tool);
+  });
+  // Hide text input if switching away from text tool
+  if (tool !== 'text') {
+    const wrap = document.getElementById('canvas-text-input-wrap');
+    if (wrap) wrap.style.display = 'none';
+  }
+  // Change cursor
+  const cv = document.getElementById('handnote-canvas');
+  if (cv) {
+    if (tool === 'eraser') cv.style.cursor = 'cell';
+    else if (tool === 'text') cv.style.cursor = 'text';
+    else cv.style.cursor = 'crosshair';
+  }
+}
 function initCanvasEvents() {
   const cv = document.getElementById('handnote-canvas');
   if (!cv) return;
   const ctx = cv.getContext('2d');
-  cv.addEventListener('pointerdown', e => {
-    e.preventDefault();
-    pushHistory();
+
+  function applyToolDown(e) {
+    const p = getCanvasPos(cv, e);
+    const tool = canvasState.tool;
+
+    if (tool === 'text') {
+      const wrap = document.getElementById('canvas-text-input-wrap');
+      const inp  = document.getElementById('canvas-text-input');
+      if (!wrap || !inp) return;
+      wrap.style.display = 'block';
+      wrap.style.left = p.x + 'px';
+      wrap.style.top  = (p.y - 12) + 'px';
+      inp.value = '';
+      inp.focus();
+      inp.dataset.x = p.x;
+      inp.dataset.y = p.y;
+      canvasState.drawing = false;
+      return;
+    }
+
     canvasState.drawing = true;
     cv.setPointerCapture(e.pointerId);
-    const p = getCanvasPos(cv, e);
-    ctx.beginPath(); ctx.moveTo(p.x, p.y);
-    if (canvasState.tool === 'eraser') {
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.lineWidth = canvasState.size * 5;
-    } else {
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.strokeStyle = canvasState.ink;
-      ctx.lineWidth = canvasState.size * (e.pressure && e.pointerType === 'pen' ? (0.5 + e.pressure * 1.5) : 1);
-    }
-    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-  });
-  cv.addEventListener('pointermove', e => {
-    if (!canvasState.drawing) return;
-    e.preventDefault();
-    const p = getCanvasPos(cv, e);
-    if (canvasState.tool === 'pen' && e.pointerType === 'pen' && e.pressure)
-      ctx.lineWidth = canvasState.size * (0.5 + e.pressure * 1.5);
-    ctx.lineTo(p.x, p.y); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(p.x, p.y);
-  });
-  cv.addEventListener('pointerup',     () => { canvasState.drawing = false; ctx.globalCompositeOperation = 'source-over'; saveCanvas(); });
-  cv.addEventListener('pointercancel', () => { canvasState.drawing = false; });
-}
 
+    if (tool === 'eraser') {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = '#f5f0e8';
+      ctx.lineWidth = canvasState.size * 6;
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.beginPath(); ctx.moveTo(p.x, p.y);
+    } else if (tool === 'highlight') {
+      ctx.globalCompositeOperation = 'multiply';
+      ctx.strokeStyle = canvasState.ink;
+      ctx.globalAlpha = 0.35;
+      ctx.lineWidth = canvasState.size * 6;
+      ctx.lineCap = 'square'; ctx.lineJoin = 'square';
+      ctx.beginPath(); ctx.moveTo(p.x, p.y);
+    } else if (tool === 'line') {
+      canvasState.lineStart = p;
+      canvasState.snapshot = ctx.getImageData(0, 0, cv.width, cv.height);
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 1;
+    } else {
+      // pen
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = canvasState.ink;
+      ctx.lineWidth = canvasState.size * (e.pressure && e.pointerType === 'pen' ? (0.5 + e.pressure*1.5) : 1);
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.beginPath(); ctx.moveTo(p.x, p.y);
+    }
+  }
+
+  function applyToolMove(e) {
+    if (!canvasState.drawing) return;
+    const p = getCanvasPos(cv, e);
+    const tool = canvasState.tool;
+
+    if (tool === 'line') {
+      if (!canvasState.snapshot) return;
+      ctx.putImageData(canvasState.snapshot, 0, 0);
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = canvasState.ink;
+      ctx.lineWidth = canvasState.size;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(canvasState.lineStart.x, canvasState.lineStart.y);
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+    } else {
+      if (tool === 'pen' && e.pointerType === 'pen' && e.pressure)
+        ctx.lineWidth = canvasState.size * (0.5 + e.pressure * 1.5);
+      ctx.lineTo(p.x, p.y); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(p.x, p.y);
+    }
+  }
+
+  function applyToolUp() {
+    if (!canvasState.drawing) return;
+    canvasState.drawing = false;
+    canvasState.lineStart = null;
+    canvasState.snapshot = null;
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    saveCanvas();
+  }
+
+  cv.addEventListener('pointerdown', e => { e.preventDefault(); pushHistory(); applyToolDown(e); });
+  cv.addEventListener('pointermove', e => { if (!canvasState.drawing) return; e.preventDefault(); applyToolMove(e); });
+  cv.addEventListener('pointerup',    e => applyToolUp());
+  cv.addEventListener('pointercancel', () => { canvasState.drawing = false; ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1; });
+
+  // Text tool: commit on Enter
+  const textInp = document.getElementById('canvas-text-input');
+  if (textInp) {
+    textInp.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const x = parseFloat(textInp.dataset.x) || 50;
+        const y = parseFloat(textInp.dataset.y) || 50;
+        const text = textInp.value.trim();
+        if (text) {
+          pushHistory();
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.globalAlpha = 1;
+          ctx.fillStyle = canvasState.ink;
+          ctx.font = `${Math.max(12, canvasState.size * 4)}px serif`;
+          ctx.fillText(text, x, y);
+          saveCanvas();
+        }
+        document.getElementById('canvas-text-input-wrap').style.display = 'none';
+      } else if (e.key === 'Escape') {
+        document.getElementById('canvas-text-input-wrap').style.display = 'none';
+      }
+    });
+  }
+}
 /* ── Compétences passives ── */
 function renderPassiveSkills() {
   const el = document.getElementById('passive-skills');
@@ -4951,21 +5185,20 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ── Canvas toolbar ── */
+  loadCanvasPages();
   initCanvasEvents();
-  document.getElementById('ctool-pen').addEventListener('click', () => {
-    canvasState.tool = 'pen';
-    document.getElementById('ctool-pen').classList.add('active');
-    document.getElementById('ctool-eraser').classList.remove('active');
+  // Outil actif
+  ['pen','highlight','line','text','eraser'].forEach(tool => {
+    const btn = document.getElementById('ctool-' + tool);
+    if (btn) btn.addEventListener('click', () => setActiveTool(tool));
   });
-  document.getElementById('ctool-eraser').addEventListener('click', () => {
-    canvasState.tool = 'eraser';
-    document.getElementById('ctool-eraser').classList.add('active');
-    document.getElementById('ctool-pen').classList.remove('active');
-  });
+  // Téléchargement PNG
+  document.getElementById('ctool-download').addEventListener('click', downloadCanvas);
+  // Undo / Clear
   document.getElementById('ctool-undo').addEventListener('click', undoCanvas);
   document.getElementById('ctool-clear').addEventListener('click', () => {
     if (!confirm('Effacer tout le dessin ?')) return;
-    pushHistory(); initCanvas();
+    pushHistory(); initCanvas(false);
   });
   // Taille de trait
   document.querySelectorAll('.canvas-size-btn').forEach(btn => {
@@ -4978,20 +5211,40 @@ document.addEventListener('DOMContentLoaded', () => {
   // Couleurs d'encre
   document.querySelectorAll('.ink-dot').forEach(dot => {
     dot.addEventListener('click', () => {
-      canvasState.tool = 'pen';
       canvasState.ink = dot.dataset.ink;
-      document.getElementById('ctool-pen').classList.add('active');
-      document.getElementById('ctool-eraser').classList.remove('active');
       document.querySelectorAll('.ink-dot').forEach(d => d.classList.remove('active'));
       dot.classList.add('active');
+      document.getElementById('ink-custom').value = dot.dataset.ink;
+      if (canvasState.tool === 'eraser') setActiveTool('pen');
     });
   });
-  // Init canvas + notes pages quand on active l'onglet Notes
+  document.getElementById('ink-custom').addEventListener('input', e => {
+    canvasState.ink = e.target.value;
+    document.querySelectorAll('.ink-dot').forEach(d => d.classList.remove('active'));
+    if (canvasState.tool === 'eraser') setActiveTool('pen');
+  });
+  // Titre page canvas
+  document.getElementById('canvas-page-title').addEventListener('input', e => {
+    if (canvasPages[currentCanvasPageId]) {
+      canvasPages[currentCanvasPageId].title = e.target.value;
+      saveCanvasPages();
+      renderCanvasPagesSidebar();
+    }
+  });
+  // Ajout / suppression de page
+  document.getElementById('btn-add-canvas-page').addEventListener('click', addCanvasPage);
+  document.getElementById('btn-del-canvas-page').addEventListener('click', deleteCanvasPage);
+  // Onglet Notes
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       if (btn.dataset.tab === 'notes') {
         setTimeout(() => {
-          if (!document.getElementById('handnote-canvas').width) initCanvas();
+          const cv = document.getElementById('handnote-canvas');
+          if (cv && !cv.width) {
+            loadCanvasPages();
+            initCanvas();
+          }
+          renderCanvasPagesSidebar();
           renderNotesPages();
           loadCurrentNoteInEditor();
         }, 50);
@@ -5161,20 +5414,12 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ── Notes canvas ── */
   document.getElementById('tab-notes-btn')?.addEventListener('click', () => {
     setTimeout(() => {
-      if (!document.getElementById('handnote-canvas').width) initCanvas();
+      const cv = document.getElementById('handnote-canvas');
+      if (cv && !cv.width) { loadCanvasPages(); initCanvas(); }
+      renderCanvasPagesSidebar();
       renderNotesPages();
       loadCurrentNoteInEditor();
     }, 50);
-  });
-
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    if (btn.dataset.tab === 'notes') {
-      btn.addEventListener('click', () => {
-        setTimeout(() => {
-          if (!document.getElementById('handnote-canvas')?.width) initCanvas();
-        }, 50);
-      });
-    }
   });
 
 }); // end DOMContentLoaded
