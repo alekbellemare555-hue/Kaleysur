@@ -336,6 +336,35 @@
     .res-del { position:absolute; top:0.35rem; right:0.35rem; background:none; border:none; color:#333; cursor:pointer; font-size:0.65rem; padding:0.1rem; transition:color var(--transition); }
     .res-del:hover { color:var(--danger); }
     .rest-btns { display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.1rem; }
+    /* ── Repos court modal ── */
+    .sr-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.72); z-index:8000; align-items:center; justify-content:center; }
+    .sr-modal-overlay.open { display:flex; }
+    .sr-modal { background:#11111c; border:1px solid #2e2e44; border-radius:10px; padding:1.5rem; width:340px; max-width:94vw; box-shadow:0 8px 40px rgba(0,0,0,0.7); }
+    .sr-modal h3 { font-family:'Cinzel',serif; color:var(--gold); font-size:1rem; margin:0 0 1rem; text-align:center; }
+    .sr-hp-display { text-align:center; font-size:0.85rem; color:#aaa; margin-bottom:0.75rem; }
+    .sr-hp-display strong { color:#e8e0d0; }
+    .sr-dice-info { display:flex; align-items:center; justify-content:center; gap:0.75rem; margin-bottom:0.85rem; font-size:0.82rem; color:#888; }
+    .sr-dice-badge { background:#1a1a2e; border:1px solid var(--gold-dark); border-radius:6px; padding:0.3rem 0.7rem; font-family:'Cinzel',serif; color:var(--gold); font-size:1rem; }
+    .sr-roll-result { min-height:2.5rem; text-align:center; font-size:1.4rem; font-family:'Cinzel',serif; color:var(--gold); margin:0.5rem 0; }
+    .sr-total { text-align:center; font-size:0.82rem; color:#8aba8a; margin-bottom:0.85rem; }
+    .sr-btn-row { display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap; margin-top:0.75rem; }
+    /* ── Catégories inventaire ── */
+    .inv-cat-tabs { display:flex; gap:0; margin-bottom:0.75rem; border-bottom:1px solid #2a2a3a; flex-wrap:wrap; }
+    .inv-cat-tab { padding:0.3rem 0.7rem; background:none; border:none; border-bottom:2px solid transparent; color:#666; font-size:0.72rem; cursor:pointer; font-family:'Cinzel',serif; letter-spacing:0.04em; transition:all var(--transition); white-space:nowrap; }
+    .inv-cat-tab:hover { color:#aaa; }
+    .inv-cat-tab.active { color:var(--gold); border-bottom-color:var(--gold); }
+    .inv-cat-badge { font-size:0.6rem; background:#1a1a2e; border-radius:3px; padding:0 0.25rem; margin-left:0.25rem; color:#666; }
+    .inv-cat-tab.active .inv-cat-badge { color:var(--gold-dark); }
+    /* ── Attunement ── */
+    .attunement-section { margin-top:0.85rem; padding-top:0.75rem; border-top:1px solid #1e1e2e; }
+    .attunement-label { font-family:'Cinzel',serif; font-size:0.62rem; color:var(--gold-dark); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:0.5rem; }
+    .attunement-slots { display:flex; flex-direction:column; gap:0.35rem; }
+    .attunement-slot { display:flex; align-items:center; gap:0.5rem; }
+    .attunement-slot input[type=text] { flex:1; background:#0d0d14; border:1px solid #2a2a3a; border-radius:4px; color:#e8e0d0; font-size:0.8rem; padding:0.25rem 0.45rem; transition:border-color var(--transition); }
+    .attunement-slot input[type=text]:focus { outline:none; border-color:var(--gold-dark); }
+    .attunement-slot input[type=text].attuned { border-color:#7a4aaa; color:#c090e8; }
+    .attunement-slot-check { accent-color:#9a60d0; width:15px; height:15px; cursor:pointer; flex-shrink:0; }
+    .attunement-slot-label { font-size:0.7rem; color:#555; font-style:italic; flex-shrink:0; }
     .btn-rest { font-size:0.75rem; padding:0.35rem 0.75rem; border-radius:5px; border:1px solid #2a2a3a; background:#0f0f18; color:#aaa; cursor:pointer; font-family:'Cinzel',serif; letter-spacing:0.04em; transition:all var(--transition); }
     .btn-rest:hover { border-color:var(--gold-dark); color:var(--gold-dark); background:#1a1a24; }
     .btn-rest.short { border-color:#3a6060; color:#7ababa; }
@@ -1035,19 +1064,49 @@
     <div class="tab-panel" id="tab-inventaire">
       <div class="sheet-section">
         <div class="sheet-section-title">Objets</div>
+        <div class="inv-cat-tabs" id="inv-cat-tabs">
+          <button class="inv-cat-tab active" data-cat="">Tout <span class="inv-cat-badge" id="icat-badge-all"></span></button>
+          <button class="inv-cat-tab" data-cat="arme">⚔ Armes</button>
+          <button class="inv-cat-tab" data-cat="armure">🛡 Armures</button>
+          <button class="inv-cat-tab" data-cat="consommable">⚗ Consommables</button>
+          <button class="inv-cat-tab" data-cat="magique">✦ Magiques</button>
+          <button class="inv-cat-tab" data-cat="equipement">🎒 Équipement</button>
+        </div>
         <div class="inv-controls">
           <input type="text" class="field-input" id="inv-search" placeholder="Rechercher un objet…" style="flex:1;min-width:120px;">
           <button class="btn btn-sm btn-gold" id="btn-add-item">+ Ajouter</button>
         </div>
         <table class="inv-table">
           <thead><tr>
-            <th style="width:12%">Qté</th>
-            <th style="width:35%">Nom</th>
-            <th style="width:38%">Description</th>
-            <th style="width:15%"></th>
+            <th style="width:10%">Qté</th>
+            <th style="width:28%">Nom</th>
+            <th style="width:32%">Description</th>
+            <th style="width:18%">Catégorie</th>
+            <th style="width:12%"></th>
           </tr></thead>
           <tbody id="inv-tbody"></tbody>
         </table>
+        <!-- Attunement -->
+        <div class="attunement-section">
+          <div class="attunement-label">⟡ Attunement (max 3)</div>
+          <div class="attunement-slots" id="attunement-slots">
+            <div class="attunement-slot">
+              <input type="checkbox" class="attunement-slot-check" data-at="0">
+              <input type="text" class="attunement-slot-inp" data-at="0" placeholder="Objet magique 1…">
+              <span class="attunement-slot-label" id="at-label-0">libre</span>
+            </div>
+            <div class="attunement-slot">
+              <input type="checkbox" class="attunement-slot-check" data-at="1">
+              <input type="text" class="attunement-slot-inp" data-at="1" placeholder="Objet magique 2…">
+              <span class="attunement-slot-label" id="at-label-1">libre</span>
+            </div>
+            <div class="attunement-slot">
+              <input type="checkbox" class="attunement-slot-check" data-at="2">
+              <input type="text" class="attunement-slot-inp" data-at="2" placeholder="Objet magique 3…">
+              <span class="attunement-slot-label" id="at-label-2">libre</span>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="sheet-section">
         <div class="sheet-section-title">Monnaie</div>
@@ -3291,6 +3350,7 @@ function renderAll() {
   renderCustomFeatures();
   renderSpells();
   renderInventory();
+  renderAttunement();
   fillCurrency();
   renderNotesPages();
   loadCurrentNoteInEditor();
@@ -3856,11 +3916,68 @@ function renderExhaustion() {
 
 /* ── Repos ── */
 function doShortRest() {
-  if (!playerData) return;
+  openShortRestModal();
+}
+function openShortRestModal() {
   const c = C();
-  (c.resources || []).forEach(r => { if (r.reset === 'short') r.used = 0; });
-  renderResources(); triggerSave();
-  showToast('Repos court effectué — ressources courtes restaurées.');
+  const overlay = document.getElementById('sr-modal-overlay');
+  if (!overlay) return;
+  // Reset state
+  let pendingHealing = 0;
+  let diceRolled = 0;
+  const nbDice = parseInt(c.nbDeVie) || c.niveau || 1;
+  const dieType = parseInt((c.deVie||'1d8').replace('1d','')) || 8;
+  const conMod  = Math.floor(((parseInt(c.con)||10) - 10) / 2);
+  const maxHP   = parseInt(c.pvMax) || 0;
+  const curHP   = parseInt(c.pvActuel) || 0;
+  const diceLeft = Math.max(0, nbDice - (parseInt(c.nbDeVieUtilises)||0));
+
+  document.getElementById('sr-hp-cur').textContent   = curHP;
+  document.getElementById('sr-hp-max').textContent   = maxHP;
+  document.getElementById('sr-dice-badge').textContent = 'd' + dieType;
+  document.getElementById('sr-dice-left').textContent = diceLeft;
+  document.getElementById('sr-roll-result').textContent = '—';
+  document.getElementById('sr-total').textContent = '';
+  const applyBtn = document.getElementById('sr-btn-apply');
+  const rollBtn  = document.getElementById('sr-btn-roll');
+  applyBtn.disabled = true;
+  rollBtn.disabled  = diceLeft <= diceRolled;
+
+  function updateDisplay() {
+    const remaining = diceLeft - diceRolled;
+    document.getElementById('sr-dice-left').textContent = remaining;
+    rollBtn.disabled = remaining <= 0 || curHP + pendingHealing >= maxHP;
+    if (pendingHealing > 0) {
+      const newHP = Math.min(maxHP, curHP + pendingHealing);
+      document.getElementById('sr-total').textContent = `Soin total : +${pendingHealing} → ${newHP} PV`;
+      applyBtn.disabled = false;
+    }
+  }
+
+  rollBtn.onclick = () => {
+    const roll = Math.ceil(Math.random() * dieType);
+    const total = Math.max(1, roll + conMod);
+    diceRolled++;
+    pendingHealing += total;
+    const conStr = conMod >= 0 ? `+${conMod}` : conMod;
+    document.getElementById('sr-roll-result').textContent = `${roll} ${conStr !== '+0' ? conStr : ''} = ${total}`;
+    updateDisplay();
+  };
+
+  applyBtn.onclick = () => {
+    if (!playerData) return;
+    const c2 = C();
+    c2.pvActuel = Math.min(parseInt(c2.pvMax)||0, (parseInt(c2.pvActuel)||0) + pendingHealing);
+    c2.nbDeVieUtilises = (parseInt(c2.nbDeVieUtilises)||0) + diceRolled;
+    (c2.resources || []).forEach(r => { if (r.reset === 'short') r.used = 0; });
+    overlay.classList.remove('open');
+    renderAll(); triggerSave();
+    showToast(`Repos court — +${pendingHealing} PV, ressources courtes restaurées.`);
+  };
+
+  document.getElementById('sr-btn-cancel').onclick = () => overlay.classList.remove('open');
+  overlay.onclick = e => { if (e.target === overlay) overlay.classList.remove('open'); };
+  overlay.classList.add('open');
 }
 function doLongRest() {
   if (!playerData) return;
@@ -3869,6 +3986,7 @@ function doLongRest() {
   (c.resources || []).forEach(r => { r.used = 0; });
   // Reset sorts utilisés
   c.emplacementsUtilises = {1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
+  c.nbDeVieUtilises = 0;
   // PV max
   c.pvActuel = c.pvMax || 0;
   c.pvTemp = 0;
@@ -3943,22 +4061,52 @@ function renderSpells() {
 }
 
 /* ── Inventaire ── */
+let _invActiveCat = '';
 function renderInventory() {
-  const search = document.getElementById('inv-search').value.toLowerCase();
+  const search = (document.getElementById('inv-search')?.value || '').toLowerCase();
   const tbody  = document.getElementById('inv-tbody');
+  if (!tbody) return;
   tbody.innerHTML = '';
   const items = INV().items || [];
+  const CAT_OPTIONS = [
+    { value:'', label:'—' },
+    { value:'arme', label:'⚔ Arme' },
+    { value:'armure', label:'🛡 Armure' },
+    { value:'consommable', label:'⚗ Consommable' },
+    { value:'magique', label:'✦ Magique' },
+    { value:'equipement', label:'🎒 Équipement' },
+  ];
+  const catOpts = CAT_OPTIONS.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
   items.forEach((item, i) => {
+    if (_invActiveCat && item.cat !== _invActiveCat) return;
     if (search && !item.name?.toLowerCase().includes(search) && !item.notes?.toLowerCase().includes(search)) return;
+    const selOpts = CAT_OPTIONS.map(o => `<option value="${o.value}"${item.cat===o.value?' selected':''}>${o.label}</option>`).join('');
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td><input class="inv-inp" style="width:55px;text-align:center;" data-item="${i}" data-ik="qty"   type="number" value="${item.qty||1}" min="0"></td>
+      <td><input class="inv-inp" style="width:50px;text-align:center;" data-item="${i}" data-ik="qty"   type="number" value="${item.qty||1}" min="0"></td>
       <td><input class="inv-inp" data-item="${i}" data-ik="name"  value="${item.name||''}"  placeholder="Nom de l'objet"></td>
       <td><input class="inv-inp" data-item="${i}" data-ik="notes" value="${item.notes||''}" placeholder="Description"></td>
+      <td><select class="inv-inp" style="padding:0.18rem 0.25rem;font-size:0.74rem;" data-item="${i}" data-ik="cat">${selOpts}</select></td>
       <td><button class="atk-del" data-del-item="${i}" title="Supprimer">✕</button></td>
     `;
     tbody.appendChild(tr);
   });
+  // Update cat tab badges
+  const allBadge = document.getElementById('icat-badge-all');
+  if (allBadge) allBadge.textContent = items.length;
+}
+function renderAttunement() {
+  const inv = INV();
+  const slots = inv.attunement || [{},{},{}];
+  for (let i = 0; i < 3; i++) {
+    const inp = document.querySelector(`.attunement-slot-inp[data-at="${i}"]`);
+    const chk = document.querySelector(`.attunement-slot-check[data-at="${i}"]`);
+    const lbl = document.getElementById(`at-label-${i}`);
+    const s = slots[i] || {};
+    if (inp) { inp.value = s.name || ''; inp.classList.toggle('attuned', !!s.active); }
+    if (chk) chk.checked = !!s.active;
+    if (lbl) lbl.textContent = s.active ? 'attunée' : 'libre';
+  }
 }
 function fillCurrency() {
   const cur = INV().currency || {};
@@ -5039,10 +5187,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* ── Inventaire ── */
   document.getElementById('inv-search').addEventListener('input', renderInventory);
+  // Category tabs
+  document.getElementById('inv-cat-tabs')?.addEventListener('click', e => {
+    const tab = e.target.closest('.inv-cat-tab');
+    if (!tab) return;
+    _invActiveCat = tab.dataset.cat;
+    document.querySelectorAll('.inv-cat-tab').forEach(t => t.classList.toggle('active', t === tab));
+    renderInventory();
+  });
+  // Attunement
+  document.getElementById('attunement-slots')?.addEventListener('input', e => {
+    const at = e.target.dataset.at;
+    if (at === undefined) return;
+    const inv = INV();
+    if (!inv.attunement) inv.attunement = [{},{},{}];
+    const idx = parseInt(at);
+    if (e.target.type === 'checkbox') {
+      inv.attunement[idx].active = e.target.checked;
+      const inp = document.querySelector(`.attunement-slot-inp[data-at="${at}"]`);
+      const lbl = document.getElementById(`at-label-${at}`);
+      if (inp) inp.classList.toggle('attuned', e.target.checked);
+      if (lbl) lbl.textContent = e.target.checked ? 'attunée' : 'libre';
+    } else {
+      inv.attunement[idx].name = e.target.value;
+    }
+    triggerSave();
+  });
   document.getElementById('btn-add-item').addEventListener('click', () => {
     if (!playerData) return;
     INV().items.push({ qty:1, name:'', notes:'' });
     renderInventory(); triggerSave();
+  });
+  document.getElementById('inv-tbody').addEventListener('change', e => {
+    const item = e.target.dataset.item; const ik = e.target.dataset.ik;
+    if (item !== undefined && ik === 'cat') { INV().items[parseInt(item)].cat = e.target.value; renderInventory(); triggerSave(); }
   });
   document.getElementById('inv-tbody').addEventListener('input', e => {
     const el = e.target;
@@ -5425,5 +5603,25 @@ document.addEventListener('DOMContentLoaded', () => {
 }); // end DOMContentLoaded
 </script>
 
+
+    <!-- ── Modal Repos Court ── -->
+    <div class="sr-modal-overlay" id="sr-modal-overlay">
+      <div class="sr-modal">
+        <h3>☽ Repos Court</h3>
+        <div class="sr-hp-display">PV : <strong id="sr-hp-cur">0</strong> / <strong id="sr-hp-max">0</strong></div>
+        <div class="sr-dice-info">
+          <span>Dé de Vie</span>
+          <div class="sr-dice-badge" id="sr-dice-badge">1d8</div>
+          <span>Restants : <strong id="sr-dice-left">0</strong></span>
+        </div>
+        <div class="sr-roll-result" id="sr-roll-result">—</div>
+        <div class="sr-total" id="sr-total"></div>
+        <div class="sr-btn-row">
+          <button class="btn btn-sm" id="sr-btn-roll" style="border-color:#3a6060;color:#7ababa;">🎲 Lancer 1 dé</button>
+          <button class="btn btn-sm btn-gold" id="sr-btn-apply" disabled>✚ Appliquer</button>
+          <button class="btn btn-sm" id="sr-btn-cancel" style="color:#888;">Annuler</button>
+        </div>
+      </div>
+    </div>
 </body>
 </html>
