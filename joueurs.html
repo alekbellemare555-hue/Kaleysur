@@ -5107,4 +5107,78 @@ document.addEventListener('DOMContentLoaded', () => {
     const lvl = parseInt(circle.dataset.slvl);
     const idx = parseInt(circle.dataset.sidx);
     const c = C();
-    if (!c.emplacementsUtilises) c.em
+    if (!c.emplacementsUtilises) c.emplacementsUtilises = {};
+    const used = parseInt(c.emplacementsUtilises[lvl]) || 0;
+    // Clic sur cercle : si utilisé → libérer, si libre → utiliser
+    if (circle.classList.contains('used')) {
+      c.emplacementsUtilises[lvl] = Math.max(0, used - 1);
+    } else {
+      const total = parseInt(c.emplacementsSort?.[lvl]) || 0;
+      c.emplacementsUtilises[lvl] = Math.min(total, used + 1);
+    }
+    renderSpellSlots();
+    triggerSave();
+  });
+
+  /* ── Total emplacements de sorts (champ nombre) ── */
+  document.getElementById('spell-slots-grid')?.addEventListener('change', e => {
+    const inp = e.target.closest('.spell-slot-total-inp');
+    if (!inp || !playerData) return;
+    const lvl = parseInt(inp.dataset.slot);
+    const c = C();
+    if (!c.emplacementsSort) c.emplacementsSort = {};
+    c.emplacementsSort[lvl] = parseInt(inp.value) || 0;
+    renderSpellSlots();
+    triggerSave();
+  });
+
+  /* ── Sections réductibles ── */
+  assignSectionIds();
+  document.querySelectorAll('#tab-personnage .sheet-section-title').forEach((title, idx) => {
+    const section = title.closest('.sheet-section');
+    if (!section) return;
+    const key = 'sec-collapse-' + (section.dataset.sec || idx);
+    // Ajouter chevron
+    const chev = document.createElement('span');
+    chev.className = 'sec-chevron';
+    chev.textContent = '▾';
+    title.appendChild(chev);
+    // Restaurer l'état sauvegardé
+    if (localStorage.getItem(key) === '1') {
+      section.classList.add('collapsed');
+      chev.textContent = '▸';
+    }
+    // Clic pour ouvrir/fermer
+    title.addEventListener('click', e => {
+      if (e.target.closest('button')) return;
+      if (e.target.closest('input')) return;
+      const isCollapsed = section.classList.toggle('collapsed');
+      chev.textContent = isCollapsed ? '▸' : '▾';
+      localStorage.setItem(key, isCollapsed ? '1' : '0');
+    });
+  });
+
+  /* ── Notes canvas ── */
+  document.getElementById('tab-notes-btn')?.addEventListener('click', () => {
+    setTimeout(() => {
+      if (!document.getElementById('handnote-canvas').width) initCanvas();
+      renderNotesPages();
+      loadCurrentNoteInEditor();
+    }, 50);
+  });
+
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    if (btn.dataset.tab === 'notes') {
+      btn.addEventListener('click', () => {
+        setTimeout(() => {
+          if (!document.getElementById('handnote-canvas')?.width) initCanvas();
+        }, 50);
+      });
+    }
+  });
+
+}); // end DOMContentLoaded
+</script>
+
+</body>
+</html>
