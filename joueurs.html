@@ -235,6 +235,28 @@
 
     /* ── Paramètres ── */
     .settings-section { background:#1a1a24; border:1px solid #2a2a3a; border-radius:var(--radius); padding:1.1rem 1.25rem; margin-bottom:1rem; }
+    /* ── D&D Beyond import ── */
+    .ddb-steps { list-style:none; padding:0; margin:0 0 0.85rem; display:flex; flex-direction:column; gap:0.4rem; }
+    .ddb-steps li { font-size:0.8rem; color:#999; display:flex; gap:0.55rem; align-items:flex-start; }
+    .ddb-step-num { background:var(--gold-dark); color:#0d0d14; border-radius:50%; width:16px; height:16px; font-size:0.6rem; font-family:'Cinzel',serif; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+    .ddb-url { font-family:monospace; font-size:0.72rem; background:#0d0d14; border:1px solid #2a2a3a; border-radius:4px; padding:0.15rem 0.4rem; color:var(--gold-dark); user-select:all; cursor:text; }
+    /* ── Import confirm modal ── */
+    .ddb-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.78); z-index:9000; align-items:center; justify-content:center; }
+    .ddb-modal-overlay.open { display:flex; }
+    .ddb-modal { background:#11111c; border:1px solid #2e2e44; border-radius:10px; padding:1.5rem; width:420px; max-width:96vw; max-height:90vh; overflow-y:auto; box-shadow:0 8px 40px rgba(0,0,0,0.7); }
+    .ddb-modal h3 { font-family:'Cinzel',serif; color:var(--gold); font-size:1rem; margin:0 0 0.35rem; }
+    .ddb-modal-sub { font-size:0.75rem; color:#666; margin-bottom:1rem; }
+    .ddb-preview { background:#0a0a14; border:1px solid #1e1e2e; border-radius:6px; padding:0.75rem 0.85rem; margin-bottom:1rem; }
+    .ddb-preview-row { display:flex; justify-content:space-between; align-items:baseline; padding:0.18rem 0; font-size:0.8rem; border-bottom:1px solid #1a1a2a; }
+    .ddb-preview-row:last-child { border-bottom:none; }
+    .ddb-preview-label { color:#666; font-size:0.72rem; }
+    .ddb-preview-val { color:#e8e0d0; font-family:'Cinzel',serif; }
+    .ddb-import-items { font-size:0.75rem; color:#888; margin-bottom:1rem; }
+    .ddb-import-items span { display:inline-block; background:#1a1a2e; border:1px solid #2a2a3a; border-radius:4px; padding:0.1rem 0.4rem; margin:0.15rem; color:#aaa; }
+    .ddb-import-items span.ok { border-color:#3a6a3a; color:#8aba8a; }
+    .ddb-import-items span.warn { border-color:#6a5a2a; color:#c0a060; }
+    .ddb-btn-row { display:flex; gap:0.6rem; justify-content:flex-end; }
+    .ddb-error { color:var(--danger); font-size:0.8rem; padding:0.5rem; background:#1a0a0a; border:1px solid #3a1a1a; border-radius:6px; margin-bottom:0.75rem; }
     .settings-section h3 { font-family:'Cinzel',serif; font-size:0.85rem; color:var(--gold); margin:0 0 0.85rem; letter-spacing:0.05em; }
     .settings-row { display:flex; align-items:center; gap:0.75rem; margin-bottom:0.65rem; flex-wrap:wrap; }
     .settings-label { flex:1; min-width:140px; font-size:0.85rem; color:#bbb; }
@@ -1296,6 +1318,20 @@
           <div class="settings-label">Importer une fiche<div class="settings-desc">Restaure depuis un fichier JSON exporté</div></div>
           <label class="btn btn-sm" style="cursor:pointer;">⬆ Importer<input type="file" id="btn-import" accept=".json" style="display:none;"></label>
         </div>
+      </div>
+      <div class="settings-section">
+        <h3>⚔ Importer depuis D&amp;D Beyond</h3>
+        <ol class="ddb-steps">
+          <li><span class="ddb-step-num">1</span>Connecte-toi sur <strong style="color:#c8a86a;">dndbeyond.com</strong> dans ce navigateur</li>
+          <li><span class="ddb-step-num">2</span>Ouvre ton personnage et note son ID dans l'URL (ex: <em style="color:#aaa;">/characters/12345678</em>)</li>
+          <li><span class="ddb-step-num">3</span>Va à cette adresse : <span class="ddb-url">https://www.dndbeyond.com/character/TONID/json</span></li>
+          <li><span class="ddb-step-num">4</span>Sauvegarde la page (Ctrl+S) pour obtenir un fichier <strong>.json</strong></li>
+          <li><span class="ddb-step-num">5</span>Clique le bouton ci-dessous et sélectionne ce fichier</li>
+        </ol>
+        <label class="btn btn-gold" style="cursor:pointer;display:inline-flex;align-items:center;gap:0.45rem;">
+          ⚔ Sélectionner le fichier JSON
+          <input type="file" id="ddb-import-file" accept=".json,application/json" style="display:none;">
+        </label>
       </div>
       <div class="settings-section">
         <h3>Compte</h3>
@@ -3999,6 +4035,210 @@ function renderExhaustion() {
 }
 
 /* ── Repos ── */
+
+/* ── Import D&D Beyond ── */
+function parseDnDBeyondJSON(raw) {
+  const d = raw.data || raw; // handle API wrapper
+  if (!d.name && !d.classes) throw new Error('Format JSON non reconnu — assure-toi d\'utiliser l\'URL /character/ID/json');
+
+  const STAT_MAP = {1:'for',2:'dex',3:'con',4:'int',5:'sag',6:'cha'};
+  const SKILL_MAP = {
+    'acrobatics':'acrobaties','animal-handling':'animaux','arcana':'arcanes',
+    'athletics':'athletisme','deception':'duperie','history':'histoire',
+    'insight':'perspicacite','intimidation':'intimidation','investigation':'investigation',
+    'medicine':'medecine','nature':'nature','perception':'perception',
+    'performance':'performance','persuasion':'persuasion','sleight-of-hand':'prestidig',
+    'religion':'religion','stealth':'discret','survival':'survie'
+  };
+  const SAVE_MAP = {
+    'strength-saving-throws':'saveFor','dexterity-saving-throws':'saveDex',
+    'constitution-saving-throws':'saveCon','intelligence-saving-throws':'saveInt',
+    'wisdom-saving-throws':'saveSag','charisma-saving-throws':'saveCha'
+  };
+  const HIT_DIE = {'Barbarian':'1d12','Bard':'1d8','Cleric':'1d8','Druid':'1d8',
+    'Fighter':'1d10','Monk':'1d8','Paladin':'1d10','Ranger':'1d10',
+    'Rogue':'1d8','Sorcerer':'1d6','Warlock':'1d8','Wizard':'1d6','Artificer':'1d8'};
+  const SPELL_AB = {'Bard':'CHA','Cleric':'SAG','Druid':'SAG','Paladin':'CHA',
+    'Ranger':'SAG','Sorcerer':'CHA','Warlock':'CHA','Wizard':'INT','Artificer':'INT'};
+  const INV_CAT = {'Weapon':'arme','Armor':'armure','Potion':'consommable',
+    'Scroll':'consommable','Wondrous Item':'magique','Ring':'magique',
+    'Rod':'magique','Staff':'magique','Wand':'magique'};
+  const SLOT_TABLE = {
+    1:[2,0,0,0,0,0,0,0,0],2:[3,0,0,0,0,0,0,0,0],3:[4,2,0,0,0,0,0,0,0],
+    4:[4,3,0,0,0,0,0,0,0],5:[4,3,2,0,0,0,0,0,0],6:[4,3,3,0,0,0,0,0,0],
+    7:[4,3,3,1,0,0,0,0,0],8:[4,3,3,2,0,0,0,0,0],9:[4,3,3,3,1,0,0,0,0],
+    10:[4,3,3,3,2,0,0,0,0],11:[4,3,3,3,2,1,0,0,0],12:[4,3,3,3,2,1,0,0,0],
+    13:[4,3,3,3,2,1,1,0,0],14:[4,3,3,3,2,1,1,0,0],15:[4,3,3,3,2,1,1,1,0],
+    16:[4,3,3,3,2,1,1,1,0],17:[4,3,3,3,2,1,1,1,1],18:[4,3,3,3,3,1,1,1,1],
+    19:[4,3,3,3,3,2,1,1,1],20:[4,3,3,3,3,2,2,1,1]
+  };
+
+  // Ability scores
+  const stats = {};
+  Object.values(STAT_MAP).forEach(k => stats[k] = 10);
+  (d.stats || []).forEach(s => { if (STAT_MAP[s.id]) stats[STAT_MAP[s.id]] = s.value || 10; });
+  (d.bonusStats || []).forEach(s => { if (STAT_MAP[s.id] && s.value) stats[STAT_MAP[s.id]] += s.value; });
+  (d.overrideStats || []).forEach(s => { if (STAT_MAP[s.id] && s.value != null) stats[STAT_MAP[s.id]] = s.value; });
+
+  // Class & level
+  const mainClass = d.classes?.[0];
+  const className = mainClass?.definition?.name || mainClass?.baseClassDefinition?.name || '';
+  const subClass  = mainClass?.subclassDefinition?.name || '';
+  const level = (d.classes || []).reduce((s,c) => s + (c.level || c.currentLevel || 0), 0) || 1;
+
+  // HP
+  const baseHP    = d.baseHitPoints || 0;
+  const currentHP = Math.max(0, baseHP - (d.removedHitPoints || 0));
+  const tempHP    = d.temporaryHitPoints || 0;
+
+  // Proficiencies from all modifier sources
+  const allMods = [
+    ...(d.modifiers?.class      || []),
+    ...(d.modifiers?.race       || []),
+    ...(d.modifiers?.background || []),
+    ...(d.modifiers?.feat       || []),
+  ];
+  const skillProfs = {}; const saveProfs = {};
+  allMods.forEach(m => {
+    const sub = m.subType || '';
+    if (SKILL_MAP[sub]) {
+      const k = SKILL_MAP[sub];
+      if (m.type === 'expertise') skillProfs[k] = 2;
+      else if (m.type === 'proficiency' && !skillProfs[k]) skillProfs[k] = 1;
+    }
+    if (SAVE_MAP[sub] && m.type === 'proficiency') saveProfs[SAVE_MAP[sub]] = true;
+  });
+
+  // Speed from race
+  let speed = 30;
+  (d.race?.racialTraits || []).forEach(t => {
+    if (t.definition?.name?.toLowerCase().includes('speed') || t.definition?.name?.toLowerCase().includes('movement'))
+      speed = t.definition?.snippet?.match(/(\d+)/)?.[1] ? parseInt(t.definition.snippet.match(/(\d+)/)[1]) : 30;
+  });
+
+  // Spells (de-duplicate by name)
+  const seenSpells = new Set();
+  const stripHtml = s => (s || '').replace(/<[^>]*>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').trim().substring(0,600);
+  const spellSources = [
+    ...(d.classSpells || []).flatMap(cs => cs.spells || []),
+    ...(d.spells?.race   || []),
+    ...(d.spells?.class  || []),
+    ...(d.spells?.feat   || []),
+    ...(d.spells?.item   || []),
+  ];
+  const spells = [];
+  spellSources.forEach(sp => {
+    const def = sp.definition || sp;
+    if (!def?.name || seenSpells.has(def.name)) return;
+    seenSpells.add(def.name);
+    const actType = def.activation?.activationType;
+    const actTime = def.activation?.activationTime || 1;
+    const action  = actType === 1 ? 'Action' : actType === 2 ? 'Bonus Action' : actType === 3 ? 'Réaction' : actType === 6 ? 'Rituel' : 'Action';
+    spells.push({
+      name: def.name,
+      level: String(def.level ?? 0),
+      degat: '',
+      typeDegat: '',
+      portee: def.range || '',
+      action: actTime > 1 ? `${actTime} ${action}` : action,
+      desc: stripHtml(def.description || def.snippet || ''),
+      _open: false, conc: false,
+    });
+  });
+  spells.sort((a,b) => parseInt(a.level) - parseInt(b.level));
+
+  // Inventory
+  const inventory = (d.inventory || []).map(item => {
+    const def = item.definition || {};
+    const cat = INV_CAT[def.type] || (def.magic ? 'magique' : 'equipement');
+    return { qty: item.quantity || 1, name: def.name || '', notes: stripHtml(def.description || '').substring(0,200), cat };
+  });
+
+  // Currency
+  const cur = d.currencies || {};
+  const currency = { pp:cur.pp||0, gp:cur.gp||0, ep:cur.ep||0, sp:cur.sp||0, cp:cur.cp||0 };
+
+  // Spell slots from level
+  const slotArr = SLOT_TABLE[Math.min(20, level)] || [0,0,0,0,0,0,0,0,0];
+  const emplacementsSort = {};
+  slotArr.forEach((n,i) => { emplacementsSort[i+1] = n; });
+
+  // Traits
+  const tr = d.traits || {};
+  const notes = d.notes || {};
+
+  const character = {
+    characterName: d.name || '',
+    species: d.race?.fullName || d.race?.baseName || '',
+    classe: className, sousClasse: subClass, niveau: level,
+    background: d.background?.definition?.name || '',
+    alignement: '', xp: d.currentXp || 0, inspiration: false,
+    ...stats, ...saveProfs, ...skillProfs,
+    ca: 10, initiative: 0, vitesse: speed,
+    pvMax: baseHP, pvActuel: currentHP, pvTemp: tempHP,
+    deVie: HIT_DIE[className] || '1d8', nbDeVie: level, nbDeVieUtilises: 0,
+    mortSucces: 0, mortEchecs: 0,
+    attaques: [],
+    classeSort: className, caractSort: SPELL_AB[className] || '',
+    emplacementsSort,
+    emplacementsUtilises: {1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0},
+    spells, customFeatures: [], resources: [], conditions: [],
+    maitrises: '', langues: '',
+    traits: tr.personalityTraits || '', ideaux: tr.ideals || '',
+    liens: tr.bonds || '', defauts: tr.flaws || '',
+    apparence: tr.appearance || '', historique: notes.backstory || '',
+  };
+
+  return { character, inventory, currency,
+    _meta: { name:d.name, classe:className, level, spells:spells.length, items:inventory.length,
+             skills: Object.keys(skillProfs).length, saves: Object.keys(saveProfs).length } };
+}
+
+let _ddbParsed = null;
+function openDdbModal(parsed) {
+  _ddbParsed = parsed;
+  const m = parsed._meta;
+  const overlay = document.getElementById('ddb-modal-overlay');
+  // Preview
+  document.getElementById('ddb-preview').innerHTML = [
+    ['Personnage', m.name || '—'],
+    ['Classe / Niveau', `${m.classe || '—'} niv. ${m.level}`],
+    ['Sorts importés', m.spells + ' sorts'],
+    ['Objets importés', m.items + ' objets'],
+    ['Compétences maîtrisées', m.skills + ' compétences'],
+    ['Sauvegardes maîtrisées', m.saves + ' sauvegardes'],
+  ].map(([l,v]) => `<div class="ddb-preview-row"><span class="ddb-preview-label">${l}</span><span class="ddb-preview-val">${v}</span></div>`).join('');
+  // Items summary
+  const tags = [
+    ['Caractéristiques','ok'], ['PV & Dés de vie','ok'], ['Compétences & Sauvegardes','ok'],
+    ['Emplacements de sorts','ok'], ['Liste de sorts','ok'], ['Inventaire','ok'],
+    ['Monnaie','ok'], ['Personnalité & Histoire','ok'],
+    ['CA (à vérifier manuellement)','warn'], ['Vitesse (à vérifier)','warn'],
+  ];
+  document.getElementById('ddb-import-items').innerHTML =
+    '<div style="margin-bottom:0.4rem;font-size:0.7rem;color:#666;">Contenu importé :</div>' +
+    tags.map(([t,c]) => `<span class="${c}">${t}</span>`).join('');
+  document.getElementById('ddb-error').style.display = 'none';
+  overlay.classList.add('open');
+}
+function applyDdbImport() {
+  if (!_ddbParsed || !playerData) return;
+  const slot = activeSlot();
+  if (!slot) return;
+  // Apply character data
+  slot.character = { ...emptyCharacter(), ..._ddbParsed.character };
+  // Merge inventory (add items, keep existing if any)
+  if (!slot.inventory) slot.inventory = { items:[], currency:{} };
+  slot.inventory.items = _ddbParsed.inventory;
+  slot.inventory.currency = _ddbParsed.currency;
+  // Update slot display name
+  slot.name = _ddbParsed.character.characterName || slot.name;
+  _ddbParsed = null;
+  document.getElementById('ddb-modal-overlay').classList.remove('open');
+  renderAll(); triggerSave();
+  showToast(`✓ ${slot.name} importé depuis D&D Beyond !`);
+}
+
 function doShortRest() {
   openShortRestModal();
 }
@@ -5256,6 +5496,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Repos
   document.getElementById('btn-short-rest').addEventListener('click', doShortRest);
+
+  // D&D Beyond import
+  document.getElementById('ddb-import-file')?.addEventListener('change', e => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const raw = JSON.parse(ev.target.result);
+        const parsed = parseDnDBeyondJSON(raw);
+        openDdbModal(parsed);
+      } catch(err) {
+        const errEl = document.getElementById('ddb-error');
+        document.getElementById('ddb-modal-overlay').classList.add('open');
+        document.getElementById('ddb-preview').innerHTML = '';
+        document.getElementById('ddb-import-items').innerHTML = '';
+        if (errEl) { errEl.textContent = '⚠ ' + err.message; errEl.style.display='block'; }
+      }
+      e.target.value = ''; // reset input
+    };
+    reader.readAsText(file);
+  });
+  document.getElementById('ddb-btn-apply')?.addEventListener('click', applyDdbImport);
+  document.getElementById('ddb-btn-cancel')?.addEventListener('click', () => {
+    document.getElementById('ddb-modal-overlay').classList.remove('open');
+  });
+  document.getElementById('ddb-modal-overlay')?.addEventListener('click', e => {
+    if (e.target === e.currentTarget) e.currentTarget.classList.remove('open');
+  });
   // Jack of All Trades toggle
   document.getElementById('jat-check')?.addEventListener('change', e => {
     if (!playerData) return;
@@ -5770,6 +6039,22 @@ document.addEventListener('DOMContentLoaded', () => {
           <button class="btn btn-sm" id="sr-btn-roll" style="border-color:#3a6060;color:#7ababa;">🎲 Lancer 1 dé</button>
           <button class="btn btn-sm btn-gold" id="sr-btn-apply" disabled>✚ Appliquer</button>
           <button class="btn btn-sm" id="sr-btn-cancel" style="color:#888;">Annuler</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Modal Import D&D Beyond ── -->
+    <div class="ddb-modal-overlay" id="ddb-modal-overlay">
+      <div class="ddb-modal">
+        <h3>⚔ Importer depuis D&D Beyond</h3>
+        <div class="ddb-modal-sub">Vérifie les informations détectées avant d'appliquer</div>
+        <div id="ddb-error" class="ddb-error" style="display:none;"></div>
+        <div class="ddb-preview" id="ddb-preview"></div>
+        <div class="ddb-import-items" id="ddb-import-items"></div>
+        <div style="font-size:0.72rem;color:#555;margin-bottom:0.85rem;">⚠ L'import remplacera le personnage actif. L'inventaire et les notes sont préservés puis complétés.</div>
+        <div class="ddb-btn-row">
+          <button class="btn btn-sm" id="ddb-btn-cancel" style="color:#888;">Annuler</button>
+          <button class="btn btn-sm btn-gold" id="ddb-btn-apply">⚔ Appliquer l'import</button>
         </div>
       </div>
     </div>
