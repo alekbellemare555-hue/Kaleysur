@@ -913,4 +913,13 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   });
 
 })();
+
+// --- Chat widget (chargé uniquement si connecté) --------
+(function loadChat() {
+  if (!localStorage.getItem('kaleysur_user')) return;
+  var s = document.createElement('script');
+  s.src = getWikiRoot() + 'js/chat.js';
+  document.body.appendChild(s);
+})();
+
 console.log('✦ Kaleysur Wiki chargé ✦');

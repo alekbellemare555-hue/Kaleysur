@@ -299,6 +299,11 @@
     .death-dot { width:14px; height:14px; border-radius:50%; border:2px solid #3a3a4a; background:transparent; cursor:pointer; transition:background var(--transition), border-color var(--transition); }
     .death-dot.success-on { background:var(--success); border-color:var(--success); }
     .death-dot.fail-on { background:var(--danger); border-color:var(--danger); }
+    /* ── Stress Points ── */
+    .stress-dots { display:flex; gap:0.35rem; flex-wrap:wrap; }
+    .stress-dot { width:14px; height:14px; border-radius:3px; border:2px solid #3a3a4a; background:transparent; cursor:pointer; transition:background var(--transition), border-color var(--transition); }
+    .stress-dot.used { background:#8b5cf6; border-color:#8b5cf6; }
+    .stress-count-inp { width:36px; background:#0d0d14; border:1px solid #2a2a3a; border-radius:4px; color:#e8e0d0; font-size:0.75rem; padding:0.15rem 0.3rem; text-align:center; margin-left:0.5rem; vertical-align:middle; }
 
     /* ── Class Features ── */
     .cf-level-group { margin-bottom:0.45rem; border:1px solid #2a2a3a; border-radius:6px; overflow:hidden; }
@@ -479,6 +484,20 @@
     .layout-col .sheet-section { margin-bottom:1rem; }
     .layout-col .sheet-section:last-child { margin-bottom:0; }
     @media (max-width:900px) { .layout-wrapper { flex-direction:column; } }
+    .layout-bottom { margin-top:1.25rem; }
+    /* Multiclass rows */
+    .cf-class-header { font-family:'Cinzel',serif; font-size:0.78rem; color:var(--gold); letter-spacing:0.06em; text-transform:uppercase; margin:0.85rem 0 0.4rem; padding-bottom:0.25rem; border-bottom:1px solid rgba(201,169,110,0.2); }
+    .mc-row { display:grid; grid-template-columns:1fr 1fr 64px auto; gap:0.4rem; align-items:center; margin-bottom:0.35rem; }
+    .mc-row .mc-custom-sub { grid-column:1 / -1; margin-top:0.25rem; }
+    .mc-primary-badge { font-size:0.7rem; color:var(--gold); font-family:'Cinzel',serif; letter-spacing:0.04em; white-space:nowrap; padding:0 0.2rem; }
+    .mc-remove-btn { padding:0.1rem 0.4rem !important; font-size:0.8rem !important; }
+    @media(max-width:600px) { .mc-row { grid-template-columns:1fr 1fr 50px auto; } }
+    .layout-col-full { flex:none; width:100%; }
+    .layout-col-full.drag-col-over { outline:1px dashed #3a6a3a; outline-offset:6px; border-radius:var(--radius); }
+    .layout-col-full .sheet-section { margin-bottom:1rem; }
+    .layout-col-full .sheet-section:last-child { margin-bottom:0; }
+    .layout-col-full .layout-col-label { font-family:'Cinzel',serif; font-size:0.62rem; color:#555; letter-spacing:0.06em; text-transform:uppercase; text-align:center; padding:0.2rem 0 0.4rem; }
+    @media (max-width:840px) { .layout-col-full .layout-col-label { display:none; } }
     /* Grille de caract pleine largeur : toujours 6 colonnes même en pleine largeur */
     .sheet-section-full .ability-grid { grid-template-columns:repeat(6,1fr); }
     @media (max-width:600px) { .sheet-section-full .ability-grid { grid-template-columns:repeat(3,1fr); } }
@@ -613,12 +632,133 @@
     <a href="astoryem/cite-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌑</span> Cité des Ombres</a>
   </div>
   <hr class="sidebar-divider">
-  <div class="sidebar-section"><div class="sidebar-section-title">Lore</div>
+  <div class="sidebar-section"><div class="sidebar-section-title">Ayakan</div>
+    <a href="ayakan/ayakan.html" class="sidebar-link"><span class="icon">🌐</span> Ayakan</a>
+    <div class="sidebar-region-label">Grand Plateau</div>
+    <a href="ayakan/comhan-de-na.html" class="sidebar-link sidebar-sublink"><span class="icon">⚙️</span> Comhan De Na</a>
+    <a href="ayakan/grand-plateau.html" class="sidebar-link sidebar-sublink"><span class="icon">⚒️</span> Grand Plateau</a>
+    <a href="ayakan/armalak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Armalak</a>
+    <a href="ayakan/fios.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔬</span> Fios</a>
+    <a href="ayakan/indelair.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚗️</span> Indelair</a>
+    <a href="ayakan/lukd-oigrid.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Lukd Oigrid</a>
+    <a href="ayakan/lukd-naek.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🪡</span> Lukd Naek</a>
+    <a href="ayakan/lukd-tagil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏗️</span> Lukd Tagil</a>
+    <a href="ayakan/lukd-trenay.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐎</span> Lukd Trenay</a>
+    <a href="ayakan/lukd-tuanak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Lukd Tuanak</a>
+    <a href="ayakan/creidak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🕊️</span> Creidak</a>
+    <a href="ayakan/curcodak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎪</span> Curcodak</a>
+    <div class="sidebar-region-label">Ouestvir</div>
+    <a href="ayakan/ouestvir.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Ouestvir</a>
+    <a href="ayakan/yokoki.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Yokoki</a>
+    <a href="ayakan/laryok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Laryok</a>
+    <a href="ayakan/yoklar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Yoklar</a>
+    <a href="ayakan/kasvir.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Kasvir</a>
+    <a href="ayakan/rusvar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Rusvar</a>
+    <a href="ayakan/sordas.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔔</span> Sordas</a>
+    <a href="ayakan/sunkur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Sunkur</a>
+    <a href="ayakan/portlune.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Portlune</a>
+    <div class="sidebar-region-label">Régions</div>
+    <a href="ayakan/kayadur.html" class="sidebar-link sidebar-sublink"><span class="icon">🌋</span> Kayadur</a>
+    <a href="ayakan/zodory.html" class="sidebar-link sidebar-sublink"><span class="icon">💎</span> Zodory</a>
+    <a href="ayakan/kolandur.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Kolandur</a>
+    <a href="ayakan/staurdur.html" class="sidebar-link sidebar-sublink"><span class="icon">💨</span> Staurdur</a>
+    <a href="ayakan/creve-glace.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Crève Glace</a>
+    <a href="ayakan/varask.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Varask</a>
+    <a href="ayakan/mornea.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Mornea</a>
+    <a href="ayakan/thyrne.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">♨️</span> Thyrne</a>
+    <a href="ayakan/selvend.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛒</span> Selvend</a>
+    <a href="ayakan/frayakin.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Frayakin</a>
+    <a href="ayakan/solcara.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌟</span> Solcara</a>
+    <a href="ayakan/pyrael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔶</span> Pyraël</a>
+    <a href="ayakan/leth.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Leth</a>
+    <a href="ayakan/faran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Faran</a>
+    <a href="ayakan/chaines-verre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎶</span> Chaînes de Verre</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Musiyav</div>
+    <a href="musiyav/musiyav.html" class="sidebar-link"><span class="icon">🌐</span> Musiyav</a>
+    <div class="sidebar-region-label">Nord</div>
+    <a href="musiyav/terres-gelees.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Terres Gelées</a>
+    <a href="musiyav/munabenn.html" class="sidebar-link sidebar-sublink"><span class="icon">⛏️</span> Munabenn</a>
+    <a href="musiyav/creastail.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚡</span> Creastail</a>
+    <a href="musiyav/stasmoc.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Stasmoc</a>
+    <a href="musiyav/clagrayn.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Clagrayn</a>
+    <a href="musiyav/fedhidom.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌑</span> Fedhidom</a>
+    <a href="musiyav/cricrosal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Cricrosal</a>
+    <a href="musiyav/ellirhom.html" class="sidebar-link sidebar-sublink"><span class="icon">🍃</span> Éllirhom</a>
+    <div class="sidebar-region-label">Centre</div>
+    <a href="musiyav/murblan.html" class="sidebar-link sidebar-sublink"><span class="icon">⚖️</span> Murblan</a>
+    <a href="musiyav/bekai-keal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Bekai Keal</a>
+    <a href="musiyav/thylkarok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎨</span> Thylkarok</a>
+    <a href="musiyav/carroval.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🗿</span> Carroval</a>
+    <a href="musiyav/caudherra.html" class="sidebar-link sidebar-sublink"><span class="icon">🐘</span> Caudherra</a>
+    <a href="musiyav/saldromil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎵</span> Saldromil</a>
+    <a href="musiyav/kandor-zei.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Kandor-Zeï</a>
+    <a href="musiyav/mirsha-lu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐘</span> Mirsha Lû</a>
+    <a href="musiyav/ukar-tal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📜</span> Ukar Tal</a>
+    <a href="musiyav/brastelma.html" class="sidebar-link sidebar-sublink"><span class="icon">🌿</span> Brastelma</a>
+    <a href="musiyav/xalatlal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐆</span> Xalatlal</a>
+    <a href="musiyav/tochion.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Tochion</a>
+    <a href="musiyav/yabalta.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Yabalta</a>
+    <a href="musiyav/solgirne.html" class="sidebar-link sidebar-sublink"><span class="icon">🌾</span> Solgirne</a>
+    <a href="musiyav/varnestal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Varnestal</a>
+    <a href="musiyav/linvelar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌲</span> Linvelar</a>
+    <a href="musiyav/eldmire.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐟</span> Eldmire</a>
+    <a href="musiyav/cairondel.html" class="sidebar-link sidebar-sublink"><span class="icon">🗿</span> Cairondel</a>
+    <a href="musiyav/gravantempe.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏔️</span> Gravantempe</a>
+    <a href="musiyav/treufloran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Treufloran</a>
+    <a href="musiyav/valtendre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Valtendre</a>
+    <div class="sidebar-region-label">Ouest</div>
+    <a href="musiyav/valacorra.html" class="sidebar-link sidebar-sublink"><span class="icon">⚜️</span> Valacorra</a>
+    <a href="musiyav/aunthrevin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Aunthrevin</a>
+    <a href="musiyav/vendrolis.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Vendrolis</a>
+    <a href="musiyav/darn-merath.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Darn Merath</a>
+    <a href="musiyav/dusalain.html" class="sidebar-link sidebar-sublink"><span class="icon">🏜️</span> Dusalain</a>
+    <a href="musiyav/sarathiil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Sarathiil</a>
+    <a href="musiyav/akalima.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Akalima</a>
+    <a href="musiyav/yndarev.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Yndarev</a>
+    <a href="musiyav/sillu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Sillu</a>
+    <div class="sidebar-region-label">Sud</div>
+    <a href="musiyav/xamaris.html" class="sidebar-link sidebar-sublink"><span class="icon">🚫</span> Xamaris</a>
+    <a href="musiyav/xakaril.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Xakaril</a>
+    <a href="musiyav/marolzhad.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚖️</span> Marolzhad</a>
+    <a href="musiyav/dorvenkar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚒️</span> Dorvenkar</a>
+    <a href="musiyav/naskarrem.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Naskarrem</a>
+    <a href="musiyav/khaelbar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Khaëlbar</a>
+    <a href="musiyav/tol-vekrah.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📖</span> Tol Vekrah</a>
+    <a href="musiyav/krelsum.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🧱</span> Krelsum</a>
+    <a href="musiyav/falstrein.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Falstrein</a>
+    <a href="musiyav/terres-pieuses.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Terres Pieuses</a>
+    <a href="musiyav/templum-triarii.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛪</span> Templum Triarii</a>
+    <a href="musiyav/forge-vivante.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Forge Vivante</a>
+    <a href="musiyav/isvarun.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌅</span> Isvarun</a>
+    <a href="musiyav/callafhar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Callafhar</a>
+    <a href="musiyav/auranthil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌲</span> Auranthil</a>
+    <a href="musiyav/elvar-tyl.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌳</span> Elvarë Tyl</a>
+    <a href="musiyav/lunemiral.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌙</span> Lunemiral</a>
+    <a href="musiyav/miriathael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Mirithaël</a>
+    <a href="musiyav/faelorrin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Faelorrin</a>
+    <div class="sidebar-region-label">Est</div>
+    <a href="musiyav/terres-sauvages.html" class="sidebar-link sidebar-sublink"><span class="icon">🌋</span> Terres Sauvages</a>
+    <a href="musiyav/kaelyth.html" class="sidebar-link sidebar-sublink"><span class="icon">⚔️</span> Viremarche</a>
+    <a href="musiyav/briseneige.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Briseneige</a>
+    <div class="sidebar-region-label">Terres Isolées</div>
+    <a href="musiyav/tinneas.html" class="sidebar-link sidebar-sublink"><span class="icon">🦴</span> Tinneas A'Bhàis</a>
+    <a href="musiyav/shurakai.html" class="sidebar-link sidebar-sublink"><span class="icon">🌫️</span> Shurakai</a>
+    <a href="musiyav/narkun.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Narkûn</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Régions Éloignées</div>
+    <a href="musiyav/anneau-dieux.html" class="sidebar-link"><span class="icon">⚫</span> Anneau des Dieux</a>
+    <a href="musiyav/archipel-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌙</span> Archipel des Ombres</a>
+    <a href="musiyav/darnobscur.html" class="sidebar-link sidebar-sublink"><span class="icon">🩸</span> Darnobscur</a>
+  </div>
+  <hr class="sidebar-divider">
+  <div class="sidebar-section"><div class="sidebar-section-title">Personnages & Lore</div>
     <a href="lore/personnages.html" class="sidebar-link"><span class="icon">🧙</span> Personnages</a>
+    <a href="lore/journal-arzi.html" class="sidebar-link sidebar-sublink"><span class="icon">📖</span> Journal d'Arzi</a>
     <a href="lore/organisations.html" class="sidebar-link"><span class="icon">⚔️</span> Organisations</a>
-    <a href="lore/dieux.html" class="sidebar-link"><span class="icon">✨</span> Dieux &amp; Trinités</a>
-    <a href="musiyav/anneau-dieux.html" class="sidebar-link"><span class="icon">💍</span> Anneau des Dieux</a>
-    <a href="lore/journal-arzi.html" class="sidebar-link"><span class="icon">📖</span> Journal d'Arzi</a>
+    <a href="lore/dieux.html" class="sidebar-link"><span class="icon">✨</span> Dieux & Trinités</a>
   </div>
 </aside>
 
@@ -704,7 +844,7 @@
     <!-- Onglets -->
     <div class="tabs">
       <button class="tab-btn active" data-tab="personnage">⚔ Personnage</button>
-      <button class="tab-btn" data-tab="inventaire">🎒 Inventaire</button>
+      <button class="tab-btn" data-tab="inventaire">🎒 Inventory</button>
       <button class="tab-btn" data-tab="notes">📜 Notes</button>
       <button class="tab-btn" data-tab="parametres">⚙ Paramètres</button>
       <button class="tab-btn" data-tab="aide">📋 Aide</button>
@@ -714,13 +854,13 @@
     <!-- ── Onglet Personnage ── -->
     <div class="tab-panel active" id="tab-personnage">
       <div id="layout-toolbar" class="layout-toolbar">
-        <span>✦ Glisse les titres de section pour réorganiser · ↔ pour changer de colonne</span>
+        <span>✦ Glisse les titres pour réorganiser · ↔ pour changer de colonne/zone</span>
         <button class="btn btn-sm" id="btn-reset-layout" style="margin-left:auto;">↺ Défaut</button>
       </div>
 
       <!-- Caractéristiques : pleine largeur au-dessus des colonnes -->
       <div class="sheet-section sheet-section-full" data-sec="caracteristiques">
-        <div class="sheet-section-title">Caractéristiques</div>
+        <div class="sheet-section-title">Ability Scores</div>
         <div class="ability-grid" id="ability-grid"></div>
       </div>
 
@@ -741,38 +881,15 @@
               <label class="field-label">Espèce (Species)</label>
               <input type="text" class="field-input" data-f="species" placeholder="ex. Humain, Elfe…">
             </div>
-            <div class="field-group">
-              <label class="field-label">Classe</label>
-              <select class="field-input" data-f="classe">
-                <option value="">— Choose a class —</option>
-                <option>Artificer</option>
-                <option>Barbarian</option>
-                <option>Bard</option>
-                <option>Cleric</option>
-                <option>Druid</option>
-                <option>Fighter</option>
-                <option>Monk</option>
-                <option>Paladin</option>
-                <option>Ranger</option>
-                <option>Rogue</option>
-                <option>Sorcerer</option>
-                <option>Warlock</option>
-                <option>Wizard</option>
-              </select>
-            </div>
-            <div class="field-group">
-              <label class="field-label">Sous-classe</label>
-              <select class="field-input" data-f="sousClasse" id="sousclasse-select">
-                <option value="">— Choisir une classe d'abord —</option>
-              </select>
-              <div class="custom-sub-wrap" id="sousclasse-custom-wrap">
-                <label>Custom subclass name</label>
-                <input type="text" class="field-input" id="sousclasse-custom-input" placeholder="Enter your subclass name…">
+            <div class="field-group" style="grid-column:span 2;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem;">
+                <label class="field-label">Classes &amp; Levels</label>
+                <button class="btn btn-sm btn-gold" id="btn-add-mc-class" type="button">+ Add Class</button>
               </div>
-            </div>
-            <div class="field-group">
-              <label class="field-label">Niveau</label>
-              <input type="number" class="field-input" data-f="niveau" min="1" max="20" value="1">
+              <div id="mc-classes-container"></div>
+              <div style="margin-top:0.45rem;font-size:0.82rem;color:#888;">
+                Total level: <strong id="mc-total-level" style="color:var(--gold);">—</strong>
+              </div>
             </div>
             <div class="field-group">
               <label class="field-label">Background</label>
@@ -794,7 +911,7 @@
           </div>
           <div class="mait-grid" style="margin-top:0.75rem;">
             <div class="field-group">
-              <label class="field-label">Maîtrises (armures, armes, outils)</label>
+              <label class="field-label">Proficiencies (armor, weapons, tools)</label>
               <textarea class="field-input" data-f="maitrises" rows="2" placeholder="ex. Armures légères, épées, outils de forgeron…"></textarea>
             </div>
             <div class="field-group">
@@ -816,7 +933,7 @@
         <!-- Sauvegardes & Compétences -->
 
         <div class="sheet-section" data-sec="saves">
-          <div class="sheet-section-title">Sauvegardes &amp; Compétences</div>
+          <div class="sheet-section-title">Saving Throws &amp; Skills</div>
           <div class="save-skill-grid">
             <div id="saves-col"></div>
           <label class="jat-toggle" id="jat-label" title="Barde niv.2+ : ajoute la moitié du bonus de maîtrise aux compétences sans maîtrise">
@@ -830,7 +947,7 @@
         <!-- Compétences passives -->
 
         <div class="sheet-section" data-sec="passives">
-          <div class="sheet-section-title">Compétences passives</div>
+          <div class="sheet-section-title">Passive Checks</div>
           <div id="passive-skills"></div>
         </div>
   
@@ -868,7 +985,7 @@
               <div class="stat-bubble-sub" id="init-auto-label">auto DEX</div>
             </div>
             <div class="stat-bubble" title="Vitesse en pieds">
-              <div class="stat-bubble-label">Vitesse</div>
+              <div class="stat-bubble-label">Speed</div>
               <input type="number" data-f="vitesse" value="30" min="0" step="5">
               <div class="stat-bubble-sub">pieds</div>
             </div>
@@ -877,15 +994,15 @@
           <!-- PV + Dés de vie -->
           <div class="combat-pv-row">
             <div class="combat-field">
-              <label class="field-label">PV Maximum</label>
+              <label class="field-label">Max HP</label>
               <input type="number" class="field-input field-input-sm" data-f="pvMax" value="0" min="0" id="inp-pvMax">
             </div>
             <div class="combat-field">
-              <label class="field-label">PV Actuels</label>
+              <label class="field-label">Current HP</label>
               <input type="number" class="field-input field-input-sm" data-f="pvActuel" value="0" id="inp-pvActuel">
             </div>
             <div class="combat-field">
-              <label class="field-label">PV Temporaires</label>
+              <label class="field-label">Temp HP</label>
               <input type="number" class="field-input field-input-sm" data-f="pvTemp" value="0" min="0">
             </div>
           </div>
@@ -926,7 +1043,7 @@
           <!-- Jets de mort -->
           <div style="display:flex;gap:2rem;margin-top:0.85rem;flex-wrap:wrap;">
             <div>
-              <div class="field-label" style="margin-bottom:0.3rem;">Jets de mort — Succès</div>
+              <div class="field-label" style="margin-bottom:0.3rem;">Death Saves — Successes</div>
               <div class="death-dots" id="death-success">
                 <div class="death-dot" data-idx="0" data-type="success"></div>
                 <div class="death-dot" data-idx="1" data-type="success"></div>
@@ -934,13 +1051,22 @@
               </div>
             </div>
             <div>
-              <div class="field-label" style="margin-bottom:0.3rem;">Jets de mort — Échecs</div>
+              <div class="field-label" style="margin-bottom:0.3rem;">Death Saves — Failures</div>
               <div class="death-dots" id="death-fail">
                 <div class="death-dot" data-idx="0" data-type="fail"></div>
                 <div class="death-dot" data-idx="1" data-type="fail"></div>
                 <div class="death-dot" data-idx="2" data-type="fail"></div>
               </div>
             </div>
+          </div>
+
+          <!-- Stress Points -->
+          <div style="margin-top:0.85rem;">
+            <div class="field-label" style="margin-bottom:0.3rem;">
+              Stress Points
+              <input type="number" class="stress-count-inp" id="stress-max-inp" min="0" max="20" value="3" title="Nombre de stress points">
+            </div>
+            <div class="stress-dots" id="stress-dots"></div>
           </div>
         </div>
   
@@ -953,8 +1079,8 @@
           </div>
           <div class="res-grid" id="resource-grid"></div>
           <div class="rest-btns">
-            <button class="btn-rest short" id="btn-short-rest">☽ Repos Court</button>
-            <button class="btn-rest long"  id="btn-long-rest">★ Repos Long</button>
+            <button class="btn-rest short" id="btn-short-rest">☽ Short Rest</button>
+            <button class="btn-rest long"  id="btn-long-rest">★ Long Rest</button>
           </div>
         </div>
   
@@ -981,7 +1107,7 @@
 
         <div class="sheet-section" data-sec="attaques">
           <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
-            <span>Attaques</span>
+            <span>Attacks</span>
             <button class="btn btn-sm btn-gold" id="btn-add-attack">+ Ajouter</button>
           </div>
           <table class="attack-table">
@@ -990,7 +1116,7 @@
               <th style="width:18%">Dégâts</th>
               <th style="width:14%">Type</th>
               <th style="width:10%">Stat</th>
-              <th style="width:7%" title="Maîtrise">Maît.</th>
+              <th style="width:7%" title="Proficiency">Maît.</th>
               <th style="width:12%">Bonus</th>
               <th style="width:13%"></th>
             </tr></thead>
@@ -998,63 +1124,9 @@
           </table>
         </div>
   
-        <!-- Sorts -->
+        <!-- Sorts: moved to bottom row -->
 
-        <div class="sheet-section" data-sec="sorts">
-          <div class="sheet-section-title">Sorts</div>
-          <div class="conc-badge" id="conc-badge">
-            <div class="conc-badge-dot"></div>
-            <span>Concentrating — breaking concentration ends this spell</span>
-          </div>
-          <div class="sheet-grid" style="margin-bottom:0.75rem;">
-            <div class="field-group">
-              <label class="field-label">Classe de sort</label>
-              <input type="text" class="field-input" data-f="classeSort" placeholder="ex. Magicien">
-            </div>
-            <div class="field-group">
-              <label class="field-label">Caractéristique</label>
-              <select class="field-input" data-f="caractSort">
-                <option value="">—</option>
-                <option>FOR</option><option>DEX</option><option>CON</option>
-                <option>INT</option><option>SAG</option><option>CHA</option>
-              </select>
-            </div>
-            <div class="combat-field">
-              <label class="field-label">Save DD</label>
-              <div class="field-input field-input-sm" id="sort-dd" style="padding:0.4rem;text-align:center;">—</div>
-            </div>
-            <div class="combat-field">
-              <label class="field-label">Bonus attaque</label>
-              <div class="field-input field-input-sm" id="sort-atk" style="padding:0.4rem;text-align:center;">—</div>
-            </div>
-          </div>
-          <div id="spell-slots-grid"></div>
-          <div style="margin-top:0.75rem;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
-              <div style="display:flex;align-items:center;gap:0.6rem;">
-                <div class="field-label">Sorts préparés</div>
-                <span class="spell-prep-counter" id="spell-prep-counter">—</span>
-              </div>
-              <button class="btn btn-sm btn-gold" id="btn-add-spell">+ Ajouter</button>
-            </div>
-            <table class="exp-table">
-              <thead><tr>
-                <th style="width:44px;">Niv.</th>
-                <th>Nom du sort</th>
-                <th style="width:70px;">Dégât</th>
-                <th style="width:80px;">Type</th>
-                <th style="width:60px;">Portée</th>
-                <th style="width:70px;">Action</th>
-                <th style="width:28px;" title="Concentration">◉</th>
-                <th style="width:28px;"></th>
-                <th style="width:24px;"></th>
-              </tr></thead>
-              <tbody id="spell-tbody"></tbody>
-            </table>
-          </div>
-        </div>
-  
-        <!-- Traits & capacités -->
+                <!-- Traits & capacités -->
 
         <div class="sheet-section" data-sec="features">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
@@ -1108,6 +1180,70 @@
         </div><!-- /col-droite -->
 
       </div><!-- /layout-wrapper -->
+
+      <!-- Zone pleine largeur (bas) -->
+      <div class="layout-bottom" id="layout-bottom">
+        <div class="layout-col layout-col-full" data-col="2">
+          <div class="layout-col-label">Zone pleine largeur</div>
+
+<!-- Sorts -->
+
+        <div class="sheet-section" data-sec="sorts">
+          <div class="sheet-section-title">Spells</div>
+          <div class="conc-badge" id="conc-badge">
+            <div class="conc-badge-dot"></div>
+            <span>Concentrating — breaking concentration ends this spell</span>
+          </div>
+          <div class="sheet-grid" style="margin-bottom:0.75rem;">
+            <div class="field-group">
+              <label class="field-label">Classe de sort</label>
+              <input type="text" class="field-input" data-f="classeSort" placeholder="ex. Magicien">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Caractéristique</label>
+              <select class="field-input" data-f="caractSort">
+                <option value="">—</option>
+                <option value="FOR">STR</option><option value="DEX">DEX</option><option value="CON">CON</option>
+                <option value="INT">INT</option><option value="SAG">WIS</option><option value="CHA">CHA</option>
+              </select>
+            </div>
+            <div class="combat-field">
+              <label class="field-label">Save DD</label>
+              <div class="field-input field-input-sm" id="sort-dd" style="padding:0.4rem;text-align:center;">—</div>
+            </div>
+            <div class="combat-field">
+              <label class="field-label">Bonus attaque</label>
+              <div class="field-input field-input-sm" id="sort-atk" style="padding:0.4rem;text-align:center;">—</div>
+            </div>
+          </div>
+          <div id="spell-slots-grid"></div>
+          <div style="margin-top:0.75rem;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
+              <div style="display:flex;align-items:center;gap:0.6rem;">
+                <div class="field-label">Prepared Spells</div>
+                <span class="spell-prep-counter" id="spell-prep-counter">—</span>
+              </div>
+              <button class="btn btn-sm btn-gold" id="btn-add-spell">+ Ajouter</button>
+            </div>
+            <table class="exp-table">
+              <thead><tr>
+                <th style="width:44px;">Niv.</th>
+                <th>Nom du sort</th>
+                <th style="width:70px;">Dégât</th>
+                <th style="width:80px;">Type</th>
+                <th style="width:60px;">Portée</th>
+                <th style="width:70px;">Action</th>
+                <th style="width:28px;" title="Concentration">◉</th>
+                <th style="width:28px;"></th>
+                <th style="width:24px;"></th>
+              </tr></thead>
+              <tbody id="spell-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        </div><!-- /layout-col-2 -->
+      </div><!-- /layout-bottom -->
 
     </div><!-- /tab-personnage -->
 
@@ -1322,9 +1458,9 @@
       <div class="settings-section">
         <h3>⚔ Importer depuis D&amp;D Beyond</h3>
         <ol class="ddb-steps">
-          <li><span class="ddb-step-num">1</span>Connecte-toi sur <strong style="color:#c8a86a;">dndbeyond.com</strong> dans ce navigateur</li>
-          <li><span class="ddb-step-num">2</span>Ouvre ton personnage et note son ID dans l'URL (ex: <em style="color:#aaa;">/characters/12345678</em>)</li>
-          <li><span class="ddb-step-num">3</span>Va à cette adresse : <span class="ddb-url">https://www.dndbeyond.com/character/TONID/json</span></li>
+          <li><span class="ddb-step-num">1</span>Sur <strong style="color:#c8a86a;">dndbeyond.com</strong>, ouvre ton personnage et va dans <em>Settings → Character Privacy → Public</em></li>
+          <li><span class="ddb-step-num">2</span>Note l'ID dans l'URL de ton personnage (ex: <em style="color:#aaa;">/characters/12345678</em>)</li>
+          <li><span class="ddb-step-num">3</span>Remplace <strong>ID</strong> par ton numéro dans cette URL : <span class="ddb-url">https://character-service.dndbeyond.com/character/v5/character/ID</span></li>
           <li><span class="ddb-step-num">4</span>Sauvegarde la page (Ctrl+S) pour obtenir un fichier <strong>.json</strong></li>
           <li><span class="ddb-step-num">5</span>Clique le bouton ci-dessous et sélectionne ce fichier</li>
         </ol>
@@ -1516,9 +1652,9 @@
     <!-- Tabs -->
     <div class="modal-tabs">
       <button class="modal-tab-btn active" data-mtab="fiche">⚔ Fiche</button>
-      <button class="modal-tab-btn" data-mtab="competences">🎯 Compétences</button>
-      <button class="modal-tab-btn" data-mtab="sorts">✨ Sorts</button>
-      <button class="modal-tab-btn" data-mtab="inventaire">🎒 Inventaire</button>
+      <button class="modal-tab-btn" data-mtab="competences">🎯 Skills</button>
+      <button class="modal-tab-btn" data-mtab="sorts">✨ Spells</button>
+      <button class="modal-tab-btn" data-mtab="inventaire">🎒 Inventory</button>
       <button class="modal-tab-btn" data-mtab="notes">📜 Notes</button>
     </div>
     <!-- Contenu -->
@@ -1597,6 +1733,19 @@ const ARTIFICER_SLOTS = {
   13:[4,3,3,1,0,0,0,0,0], 14:[4,3,3,1,0,0,0,0,0], 15:[4,3,3,2,0,0,0,0,0],
   16:[4,3,3,2,0,0,0,0,0], 17:[4,3,3,3,1,0,0,0,0], 18:[4,3,3,3,1,0,0,0,0],
   19:[4,3,3,3,2,0,0,0,0], 20:[4,3,3,3,2,0,0,0,0]
+};
+
+/* ════════════════════════════════════════════════════════════
+   MULTICLASS SPELL SLOTS  (PHB 5e / 2024 combined table)
+   ════════════════════════════════════════════════════════════ */
+const MULTICLASS_SLOTS = {
+  1:[2,0,0,0,0,0,0,0,0], 2:[3,0,0,0,0,0,0,0,0], 3:[4,2,0,0,0,0,0,0,0],
+  4:[4,3,0,0,0,0,0,0,0], 5:[4,3,2,0,0,0,0,0,0], 6:[4,3,3,0,0,0,0,0,0],
+  7:[4,3,3,1,0,0,0,0,0], 8:[4,3,3,2,0,0,0,0,0], 9:[4,3,3,3,1,0,0,0,0],
+  10:[4,3,3,3,2,0,0,0,0],11:[4,3,3,3,2,1,0,0,0],12:[4,3,3,3,2,1,0,0,0],
+  13:[4,3,3,3,2,1,1,0,0],14:[4,3,3,3,2,1,1,0,0],15:[4,3,3,3,2,1,1,1,0],
+  16:[4,3,3,3,2,1,1,1,0],17:[4,3,3,3,2,1,1,1,1],18:[4,3,3,3,3,1,1,1,1],
+  19:[4,3,3,3,3,2,1,1,1],20:[4,3,3,3,3,2,2,1,1]
 };
 
 /* ════════════════════════════════════════════════════════════
@@ -2990,21 +3139,20 @@ function populateSubclassSelect(classe) {
 
 /* ── Auto-remplissage classe ── */
 function autoFillClass(classe) {
+  // Legacy: called when data-f="classe" changes — now handled per-row in renderMulticlasses
+  // Still called from importDnDBeyond etc.
   const info = DND_CLASSES[classe];
   if (!info) return;
   C().deVie = info.de;
   if (info.sort) C().caractSort = info.sort;
-  C().nbDeVie = C().niveau || 1;
-  // Auto-set saving throw proficiencies from class
+  C().nbDeVie = getTotalLevel(C());
   if (CLASS_DATA[classe]) {
     const classSaves = CLASS_DATA[classe].saves;
     const saveMap = { for:'saveFor', dex:'saveDex', con:'saveCon', int:'saveInt', sag:'saveSag', cha:'saveCha' };
     Object.entries(saveMap).forEach(([attr, key]) => { C()[key] = classSaves.includes(attr); });
   }
-  populateSubclassSelect(classe);
-  // Pré-remplir ressources de classe si vide
   if (CLASS_RESOURCES[classe] && !(C().resources || []).length) {
-    C().resources = CLASS_RESOURCES[classe](C().niveau || 1).map(r => ({ ...r }));
+    C().resources = CLASS_RESOURCES[classe](getTotalLevel(C())).map(r => ({ ...r }));
     renderResources();
   }
   fillFields();
@@ -3018,63 +3166,101 @@ function autoFillClass(classe) {
    ════════════════════════════════════════════════════════════ */
 function renderClassFeatures() {
   const c       = C();
-  const classe  = c.classe;
-  const niveau  = Math.max(1, Math.min(20, parseInt(c.niveau) || 1));
+  const classes = getClasses(c);
   const section = document.getElementById('cf-section');
   const body    = document.getElementById('cf-body');
   const title   = document.getElementById('cf-title');
   const slotsNote = document.getElementById('cf-slots-note');
 
-  if (!classe || !CLASS_DATA[classe]) { section.style.display = 'none'; return; }
+  const validClasses = classes.filter(cl => cl.classe && CLASS_DATA[cl.classe]);
+  if (!validClasses.length) { section.style.display = 'none'; return; }
 
   section.style.display = '';
+  const totalLvl = getTotalLevel(c);
+
+  // Title
+  title.textContent = validClasses.map(cl => cl.classe + ' ' + cl.niveau).join(' / ') + ' — Class Features';
+
+  /* ── Spell slots note (multiclass or single) ── */
+  const FULL_CAST  = ['Bard','Cleric','Druid','Sorcerer','Wizard'];
+  const HALF_CAST  = ['Paladin','Ranger'];
+  const ordinals   = ['1st','2nd','3rd','4th','5th','6th','7th','8th','9th'];
+
+  if (classes.length > 1) {
+    // Multiclass: show combined slots
+    const mcSlots = computeMulticlassSlots(c);
+    const warlockCl = classes.find(cl => cl.classe === 'Warlock');
+    let notes = [];
+    if (mcSlots) {
+      const parts = mcSlots.map((s,i) => s > 0 ? `${s} × ${ordinals[i]}` : null).filter(Boolean);
+      if (parts.length) notes.push(`<strong>Multiclass Spell Slots:</strong> ${parts.join(' · ')}`);
+    }
+    if (warlockCl) {
+      const wSlots = WARLOCK_SLOTS[Math.min(warlockCl.niveau||1, 20)];
+      if (wSlots) {
+        const parts = wSlots.map((s,i) => s > 0 ? `${s} × ${ordinals[i]}` : null).filter(Boolean);
+        if (parts.length) notes.push(`<strong>Warlock Pact Slots (Short Rest):</strong> ${parts.join(' · ')}`);
+      }
+    }
+    if (notes.length) { slotsNote.style.display = ''; slotsNote.innerHTML = notes.join('<br>'); }
+    else slotsNote.style.display = 'none';
+  } else {
+    // Single class
+    const classe = validClasses[0].classe;
+    const niveau = Math.max(1, Math.min(20, parseInt(validClasses[0].niveau) || 1));
+    let slotTable = null;
+    if (FULL_CAST.includes(classe))      slotTable = FULL_CASTER_SLOTS[niveau];
+    else if (HALF_CAST.includes(classe)) slotTable = HALF_CASTER_SLOTS[niveau];
+    else if (classe === 'Warlock')       slotTable = WARLOCK_SLOTS[niveau];
+    else if (classe === 'Artificer')     slotTable = ARTIFICER_SLOTS[niveau];
+    if (slotTable) {
+      const parts = slotTable.map((s,i) => s > 0 ? `${s} × ${ordinals[i]}` : null).filter(Boolean);
+      if (parts.length) {
+        const extra = classe === 'Warlock' ? ' <em style="color:#888;">(restore on Short Rest)</em>' : '';
+        slotsNote.style.display = '';
+        slotsNote.innerHTML = `<strong>Spell Slots — Level ${niveau}${extra}:</strong> ${parts.join(' · ')}`;
+      } else slotsNote.style.display = 'none';
+    } else slotsNote.style.display = 'none';
+  }
+
+  /* Use first valid class for proficiency/armor display, and totalLvl */
+  const classe  = validClasses[0].classe;
+  const niveau  = totalLvl; // for progress bar
+
+  /* ── Proficiencies from primary class ── */
   const data = CLASS_DATA[classe];
-  title.textContent = classe + ' — Class Features';
-
-  /* ── Spell slots note ── */
-  let slotTable = null;
-  const FULL_CAST = ['Bard','Cleric','Druid','Sorcerer','Wizard'];
-  const HALF_CAST = ['Paladin','Ranger'];
-  if (FULL_CAST.includes(classe))       slotTable = FULL_CASTER_SLOTS[niveau];
-  else if (HALF_CAST.includes(classe))  slotTable = HALF_CASTER_SLOTS[niveau];
-  else if (classe === 'Warlock')        slotTable = WARLOCK_SLOTS[niveau];
-  else if (classe === 'Artificer')      slotTable = ARTIFICER_SLOTS[niveau];
-
-  if (slotTable) {
-    const ordinals = ['1st','2nd','3rd','4th','5th','6th','7th','8th','9th'];
-    const parts = slotTable.map((s,i) => s > 0 ? `${s} × ${ordinals[i]}` : null).filter(Boolean);
-    if (parts.length) {
-      const extra = classe === 'Warlock' ? ' <em style="color:#888;">(restore on Short Rest)</em>' : '';
-      slotsNote.style.display = '';
-      slotsNote.innerHTML = `<strong>Spell Slots — Level ${niveau}${extra}:</strong> ${parts.join(' · ')}`;
-    } else { slotsNote.style.display = 'none'; }
-  } else { slotsNote.style.display = 'none'; }
-
-  /* ── Count total levels with features for progress ── */
-  const allLevels = Object.keys(data.features).map(Number).sort((a,b)=>a-b);
-  const unlockedCount = allLevels.filter(l => l <= niveau).length;
-  const pct = Math.round(niveau / 20 * 100);
-
-  /* ── Body ── */
   body.innerHTML = `
     <div class="cf-profs">
       <div class="cf-prof-item"><span class="cf-prof-label">Saving Throws:</span> ${data.saves.map(s=>s.toUpperCase()).join(' &amp; ')}</div>
       ${data.armorProf  ? `<div class="cf-prof-item"><span class="cf-prof-label">Armor:</span> ${data.armorProf}</div>` : ''}
       ${data.weaponProf ? `<div class="cf-prof-item"><span class="cf-prof-label">Weapons:</span> ${data.weaponProf}</div>` : ''}
     </div>
-    <div class="cf-progress-bar"><div class="cf-progress-fill" style="width:${pct}%"></div></div>
-    <div class="cf-progress-label">Level ${niveau} / 20 — ${unlockedCount} feature group${unlockedCount!==1?'s':''} unlocked</div>
+    <div class="cf-progress-bar"><div class="cf-progress-fill" style="width:${Math.round(totalLvl/20*100)}%"></div></div>
+    <div class="cf-progress-label">Total level ${totalLvl} / 20</div>
   `;
 
-  /* ── Subclass data ── */
-  const sousClasse = c.sousClasse;
-  const subData = (sousClasse && SUBCLASS_DATA[classe]) ? SUBCLASS_DATA[classe][sousClasse] : null;
+  /* ── Features for each class ── */
+  validClasses.forEach(clEntry => {
+    const clName  = clEntry.classe;
+    const clLvl   = Math.max(1, Math.min(20, parseInt(clEntry.niveau) || 1));
+    const clData  = CLASS_DATA[clName];
+    if (!clData) return;
+    const sousClasse = clEntry.sousClasse === '__custom__' ? '' : (clEntry.sousClasse || '');
+    const subData = (sousClasse && SUBCLASS_DATA[clName]) ? SUBCLASS_DATA[clName][sousClasse] : null;
 
-  /* ── Features by level — locked levels are invisible (not rendered) ── */
+    // Class header (only if multiclassing)
+    if (validClasses.length > 1) {
+      const classHeader = document.createElement('div');
+      classHeader.className = 'cf-class-header';
+      classHeader.textContent = clName + ' (level ' + clLvl + ')';
+      body.appendChild(classHeader);
+    }
+
+  /* ── Features by level ── */
   for (let lvl = 1; lvl <= 20; lvl++) {
-    if (lvl > niveau) continue; // locked = invisible
+    if (lvl > clLvl) continue; // locked = invisible
 
-    const baseFeats = data.features[lvl] || [];
+    const baseFeats = clData.features[lvl] || [];
     const subFeats  = subData ? (subData[lvl] || []) : [];
     if (!baseFeats.length && !subFeats.length) continue;
 
@@ -3145,7 +3331,8 @@ function renderClassFeatures() {
     group.appendChild(header);
     group.appendChild(levelBody);
     body.appendChild(group);
-  }
+  } // end for lvl
+  }); // end validClasses.forEach
 }
 
 /* ── Barre de PV ── */
@@ -3337,7 +3524,7 @@ function renderCharCards() {
       <button class="char-card-del" data-del-char="${id}" title="Supprimer">✕</button>
       <div class="char-card-avatar">${playerData.avatar || '⚔'}</div>
       <div class="char-card-name">${c.characterName || 'Sans nom'}</div>
-      <div class="char-card-sub">${c.classe || '—'}${subClasse} ${c.niveau ? 'Niv.'+c.niveau : ''}</div>
+      <div class="char-card-sub">${getClasses(c).filter(cl=>cl.classe).map(cl=>cl.classe+' '+cl.niveau).join(' / ') || '—'}</div>
       ${c.species ? `<div class="char-card-species">${c.species}</div>` : ''}
       ${hpHtml}
     `;
@@ -3393,15 +3580,142 @@ function updateCharSummary() {
   const c = C();
   const parts = [];
   if (c.characterName) parts.push(c.characterName);
-  if (c.classe) parts.push(c.classe + (c.niveau ? ' niv.' + c.niveau : ''));
+  const classes = getClasses(c);
+  if (classes.length) {
+    const classStr = classes.map(cl => cl.classe ? cl.classe + ' ' + (cl.niveau||1) : '').filter(Boolean).join(' / ');
+    if (classStr) parts.push(classStr);
+  }
   if (c.species) parts.push(c.species);
   document.getElementById('dash-info').textContent = parts.join(' · ') || 'Aucun personnage';
 }
 
+
+/* ════════════════════════════════════════════════════════════
+   MULTICLASS HELPERS
+   ════════════════════════════════════════════════════════════ */
+
+function migrateToMulticlass(c) {
+  if (!c) return;
+  if (!c.classes || !c.classes.length) {
+    c.classes = [{ classe: c.classe || '', sousClasse: c.sousClasse || '', niveau: parseInt(c.niveau) || 1, customSousClasse: '' }];
+  }
+}
+
+function getClasses(c) {
+  if (c && c.classes && c.classes.length) return c.classes;
+  return [{ classe: c?.classe || '', sousClasse: c?.sousClasse || '', niveau: parseInt(c?.niveau) || 1, customSousClasse: '' }];
+}
+
+function getTotalLevel(c) {
+  return getClasses(c).reduce((s, cl) => s + (parseInt(cl.niveau) || 1), 0);
+}
+
+function syncClassesToLegacy(c) {
+  const classes = getClasses(c);
+  if (classes.length > 0) {
+    c.classe    = classes[0].classe;
+    c.sousClasse = classes[0].sousClasse === '__custom__' ? (classes[0].customSousClasse || '') : (classes[0].sousClasse || '');
+    c.niveau    = classes[0].niveau;
+  }
+}
+
+function computeMulticlassSlots(c) {
+  const classes = getClasses(c);
+  const FULL_C  = ['Bard','Cleric','Druid','Sorcerer','Wizard'];
+  const HALF_C  = ['Paladin','Ranger','Artificer'];
+  let eff = 0;
+  let hasCaster = false;
+  classes.forEach(cl => {
+    const lvl = parseInt(cl.niveau) || 1;
+    if (FULL_C.includes(cl.classe))      { eff += lvl;                    hasCaster = true; }
+    else if (HALF_C.includes(cl.classe)) { eff += Math.floor(lvl / 2);    hasCaster = true; }
+    // Warlock: pact magic, not combined; others: no spellcasting
+  });
+  if (!hasCaster || eff < 1) return null;
+  return MULTICLASS_SLOTS[Math.min(eff, 20)] || null;
+}
+
+function renderMulticlasses() {
+  const c = C();
+  if (!c) return;
+  migrateToMulticlass(c);
+  const classes   = c.classes;
+  const container = document.getElementById('mc-classes-container');
+  if (!container) return;
+  const CLASS_LIST = ['Artificer','Barbarian','Bard','Cleric','Druid','Fighter','Monk','Paladin','Ranger','Rogue','Sorcerer','Warlock','Wizard'];
+  container.innerHTML = '';
+  classes.forEach((cl, idx) => {
+    const row = document.createElement('div');
+    row.className = 'mc-row';
+    const subclasses = SUBCLASS_DATA[cl.classe] ? Object.keys(SUBCLASS_DATA[cl.classe]) : [];
+    const isCustom   = cl.sousClasse === '__custom__' || (cl.sousClasse && !subclasses.includes(cl.sousClasse) && subclasses.length > 0);
+    const subOptions = subclasses.map(s => `<option value="${s}"${cl.sousClasse===s?' selected':''}>${s}</option>`).join('');
+    const classOptions = CLASS_LIST.map(name => `<option value="${name}"${cl.classe===name?' selected':''}>${name}</option>`).join('');
+    row.innerHTML = `
+      <select class="field-input mc-classe-sel" title="Class">
+        <option value="">— Class —</option>${classOptions}
+      </select>
+      <select class="field-input mc-sub-sel" title="Subclass">
+        <option value="">— Subclass —</option>${subOptions}
+        <option value="__custom__"${isCustom?' selected':''}>Custom…</option>
+      </select>
+      <input type="number" class="field-input mc-niveau-inp" value="${cl.niveau||1}" min="1" max="20" title="Level" style="text-align:center;">
+      ${idx === 0 ? '<span class="mc-primary-badge">Primary</span>' : '<button class="mc-remove-btn btn btn-sm btn-danger" type="button">✕</button>'}
+      ${isCustom ? `<input type="text" class="field-input mc-custom-sub" placeholder="Custom subclass…" value="${cl.customSousClasse||cl.sousClasse||''}">` : ''}
+    `;
+    container.appendChild(row);
+    const classSel  = row.querySelector('.mc-classe-sel');
+    const subSel    = row.querySelector('.mc-sub-sel');
+    const niveauInp = row.querySelector('.mc-niveau-inp');
+    const removeBtn = row.querySelector('.mc-remove-btn');
+    const customInp = row.querySelector('.mc-custom-sub');
+    classSel.addEventListener('change', () => {
+      classes[idx].classe = classSel.value; classes[idx].sousClasse = ''; classes[idx].customSousClasse = '';
+      syncClassesToLegacy(c);
+      if (idx === 0) autoFillClass(classSel.value);
+      renderMulticlasses(); renderClassFeatures(); updateCharSummary(); renderCharCards(); triggerSave();
+    });
+    subSel.addEventListener('change', () => {
+      classes[idx].sousClasse = subSel.value; classes[idx].customSousClasse = '';
+      syncClassesToLegacy(c);
+      renderMulticlasses(); renderClassFeatures(); updateCharSummary(); triggerSave();
+    });
+    niveauInp.addEventListener('input', () => {
+      classes[idx].niveau = parseInt(niveauInp.value) || 1;
+      syncClassesToLegacy(c);
+      updateMcTotalLevel(); updateProfBonus();
+      renderSaves(); renderSkills(); renderPassiveSkills(); renderClassFeatures(); updateSpellCalcs();
+      triggerSave();
+    });
+    if (customInp) {
+      customInp.addEventListener('input', () => {
+        classes[idx].customSousClasse = customInp.value;
+        classes[idx].sousClasse = '__custom__';
+        syncClassesToLegacy(c);
+        renderClassFeatures(); triggerSave();
+      });
+    }
+    if (removeBtn) {
+      removeBtn.addEventListener('click', () => {
+        classes.splice(idx, 1); syncClassesToLegacy(c);
+        renderMulticlasses(); renderClassFeatures(); updateProfBonus(); updateMcTotalLevel(); updateSpellCalcs(); updateCharSummary(); renderCharCards(); triggerSave();
+      });
+    }
+  });
+  updateMcTotalLevel();
+}
+
+function updateMcTotalLevel() {
+  const c = C(); if (!c) return;
+  const el = document.getElementById('mc-total-level');
+  if (el) el.textContent = getTotalLevel(c);
+}
+
 /* ── Rendu complet ── */
 function renderAll() {
+  migrateToMulticlass(C());
   fillFields();
-  populateSubclassSelect(C().classe);
+  renderMulticlasses();
   renderAbilities();
   renderSaves();
   renderSkills();
@@ -3437,13 +3751,14 @@ function fillFields() {
 }
 
 function updateProfBonus() {
-  document.getElementById('prof-bonus').textContent = '+' + pb(C().niveau || 1);
+  const el = document.getElementById('prof-bonus');
+  if (el) el.textContent = '+' + pb(getTotalLevel(C()));
 }
 
 /* ── Caractéristiques ── */
 const ABILITIES = [
-  { key:'for', label:'FOR' }, { key:'dex', label:'DEX' }, { key:'con', label:'CON' },
-  { key:'int', label:'INT' }, { key:'sag', label:'SAG' }, { key:'cha', label:'CHA' }
+  { key:'for', label:'STR' }, { key:'dex', label:'DEX' }, { key:'con', label:'CON' },
+  { key:'int', label:'INT' }, { key:'sag', label:'WIS' }, { key:'cha', label:'CHA' }
 ];
 function renderAbilities() {
   const grid = document.getElementById('ability-grid');
@@ -3479,24 +3794,24 @@ function updateModifier(key) {
 
 /* ── Sauvegardes ── */
 const SAVES = [
-  { key:'saveFor', attr:'for', label:'Force' },
-  { key:'saveDex', attr:'dex', label:'Dextérité' },
+  { key:'saveFor', attr:'for', label:'Strength' },
+  { key:'saveDex', attr:'dex', label:'Dexterity' },
   { key:'saveCon', attr:'con', label:'Constitution' },
   { key:'saveInt', attr:'int', label:'Intelligence' },
-  { key:'saveSag', attr:'sag', label:'Sagesse' },
-  { key:'saveCha', attr:'cha', label:'Charisme' }
+  { key:'saveSag', attr:'sag', label:'Wisdom' },
+  { key:'saveCha', attr:'cha', label:'Charisma' }
 ];
 function renderSaves() {
   const col = document.getElementById('saves-col');
-  col.innerHTML = '<div style="font-size:0.7rem;text-transform:uppercase;color:#666;letter-spacing:0.05em;margin-bottom:0.35rem;">Sauvegardes</div>';
-  const c = C(); const bonus = pb(c.niveau || 1);
+  col.innerHTML = '<div style="font-size:0.7rem;text-transform:uppercase;color:#666;letter-spacing:0.05em;margin-bottom:0.35rem;">Saving Throws</div>';
+  const c = C(); const bonus = pb(getTotalLevel(c));
   SAVES.forEach(sv => {
     const prof = !!c[sv.key];
     const val  = mod(abilScore(sv.attr)) + (prof ? bonus : 0);
     const row  = document.createElement('div');
     row.className = 'sv-row';
     row.innerHTML = `
-      <div class="prof-dot ${prof ? 'on' : ''}" data-sv="${sv.key}" title="Maîtrise"></div>
+      <div class="prof-dot ${prof ? 'on' : ''}" data-sv="${sv.key}" title="Proficiency"></div>
       <span class="sv-val">${val >= 0 ? '+' : ''}${val}</span>
       <span>${sv.label}</span>
     `;
@@ -3506,29 +3821,29 @@ function renderSaves() {
 
 /* ── Compétences ── */
 const SKILLS = [
-  { key:'acrobaties', attr:'dex', label:'Acrobaties' },
-  { key:'animaux',    attr:'sag', label:'Dressage' },
-  { key:'arcanes',    attr:'int', label:'Arcanes' },
-  { key:'athletisme', attr:'for', label:'Athlétisme' },
-  { key:'discret',    attr:'dex', label:'Discrétion' },
-  { key:'duperie',    attr:'cha', label:'Tromperie' },
-  { key:'histoire',   attr:'int', label:'Histoire' },
+  { key:'acrobaties', attr:'dex', label:'Acrobatics' },
+  { key:'animaux',    attr:'sag', label:'Animal Handling' },
+  { key:'arcanes',    attr:'int', label:'Arcana' },
+  { key:'athletisme', attr:'for', label:'Athletics' },
+  { key:'discret',    attr:'dex', label:'Stealth' },
+  { key:'duperie',    attr:'cha', label:'Deception' },
+  { key:'histoire',   attr:'int', label:'History' },
   { key:'intimidation',attr:'cha',label:'Intimidation' },
   { key:'investigation',attr:'int',label:'Investigation' },
-  { key:'medecine',   attr:'sag', label:'Médecine' },
+  { key:'medecine',   attr:'sag', label:'Medicine' },
   { key:'nature',     attr:'int', label:'Nature' },
   { key:'perception', attr:'sag', label:'Perception' },
-  { key:'performance',attr:'cha', label:'Représentation' },
+  { key:'performance',attr:'cha', label:'Performance' },
   { key:'persuasion', attr:'cha', label:'Persuasion' },
-  { key:'prestidig',  attr:'dex', label:'Prestidigitation' },
+  { key:'prestidig',  attr:'dex', label:'Sleight of Hand' },
   { key:'religion',   attr:'int', label:'Religion' },
-  { key:'survie',     attr:'sag', label:'Survie' },
-  { key:'perspicacite',attr:'sag',label:'Perspicacité' }
+  { key:'survie',     attr:'sag', label:'Survival' },
+  { key:'perspicacite',attr:'sag',label:'Insight' }
 ];
 function renderSkills() {
   const col = document.getElementById('skills-col');
   col.innerHTML = '<div style="font-size:0.7rem;text-transform:uppercase;color:#666;letter-spacing:0.05em;margin-bottom:0.35rem;">Compétences <span style="font-size:0.6rem;color:#444;font-style:italic;">(clic=maîtrise, 2×=expertise)</span></div>';
-  const c = C(); const bonus = pb(c.niveau || 1);
+  const c = C(); const bonus = pb(getTotalLevel(c));
   const jat = !!c.jackOfAllTrades;
   const halfBonus = Math.floor(bonus / 2);
   // Sync JAT checkbox
@@ -3541,7 +3856,7 @@ function renderSkills() {
     const jatBonus = (jat && profLevel === 0) ? halfBonus : 0;
     const val = mod(abilScore(sk.attr)) + (profLevel >= 1 ? bonus : 0) + (profLevel >= 2 ? bonus : 0) + jatBonus;
     const dotClass = profLevel === 2 ? 'on expert' : profLevel === 1 ? 'on' : '';
-    const title = profLevel === 2 ? 'Expertise (double maîtrise)' : profLevel === 1 ? 'Maîtrise' : 'Aucune maîtrise';
+    const title = profLevel === 2 ? 'Expertise (double proficiency)' : profLevel === 1 ? 'Proficiency' : 'Not proficient';
     const row  = document.createElement('div');
     row.className = 'sk-row';
     row.innerHTML = `
@@ -3570,13 +3885,24 @@ function renderCombat() {
     const lbl = document.getElementById('init-auto-label');
     if (lbl) lbl.textContent = 'manuel';
   }
-  // Jets de mort
+  // Death Saves
   ['success','fail'].forEach(type => {
     const count = type === 'success' ? (c.mortSucces || 0) : (c.mortEchecs || 0);
     document.querySelectorAll(`.death-dot[data-type="${type}"]`).forEach((dot, i) => {
       dot.classList.toggle(type + '-on', i < count);
     });
   });
+  // Stress Points
+  const stressMax  = parseInt(c.stressMax)  || 3;
+  const stressUsed = parseInt(c.stressUsed) || 0;
+  const stressInp  = document.getElementById('stress-max-inp');
+  if (stressInp) stressInp.value = stressMax;
+  const stressCont = document.getElementById('stress-dots');
+  if (stressCont) {
+    stressCont.innerHTML = Array.from({length: stressMax}, (_,i) =>
+      `<div class="stress-dot${i < stressUsed ? ' used' : ''}" data-sidx="${i}"></div>`
+    ).join('');
+  }
 }
 
 /* ── Sorts ── */
@@ -3606,7 +3932,7 @@ function renderSpellSlots() {
 function updateSpellCalcs() {
   const c = C();
   const prepEl = document.getElementById('spell-prep-counter');
-  if (!c.caractSort || !c.niveau) {
+  if (!c.caractSort || !getTotalLevel(c)) {
     document.getElementById('sort-dd').textContent = '—';
     document.getElementById('sort-atk').textContent = '—';
     if (prepEl) { prepEl.textContent = '—'; prepEl.className = 'spell-prep-counter'; }
@@ -3615,7 +3941,8 @@ function updateSpellCalcs() {
   const attrMap = { FOR:'for', DEX:'dex', CON:'con', INT:'int', SAG:'sag', CHA:'cha' };
   const attr = attrMap[c.caractSort];
   if (!attr) return;
-  const bonus = pb(c.niveau || 1);
+  const totalLvl = getTotalLevel(c);
+  const bonus = pb(totalLvl);
   const m = mod(abilScore(attr));
   document.getElementById('sort-dd').textContent  = 8 + bonus + m;
   document.getElementById('sort-atk').textContent = (bonus + m >= 0 ? '+' : '') + (bonus + m);
@@ -3623,7 +3950,8 @@ function updateSpellCalcs() {
   if (prepEl) {
     const spells = c.spells || [];
     const leveled = spells.filter(s => s.level && s.level !== '0' && s.level !== 0);
-    const maxPrep = Math.max(1, parseInt(c.niveau || 1) + m);
+    const primaryLvl = getClasses(c)[0]?.niveau || totalLvl;
+    const maxPrep = Math.max(1, parseInt(primaryLvl) + m);
     prepEl.textContent = `${leveled.length} / ${maxPrep}`;
     prepEl.className = 'spell-prep-counter' + (leveled.length > maxPrep ? ' over' : leveled.length > 0 ? ' ok' : '');
   }
@@ -3631,7 +3959,7 @@ function updateSpellCalcs() {
 
 /* ── Attaques ── */
 function calcAtkBonus(atk) {
-  const c = C(); const bonus = pb(c.niveau || 1);
+  const c = C(); const bonus = pb(getTotalLevel(c));
   const t = (atk.atkType || '').toLowerCase();
   if (t === 'sort') {
     const el = document.getElementById('sort-atk');
@@ -3661,7 +3989,7 @@ function renderAttacks() {
       <td><input class="atk-inp" data-atk="${i}" data-ak="degats" value="${esc(atk.degats||'')}" placeholder="1d8+3" style="font-size:0.75rem;"></td>
       <td><input class="atk-inp" data-atk="${i}" data-ak="typeDegat" value="${esc(atk.typeDegat||'')}" placeholder="tranchant" style="font-size:0.75rem;"></td>
       <td><select class="atk-inp" data-atk="${i}" data-ak="atkType" style="padding:0.18rem 0.2rem;font-size:0.74rem;">${statSelOpts}</select></td>
-      <td style="text-align:center;"><input type="checkbox" data-atk="${i}" data-ak="prof" ${atk.prof ? 'checked' : ''} style="accent-color:var(--gold-dark);width:14px;height:14px;cursor:pointer;" title="Maîtrise"></td>
+      <td style="text-align:center;"><input type="checkbox" data-atk="${i}" data-ak="prof" ${atk.prof ? 'checked' : ''} style="accent-color:var(--gold-dark);width:14px;height:14px;cursor:pointer;" title="Proficiency"></td>
       <td class="atk-bonus-cell">${atkBonus}</td>
       <td><button class="atk-del" data-del="${i}" title="Supprimer">✕</button></td>
     `;
@@ -3957,7 +4285,7 @@ function initCanvasEvents() {
 function renderPassiveSkills() {
   const el = document.getElementById('passive-skills');
   if (!el) return;
-  const c = C(); const bonus = pb(c.niveau || 1);
+  const c = C(); const bonus = pb(getTotalLevel(c));
   const passives = [
     { label:'Perception passive',      key:'perception',   attr:'sag' },
     { label:'Investigation passive',   key:'investigation',attr:'int' },
@@ -3979,7 +4307,7 @@ function renderResources() {
   resources.forEach((r, i) => {
     const card = document.createElement('div');
     card.className = 'res-card';
-    const resetLabel = r.reset === 'short' ? 'Repos Court' : r.reset === 'long' ? 'Repos Long' : '';
+    const resetLabel = r.reset === 'short' ? 'Short Rest' : r.reset === 'long' ? 'Long Rest' : '';
     const maxDisplay = r.max !== null && r.max !== undefined ? r.max : '—';
     card.innerHTML = `
       <input class="res-card-name-inp" type="text" data-ri="${i}" data-rk="name" value="${esc(r.name||'Ressource')}" placeholder="Nom…" title="Renommer">
@@ -4187,6 +4515,7 @@ function parseDnDBeyondJSON(raw) {
     traits: tr.personalityTraits || '', ideaux: tr.ideals || '',
     liens: tr.bonds || '', defauts: tr.flaws || '',
     apparence: tr.appearance || '', historique: notes.backstory || '',
+    classes: [{ classe: className, sousClasse: '', niveau: level, customSousClasse: '' }],
   };
 
   return { character, inventory, currency,
@@ -4210,10 +4539,10 @@ function openDdbModal(parsed) {
   ].map(([l,v]) => `<div class="ddb-preview-row"><span class="ddb-preview-label">${l}</span><span class="ddb-preview-val">${v}</span></div>`).join('');
   // Items summary
   const tags = [
-    ['Caractéristiques','ok'], ['PV & Dés de vie','ok'], ['Compétences & Sauvegardes','ok'],
-    ['Emplacements de sorts','ok'], ['Liste de sorts','ok'], ['Inventaire','ok'],
+    ['Ability Scores','ok'], ['PV & Dés de vie','ok'], ['Compétences & Sauvegardes','ok'],
+    ['Spell Slots','ok'], ['Spell List','ok'], ['Inventory','ok'],
     ['Monnaie','ok'], ['Personnalité & Histoire','ok'],
-    ['CA (à vérifier manuellement)','warn'], ['Vitesse (à vérifier)','warn'],
+    ['AC (check manually)','warn'], ['Speed (check manually)','warn'],
   ];
   document.getElementById('ddb-import-items').innerHTML =
     '<div style="margin-bottom:0.4rem;font-size:0.7rem;color:#666;">Contenu importé :</div>' +
@@ -4249,7 +4578,7 @@ function openShortRestModal() {
   // Reset state
   let pendingHealing = 0;
   let diceRolled = 0;
-  const nbDice = parseInt(c.nbDeVie) || c.niveau || 1;
+  const nbDice = parseInt(c.nbDeVie) || getTotalLevel(c) || 1;
   const dieType = parseInt((c.deVie||'1d8').replace('1d','')) || 8;
   const conMod  = Math.floor(((parseInt(c.con)||10) - 10) / 2);
   const maxHP   = parseInt(c.pvMax) || 0;
@@ -4507,7 +4836,7 @@ async function renderAdminPanel() {
       card.className = 'admin-card';
       card.innerHTML = `
         <div class="admin-card-name">${data.avatar||'⚔'} ${row.username}</div>
-        <div class="admin-card-info">${activeChar.characterName || '—'} · ${activeChar.classe || '—'} niv.${activeChar.niveau||1}</div>
+        <div class="admin-card-info">${activeChar.characterName || '—'} · ${getClasses(activeChar).filter(cl=>cl.classe).map(cl=>cl.classe+' '+cl.niveau).join(' / ') || (activeChar.classe||'—')}</div>
         <div class="admin-card-info" style="margin-top:0.15rem;">${charCount} personnage(s) · PV ${pvCur}/${pvMax}</div>
         ${pvMax > 0 ? `<div class="admin-card-hp"><div class="admin-card-hp-bar" style="width:${pct}%;background:${hpColor};height:100%;border-radius:3px;"></div></div>` : ''}
         <div style="margin-top:0.65rem;font-size:0.72rem;color:var(--gold-dark);letter-spacing:0.04em;">✏ Cliquer pour éditer</div>
@@ -4617,7 +4946,7 @@ function renderAdminModalTab() {
 
       <!-- Caractéristiques -->
       <div class="sheet-section">
-        <div class="sheet-section-title">Caractéristiques</div>
+        <div class="sheet-section-title">Ability Scores</div>
         <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:0.6rem;">
           ${['for','dex','con','int','sag','cha'].map(a => `
             <div class="ability-box">
@@ -4635,10 +4964,10 @@ function renderAdminModalTab() {
         <div class="combat-grid">
           <div class="combat-field"><label class="field-label">CA</label><input type="number" class="field-input field-input-sm" id="ae-ca" value="${c.ca||10}"></div>
           <div class="combat-field"><label class="field-label">Initiative</label><input type="number" class="field-input field-input-sm" id="ae-initiative" value="${c.initiative||0}"></div>
-          <div class="combat-field"><label class="field-label">Vitesse</label><input type="number" class="field-input field-input-sm" id="ae-vitesse" value="${c.vitesse||30}" step="5"></div>
-          <div class="combat-field"><label class="field-label">PV Max</label><input type="number" class="field-input field-input-sm" id="ae-pvMax" value="${c.pvMax||0}" min="0"></div>
-          <div class="combat-field"><label class="field-label">PV Actuels</label><input type="number" class="field-input field-input-sm" id="ae-pvActuel" value="${c.pvActuel||0}"></div>
-          <div class="combat-field"><label class="field-label">PV Temp.</label><input type="number" class="field-input field-input-sm" id="ae-pvTemp" value="${c.pvTemp||0}" min="0"></div>
+          <div class="combat-field"><label class="field-label">Speed</label><input type="number" class="field-input field-input-sm" id="ae-vitesse" value="${c.vitesse||30}" step="5"></div>
+          <div class="combat-field"><label class="field-label">Max HP</label><input type="number" class="field-input field-input-sm" id="ae-pvMax" value="${c.pvMax||0}" min="0"></div>
+          <div class="combat-field"><label class="field-label">Current HP</label><input type="number" class="field-input field-input-sm" id="ae-pvActuel" value="${c.pvActuel||0}"></div>
+          <div class="combat-field"><label class="field-label">Temp HP</label><input type="number" class="field-input field-input-sm" id="ae-pvTemp" value="${c.pvTemp||0}" min="0"></div>
           <div class="combat-field">
             <label class="field-label">Dé de Vie</label>
             <select class="field-input field-input-md" id="ae-deVie">
@@ -4651,7 +4980,7 @@ function renderAdminModalTab() {
 
       <!-- Sorts -->
       <div class="sheet-section">
-        <div class="sheet-section-title">Sorts</div>
+        <div class="sheet-section-title">Spells</div>
         <div class="sheet-grid">
           <div class="field-group">
             <label class="field-label">Classe de sort</label>
@@ -4681,9 +5010,9 @@ function renderAdminModalTab() {
 
       <!-- Maîtrises & Langues -->
       <div class="sheet-section">
-        <div class="sheet-section-title">Maîtrises &amp; Langues</div>
+        <div class="sheet-section-title">Proficiencies &amp; Languages</div>
         <div class="sheet-grid-2">
-          <div class="field-group"><label class="field-label">Maîtrises</label><textarea class="field-input" id="ae-maitrises" rows="3" placeholder="ex. Armures légères, épées…">${esc(c.maitrises)}</textarea></div>
+          <div class="field-group"><label class="field-label">Proficiencies</label><textarea class="field-input" id="ae-maitrises" rows="3" placeholder="ex. Armures légères, épées…">${esc(c.maitrises)}</textarea></div>
           <div class="field-group"><label class="field-label">Langues</label><textarea class="field-input" id="ae-langues" rows="3" placeholder="ex. Commun, Elfique…">${esc(c.langues)}</textarea></div>
         </div>
       </div>
@@ -5036,7 +5365,8 @@ const SECTION_LABELS = {
 const DEFAULT_LAYOUT = {
   columns:[
     ['identite','saves','passives'],
-    ['cf','combat','ressources','conditions','attaques','sorts','features','perso']
+    ['cf','combat','ressources','conditions','attaques','features','perso'],
+    ['sorts']
   ],
   hidden:[]
 };
@@ -5070,10 +5400,17 @@ function getLayout() {
 
 function captureCurrentLayout() {
   const wrapper = document.querySelector('#tab-personnage .layout-wrapper');
+  const bottom  = document.getElementById('layout-bottom');
   if (!wrapper) return getLayout();
-  const columns = Array.from(wrapper.querySelectorAll('.layout-col')).map(col =>
+  const columns = Array.from(wrapper.querySelectorAll(':scope > .layout-col')).map(col =>
     Array.from(col.querySelectorAll('.sheet-section[data-sec]')).map(s => s.dataset.sec)
   );
+  // Third column: bottom full-width row
+  const bottomCol = bottom?.querySelector('.layout-col[data-col="2"]');
+  const bottomIds = bottomCol
+    ? Array.from(bottomCol.querySelectorAll('.sheet-section[data-sec]')).map(s => s.dataset.sec)
+    : [];
+  columns.push(bottomIds);
   return { columns, hidden: playerData?.layout?.hidden || [] };
 }
 
@@ -5084,8 +5421,14 @@ function applyLayout() {
   const wrapper = document.getElementById('layout-wrapper');
   if (!wrapper) return;
 
-  const cols = wrapper.querySelectorAll('.layout-col');
-  if (!cols.length) return;
+  const bottom   = document.getElementById('layout-bottom');
+  const bottomCol = bottom?.querySelector('.layout-col[data-col="2"]');
+  const topCols  = Array.from(wrapper.querySelectorAll(':scope > .layout-col'));
+  const allCols  = bottomCol ? [...topCols, bottomCol] : topCols;
+  const cols     = { length: allCols.length, forEach: fn => allCols.forEach(fn) };
+  // Also make cols[ci] work
+  allCols.forEach((c,i) => cols[i] = c);
+  if (!topCols.length) return;
 
   // Sections fixes (hors colonnes) — visibilité uniquement, pas de déplacement
   panel.querySelectorAll('.sheet-section-full[data-sec]').forEach(sec => {
@@ -5094,10 +5437,13 @@ function applyLayout() {
     else sec.classList.remove('sec-hidden');
   });
 
-  // Construire la map data-sec → élément (seulement dans les colonnes)
+  // Construire la map data-sec → élément (colonnes + zone bas)
   const sectionMap = {};
-  wrapper.querySelectorAll('.sheet-section[data-sec]').forEach(s => {
-    if (!FIXED_SECTIONS.includes(s.dataset.sec)) sectionMap[s.dataset.sec] = s;
+  [wrapper, bottomCol].forEach(container => {
+    if (!container) return;
+    container.querySelectorAll('.sheet-section[data-sec]').forEach(s => {
+      if (!FIXED_SECTIONS.includes(s.dataset.sec)) sectionMap[s.dataset.sec] = s;
+    });
   });
 
   const layout = getLayout();
@@ -5156,9 +5502,11 @@ function toggleLayoutEdit() {
       b.className = 'sec-col-btn btn btn-sm'; b.innerHTML = '↔'; b.title = 'Autre colonne';
       b.onclick = e => {
         e.preventDefault(); e.stopPropagation();
+        const allLayoutCols = Array.from(document.querySelectorAll('.layout-col'));
         const cur = sec.closest('.layout-col');
-        const other = Array.from(document.querySelectorAll('.layout-col')).find(c => c !== cur);
-        if (other) other.appendChild(sec);
+        const curIdx = allLayoutCols.indexOf(cur);
+        const nextIdx = (curIdx + 1) % allLayoutCols.length;
+        allLayoutCols[nextIdx].appendChild(sec);
       };
       const titleEl = sec.querySelector('.sheet-section-title');
       if (titleEl) titleEl.appendChild(b);
@@ -5207,7 +5555,7 @@ function initLayoutDrag() {
     });
   });
 
-  document.querySelectorAll('.layout-col').forEach(col => {
+  document.querySelectorAll('.layout-col, .layout-col-full').forEach(col => {
     col.addEventListener('dragover', e => {
       if (!layoutEditMode) return; e.preventDefault();
       col.classList.add('drag-col-over');
@@ -5381,7 +5729,7 @@ document.addEventListener('DOMContentLoaded', () => {
       else C()[el.dataset.f] = el.value;
 
       if (el.dataset.f === 'characterName') { activeSlot().name = el.value || 'Sans nom'; renderCharCards(); }
-      if (el.dataset.f === 'niveau') { updateProfBonus(); renderSaves(); renderSkills(); renderPassiveSkills(); renderClassFeatures(); autoFillClass(C().classe); }
+      if (el.dataset.f === 'niveau') { syncClassesToLegacy(C()); updateProfBonus(); renderSaves(); renderSkills(); renderPassiveSkills(); renderClassFeatures(); renderMulticlasses(); }
       if (el.dataset.f === 'classe') { autoFillClass(el.value); updateCharSummary(); renderCharCards(); }
       if (['for','dex','con','int','sag','cha'].includes(el.dataset.f)) { updateModifier(el.dataset.f); renderSaves(); renderSkills(); renderPassiveSkills(); updateSpellCalcs(); }
       if (el.dataset.f === 'caractSort' || el.dataset.f === 'niveau') updateSpellCalcs();
@@ -5446,7 +5794,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Bouton ajouter attaque
+  // Stress Points
+  document.getElementById('stress-dots').addEventListener('click', e => {
+    const dot = e.target.closest('.stress-dot');
+    if (!dot) return;
+    const idx  = parseInt(dot.dataset.sidx);
+    const cur  = parseInt(C().stressUsed) || 0;
+    C().stressUsed = cur > idx ? idx : idx + 1;
+    renderCombat(); triggerSave();
+  });
+  document.getElementById('stress-max-inp').addEventListener('change', e => {
+    C().stressMax = Math.max(0, Math.min(20, parseInt(e.target.value) || 0));
+    C().stressUsed = Math.min(C().stressUsed || 0, C().stressMax);
+    renderCombat(); triggerSave();
+  });
+
+  // Add attack button
   document.getElementById('btn-add-attack').addEventListener('click', () => {
     if (!playerData) return;
     C().attaques = C().attaques || [];
@@ -5854,6 +6217,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* ── Bouton Organiser ── */
   document.getElementById('btn-layout-edit')?.addEventListener('click', toggleLayoutEdit);
+
+  /* ── Add multiclass button ── */
+  document.getElementById('btn-add-mc-class')?.addEventListener('click', () => {
+    const c = C(); if (!c) return;
+    migrateToMulticlass(c);
+    if (c.classes.length >= 3) { alert('Maximum 3 classes (PHB rules).'); return; }
+    c.classes.push({ classe: '', sousClasse: '', niveau: 1, customSousClasse: '' });
+    renderMulticlasses(); triggerSave();
+  });
   document.getElementById('btn-reset-layout')?.addEventListener('click', () => {
     if (!confirm('Réinitialiser la mise en page par défaut ?')) return;
     if (playerData) { playerData.layout = null; triggerSave(); }
