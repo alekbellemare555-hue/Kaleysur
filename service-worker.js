@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kaleysur-v25';
+const CACHE_NAME = 'kaleysur-v26';
 
 const ASSETS = [
   'index.html',
@@ -8,7 +8,9 @@ const ASSETS = [
   'calendrier.html',
   'editeur-carte.html',
   'css/style.css',
+  'js/components.js',
   'js/wiki.js',
+  'search-index.json',
   'manifest.json',
   'favicon.png',
   'icons/icon-192.png',
@@ -157,12 +159,34 @@ self.addEventListener('activate', event => {
   );
 });
 
+const FONTS_CACHE = 'kaleysur-fonts-v1';
+const FONTS_ORIGINS = ['fonts.googleapis.com', 'fonts.gstatic.com'];
+
 /* ── Fetch : cache-first, fallback réseau ── */
 self.addEventListener('fetch', event => {
-  // Ignorer les requêtes non-GET et externes (ex: Supabase)
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
-  if (!url.origin.includes(self.location.hostname) && !url.hostname.includes(self.location.hostname)) return;
+
+  // Polices Google Fonts : stale-while-revalidate avec cache dédié
+  if (FONTS_ORIGINS.some(o => url.hostname === o)) {
+    event.respondWith(
+      caches.open(FONTS_CACHE).then(cache =>
+        cache.match(event.request).then(cached => {
+          const fresh = fetch(event.request).then(response => {
+            if (response && response.status === 200) {
+              cache.put(event.request, response.clone());
+            }
+            return response;
+          }).catch(() => cached);
+          return cached || fresh;
+        })
+      )
+    );
+    return;
+  }
+
+  // Ressources externes autres → ignorer (pas de cache)
+  if (!url.hostname.includes(self.location.hostname)) return;
 
   event.respondWith(
     caches.match(event.request).then(cached => {
