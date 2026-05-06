@@ -111,23 +111,6 @@ body {
   gap: 0.2rem;
   flex-shrink: 0;
 }
-.nav-user-badge {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  color: var(--gold-dark);
-  text-decoration: none;
-  font-size: 0.75rem;
-  font-family: 'Cinzel', serif;
-  letter-spacing: 0.04em;
-  padding: 0.22rem 0.6rem 0.22rem 0.45rem;
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  background: var(--bg-secondary);
-  transition: border-color var(--transition), color var(--transition);
-  max-width: 130px;
-}
-.nav-user-badge:hover { border-color: var(--gold-dark); color: var(--gold); }
 .nav-user-icon { width: 14px; height: 14px; flex-shrink: 0; }
 .nav-user-name {
   overflow: hidden;
@@ -258,6 +241,8 @@ body {
   letter-spacing: 0.04em;
   text-decoration: none;
   white-space: nowrap;
+  max-width: 130px;
+  overflow: hidden;
   transition: background var(--transition), border-color var(--transition);
   cursor: pointer;
 }
@@ -1745,6 +1730,28 @@ footer span { color: var(--gold-dark); }
 .continent-links { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem; }
 .continent-link { font-family: var(--font-ui); font-size: 0.67rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-dark); text-decoration: none; border-bottom: 1px solid var(--border); padding-bottom: 1px; transition: color var(--transition), border-color var(--transition); }
 .continent-link:hover { color: var(--gold); border-color: var(--gold-dark); }
+.continent-entry--astoryem { border-left-color: #2e5496; }
+.continent-entry--astoryem .continent-icon-wrap { border-color: rgba(46,84,150,0.3); background: rgba(46,84,150,0.1); }
+.continent-entry--ayakan { border-left-color: #8a7040; }
+.continent-entry--ayakan .continent-icon-wrap { border-color: rgba(110,98,72,0.3); background: rgba(110,98,72,0.1); }
+.continent-entry--musiyav { border-left-color: #8a1a1a; }
+.continent-entry--musiyav .continent-icon-wrap { border-color: rgba(138,26,26,0.3); background: rgba(138,26,26,0.1); }
+
+/* Lien "Chronologie complète" inline → classe */
+.chrono-link {
+  display: inline-block;
+  margin-top: 0.75rem;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 2px;
+  transition: color var(--transition);
+}
+.chrono-link:hover { color: var(--gold); }
 
 /* --- Ère actuelle ----------------------------------------- */
 .era-block { display: flex; gap: 1.5rem; align-items: flex-start; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem 1.75rem; margin: 1.25rem 0; }
