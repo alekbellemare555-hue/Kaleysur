@@ -2361,6 +2361,15 @@ const SUBCLASS_DATA = {
     10:[{ name:'Shadow Lore', desc:'Whisper at one creature within 30 ft. WIS save or Frightened for 8 hours (can\'t react, must flee). 1/Long Rest.' }],
     14:[{ name:'Master of Intrigue', desc:'Disguise Self at will. Mimic the speech patterns of anyone you\'ve heard for at least 1 minute.' }],
   },
+  'College of the Moon': {
+    3:[
+      { name:'Moonlit Inspiration', desc:'When you grant Bardic Inspiration to an ally, they regain HP equal to your CHA mod (min 1). You can cast Invisibility on yourself once per Long Rest without a spell slot.' },
+      { name:'Moon Spells', desc:'Always prepared: Faerie Fire, Moonbeam.' }
+    ],
+    6:[{ name:'Radiant Moonbeam', desc:'When you cast Moonbeam, the radius doubles to 10 ft and creatures that fail their save take maximum damage on the first roll.' }],
+    14:[{ name:'Moonlit Mantle', desc:'You can cast Invisibility on another willing creature once per Long Rest. Whenever a creature uses your Bardic Inspiration, you or they regain HP equal to your Bard level without expending a spell slot or Inspiration die.' }],
+  },
+
 },
 
 'Cleric': {
@@ -2502,6 +2511,17 @@ const SUBCLASS_DATA = {
     15:[{ name:'Bulwark of Force', desc:'Bonus Action: choose up to PB creatures within 30 ft. Each gains Half Cover until start of your next turn. Uses = INT mod/Long Rest.' }],
     18:[{ name:'Telekinetic Master', desc:'Cast Telekinesis (Concentration) without a slot. Still make weapon attacks while concentrating. 1/Long Rest.' }],
   },
+  'Banneret': {
+    3:[
+      { name:'Banneret Proficiencies', desc:'Gain proficiency in one skill of your choice and one additional language. You can cast Comprehend Languages as a ritual without a spell slot.' },
+      { name:'Quick Study', desc:'After observing a language for 1 hour, you can attempt to understand and speak it. After 7 days of study you learn the language permanently.' }
+    ],
+    7:[{ name:'Team Tactics', desc:'When you take the Attack action, choose an ally within 30 ft. Until the start of your next turn, that ally has Advantage on attack rolls against creatures you attacked this turn.' }],
+    10:[{ name:'Rallying Surge', desc:'When you use Action Surge, one ally within 60 ft can immediately use their Reaction to make one weapon attack and move up to their speed.' }],
+    15:[{ name:'Stalwart Spirit', desc:'When you fail a saving throw, you can reroll it with a +5 bonus. You must use the new result. 1/Long Rest.' }],
+    18:[{ name:'Inspiring Leader', desc:'You are immune to the Charmed and Frightened conditions. Your Team Tactics and Rallying Surge now affect up to 2 allies simultaneously.' }],
+  },
+
 },
 
 'Monk': {
@@ -2576,6 +2596,17 @@ const SUBCLASS_DATA = {
     15:[{ name:'Soul of Vengeance', desc:'Reaction: when a creature under your Vow of Enmity attacks, make one melee weapon attack against it.' }],
     20:[{ name:'Avenging Angel', desc:'Action: grow wings (Fly 60 ft), frightening aura 30 ft for 1 hour. Creatures entering the aura make WIS save or are Frightened. 1/Long Rest.' }],
   },
+  'Oath of the Noble Genies': {
+    3:[
+      { name:'Oath Spells', desc:'Always prepared: Thunderwave, Burning Hands (3rd); Gust of Wind, Scorching Ray (5th); Call Lightning, Fly (9th); Conjure Minor Elementals, Fire Shield (13th); Conjure Elemental, Cloudkill (17th).' },
+      { name:'Elemental Smite', desc:'When you hit with a weapon attack and expend a spell slot, choose one of four options: Tempest Smite (thunder damage, push 10 ft), Flame Smite (fire damage that jumps to adjacent creature), Stone Smite (bludgeoning damage, target Prone), or Wind Smite (teleport target up to 20 ft to unoccupied space).' },
+      { name:'Channel Divinity: Elemental Command', desc:'As an Action, conjure an elemental aura of your choice: air (you and allies gain +10 ft speed), fire (enemies in 10 ft take fire damage on their turn), earth (you gain resistance to bludgeoning/piercing/slashing), or water (create difficult terrain zone).' }
+    ],
+    7:[{ name:'Elemental Resistance', desc:'You and allies within 10 ft gain resistance to fire, cold, lightning, and thunder damage while you are conscious.' }],
+    15:[{ name:'Elemental Reaction', desc:'When a creature within 30 ft takes fire, cold, lightning, or thunder damage, use your Reaction to halve that damage. If the damage is halved, you regain HP equal to half the damage prevented.' }],
+    20:[{ name:'Genie Apotheosis', desc:'For 1 minute, you gain a Fly speed equal to your walk speed, immunity to fire, cold, lightning, and thunder damage, and once per turn you can turn one failed D20 Test into a success.' }],
+  },
+
 },
 
 'Ranger': {
@@ -2614,6 +2645,16 @@ const SUBCLASS_DATA = {
     11:[{ name:'Multiattack', desc:'Choose: Volley (ranged attack all creatures in 10-ft radius) or Whirlwind Attack (melee attack all creatures within 5 ft).' }],
     15:[{ name:'Superior Hunter\'s Defense', desc:'Choose: Evasion, Stand Against the Tide (redirect misses to another creature), or Uncanny Dodge (halve damage from one attack).' }],
   },
+  'Winter Walker': {
+    3:[
+      { name:'Cold Mastery', desc:'You have Resistance to Cold damage. Your attacks and spells ignore Cold Resistance (but not Immunity). Once per turn when you deal damage to a creature, you can deal an additional 1d6 Cold damage.' },
+      { name:'Winter Walker Spells', desc:'Always prepared: Fog Cloud, Ice Knife (3rd); Hold Person, Snilloc\'s Snowball Swarm (5th); Sleet Storm, Slow (9th); Ice Storm, Freedom of Movement (13th); Cone of Cold, Hold Monster (17th).' }
+    ],
+    7:[{ name:'Winter\'s Cloak', desc:'You ignore difficult terrain caused by ice or snow. You can move across icy surfaces without falling Prone. You can Hide in lightly obscured areas created by blizzards, fog, or falling snow.' }],
+    11:[{ name:'Blizzard Strike', desc:'When you hit a creature with a weapon attack, you can expend one spell slot to deal an additional 2d6 Cold damage per slot level. The target\'s speed is reduced by 10 ft until the start of your next turn.' }],
+    15:[{ name:'Frozen Tundra', desc:'As an Action, you can create a 30-ft radius zone of supernatural cold centered on you for 1 minute (Concentration). Creatures entering or starting their turn in the zone take 2d8 Cold damage (CON save halves). The area is difficult terrain. 1/Long Rest.' }],
+  },
+
 },
 
 'Rogue': {
@@ -2662,6 +2703,16 @@ const SUBCLASS_DATA = {
     13:[{ name:'Use Magic Device', desc:'Ignore class, species, and level requirements for attuning to and using magic items.' }],
     17:[{ name:'Thief\'s Reflexes', desc:'First round of combat: take two turns (normal Initiative and Initiative −10).' }],
   },
+  'Scion of the Three': {
+    3:[
+      { name:'Dark Devotion', desc:'You serve the Dead Three—Bane, Bhaal, and Myrkul. When you use Sneak Attack against a creature that is Bloodied (at or below half its HP maximum), roll one additional Sneak Attack damage die.' },
+      { name:'Three-Fold Curse', desc:'Once per Short or Long Rest, you can mark a creature you can see within 60 ft. Until the mark ends (1 hour), you deal maximum damage on Sneak Attacks against it.' }
+    ],
+    9:[{ name:'Fearful Presence', desc:'When you deal Sneak Attack damage, you can force the target to make a WIS save (DC 8 + PB + INT mod) or become Frightened of you for 1 minute. A Frightened creature repeats the save at the end of each of its turns. 1/Short or Long Rest.' }],
+    13:[{ name:'Death\'s Touch', desc:'Once per turn when you deal Sneak Attack damage, you can add your INT modifier (min 1) to the damage roll as Necrotic damage. This damage ignores resistance.' }],
+    17:[{ name:'Assassin of the Dead Three', desc:'Your Sneak Attack damage dice increase by one size (d6→d8). You regain one use of Fearful Presence on each Short Rest. When you reduce a creature to 0 HP with Sneak Attack, you regain HP equal to your PB + INT mod.' }],
+  },
+
 },
 
 'Sorcerer': {
@@ -2701,6 +2752,16 @@ const SUBCLASS_DATA = {
     14:[{ name:'Trance of Order', desc:'Bonus Action: any d20 roll of 9 or lower = 10, for 1 minute. 1/Long Rest or 5 Sorcery Points.' }],
     18:[{ name:'Clockwork Cavalcade', desc:'In a 30-ft cube: restore 100 HP, repair magic items, dispel spells ≤6th level, deal 6d10 Force to hostiles (CON save half). 1/Long Rest.' }],
   },
+  'Spellfire Sorcery': {
+    3:[
+      { name:'Spellfire Burst', desc:'As a Bonus Action, spend 1–5 Sorcery Points to unleash raw Weave energy. Spend 2 SP to deal 2d6 radiant or fire damage (your choice) to one creature within 60 ft (DEX save halves); or spend 1 SP to grant yourself or an ally within 30 ft temporary HP equal to your CHA mod + SP spent.' },
+      { name:'Weave Sense', desc:'You can cast Detect Magic at will without a spell slot.' }
+    ],
+    6:[{ name:'Counterspell Mastery', desc:'Counterspell is always prepared and doesn\'t count against your spells known. When you successfully counter a spell, regain Sorcery Points equal to the countered spell\'s level (max 5).' }],
+    14:[{ name:'Greater Spellfire', desc:'Your Spellfire Burst damage dice increase to d10s. When you spend 4+ Sorcery Points on Spellfire Burst, affected creatures also have Disadvantage on saving throws against your spells until the start of your next turn.' }],
+    18:[{ name:'Spellfire Transcendence', desc:'You gain a Fly speed of 60 ft and resistance to fire, radiant, and force damage. When a spell of 5th level or lower targets you, you can use your Reaction to negate it entirely and regain Sorcery Points equal to the spell\'s level. 1/Long Rest.' }],
+  },
+
 },
 
 'Warlock': {
@@ -2815,6 +2876,16 @@ const SUBCLASS_DATA = {
     10:[{ name:'Shapechanger', desc:'Cast Polymorph on yourself (CR 1 or lower Beast) once per Short or Long Rest without a slot.' }],
     14:[{ name:'Master Transmuter', desc:'Destroy your Transmuter\'s Stone for one of: reshape matter (5-ft cube), cure all diseases and poisons on one creature, cast Raise Dead, or reduce target\'s age by 2d10 years.' }],
   },
+  'Bladesinger': {
+    2:[
+      { name:'Training in War and Song', desc:'You gain proficiency with a one-handed melee weapon of your choice and Performance. You can use INT instead of STR or DEX for attack and damage rolls with your chosen weapon while Bladesinging.' },
+      { name:'Bladesong', desc:'Bonus Action: activate Bladesong for 1 minute (can\'t wear medium/heavy armor or use shields, and can\'t cast two-handed spells). While active, gain +INT mod to AC, +10 ft walking speed, Advantage on Acrobatics, and +INT mod to CON saves to maintain Concentration. 2×/Short Rest.' }
+    ],
+    6:[{ name:'Extra Attack', desc:'You can attack twice instead of once whenever you take the Attack action. One of those attacks can be replaced with a cantrip.' }],
+    10:[{ name:'Song of Defense', desc:'While Bladesinging, use your Reaction when you take damage to expend a spell slot and reduce the damage by 5× the slot\'s level.' }],
+    14:[{ name:'Song of Victory', desc:'While Bladesinging, add your INT modifier to melee weapon damage rolls.' }],
+  },
+
 },
 
 'Artificer': {
@@ -2856,6 +2927,19 @@ const SUBCLASS_DATA = {
     15:[{ name:'Improved Defender', desc:'Arcane Jolt damage/healing increases to 4d6. Your Steel Defender gains a +2 bonus to its AC.' }],
   },
 },
+
+  'Cartographer': {
+    3:[
+      { name:'Tool Proficiencies', desc:'You gain proficiency with Calligrapher\'s Supplies and Cartographer\'s Tools. You can scribe spell scrolls in half the normal time and cost.' },
+      { name:'Magical Maps', desc:'After each Long Rest, create a number of magical maps equal to your INT modifier (min 1). Map holders: gain +1d4 to Initiative rolls; always know each other\'s locations (same plane); and can target each other with effects that require sight even if they can\'t see each other.' },
+      { name:'Illuminated Cartography', desc:'You can cast Faerie Fire without a spell slot a number of times equal to your INT modifier per Long Rest.' }
+    ],
+    5:[{ name:'Guided Precision', desc:'Your Concentration on Faerie Fire can\'t be broken by taking damage. When a spell you cast deals damage to a creature affected by your Faerie Fire, add your INT modifier to the damage roll.' }],
+    15:[
+      { name:'Safe Haven', desc:'When a map holder drops to 0 HP, they can destroy the map to immediately regain HP equal to twice your Artificer level and teleport to within 5 ft of you or another map holder (no distance limit).' },
+      { name:'Cartographer\'s Path', desc:'Each map holder can cast Find the Path once per Long Rest for free. When you use your Flash of Genius reaction, you or the map holder can additionally teleport up to 30 ft to an unoccupied space.' }
+    ],
+  },
 
 }; // end SUBCLASS_DATA
 
