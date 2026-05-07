@@ -20,6 +20,7 @@
     /* ── Écrans ── */
     .j-screen { display: none; }
     .j-screen.active { display: block; }
+    .j-hidden { display: none !important; }
     /* Force sidebar above all joueurs.html elements */
     .sidebar { z-index: 1500 !important; }
 
@@ -473,7 +474,7 @@
     #canvas-text-input { background:rgba(245,240,232,0.92); border:1px dashed #b4a07a; border-radius:4px; color:#1a1212; font-family:'Cinzel',serif; font-size:0.88rem; padding:0.2rem 0.4rem; min-width:120px; outline:none; }
     @media (max-width:700px) { .canvas-pages-sidebar { width:80px; } }
 
-    .canvas-toolbar { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.6rem; padding:0.5rem 0.6rem; background:#0d0d14; border:1px solid #2a2a3a; border-radius:6px; } display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.6rem; padding:0.5rem 0.6rem; background:#0d0d14; border:1px solid #2a2a3a; border-radius:6px; }
+    .canvas-toolbar { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.6rem; padding:0.5rem 0.6rem; background:#0d0d14; border:1px solid #2a2a3a; border-radius:6px; }
     .canvas-tool-btn { background:#1a1a24; border:1px solid #2a2a3a; border-radius:5px; color:#aaa; cursor:pointer; font-size:0.72rem; padding:0.25rem 0.55rem; transition:all var(--transition); font-family:'Cinzel',serif; letter-spacing:0.03em; }
     .canvas-tool-btn:hover { border-color:var(--gold-dark); color:var(--gold-dark); }
     .canvas-tool-btn.active { border-color:var(--gold); background:rgba(201,169,110,0.12); color:var(--gold); }
@@ -636,11 +637,11 @@
         <div id="mode-login">
           <div class="auth-mode-title">Connexion</div>
           <div class="auth-field">
-            <label class="auth-label">Pseudo</label>
+            <label class="auth-label" for="login-user">Pseudo</label>
             <input type="text" class="auth-input" id="login-user" placeholder="Ton pseudo" autocorrect="off" autocapitalize="none">
           </div>
           <div class="auth-field">
-            <label class="auth-label">Mot de passe</label>
+            <label class="auth-label" for="login-pass">Mot de passe</label>
             <input type="password" class="auth-input" id="login-pass" placeholder="••••••••">
           </div>
           <button class="auth-btn" id="btn-login">Se connecter</button>
@@ -651,18 +652,18 @@
         </div>
 
         <!-- Inscription -->
-        <div id="mode-register" style="display:none;">
+        <div id="mode-register" class="j-hidden">
           <div class="auth-mode-title">Créer un compte</div>
           <div class="auth-field">
-            <label class="auth-label">Pseudo</label>
+            <label class="auth-label" for="reg-user">Pseudo</label>
             <input type="text" class="auth-input" id="reg-user" placeholder="Choisis un pseudo unique" autocorrect="off" autocapitalize="none">
           </div>
           <div class="auth-field">
-            <label class="auth-label">Mot de passe</label>
+            <label class="auth-label" for="reg-pass">Mot de passe</label>
             <input type="password" class="auth-input" id="reg-pass" placeholder="Au moins 6 caractères">
           </div>
           <div class="auth-field">
-            <label class="auth-label">Confirmer le mot de passe</label>
+            <label class="auth-label" for="reg-pass2">Confirmer le mot de passe</label>
             <input type="password" class="auth-input" id="reg-pass2" placeholder="Répète le mot de passe">
           </div>
           <button class="auth-btn" id="btn-register">Créer le compte</button>
@@ -701,7 +702,7 @@
     <!-- Onglets -->
     <div class="tabs">
       <button class="tab-btn active" data-tab="personnage">⚔ Personnage</button>
-      <button class="tab-btn" data-tab="inventaire">🎒 Inventory</button>
+      <button class="tab-btn" data-tab="inventaire">🎒 Inventaire</button>
       <button class="tab-btn" data-tab="notes">📜 Notes</button>
       <button class="tab-btn" data-tab="parametres">⚙ Paramètres</button>
       <button class="tab-btn" data-tab="aide">📋 Aide</button>
@@ -902,17 +903,17 @@
             <div>
               <div class="field-label" style="margin-bottom:0.3rem;">Death Saves — Successes</div>
               <div class="death-dots" id="death-success">
-                <div class="death-dot" data-idx="0" data-type="success"></div>
-                <div class="death-dot" data-idx="1" data-type="success"></div>
-                <div class="death-dot" data-idx="2" data-type="success"></div>
+                <div class="death-dot" data-idx="0" data-type="success" role="button" tabindex="0" aria-label="Succès 1"></div>
+                <div class="death-dot" data-idx="1" data-type="success" role="button" tabindex="0" aria-label="Succès 2"></div>
+                <div class="death-dot" data-idx="2" data-type="success" role="button" tabindex="0" aria-label="Succès 3"></div>
               </div>
             </div>
             <div>
               <div class="field-label" style="margin-bottom:0.3rem;">Death Saves — Failures</div>
               <div class="death-dots" id="death-fail">
-                <div class="death-dot" data-idx="0" data-type="fail"></div>
-                <div class="death-dot" data-idx="1" data-type="fail"></div>
-                <div class="death-dot" data-idx="2" data-type="fail"></div>
+                <div class="death-dot" data-idx="0" data-type="fail" role="button" tabindex="0" aria-label="Échec 1"></div>
+                <div class="death-dot" data-idx="1" data-type="fail" role="button" tabindex="0" aria-label="Échec 2"></div>
+                <div class="death-dot" data-idx="2" data-type="fail" role="button" tabindex="0" aria-label="Échec 3"></div>
               </div>
             </div>
           </div>
@@ -949,12 +950,12 @@
           <div class="exhaustion-row">
             <span class="exhaustion-label">Exhaustion</span>
             <div class="exhaustion-pips" id="exhaustion-pips">
-              <div class="exhaust-pip" data-ex="1" title="Level 1 — −1 to all d20 Tests"></div>
-              <div class="exhaust-pip" data-ex="2" title="Level 2 — −2 to all d20 Tests"></div>
-              <div class="exhaust-pip" data-ex="3" title="Level 3 — −3 to all d20 Tests"></div>
-              <div class="exhaust-pip" data-ex="4" title="Level 4 — −4 to all d20 Tests"></div>
-              <div class="exhaust-pip" data-ex="5" title="Level 5 — −5 + Speed halved"></div>
-              <div class="exhaust-pip" data-ex="6" title="Level 6 — Death"></div>
+              <div class="exhaust-pip" data-ex="1" role="button" tabindex="0" title="Level 1 — −1 to all d20 Tests" aria-label="Épuisement 1"></div>
+              <div class="exhaust-pip" data-ex="2" role="button" tabindex="0" title="Level 2 — −2 to all d20 Tests" aria-label="Épuisement 2"></div>
+              <div class="exhaust-pip" data-ex="3" role="button" tabindex="0" title="Level 3 — −3 to all d20 Tests" aria-label="Épuisement 3"></div>
+              <div class="exhaust-pip" data-ex="4" role="button" tabindex="0" title="Level 4 — −4 to all d20 Tests" aria-label="Épuisement 4"></div>
+              <div class="exhaust-pip" data-ex="5" role="button" tabindex="0" title="Level 5 — −5 + Speed halved" aria-label="Épuisement 5"></div>
+              <div class="exhaust-pip" data-ex="6" role="button" tabindex="0" title="Level 6 — Death" aria-label="Épuisement 6"></div>
             </div>
             <span class="exhaustion-desc" id="exhaustion-desc"></span>
           </div>
@@ -3477,6 +3478,9 @@ function renderCharCards() {
     const card = document.createElement('div');
     card.className = 'char-card' + (isActive ? ' active' : '');
     card.dataset.charId = id;
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-label', c.characterName || 'Personnage');
 
     const hpHtml = pvMax > 0
       ? `<div class="char-card-hp-wrap">
@@ -3511,6 +3515,9 @@ function renderCharCards() {
   const addCard = document.createElement('div');
   addCard.className = 'char-card char-card-add';
   addCard.title = 'Créer un nouveau personnage';
+  addCard.setAttribute('role', 'button');
+  addCard.setAttribute('tabindex', '0');
+  addCard.setAttribute('aria-label', 'Créer un nouveau personnage');
   addCard.innerHTML = '<div class="char-card-add-icon">+</div><div class="char-card-add-label">Nouveau</div>';
   addCard.addEventListener('click', () => {
     const name = prompt('Nom du nouveau personnage :', 'Nouveau personnage');
@@ -3779,7 +3786,7 @@ function renderSaves() {
     const row  = document.createElement('div');
     row.className = 'sv-row';
     row.innerHTML = `
-      <div class="prof-dot ${prof ? 'on' : ''}" data-sv="${sv.key}" title="Proficiency"></div>
+      <div class="prof-dot ${prof ? 'on' : ''}" data-sv="${sv.key}" role="button" tabindex="0" title="Proficiency" aria-label="Maîtrise ${sv.label}"></div>
       <span class="sv-val">${val >= 0 ? '+' : ''}${val}</span>
       <span>${sv.label}</span>
     `;
@@ -3828,7 +3835,7 @@ function renderSkills() {
     const row  = document.createElement('div');
     row.className = 'sk-row';
     row.innerHTML = `
-      <div class="prof-dot ${dotClass}" data-sk="${sk.key}" title="${title}"></div>
+      <div class="prof-dot ${dotClass}" data-sk="${sk.key}" role="button" tabindex="0" title="${title}" aria-label="Maîtrise ${sk.label}"></div>
       <span class="sk-val">${val >= 0 ? '+' : ''}${val}</span>
       <span>${sk.label} <span style="color:#555;font-size:0.72rem;">(${sk.attr.toUpperCase()})</span></span>
     `;
@@ -3868,7 +3875,7 @@ function renderCombat() {
   const stressCont = document.getElementById('stress-dots');
   if (stressCont) {
     stressCont.innerHTML = Array.from({length: stressMax}, (_,i) =>
-      `<div class="stress-dot${i < stressUsed ? ' used' : ''}" data-sidx="${i}"></div>`
+      `<div class="stress-dot${i < stressUsed ? ' used' : ''}" data-sidx="${i}" role="button" tabindex="0" aria-label="Stress ${i+1}"></div>`
     ).join('');
   }
 }
@@ -3884,7 +3891,7 @@ function renderSpellSlots() {
     const total = parseInt(c.emplacementsSort?.[lvl]) || 0;
     const used  = parseInt(c.emplacementsUtilises?.[lvl]) || 0;
     const circles = Array.from({length: total}, (_,i) =>
-      `<div class="spell-slot-circle${i < used ? ' used' : ''}" data-slvl="${lvl}" data-sidx="${i}"></div>`
+      `<div class="spell-slot-circle${i < used ? ' used' : ''}" data-slvl="${lvl}" data-sidx="${i}" role="button" tabindex="0" aria-label="Emplacement niv.${lvl} ${i+1}"></div>`
     ).join('');
     const row = document.createElement('div');
     row.className = 'spell-slot-row';
@@ -4300,7 +4307,7 @@ function renderConditions() {
   grid.innerHTML = ALL_CONDITIONS.map(cond => {
     const isActive = active.includes(cond);
     const isConc = cond === 'Concentrating';
-    return `<div class="cond-badge${isActive ? ' active' : ''}${isConc && isActive ? ' conc' : ''}" data-cond="${cond}">${cond}</div>`;
+    return `<div class="cond-badge${isActive ? ' active' : ''}${isConc && isActive ? ' conc' : ''}" data-cond="${cond}" role="button" tabindex="0" aria-pressed="${isActive}">${cond}</div>`;
   }).join('');
   // Exhaustion pips
   renderExhaustion();
@@ -5818,13 +5825,13 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('reg-pass2').addEventListener('keydown', e => { if (e.key === 'Enter') doRegister(); });
 
   document.getElementById('btn-go-register').addEventListener('click', () => {
-    document.getElementById('mode-login').style.display = 'none';
-    document.getElementById('mode-register').style.display = '';
+    document.getElementById('mode-login').classList.add('j-hidden');
+    document.getElementById('mode-register').classList.remove('j-hidden');
     clearAuthError();
   });
   document.getElementById('btn-go-login').addEventListener('click', () => {
-    document.getElementById('mode-register').style.display = 'none';
-    document.getElementById('mode-login').style.display = '';
+    document.getElementById('mode-register').classList.add('j-hidden');
+    document.getElementById('mode-login').classList.remove('j-hidden');
     clearAuthError();
   });
 
@@ -6568,6 +6575,17 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 }); // end DOMContentLoaded
+
+/* ── Accessibilité clavier : Enter/Space déclenche click sur tout role="button" non-natif ── */
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const el = e.target;
+  if (el.tagName === 'BUTTON' || el.tagName === 'A' || el.tagName === 'INPUT' || el.tagName === 'SELECT' || el.tagName === 'TEXTAREA') return;
+  if (el.getAttribute('role') === 'button') {
+    e.preventDefault();
+    el.click();
+  }
+});
 </script>
 
 
