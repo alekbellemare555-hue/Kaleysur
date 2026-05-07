@@ -598,6 +598,50 @@
     .cond-cheat-item:last-child { border-bottom:none; margin-bottom:0; }
     .cond-cheat-name { font-family:'Cinzel',serif; font-size:0.74rem; color:#e8e0d0; letter-spacing:0.03em; }
     .cond-cheat-desc { font-size:0.73rem; color:#777; margin-top:0.1rem; line-height:1.4; }
+
+    /* ── Modal nouvelle fiche ── */
+    .new-char-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.78); z-index:9500; align-items:center; justify-content:center; }
+    .new-char-modal-overlay.open { display:flex; }
+    .new-char-modal { background:#11111c; border:1px solid #2e2e44; border-radius:10px; padding:1.75rem; width:400px; max-width:94vw; box-shadow:0 8px 40px rgba(0,0,0,0.7); }
+    .new-char-modal h3 { font-family:'Cinzel',serif; color:var(--gold); font-size:1rem; margin:0 0 1.25rem; text-align:center; letter-spacing:0.06em; }
+    .new-char-avatar-grid { display:flex; flex-wrap:wrap; gap:0.4rem; justify-content:center; margin:0.6rem 0 1rem; }
+    .new-char-av-btn { width:38px; height:38px; border-radius:6px; border:2px solid #2a2a3a; background:#0d0d14; font-size:1.3rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:border-color 0.15s, background 0.15s; }
+    .new-char-av-btn:hover { border-color:var(--gold-dark); }
+    .new-char-av-btn.selected { border-color:var(--gold); background:rgba(201,162,39,0.12); }
+    .new-char-btn-row { display:flex; gap:0.6rem; justify-content:flex-end; margin-top:1.1rem; }
+
+    /* ── Indicateur connexion ── */
+    .conn-indicator { font-size:0.72rem; font-family:var(--font-ui,sans-serif); padding:0.18rem 0.55rem; border-radius:99px; border:1px solid #2a2a3a; background:#0f0f18; color:#666; letter-spacing:0.04em; white-space:nowrap; transition:all 0.3s ease; }
+    .conn-indicator.online  { border-color:rgba(106,186,106,0.4); color:#6aba6a; background:rgba(106,186,106,0.08); }
+    .conn-indicator.offline { border-color:rgba(201,169,110,0.4); color:#c9a96e; background:rgba(201,169,110,0.08); }
+    .conn-indicator.local   { border-color:rgba(201,122,122,0.4); color:#c97a7a; background:rgba(201,122,122,0.08); }
+
+    /* ── Vue MJ enrichie ── */
+    .mj-player-card { background:#13131a; border:1px solid #2a2a3a; border-radius:var(--radius); padding:1rem 1.1rem; transition:border-color var(--transition); }
+    .mj-player-card:hover { border-color:#3a3a5a; }
+    .mj-player-header { display:flex; align-items:center; gap:0.6rem; margin-bottom:0.65rem; }
+    .mj-player-avatar { font-size:1.4rem; flex-shrink:0; }
+    .mj-player-name { font-family:'Cinzel',serif; color:var(--gold); font-size:0.88rem; }
+    .mj-player-class { font-size:0.72rem; color:#888; font-style:italic; }
+    .mj-hp-row { display:flex; justify-content:space-between; align-items:center; font-size:0.72rem; color:#888; margin-bottom:0.3rem; }
+    .mj-hp-val { color:#e8e0d0; font-family:'Cinzel',serif; }
+    .mj-hp-bar { height:8px; background:#1a1a24; border-radius:4px; overflow:hidden; margin-bottom:0.65rem; }
+    .mj-hp-fill { height:100%; border-radius:4px; transition:width 0.4s ease; }
+    .mj-badges { display:flex; flex-wrap:wrap; gap:0.3rem; margin-bottom:0.55rem; }
+    .mj-badge { font-size:0.62rem; font-family:'Cinzel',serif; padding:0.1rem 0.4rem; border-radius:3px; border:1px solid; letter-spacing:0.03em; }
+    .mj-badge-cond  { border-color:rgba(201,80,80,0.5); color:#f08080; background:rgba(201,80,80,0.1); }
+    .mj-badge-conc  { border-color:rgba(140,80,220,0.5); color:#c090f8; background:rgba(140,80,220,0.1); }
+    .mj-badge-insp  { border-color:rgba(240,192,64,0.5); color:#f0c040; background:rgba(240,192,64,0.1); }
+    .mj-badge-dead  { border-color:rgba(201,80,80,0.8); color:#f04040; background:rgba(201,80,80,0.15); }
+    .mj-badge-low   { border-color:rgba(201,169,80,0.5); color:#c9a950; background:rgba(201,169,80,0.08); }
+    .mj-slots-row { display:flex; gap:0.25rem; flex-wrap:wrap; align-items:center; margin-top:0.3rem; }
+    .mj-slot-pip { width:9px; height:9px; border-radius:50%; border:1.5px solid var(--gold-dark); background:transparent; }
+    .mj-slot-pip.used { background:var(--gold-dark); }
+    .mj-slot-lvl { font-size:0.6rem; color:#555; margin-right:0.15rem; font-family:'Cinzel',serif; }
+    .mj-edit-btn { font-size:0.68rem; color:var(--gold-dark); background:none; border:1px solid #2a2a3a; border-radius:4px; padding:0.2rem 0.5rem; cursor:pointer; transition:all var(--transition); margin-top:0.55rem; width:100%; font-family:'Cinzel',serif; letter-spacing:0.04em; }
+    .mj-edit-btn:hover { border-color:var(--gold-dark); background:rgba(201,162,39,0.08); }
+    .mj-refresh-bar { display:flex; align-items:center; gap:0.75rem; margin-bottom:0.75rem; font-size:0.75rem; color:#555; }
+    .mj-last-refresh { font-size:0.7rem; color:#444; font-style:italic; }
   </style>
 
   <!-- PWA -->
@@ -689,6 +733,7 @@
         </div>
       </div>
       <div class="dash-actions">
+        <span class="conn-indicator" id="conn-indicator" title="État de la connexion au cloud">…</span>
         <span class="save-badge" id="save-badge"></span>
         <button class="inspiration-btn" id="btn-inspiration" title="Inspiration (avantage sur un jet)">✦</button>
         <button class="btn btn-sm" id="btn-layout-edit" title="Réorganiser les sections">⠿ Organiser</button>
@@ -3056,18 +3101,43 @@ function pb(niveau)   { return Math.ceil(niveau / 4) + 1; }
 function abilScore(key){ return parseInt(C()[key]) || 10; }
 
 /* ── Autosave ── */
+/* ── Clé localStorage par utilisateur ── */
+function localKey(u) { return 'kaleysur_data_' + u; }
+
+/* ── Sauvegarde locale systématique (backup) ── */
+function saveLocal(u, data) {
+  try { localStorage.setItem(localKey(u), JSON.stringify({ ts: Date.now(), data })); } catch(e) {}
+}
+
+/* ── Indicateur de connexion ── */
+function updateConnIndicator(state) {
+  const el = document.getElementById('conn-indicator');
+  if (!el) return;
+  if (state === 'online')  { el.textContent = '🟢 Cloud';      el.className = 'conn-indicator online';  el.title = 'Données synchronisées avec le cloud'; }
+  if (state === 'offline') { el.textContent = '🟠 Hors ligne'; el.className = 'conn-indicator offline'; el.title = 'Hors ligne — sauvegarde locale active'; }
+  if (state === 'local')   { el.textContent = '⚠ Local';       el.className = 'conn-indicator local';   el.title = 'Échec cloud — données sauvées localement uniquement'; }
+}
+
 function triggerSave() {
   const badge = document.getElementById('save-badge');
   badge.textContent = 'Sauvegarde…'; badge.className = 'save-badge';
   clearTimeout(saveTimer);
   saveTimer = setTimeout(async () => {
     if (!currentUser || !playerData) return;
+    saveLocal(currentUser, playerData); // backup local toujours
+    if (!navigator.onLine) {
+      badge.textContent = '🟠 Local'; badge.className = 'save-badge';
+      updateConnIndicator('offline');
+      return;
+    }
     try {
       await sbUpdateData(currentUser, playerData);
       badge.textContent = 'Sauvegardé ✓'; badge.className = 'save-badge ok';
+      updateConnIndicator('online');
       setTimeout(() => { badge.textContent = ''; badge.className = 'save-badge'; }, 2500);
     } catch(e) {
-      badge.textContent = '⚠ ' + e.message; badge.className = 'save-badge err';
+      badge.textContent = '⚠ Local'; badge.className = 'save-badge err';
+      updateConnIndicator('local');
     }
   }, 900);
 }
@@ -3519,16 +3589,7 @@ function renderCharCards() {
   addCard.setAttribute('tabindex', '0');
   addCard.setAttribute('aria-label', 'Créer un nouveau personnage');
   addCard.innerHTML = '<div class="char-card-add-icon">+</div><div class="char-card-add-label">Nouveau</div>';
-  addCard.addEventListener('click', () => {
-    const name = prompt('Nom du nouveau personnage :', 'Nouveau personnage');
-    if (!name) return;
-    const id = newCharId();
-    playerData.characters[id] = emptyCharSlot(name);
-    playerData.activeCharId = id;
-    renderCharCards();
-    renderAll();
-    triggerSave();
-  });
+  addCard.addEventListener('click', () => openNewCharModal());
   grid.appendChild(addCard);
 
   // Boutons supprimer
@@ -4950,41 +5011,121 @@ function updatePngPreviewUI() {
 }
 
 /* ════════════════════════════════════════════════════════════
-   PANEL ADMIN — GRILLE
+   PANEL ADMIN — TABLEAU DE BORD MJ
    ════════════════════════════════════════════════════════════ */
+let mjRefreshTimer = null;
+
 async function renderAdminPanel() {
   const grid    = document.getElementById('admin-grid');
   const loading = document.getElementById('admin-loading');
   grid.innerHTML = ''; loading.style.display = '';
   loading.textContent = 'Chargement…';
+
+  // Barre refresh + timestamp
+  const refreshBar = document.createElement('div');
+  refreshBar.className = 'mj-refresh-bar';
+  const now = new Date().toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  refreshBar.innerHTML = `
+    <span class="mj-last-refresh">Actualisé à ${now}</span>
+    <button class="btn btn-sm" id="btn-admin-refresh-inner">↺ Actualiser</button>
+    <label style="display:flex;align-items:center;gap:0.35rem;font-size:0.72rem;color:#666;cursor:pointer;">
+      <input type="checkbox" id="mj-auto-refresh" style="accent-color:var(--gold-dark);">
+      Auto (30s)
+    </label>
+  `;
+  grid.appendChild(refreshBar);
+
   try {
     const rows = await sbGetAllPlayers();
     loading.style.display = 'none';
-    if (!rows.length) { loading.textContent = 'Aucun joueur.'; loading.style.display = ''; return; }
-    rows.filter(r => r.username !== ADMIN_USER).forEach(row => {
+    const players = rows.filter(r => r.username !== ADMIN_USER);
+    if (!players.length) { loading.textContent = 'Aucun joueur.'; loading.style.display = ''; return; }
+
+    const mjGrid = document.createElement('div');
+    mjGrid.className = 'admin-grid';
+    mjGrid.style.marginTop = '0';
+
+    players.forEach(row => {
       const data  = row.data || {};
       const chars = data.characters || {};
-      const charCount  = Object.keys(chars).length;
-      const activeChar = chars[data.activeCharId]?.character || {};
-      const pvMax = parseInt(activeChar.pvMax) || 0;
-      const pvCur = parseInt(activeChar.pvActuel) || 0;
-      const pct   = pvMax > 0 ? Math.min(100, Math.round(pvCur / pvMax * 100)) : 0;
-      let hpColor = '#6aba6a';
+      const activeChar = (chars[data.activeCharId]?.character) || {};
+
+      const pvMax  = parseInt(activeChar.pvMax)    || 0;
+      const pvCur  = parseInt(activeChar.pvActuel) || 0;
+      const pvTemp = parseInt(activeChar.pvTemp)   || 0;
+      const pct    = pvMax > 0 ? Math.min(100, Math.round(pvCur / pvMax * 100)) : 0;
+      const isDead = pvMax > 0 && pvCur <= 0;
+      let hpColor  = '#6aba6a';
       if (pct < 50) hpColor = '#c9a96e';
       if (pct < 25) hpColor = '#c97a7a';
+      if (isDead)   hpColor = '#c97a7a';
+
+      const conditions = activeChar.conditions || [];
+      const isConc     = conditions.includes('Concentrating');
+      const activeCondsNoConc = conditions.filter(c => c !== 'Concentrating');
+      const hasInsp    = activeChar.inspiration;
+      const exhaustion = parseInt(activeChar.exhaustion) || 0;
+
+      // Emplacements de sorts restants (niveaux 1–5 résumés)
+      const slots = activeChar.emplacementsSort || {};
+      const used  = activeChar.emplacementsUtilises || {};
+      let slotsHtml = '';
+      for (let lvl = 1; lvl <= 9; lvl++) {
+        const total = parseInt(slots[lvl]) || 0;
+        if (!total) continue;
+        const usedN = parseInt(used[lvl]) || 0;
+        const pips  = Array.from({length: total}, (_, i) =>
+          `<div class="mj-slot-pip${i < usedN ? ' used' : ''}"></div>`
+        ).join('');
+        slotsHtml += `<span class="mj-slot-lvl">${lvl}</span>${pips}<span style="margin-right:0.4rem;"></span>`;
+      }
+
+      // Badges d'état
+      let badgesHtml = '';
+      if (isDead)       badgesHtml += `<span class="mj-badge mj-badge-dead">💀 À terre</span>`;
+      if (pct < 25 && !isDead) badgesHtml += `<span class="mj-badge mj-badge-low">⚠ PV bas</span>`;
+      if (isConc)       badgesHtml += `<span class="mj-badge mj-badge-conc">◉ Conc.</span>`;
+      if (hasInsp)      badgesHtml += `<span class="mj-badge mj-badge-insp">✦ Insp.</span>`;
+      if (exhaustion)   badgesHtml += `<span class="mj-badge mj-badge-cond">Épuis. ${exhaustion}</span>`;
+      activeCondsNoConc.forEach(c => { badgesHtml += `<span class="mj-badge mj-badge-cond">${c}</span>`; });
+
+      const classLine = getClasses(activeChar).filter(cl=>cl.classe).map(cl=>`${cl.classe} ${cl.niveau}`).join(' / ') || '—';
+      const avatarStr = activeChar.avatarPng
+        ? `<img src="${activeChar.avatarPng}" style="width:1.6rem;height:1.6rem;border-radius:50%;object-fit:cover;vertical-align:middle;">`
+        : (activeChar.avatar || data.avatar || '⚔');
 
       const card = document.createElement('div');
-      card.className = 'admin-card';
+      card.className = 'mj-player-card';
       card.innerHTML = `
-        <div class="admin-card-name">${data.avatar||'⚔'} ${row.username}</div>
-        <div class="admin-card-info">${activeChar.characterName || '—'} · ${getClasses(activeChar).filter(cl=>cl.classe).map(cl=>cl.classe+' '+cl.niveau).join(' / ') || (activeChar.classe||'—')}</div>
-        <div class="admin-card-info" style="margin-top:0.15rem;">${charCount} personnage(s) · PV ${pvCur}/${pvMax}</div>
-        ${pvMax > 0 ? `<div class="admin-card-hp"><div class="admin-card-hp-bar" style="width:${pct}%;background:${hpColor};height:100%;border-radius:3px;"></div></div>` : ''}
-        <div style="margin-top:0.65rem;font-size:0.72rem;color:var(--gold-dark);letter-spacing:0.04em;">✏ Cliquer pour éditer</div>
+        <div class="mj-player-header">
+          <div class="mj-player-avatar">${avatarStr}</div>
+          <div>
+            <div class="mj-player-name">${row.username}</div>
+            <div class="mj-player-class">${activeChar.characterName || '—'} · ${classLine}</div>
+          </div>
+        </div>
+        <div class="mj-hp-row">
+          <span>PV <span class="mj-hp-val">${pvCur}${pvTemp ? '+'+pvTemp+'t' : ''} / ${pvMax}</span></span>
+          <span style="color:${hpColor};font-weight:600;">${pvMax > 0 ? pct+'%' : '—'}</span>
+        </div>
+        ${pvMax > 0 ? `<div class="mj-hp-bar"><div class="mj-hp-fill" style="width:${pct}%;background:${hpColor};"></div></div>` : ''}
+        ${badgesHtml ? `<div class="mj-badges">${badgesHtml}</div>` : ''}
+        ${slotsHtml ? `<div class="mj-slots-row">${slotsHtml}</div>` : ''}
+        <button class="mj-edit-btn">✏ Éditer la fiche</button>
       `;
-      card.onclick = () => openAdminEdit(row.username, data);
-      grid.appendChild(card);
+      card.querySelector('.mj-edit-btn').addEventListener('click', () => openAdminEdit(row.username, data));
+      mjGrid.appendChild(card);
     });
+
+    grid.appendChild(mjGrid);
+
+    // Auto-refresh
+    document.getElementById('btn-admin-refresh-inner')?.addEventListener('click', renderAdminPanel);
+    document.getElementById('mj-auto-refresh')?.addEventListener('change', e => {
+      clearInterval(mjRefreshTimer);
+      if (e.target.checked) mjRefreshTimer = setInterval(renderAdminPanel, 30000);
+    });
+
   } catch(e) {
     loading.textContent = 'Erreur : ' + e.message;
     loading.style.display = '';
@@ -6306,10 +6447,33 @@ document.addEventListener('DOMContentLoaded', () => {
   const savedUser = loadSession();
   if (savedUser) {
     sbGetPlayer(savedUser).then(row => {
-      if (row) { currentUser = savedUser; playerData = row.data; openDashboard(); }
-      else clearSession();
-    }).catch(() => clearSession());
+      if (row) {
+        currentUser = savedUser; playerData = row.data;
+        saveLocal(savedUser, row.data); // met à jour le cache local
+        openDashboard();
+      } else clearSession();
+    }).catch(() => {
+      // Supabase indisponible — tenter le cache local
+      const cached = localStorage.getItem(localKey(savedUser));
+      if (cached) {
+        try {
+          const { data } = JSON.parse(cached);
+          currentUser = savedUser; playerData = data;
+          openDashboard();
+          updateConnIndicator('offline');
+        } catch(e) { clearSession(); }
+      } else clearSession();
+    });
   }
+
+  /* ── Synchronisation en ligne / hors ligne ── */
+  window.addEventListener('online', async () => {
+    updateConnIndicator('online');
+    if (!currentUser || !playerData) return;
+    try { await sbUpdateData(currentUser, playerData); } catch(e) {}
+  });
+  window.addEventListener('offline', () => updateConnIndicator('offline'));
+  updateConnIndicator(navigator.onLine ? 'online' : 'offline');
 
   /* ── Canvas toolbar ── */
   loadCanvasPages();
@@ -6574,7 +6738,63 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 50);
   });
 
+  /* ── Initialisation modal nouveau personnage ── */
+  let newCharSelectedAvatar = AVATARS[0];
+
+  (function initNewCharModal() {
+    const overlay  = document.getElementById('new-char-modal-overlay');
+    const grid     = document.getElementById('new-char-avatar-grid');
+    const nameInp  = document.getElementById('new-char-name');
+    const btnOk    = document.getElementById('new-char-confirm');
+    const btnClose = document.getElementById('new-char-cancel');
+
+    // Grille d'avatars
+    AVATARS.forEach(av => {
+      const btn = document.createElement('button');
+      btn.className = 'new-char-av-btn' + (av === newCharSelectedAvatar ? ' selected' : '');
+      btn.type = 'button'; btn.textContent = av;
+      btn.addEventListener('click', () => {
+        grid.querySelectorAll('.new-char-av-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        newCharSelectedAvatar = av;
+      });
+      grid.appendChild(btn);
+    });
+
+    function closeModal() { overlay.classList.remove('open'); nameInp.value = ''; }
+
+    btnClose.addEventListener('click', closeModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+
+    btnOk.addEventListener('click', () => {
+      const name = nameInp.value.trim() || 'Nouveau personnage';
+      const id = newCharId();
+      playerData.characters[id] = emptyCharSlot(name);
+      playerData.characters[id].character = playerData.characters[id].character || {};
+      playerData.characters[id].character.characterName = name;
+      playerData.activeCharId = id;
+      // Avatar assigné au nouveau personnage
+      if (!playerData.characters[id].character) playerData.characters[id].character = {};
+      playerData.characters[id].character.avatar = newCharSelectedAvatar;
+      closeModal();
+      renderCharCards();
+      renderAll();
+      triggerSave();
+    });
+
+    nameInp.addEventListener('keydown', e => { if (e.key === 'Enter') btnOk.click(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal(); });
+  })();
+
 }); // end DOMContentLoaded
+
+/* ── Fonction globale : ouvrir le modal nouveau personnage ── */
+function openNewCharModal() {
+  const overlay = document.getElementById('new-char-modal-overlay');
+  if (!overlay) return;
+  overlay.classList.add('open');
+  setTimeout(() => document.getElementById('new-char-name')?.focus(), 50);
+}
 
 /* ── Accessibilité clavier : Enter/Space déclenche click sur tout role="button" non-natif ── */
 document.addEventListener('keydown', e => {
@@ -6588,6 +6808,23 @@ document.addEventListener('keydown', e => {
 });
 </script>
 
+
+    <!-- ── Modal Nouveau Personnage ── -->
+    <div class="new-char-modal-overlay" id="new-char-modal-overlay">
+      <div class="new-char-modal">
+        <h3>✦ Nouveau personnage</h3>
+        <div class="auth-field">
+          <label class="auth-label" for="new-char-name">Nom du personnage</label>
+          <input type="text" class="auth-input" id="new-char-name" placeholder="Nom du héros…" maxlength="40" autocomplete="off">
+        </div>
+        <div class="field-label" style="margin:0.5rem 0 0.4rem;">Avatar</div>
+        <div class="new-char-avatar-grid" id="new-char-avatar-grid"></div>
+        <div class="new-char-btn-row">
+          <button class="btn btn-sm" id="new-char-cancel">Annuler</button>
+          <button class="btn btn-sm btn-gold" id="new-char-confirm">✦ Créer</button>
+        </div>
+      </div>
+    </div>
 
     <!-- ── Modal Repos Court ── -->
     <div class="sr-modal-overlay" id="sr-modal-overlay">
