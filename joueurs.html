@@ -626,6 +626,71 @@
     @keyframes hp-danger { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 16px rgba(201,100,100,0.35) inset} }
     .hp-danger { animation:hp-danger 1.8s ease-in-out infinite; }
 
+    /* ── Historique PV ── */
+    .hp-log-toggle { font-size:0.68rem; color:#555; cursor:pointer; text-align:center; margin-top:0.4rem; user-select:none; transition:color var(--transition); }
+    .hp-log-toggle:hover { color:#888; }
+    .hp-log { margin-top:0.4rem; display:flex; flex-direction:column; gap:0.2rem; }
+    .hp-log-entry { display:flex; align-items:center; gap:0.5rem; font-size:0.7rem; padding:0.18rem 0.5rem; border-radius:4px; background:var(--j-input,#0d0d14); border-left:3px solid transparent; }
+    .hp-log-entry.heal { border-color:#6aba6a; }
+    .hp-log-entry.dmg  { border-color:#c97a7a; }
+    .hp-log-entry.set  { border-color:#888; }
+    .hp-log-delta { font-family:'Cinzel',serif; font-weight:600; min-width:42px; }
+    .hp-log-entry.heal .hp-log-delta { color:#6aba6a; }
+    .hp-log-entry.dmg  .hp-log-delta { color:#c97a7a; }
+    .hp-log-entry.set  .hp-log-delta { color:#888; }
+    .hp-log-hp   { color:#aaa; flex:1; }
+    .hp-log-time { color:#555; font-size:0.62rem; white-space:nowrap; }
+
+    /* ── Chat flottant ── */
+    #chat-fab { position:fixed; bottom:1.2rem; right:1.2rem; z-index:2000; width:46px; height:46px; border-radius:50%; background:var(--gold-dark); border:none; color:#fff; font-size:1.3rem; cursor:pointer; box-shadow:0 3px 14px rgba(0,0,0,0.55); transition:background var(--transition), transform 0.15s; display:flex; align-items:center; justify-content:center; }
+    #chat-fab:hover { background:var(--gold); transform:scale(1.08); }
+    #chat-fab .chat-unread { position:absolute; top:-3px; right:-3px; background:var(--danger); color:#fff; font-size:0.6rem; font-family:'Cinzel',serif; border-radius:99px; min-width:16px; height:16px; line-height:16px; text-align:center; padding:0 3px; display:none; }
+    #chat-panel { position:fixed; bottom:4.2rem; right:1.2rem; z-index:1999; width:310px; max-height:420px; background:var(--j-panel,#1a1a24); border:1px solid var(--j-border-col,#2a2a3a); border-radius:10px; box-shadow:0 6px 30px rgba(0,0,0,0.6); display:none; flex-direction:column; overflow:hidden; }
+    #chat-panel.open { display:flex; }
+    .chat-header { padding:0.55rem 0.85rem; background:var(--j-input,#0d0d14); border-bottom:1px solid var(--j-border-col,#2a2a3a); font-family:'Cinzel',serif; font-size:0.78rem; color:var(--gold); letter-spacing:0.06em; display:flex; align-items:center; justify-content:space-between; }
+    .chat-close { background:none; border:none; color:#555; cursor:pointer; font-size:1rem; line-height:1; padding:0; }
+    .chat-close:hover { color:#aaa; }
+    .chat-messages { flex:1; overflow-y:auto; padding:0.5rem 0.65rem; display:flex; flex-direction:column; gap:0.3rem; scroll-behavior:smooth; }
+    .chat-msg { font-size:0.78rem; line-height:1.45; word-break:break-word; }
+    .chat-msg-name { font-family:'Cinzel',serif; font-size:0.67rem; color:var(--gold-dark); margin-right:0.35rem; }
+    .chat-msg-name.me { color:var(--gold); }
+    .chat-msg-time { font-size:0.6rem; color:#555; margin-left:0.35rem; }
+    .chat-msg-text { color:var(--j-text,#e8e0d0); }
+    .chat-msg.system { color:#555; font-size:0.68rem; font-style:italic; text-align:center; }
+    .chat-input-row { display:flex; gap:0.4rem; padding:0.5rem 0.65rem; border-top:1px solid var(--j-border-col,#2a2a3a); }
+    .chat-input { flex:1; background:var(--j-input,#0d0d14); border:1px solid var(--j-border-col,#2a2a3a); border-radius:6px; color:var(--j-text,#e8e0d0); font-size:0.82rem; padding:0.35rem 0.55rem; }
+    .chat-input:focus { outline:none; border-color:var(--gold-dark); }
+    .chat-send { background:var(--gold-dark); border:none; border-radius:6px; color:#fff; padding:0.35rem 0.65rem; cursor:pointer; font-size:0.8rem; transition:background var(--transition); }
+    .chat-send:hover { background:var(--gold); }
+    .chat-login-msg { padding:0.85rem; text-align:center; font-size:0.78rem; color:#666; font-style:italic; }
+
+    /* ── Vue fiche partagée ── */
+    .view-screen-wrap { max-width:720px; margin:0 auto; padding:1.5rem 1rem; }
+    .view-header { display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; padding-bottom:1rem; border-bottom:1px solid var(--j-border-col,#2a2a3a); }
+    .view-avatar { font-size:2.5rem; width:54px; height:54px; display:flex; align-items:center; justify-content:center; background:var(--j-input,#0d0d14); border:2px solid var(--j-border-col,#2a2a3a); border-radius:50%; overflow:hidden; flex-shrink:0; }
+    .view-avatar img { width:100%; height:100%; object-fit:cover; }
+    .view-char-name { font-family:'Cinzel',serif; font-size:1.3rem; color:var(--gold); }
+    .view-char-sub { font-size:0.82rem; color:#888; margin-top:0.2rem; }
+    .view-section { background:var(--j-panel,#1a1a24); border:1px solid var(--j-border-col,#2a2a3a); border-radius:var(--radius); padding:1rem 1.2rem; margin-bottom:0.85rem; }
+    .view-section-title { font-family:'Cinzel',serif; font-size:0.72rem; color:var(--gold-dark); letter-spacing:0.09em; text-transform:uppercase; margin-bottom:0.75rem; }
+    .view-stats { display:grid; grid-template-columns:repeat(6,1fr); gap:0.5rem; }
+    .view-stat { text-align:center; }
+    .view-stat-name { font-size:0.58rem; color:#666; text-transform:uppercase; letter-spacing:0.05em; }
+    .view-stat-val { font-family:'Cinzel',serif; font-size:1.1rem; color:var(--j-text,#e8e0d0); }
+    .view-stat-mod { font-size:0.68rem; color:var(--gold-dark); }
+    .view-combat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0.6rem; }
+    .view-combat-item { text-align:center; }
+    .view-combat-label { font-size:0.6rem; color:#666; text-transform:uppercase; letter-spacing:0.04em; }
+    .view-combat-val { font-family:'Cinzel',serif; font-size:1.15rem; color:var(--j-text,#e8e0d0); }
+    .view-hp-bar { height:8px; background:var(--j-input,#0d0d14); border-radius:4px; overflow:hidden; margin-top:0.4rem; }
+    .view-hp-fill { height:100%; border-radius:4px; transition:width 0.4s; }
+    .view-skills-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.2rem 1.5rem; }
+    .view-skill { display:flex; align-items:center; gap:0.4rem; font-size:0.75rem; color:#aaa; }
+    .view-skill-dot { width:8px; height:8px; border-radius:50%; border:1px solid #555; flex-shrink:0; }
+    .view-skill-dot.prof { background:var(--gold-dark); border-color:var(--gold-dark); }
+    .view-skill-dot.expert { background:var(--gold); border-color:var(--gold); }
+    .view-refresh-note { font-size:0.68rem; color:#555; text-align:right; font-style:italic; margin-top:0.75rem; }
+
     /* ── Onglet Aide (cheat sheet) ── */
     .cheat-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
     @media(max-width:700px){ .cheat-grid { grid-template-columns:1fr; } }
@@ -973,6 +1038,9 @@
             <input type="number" class="hp-quick-input" id="hp-quick-val" min="0" placeholder="0">
             <button class="btn btn-sm btn-heal" id="btn-apply-heal">✚ Soigner</button>
           </div>
+          <!-- Historique PV -->
+          <div class="hp-log-toggle j-hidden" id="hp-log-toggle">▾ Historique</div>
+          <div class="hp-log j-hidden" id="hp-log"></div>
 
           <!-- Dés de vie -->
           <div class="combat-dv-row" style="margin-top:0.85rem;">
@@ -1453,6 +1521,14 @@
         <div class="pwd-msg" id="pwd-msg"></div>
       </div>
       <div class="settings-section">
+        <h3>Partage</h3>
+        <div class="settings-row">
+          <div class="settings-label">Fiche en lecture seule<div class="settings-desc">Un lien public pour afficher ta fiche sans connexion</div></div>
+          <button class="btn btn-sm btn-gold" id="btn-share-sheet">🔗 Copier le lien</button>
+        </div>
+        <div id="share-link-display" style="display:none;margin-top:0.5rem;font-size:0.75rem;color:#888;word-break:break-all;padding:0.4rem 0.6rem;background:var(--j-input,#0d0d14);border-radius:5px;border:1px solid var(--j-border-col,#2a2a3a);"></div>
+      </div>
+      <div class="settings-section">
         <h3>Sauvegarde</h3>
         <div class="settings-row">
           <div class="settings-label">Exporter ma fiche<div class="settings-desc">Télécharge un fichier JSON de sauvegarde</div></div>
@@ -1680,8 +1756,33 @@
 
   </div><!-- /screen-dashboard -->
 
+  <!-- ══ VUE FICHE PARTAGÉE (lecture seule) ══ -->
+  <div class="j-screen" id="screen-view">
+    <div class="view-screen-wrap" id="view-content">
+      <div style="text-align:center;padding:3rem;color:#666;font-style:italic;">Chargement…</div>
+    </div>
+  </div>
+
 </main>
 </div><!-- /page-wrapper -->
+
+<!-- ══ Chat flottant ══ -->
+<button id="chat-fab" style="display:none;" title="Chat du groupe">
+  💬<span class="chat-unread" id="chat-unread"></span>
+</button>
+<div id="chat-panel">
+  <div class="chat-header">
+    <span>💬 Chat du groupe</span>
+    <button class="chat-close" id="chat-close">✕</button>
+  </div>
+  <div class="chat-messages" id="chat-messages"></div>
+  <div id="chat-input-area">
+    <div class="chat-input-row">
+      <input type="text" class="chat-input" id="chat-input" placeholder="Votre message…" maxlength="400">
+      <button class="chat-send" id="chat-send">↑</button>
+    </div>
+  </div>
+</div>
 
 <!-- ══ Modal édition admin ══ -->
 <div class="modal-overlay" id="admin-modal">
@@ -3531,10 +3632,12 @@ function applyHpChange(delta) {
   if (!playerData) return;
   const c = C();
   const max = parseInt(c.pvMax) || 0;
-  c.pvActuel = Math.max(0, Math.min(max, (parseInt(c.pvActuel) || 0) + delta));
+  const before = parseInt(c.pvActuel) || 0;
+  c.pvActuel = Math.max(0, Math.min(max, before + delta));
+  pushHpLog(delta, c.pvActuel, max);
   updateHpBar();
+  renderHpLog();
   triggerSave();
-  // Flash feedback
   const bar = document.getElementById('hp-bar-fill');
   if (bar) {
     bar.style.transition = 'none';
@@ -3888,6 +3991,7 @@ function renderAll() {
   updateCharSummary();
   updateProfBonus();
   updateHpBar();
+  renderHpLog();
   applyCharTheme();
   applyCharBg(C());
 }
@@ -6351,6 +6455,239 @@ function initPaletteUI() {
 }
 
 /* ════════════════════════════════════════════════════════════
+   HISTORIQUE PV
+   ════════════════════════════════════════════════════════════ */
+function pushHpLog(delta, newHp, maxHp) {
+  const c = C(); if (!c) return;
+  if (!c.hpLog) c.hpLog = [];
+  const type = delta > 0 ? 'heal' : delta < 0 ? 'dmg' : 'set';
+  c.hpLog.unshift({ delta, hp: newHp, max: maxHp, ts: Date.now(), type });
+  if (c.hpLog.length > 10) c.hpLog.length = 10;
+}
+function renderHpLog() {
+  const c = C();
+  const log = c?.hpLog || [];
+  const toggleEl = document.getElementById('hp-log-toggle');
+  const logEl    = document.getElementById('hp-log');
+  if (!toggleEl || !logEl) return;
+  if (log.length === 0) { toggleEl.classList.add('j-hidden'); logEl.classList.add('j-hidden'); return; }
+  toggleEl.classList.remove('j-hidden');
+  if (logEl.classList.contains('j-hidden')) return; // collapsed
+  logEl.innerHTML = log.map(e => {
+    const sign  = e.type === 'heal' ? '+' : e.type === 'dmg' ? '' : '→';
+    const delta = e.type === 'set' ? `${e.hp}` : `${sign}${Math.abs(e.delta)}`;
+    const time  = new Date(e.ts).toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
+    return `<div class="hp-log-entry ${e.type}">
+      <span class="hp-log-delta">${delta} PV</span>
+      <span class="hp-log-hp">${e.hp} / ${e.max}</span>
+      <span class="hp-log-time">${time}</span>
+    </div>`;
+  }).join('');
+}
+
+/* ════════════════════════════════════════════════════════════
+   VUE FICHE EN LECTURE SEULE
+   ════════════════════════════════════════════════════════════ */
+async function initViewMode() {
+  const params = new URLSearchParams(location.search);
+  const viewUser = params.get('view');
+  if (!viewUser) return false;
+  showScreen('screen-view');
+  document.getElementById('chat-fab').style.display = 'none';
+  const el = document.getElementById('view-content');
+  try {
+    const row = await sbGetPlayer(viewUser);
+    if (!row) { el.innerHTML = `<p style="text-align:center;color:#c97a7a;padding:3rem;">Joueur "${viewUser}" introuvable.</p>`; return true; }
+    const pd = row.data;
+    const activeId = pd.activeCharId;
+    const slot = pd.characters?.[activeId];
+    const c = slot?.character || {};
+    renderViewSheet(el, pd, c, slot, viewUser);
+    // Auto-refresh toutes les 30s
+    setInterval(async () => {
+      try {
+        const r2 = await sbGetPlayer(viewUser);
+        if (!r2) return;
+        const pd2 = r2.data; const s2 = pd2.characters?.[pd2.activeCharId]; const c2 = s2?.character || {};
+        renderViewSheet(el, pd2, c2, s2, viewUser);
+      } catch(e) {}
+    }, 30000);
+  } catch(e) {
+    el.innerHTML = `<p style="text-align:center;color:#c97a7a;padding:3rem;">Erreur de chargement.</p>`;
+  }
+  return true;
+}
+
+function renderViewSheet(el, pd, c, slot, username) {
+  const esc = s => (s||'').toString().replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const scores = c.scores || {};
+  const ABILITY_NAMES = ['FOR','DEX','CON','INT','SAG','CHA'];
+  const ABILITY_KEYS  = ['STR','DEX','CON','INT','WIS','CHA'];
+  function mod(score) { return Math.floor(((parseInt(score)||10)-10)/2); }
+  function fmtMod(m)  { return (m>=0?'+':'')+m; }
+  const pvCur = parseInt(c.pvActuel)||0; const pvMax = parseInt(c.pvMax)||1;
+  const hpPct = Math.round((pvCur/pvMax)*100);
+  const hpColor = hpPct>50?'#6aba6a':hpPct>25?'#dca03c':'#c97a7a';
+  const avatarHtml = c.avatarPng
+    ? `<div class="view-avatar"><img src="${c.avatarPng}" alt="avatar"></div>`
+    : `<div class="view-avatar">${esc(c.avatar||pd.avatar||'⚔')}</div>`;
+  const classes = (c.classes||[{classe:c.classe,niveau:c.niveau}]).filter(cl=>cl.classe).map(cl=>`${cl.classe} ${cl.niveau}`).join(' / ') || '—';
+  const statsHtml = ABILITY_KEYS.map((k,i) => {
+    const val = parseInt(scores[k])||10; const m = mod(val);
+    return `<div class="view-stat">
+      <div class="view-stat-name">${ABILITY_NAMES[i]}</div>
+      <div class="view-stat-val">${val}</div>
+      <div class="view-stat-mod">${fmtMod(m)}</div>
+    </div>`;
+  }).join('');
+  const SKILLS_DATA = [
+    {name:'Acrobaties',key:'DEX'},{name:'Arcanes',key:'INT'},{name:'Athlétisme',key:'STR'},
+    {name:'Discrétion',key:'DEX'},{name:'Dressage',key:'WIS'},{name:'Escamotage',key:'DEX'},
+    {name:'Histoire',key:'INT'},{name:'Intimidation',key:'CHA'},{name:'Investigation',key:'INT'},
+    {name:'Médecine',key:'WIS'},{name:'Nature',key:'INT'},{name:'Perception',key:'WIS'},
+    {name:'Perspicacité',key:'WIS'},{name:'Persuasion',key:'CHA'},{name:'Religion',key:'INT'},
+    {name:'Représentation',key:'CHA'},{name:'Survie',key:'WIS'},{name:'Tromperie',key:'CHA'},
+  ];
+  const pb = parseInt(c.bonusMaitrise)||2;
+  const saves = c.savingThrows||{};
+  const skillProfs = c.skillProficiencies||{};
+  const skillsHtml = SKILLS_DATA.map(sk => {
+    const lvl = skillProfs[sk.name] || 0;
+    const base = mod(parseInt(scores[sk.key])||10);
+    const bonus = lvl===2 ? pb*2 : lvl===1 ? pb : 0;
+    const total = fmtMod(base+bonus);
+    const dotCls = lvl===2?'expert':lvl===1?'prof':'';
+    return `<div class="view-skill"><span class="view-skill-dot ${dotCls}"></span>${esc(sk.name)} <strong style="color:var(--j-text,#e8e0d0);margin-left:auto">${total}</strong></div>`;
+  }).join('');
+  const conditions = (c.conditions||[]).filter(x=>x).map(x=>`<span style="background:rgba(201,122,122,0.15);border:1px solid rgba(201,122,122,0.3);color:#c97a7a;border-radius:4px;font-size:0.68rem;padding:0.1rem 0.45rem;">${esc(x)}</span>`).join(' ');
+  const now = new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  el.innerHTML = `
+    <div class="view-header">
+      ${avatarHtml}
+      <div>
+        <div class="view-char-name">${esc(c.characterName||'Sans nom')}</div>
+        <div class="view-char-sub">${esc(classes)}${c.species?' · '+esc(c.species):''}</div>
+        <div class="view-char-sub" style="margin-top:0.15rem;">${esc(pd.username||username||'')}</div>
+      </div>
+    </div>
+    <div class="view-section">
+      <div class="view-section-title">Points de Vie</div>
+      <div class="view-combat-grid">
+        <div class="view-combat-item"><div class="view-combat-label">PV Actuels</div><div class="view-combat-val" style="color:${hpColor}">${pvCur}</div></div>
+        <div class="view-combat-item"><div class="view-combat-label">PV Max</div><div class="view-combat-val">${pvMax}</div></div>
+        <div class="view-combat-item"><div class="view-combat-label">PV Temp</div><div class="view-combat-val" style="color:#5a9fd4">${parseInt(c.pvTemp)||0}</div></div>
+      </div>
+      <div class="view-hp-bar"><div class="view-hp-fill" style="width:${hpPct}%;background:${hpColor}"></div></div>
+      ${conditions?`<div style="margin-top:0.55rem;display:flex;flex-wrap:wrap;gap:0.3rem;">${conditions}</div>`:''}
+    </div>
+    <div class="view-section">
+      <div class="view-section-title">Combat</div>
+      <div class="view-combat-grid">
+        <div class="view-combat-item"><div class="view-combat-label">CA</div><div class="view-combat-val">${parseInt(c.ca)||10}</div></div>
+        <div class="view-combat-item"><div class="view-combat-label">Initiative</div><div class="view-combat-val">${fmtMod(parseInt(c.initiative)||mod(parseInt(scores.DEX)||10))}</div></div>
+        <div class="view-combat-item"><div class="view-combat-label">Vitesse</div><div class="view-combat-val">${esc(c.vitesse||'30 ft')}</div></div>
+      </div>
+    </div>
+    <div class="view-section">
+      <div class="view-section-title">Caractéristiques</div>
+      <div class="view-stats">${statsHtml}</div>
+    </div>
+    <div class="view-section">
+      <div class="view-section-title">Compétences</div>
+      <div class="view-skills-grid">${skillsHtml}</div>
+    </div>
+    <div class="view-refresh-note">Mise à jour auto toutes les 30s · ${now}</div>`;
+}
+
+/* ════════════════════════════════════════════════════════════
+   CHAT
+   ════════════════════════════════════════════════════════════ */
+const CHAT_TABLE = '/rest/v1/chat_messages';
+let _chatLastId = 0;
+let _chatOpen   = false;
+let _chatPollTimer = null;
+
+async function chatFetch(sinceId) {
+  const url = sinceId
+    ? `${CHAT_TABLE}?id=gt.${sinceId}&order=id.asc&limit=50`
+    : `${CHAT_TABLE}?order=id.desc&limit=50`;
+  const r = await sbFetch(url);
+  if (!r.ok) return [];
+  const msgs = await r.json();
+  return sinceId ? msgs : msgs.reverse();
+}
+async function chatSend(message) {
+  if (!message.trim() || !currentUser) return;
+  await sbFetch(CHAT_TABLE, { method:'POST', headers:{ 'Prefer':'return=minimal' }, body: JSON.stringify({ username: currentUser, message: message.trim() }) });
+}
+function chatRenderMessages(msgs, append) {
+  const box = document.getElementById('chat-messages');
+  if (!box) return;
+  if (!append) box.innerHTML = '';
+  let unread = 0;
+  msgs.forEach(m => {
+    if (m.id > _chatLastId) _chatLastId = m.id;
+    const isMe = m.username === currentUser;
+    const time = new Date(m.created_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    const div = document.createElement('div');
+    div.className = 'chat-msg';
+    div.innerHTML = `<span class="chat-msg-name ${isMe?'me':''}">${m.username}</span><span class="chat-msg-text">${escHtml(m.message)}</span><span class="chat-msg-time">${time}</span>`;
+    box.appendChild(div);
+    if (append && !_chatOpen) unread++;
+  });
+  if (append && box.children.length > 0) {
+    const last = box.lastElementChild;
+    if (_chatOpen) last.scrollIntoView({ behavior:'smooth', block:'end' });
+    else if (unread > 0) {
+      const badge = document.getElementById('chat-unread');
+      if (badge) { const cur = parseInt(badge.textContent)||0; badge.textContent = cur+unread; badge.style.display='block'; }
+    }
+  } else if (!append) {
+    box.scrollTop = box.scrollHeight;
+  }
+}
+function escHtml(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+async function chatPoll() {
+  try {
+    const msgs = await chatFetch(_chatLastId || null);
+    if (msgs.length) chatRenderMessages(msgs, _chatLastId > 0);
+    if (!_chatLastId && msgs.length) _chatLastId = msgs[msgs.length-1].id;
+  } catch(e) {}
+}
+function startChatPoll() {
+  if (_chatPollTimer) return;
+  chatPoll();
+  _chatPollTimer = setInterval(chatPoll, 5000);
+}
+function initChat() {
+  const fab   = document.getElementById('chat-fab');
+  const panel = document.getElementById('chat-panel');
+  const close = document.getElementById('chat-close');
+  const input = document.getElementById('chat-input');
+  const send  = document.getElementById('chat-send');
+  const badge = document.getElementById('chat-unread');
+  if (!fab || !panel) return;
+  fab.style.display = 'flex';
+  fab.addEventListener('click', () => {
+    _chatOpen = !_chatOpen;
+    panel.classList.toggle('open', _chatOpen);
+    if (_chatOpen && badge) { badge.textContent = ''; badge.style.display='none'; }
+    if (_chatOpen) { const box=document.getElementById('chat-messages'); if(box) box.scrollTop=box.scrollHeight; input?.focus(); }
+  });
+  close?.addEventListener('click', () => { _chatOpen=false; panel.classList.remove('open'); });
+  send?.addEventListener('click', async () => {
+    const msg = input?.value.trim(); if (!msg) return;
+    input.value = '';
+    await chatSend(msg);
+    chatPoll();
+  });
+  input?.addEventListener('keydown', e => {
+    if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); send?.click(); }
+  });
+  startChatPoll();
+}
+
+/* ════════════════════════════════════════════════════════════
    TAILLE DU TEXTE
    ════════════════════════════════════════════════════════════ */
 function applyCharTheme() {
@@ -6400,7 +6737,11 @@ function esc(val) {
 /* ════════════════════════════════════════════════════════════
    LISTENERS
    ════════════════════════════════════════════════════════════ */
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+
+  /* ── Vue lecture seule (URL ?view=) ── */
+  const isView = await initViewMode();
+  if (isView) return; // pas d'auth ni de dashboard
 
   /* ── Auth ── */
   document.getElementById('btn-login').addEventListener('click', doLogin);
@@ -7048,6 +7389,30 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ── Thèmes ── */
   buildThemeSwatches();
   initPaletteUI();
+
+  /* ── Historique PV toggle ── */
+  document.getElementById('hp-log-toggle')?.addEventListener('click', () => {
+    const logEl = document.getElementById('hp-log');
+    const togEl = document.getElementById('hp-log-toggle');
+    if (!logEl) return;
+    const open = logEl.classList.contains('j-hidden');
+    logEl.classList.toggle('j-hidden', !open);
+    if (togEl) togEl.textContent = open ? '▴ Historique' : '▾ Historique';
+    if (open) renderHpLog();
+  });
+
+  /* ── Partage fiche ── */
+  document.getElementById('btn-share-sheet')?.addEventListener('click', () => {
+    const url = `${location.origin}${location.pathname}?view=${encodeURIComponent(currentUser)}`;
+    navigator.clipboard?.writeText(url).catch(()=>{});
+    const disp = document.getElementById('share-link-display');
+    if (disp) { disp.textContent = url; disp.style.display = 'block'; }
+    const btn = document.getElementById('btn-share-sheet');
+    if (btn) { btn.textContent = '✓ Copié !'; setTimeout(() => { btn.textContent = '🔗 Copier le lien'; }, 2500); }
+  });
+
+  /* ── Chat ── */
+  initChat();
 
   /* ── Bouton Organiser ── */
   document.getElementById('btn-layout-edit')?.addEventListener('click', toggleLayoutEdit);
