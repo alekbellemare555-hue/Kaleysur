@@ -433,6 +433,23 @@
     .sr-roll-result { min-height:2.5rem; text-align:center; font-size:1.4rem; font-family:'Cinzel',serif; color:var(--gold); margin:0.5rem 0; }
     .sr-total { text-align:center; font-size:0.82rem; color:#8aba8a; margin-bottom:0.85rem; }
     .sr-btn-row { display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap; margin-top:0.75rem; }
+    /* ── Ration Tracker ── */
+    .ration-tracker { display:flex; flex-direction:column; gap:0.65rem; }
+    .ration-row { display:flex; align-items:center; gap:0.65rem; flex-wrap:wrap; }
+    .ration-icon { font-size:1.25rem; width:1.6rem; text-align:center; flex-shrink:0; }
+    .ration-label { font-size:0.78rem; color:#999; min-width:90px; }
+    .ration-counter { display:flex; align-items:center; gap:0.4rem; }
+    .ration-btn { width:26px; height:26px; border-radius:5px; border:1px solid var(--j-border-col,#2a2a3a); background:var(--j-input,#0d0d14); color:#ccc; font-size:1rem; cursor:pointer; line-height:1; transition:border-color var(--transition); display:flex; align-items:center; justify-content:center; }
+    .ration-btn:hover { border-color:var(--gold-dark); color:var(--gold); }
+    .ration-val { width:36px; text-align:center; background:var(--j-input,#0d0d14); border:1px solid var(--j-border-col,#2a2a3a); border-radius:4px; color:var(--j-text,#e8e0d0); font-size:0.95rem; font-family:'Cinzel',serif; padding:0.2rem 0; }
+    .ration-warn { font-size:0.7rem; padding:0.12rem 0.45rem; border-radius:4px; font-family:'Cinzel',serif; letter-spacing:0.04em; }
+    .ration-warn.ok  { background:rgba(106,186,106,0.12); color:#6aba6a; border:1px solid rgba(106,186,106,0.25); }
+    .ration-warn.low { background:rgba(220,170,60,0.12);  color:#dca03c; border:1px solid rgba(220,170,60,0.25); }
+    .ration-warn.out { background:rgba(201,122,122,0.12); color:#c97a7a; border:1px solid rgba(201,122,122,0.25); }
+    .ration-depriv { font-size:0.72rem; color:#888; margin-left:0.3rem; }
+    .ration-depriv.danger { color:#c97a7a; font-weight:600; }
+    .ration-actions { display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.2rem; }
+    .ration-day-btn { font-size:0.75rem; padding:0.3rem 0.75rem; }
     /* ── Catégories inventaire ── */
     .inv-cat-tabs { display:flex; gap:0; margin-bottom:0.75rem; border-bottom:1px solid var(--j-border-col,#2a2a3a); flex-wrap:wrap; }
     .inv-cat-tab { padding:0.3rem 0.7rem; background:none; border:none; border-bottom:2px solid transparent; color:#666; font-size:0.72rem; cursor:pointer; font-family:'Cinzel',serif; letter-spacing:0.04em; transition:all var(--transition); white-space:nowrap; }
@@ -1225,6 +1242,10 @@
             </div>
           </div>
         </div>
+      </div>
+      <div class="sheet-section">
+        <div class="sheet-section-title">Rations &amp; Eau</div>
+        <div class="ration-tracker" id="ration-tracker"></div>
       </div>
       <div class="sheet-section">
         <div class="sheet-section-title">Monnaie</div>
@@ -3859,6 +3880,7 @@ function renderAll() {
   renderCustomFeatures();
   renderSpells();
   renderInventory();
+  renderRationTracker();
   renderAttunement();
   fillCurrency();
   renderNotesPages();
@@ -5105,6 +5127,100 @@ function renderSpells() {
         tbody.appendChild(dr);
       }
     });
+  });
+}
+
+/* ── Ration Tracker ── */
+function getRations() {
+  const inv = INV();
+  if (!inv.rations) inv.rations = { food: 5, water: 3, joursPriveFood: 0, joursPriveWater: 0 };
+  return inv.rations;
+}
+function renderRationTracker() {
+  const el = document.getElementById('ration-tracker');
+  if (!el) return;
+  const r = getRations();
+  const conMod = Math.floor(((C().scores?.CON ?? 10) - 10) / 2);
+  // D&D 5e: exhaustion after (3 + CON mod) days without food (min 1), 1 day without water
+  const foodThresh = Math.max(1, 3 + conMod);
+
+  function warnFood() {
+    if (r.food > 0)           return { cls:'ok',  txt:`${r.food} ration${r.food > 1 ? 's' : ''}` };
+    if (r.joursPriveFood < foodThresh) return { cls:'low', txt:`Privé J${r.joursPriveFood}/${foodThresh}` };
+    return { cls:'out', txt:`Épuisement ! J${r.joursPriveFood}` };
+  }
+  function warnWater() {
+    if (r.water > 0)          return { cls:'ok',  txt:`${r.water} jour${r.water > 1 ? 's' : ''}` };
+    if (r.joursPriveWater < 1) return { cls:'low', txt:'Privé J0/1' };
+    return { cls:'out', txt:`Épuisement ! J${r.joursPriveWater}` };
+  }
+  const wf = warnFood(); const ww = warnWater();
+
+  el.innerHTML = `
+    <div class="ration-row">
+      <span class="ration-icon">🍖</span>
+      <span class="ration-label">Rations alimentaires</span>
+      <div class="ration-counter">
+        <button class="ration-btn" data-ration-adj="food" data-d="-1" title="Retirer une ration">−</button>
+        <input type="number" class="ration-val" id="ration-food-val" value="${r.food}" min="0" max="99">
+        <button class="ration-btn" data-ration-adj="food" data-d="1" title="Ajouter une ration">+</button>
+      </div>
+      <span class="ration-warn ${wf.cls}">${wf.txt}</span>
+      ${r.joursPriveFood > 0 ? `<span class="ration-depriv danger">⚠ ${r.joursPriveFood}j sans nourriture</span>` : ''}
+    </div>
+    <div class="ration-row">
+      <span class="ration-icon">💧</span>
+      <span class="ration-label">Eau (jours)</span>
+      <div class="ration-counter">
+        <button class="ration-btn" data-ration-adj="water" data-d="-1" title="Retirer un jour d'eau">−</button>
+        <input type="number" class="ration-val" id="ration-water-val" value="${r.water}" min="0" max="99">
+        <button class="ration-btn" data-ration-adj="water" data-d="1" title="Ajouter un jour d'eau">+</button>
+      </div>
+      <span class="ration-warn ${ww.cls}">${ww.txt}</span>
+      ${r.joursPriveWater > 0 ? `<span class="ration-depriv danger">⚠ ${r.joursPriveWater}j sans eau</span>` : ''}
+    </div>
+    <div class="ration-actions">
+      <button class="btn btn-sm ration-day-btn" id="btn-ration-day" title="Consomme 1 ration et 1 jour d'eau. Met à jour la privation si manque.">🌙 Fin de journée</button>
+      <button class="btn btn-sm" id="btn-ration-rest" title="Remet la privation à zéro (repos long avec nourriture et eau)">☀ Repos complet</button>
+    </div>`;
+
+  // +/- buttons
+  el.querySelectorAll('[data-ration-adj]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const type = btn.dataset.rationAdj; // 'food' | 'water'
+      const d = parseInt(btn.dataset.d);
+      const r2 = getRations();
+      r2[type] = Math.max(0, (r2[type] || 0) + d);
+      triggerSave(); renderRationTracker();
+    });
+  });
+
+  // Direct input edit
+  ['food','water'].forEach(type => {
+    const inp = document.getElementById(`ration-${type}-val`);
+    if (!inp) return;
+    inp.addEventListener('change', () => {
+      const r2 = getRations();
+      r2[type] = Math.max(0, parseInt(inp.value) || 0);
+      triggerSave(); renderRationTracker();
+    });
+  });
+
+  // Fin de journée
+  document.getElementById('btn-ration-day')?.addEventListener('click', () => {
+    const r2 = getRations();
+    if (r2.food > 0) { r2.food--; r2.joursPriveFood = 0; }
+    else { r2.joursPriveFood = (r2.joursPriveFood || 0) + 1; }
+    if (r2.water > 0) { r2.water--; r2.joursPriveWater = 0; }
+    else { r2.joursPriveWater = (r2.joursPriveWater || 0) + 1; }
+    triggerSave(); renderRationTracker();
+  });
+
+  // Repos complet
+  document.getElementById('btn-ration-rest')?.addEventListener('click', () => {
+    const r2 = getRations();
+    r2.joursPriveFood = 0; r2.joursPriveWater = 0;
+    triggerSave(); renderRationTracker();
   });
 }
 
