@@ -14,8 +14,20 @@ function getWikiRoot() {
 }
 
 // --- Données de recherche ----------------------------------
-// Les URL sont relatives à la racine du wiki (ex: "astoryem/feymundi.html")
-const SEARCH_INDEX = [
+// Chargées depuis search-index.json pour faciliter la maintenance.
+let SEARCH_INDEX = null;
+
+(function loadSearchIndex() {
+  const root = getWikiRoot();
+  fetch(root + 'search-index.json')
+    .then(r => r.json())
+    .then(data => { SEARCH_INDEX = data; })
+    .catch(() => { SEARCH_INDEX = []; });
+})();
+
+// LEGACY — conservé temporairement pour compatibilité offline au premier chargement
+// TODO: supprimer quand search-index.json est systématiquement en cache SW
+const _SEARCH_INDEX_FALLBACK = [
   // Continents
   { title: 'Astoryem', category: 'Continent', url: 'astoryem/astoryem.html' },
   { title: 'Ayakan', category: 'Continent', url: 'ayakan/ayakan.html' },
@@ -258,7 +270,8 @@ if (searchInput && searchResults) {
       return;
     }
 
-    const results = SEARCH_INDEX.filter(item =>
+    const index = SEARCH_INDEX || _SEARCH_INDEX_FALLBACK;
+    const results = index.filter(item =>
       item.title.toLowerCase().includes(q) ||
       item.category.toLowerCase().includes(q)
     ).slice(0, 10);
