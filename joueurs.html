@@ -13,7 +13,7 @@
       --gold-dark: #8a6e1a;
       --danger: #c97a7a;
       --success: #6aba6a;
-      --radius: 8px;
+      --radius: 2px;
       --transition: 0.2s ease;
       /* Extended palette — customizable via settings */
       --j-panel: #221a0e;
@@ -1389,6 +1389,66 @@
   input[type=number].ability-score-input { padding-right: 0; width: 54px; }
 }
 
+/* ── HP Steppers (+1/-1/+5/-5) ── */
+.hp-step-row { display:flex; gap:4px; margin-top:0.35rem; }
+.hp-step-btn {
+  flex:1; padding:4px 2px; font-size:0.72rem; font-family:'Cinzel',serif;
+  letter-spacing:0.04em; cursor:pointer; border:1px solid; transition:background 0.15s;
+  line-height:1;
+}
+.hp-step-btn.neg { background:rgba(201,122,122,0.08); border-color:rgba(201,122,122,0.3); color:var(--danger); }
+.hp-step-btn.neg:hover { background:rgba(201,122,122,0.2); }
+.hp-step-btn.pos { background:rgba(106,186,106,0.08); border-color:rgba(106,186,106,0.3); color:var(--success); }
+.hp-step-btn.pos:hover { background:rgba(106,186,106,0.2); }
+
+/* ══ COINS CARRÉS — réduction globale de tous les border-radius ══ */
+/* Cartes, sections, boîtes */
+.auth-box, .char-card, .admin-card, .modal-box, .settings-section,
+.ddb-modal, .ddb-preview, .ddb-dropzone, .ddb-error,
+.sr-modal, .new-char-modal, #chat-panel,
+.view-section, .cheat-section, .mj-player-card,
+.notes-section-wrap, .canvas-scroll-wrap,
+.cf-level-group, .res-card, .hp-log-entry,
+#undo-toast { border-radius: 2px !important; }
+
+/* Inputs & textareas */
+.field-input, .auth-input, .atk-inp, .inv-inp,
+.notes-editor, .notes-page-title-input, .exp-desc-area,
+.auth-error, .ddb-url, .stress-count-inp, .spell-slot-total-inp,
+.res-counter-inp, .res-counter-max, .ration-val,
+.color-inp-hex, input[type=color].color-inp,
+.hp-quick-input, .attunement-slot input[type=text],
+.canvas-toolbar, #canvas-text-input,
+.ability-score-input { border-radius: 2px !important; }
+
+/* Boutons */
+.btn, .auth-btn, .notes-add-page-btn, .notes-del-page-btn,
+.canvas-tool-btn, .spell-conc-btn, .spell-prep-counter,
+.btn-rest, .ration-btn, .inspiration-btn,
+.ddb-import-items span, .cf-badge, .spell-level-badge,
+.cf-slots-note, .cf-profs, .cf-feature,
+.passive-row, .exp-toggle, #undo-toast button,
+.chat-input, .chat-send, .mj-edit-btn,
+.new-char-av-btn, .av-btn, .avatar-img, .av-png-preview, .bg-preview,
+.sr-dice-badge, .vb-mini-stats { border-radius: 2px !important; }
+
+/* Ability boxes */
+.ability-box { border-radius: 2px !important; }
+
+/* HP bars (petits arrondis pour éviter les angles trop brutaux sur les barres) */
+.hp-bar-track, .hp-bar-fill, .hp-bar-temp,
+.vb-hp-bar-track, .char-card-hp-track, .char-card-hp-bar,
+.admin-card-hp, .admin-card-hp-bar,
+.mj-hp-bar, .mj-hp-fill, .view-hp-bar, .view-hp-fill,
+.cf-progress-bar, .cf-progress-fill { border-radius: 1px !important; }
+
+/* VB hero éléments */
+.vb-portrait-frame, .vb-vitals-box, .vb-cond-box,
+.vb-btn-dmg, .vb-btn-heal, .vb-rest-btn-short, .vb-rest-btn-long { border-radius: 2px !important; }
+
+/* HP stepper buttons */
+.hp-step-btn { border-radius: 2px !important; }
+
   </style>
 
   <!-- PWA -->
@@ -1618,6 +1678,13 @@
               <button class="vb-btn-dmg vb-btn-quick" onclick="document.getElementById('btn-apply-dmg').click()" title="Appliquer dégâts">⚔</button>
               <input type="number" class="hp-quick-input" id="hp-quick-val" min="0" placeholder="0">
               <button class="vb-btn-heal vb-btn-quick" onclick="document.getElementById('btn-apply-heal').click()" title="Appliquer soin">✚</button>
+            </div>
+            <!-- Steppers rapides ±1 / ±5 -->
+            <div class="hp-step-row">
+              <button class="hp-step-btn neg" onclick="applyHpChange(-5)" title="−5 HP">−5</button>
+              <button class="hp-step-btn neg" onclick="applyHpChange(-1)" title="−1 HP">−1</button>
+              <button class="hp-step-btn pos" onclick="applyHpChange(1)"  title="+1 HP">+1</button>
+              <button class="hp-step-btn pos" onclick="applyHpChange(5)"  title="+5 HP">+5</button>
             </div>
             <div class="hp-log-toggle j-hidden" id="hp-log-toggle">▾ Historique</div>
             <div class="hp-log j-hidden" id="hp-log"></div>
@@ -7678,7 +7745,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (el.dataset.f === 'characterName') { activeSlot().name = el.value || 'Sans nom'; renderCharCards(); }
       if (el.dataset.f === 'niveau') { syncClassesToLegacy(C()); updateProfBonus(); renderSaves(); renderSkills(); renderPassiveSkills(); renderClassFeatures(); renderMulticlasses(); }
       if (el.dataset.f === 'classe') { autoFillClass(el.value); updateCharSummary(); renderCharCards(); }
-      if (['for','dex','con','int','sag','cha'].includes(el.dataset.f)) { updateModifier(el.dataset.f); renderSaves(); renderSkills(); renderPassiveSkills(); updateSpellCalcs(); }
+      if (['for','dex','con','int','sag','cha'].includes(el.dataset.f)) { updateModifier(el.dataset.f); debouncedStats(() => { renderSaves(); renderSkills(); renderPassiveSkills(); updateSpellCalcs(); }); }
       if (el.dataset.f === 'caractSort' || el.dataset.f === 'niveau') updateSpellCalcs();
       if (el.dataset.f === 'pvMax' || el.dataset.f === 'pvActuel') { updateHpBar(); renderCharCards(); }
       updateCharSummary();
