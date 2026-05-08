@@ -939,7 +939,7 @@
     .vb-corner.br { bottom: 5px; right: 7px; }
     .vb-mini-stats {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: repeat(4, 1fr);
       gap: 1px;
       background: var(--j-border-col, #4a3510);
       border: 1px solid var(--j-border-col, #4a3510);
@@ -1262,7 +1262,7 @@
   #vb-hero-portrait { order: 3; }
   #vb-hero-portrait .vb-portrait-frame { aspect-ratio: 21/9; max-height: 150px; }
   #vb-hero-portrait .vb-portrait-placeholder { font-size: 2.2rem; }
-  .vb-mini-stats { grid-template-columns: repeat(3, 1fr); }
+  .vb-mini-stats { grid-template-columns: repeat(4, 1fr); }
 
   /* Layout: 2 columns */
   .layout-wrapper {
@@ -1664,6 +1664,10 @@
               <div class="vb-mini-stat-label">SPD</div>
               <div class="vb-mini-stat-val" id="vb-hero-speed">—</div>
             </div>
+            <div class="vb-mini-stat">
+              <div class="vb-mini-stat-label">DC</div>
+              <div class="vb-mini-stat-val" id="vb-hero-dc">—</div>
+            </div>
           </div>
         </div>
 
@@ -1766,7 +1770,10 @@
                 </div>
               </div>
               <div>
-                <div class="vb-section-label">Death Saves</div>
+                <div style="display:flex;align-items:center;gap:0.4rem;">
+                  <div class="vb-section-label">Death Saves</div>
+                  <button id="death-save-roll-btn" title="Lancer un jet de mort (d20)" style="background:transparent;border:none;color:var(--gold-dark);cursor:pointer;font-size:0.85rem;padding:0;line-height:1;opacity:0.65;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.65'">🎲</button>
+                </div>
                 <!-- Pips cliquables — data-idx / data-type gérés par renderCombat -->
                 <div class="vb-death-pips" id="vb-hero-death-pips" style="cursor:pointer;" title="Cliquer pour basculer"></div>
                 <!-- Dots fonctionnels cachés (maintenus pour compat JS existant) -->
@@ -2028,6 +2035,7 @@
               </div>
               <button class="btn btn-sm btn-gold" id="btn-add-spell">+ Ajouter</button>
             </div>
+            <input type="search" id="spell-filter" class="field-input" placeholder="Filtrer sorts…" style="width:100%;margin-bottom:0.4rem;padding:0.3rem 0.5rem;font-size:0.78rem;">
             <table class="exp-table">
               <thead><tr>
                 <th style="width:44px;">Niv.</th>
@@ -5189,6 +5197,8 @@ function updateSpellCalcs() {
   if (!c.caractSort || !getTotalLevel(c)) {
     document.getElementById('sort-dd').textContent = '—';
     document.getElementById('sort-atk').textContent = '—';
+    const dcEl2 = document.getElementById('vb-hero-dc');
+    if (dcEl2) dcEl2.textContent = '—';
     if (prepEl) { prepEl.textContent = '—'; prepEl.className = 'spell-prep-counter'; }
     return;
   }
@@ -5200,6 +5210,8 @@ function updateSpellCalcs() {
   const m = mod(abilScore(attr));
   document.getElementById('sort-dd').textContent  = 8 + bonus + m;
   document.getElementById('sort-atk').textContent = (bonus + m >= 0 ? '+' : '') + (bonus + m);
+  const dcEl = document.getElementById('vb-hero-dc');
+  if (dcEl) dcEl.textContent = 8 + bonus + m;
   // Spell prep counter (leveled spells only, not cantrips)
   if (prepEl) {
     const spells = c.spells || [];
@@ -6201,6 +6213,7 @@ function renderSpells() {
   if (!tbody) return;
   tbody.innerHTML = '';
   const spells = C().spells || [];
+  const filterQ = (document.getElementById('spell-filter')?.value || '').toLowerCase().trim();
   // Group by level
   const groups = {};
   spells.forEach((s, i) => {
@@ -6212,8 +6225,16 @@ function renderSpells() {
   // Also add any levels that exist but aren't in ORDER
   Object.keys(groups).forEach(k => { if (!ORDER.includes(k)) ORDER.push(k); });
   ORDER.forEach(lvl => {
-    const entries = groups[lvl];
-    if (!entries || !entries.length) return;
+    const allEntries = groups[lvl];
+    if (!allEntries || !allEntries.length) return;
+    const entries = filterQ
+      ? allEntries.filter(({ s }) =>
+          (s.name || '').toLowerCase().includes(filterQ) ||
+          (s.typeDegat || '').toLowerCase().includes(filterQ) ||
+          (s.action || '').toLowerCase().includes(filterQ) ||
+          (s.desc || '').toLowerCase().includes(filterQ))
+      : allEntries;
+    if (!entries.length) return;
     // Level header row
     const hdr = document.createElement('tr');
     hdr.className = 'spell-lvl-header';
@@ -8913,6 +8934,9 @@ document.getElementById('dice-tray')?.addEventListener('click', e => {
 /* ── 12. Skill search filter ── */
 document.getElementById('skill-filter')?.addEventListener('input', () => { if (playerData) renderSkills(); });
 
+/* ── 13b. Spell search filter ── */
+document.getElementById('spell-filter')?.addEventListener('input', () => { if (playerData) renderSpells(); });
+
 /* ── 13. Scroll haut au changement d'onglet (sauf identité qui a son propre scroll) ── */
 (function () {
   document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -8922,8 +8946,74 @@ document.getElementById('skill-filter')?.addEventListener('input', () => { if (p
       }
     });
   });
-  // Also handle the dice-tray button — showDiceRoll was referenced above, ensure global
 })();
+
+/* ── 14. Lanceur de dégâts — double-clic sur champ degats/degat ── */
+window.rollDiceExpr = function(expr) {
+  let total = 0;
+  const str = expr.replace(/\s/g, '').toLowerCase();
+  const tokens = str.split(/(?=[+-])/);
+  const parts = [];
+  for (const token of tokens) {
+    const m = token.match(/^([+-]?)(\d*)d(\d+)$/);
+    if (m) {
+      const sign = m[1] === '-' ? -1 : 1;
+      const count = parseInt(m[2] || '1');
+      const sides = parseInt(m[3]);
+      let sub = 0;
+      for (let j = 0; j < count; j++) sub += Math.floor(Math.random() * sides) + 1;
+      total += sign * sub;
+      parts.push((sign < 0 ? '-' : parts.length ? '+' : '') + sub);
+    } else {
+      const n = parseInt(token);
+      if (!isNaN(n)) { total += n; if (n !== 0) parts.push((n >= 0 && parts.length ? '+' : '') + n); }
+    }
+  }
+  return { total, detail: parts.length > 1 ? parts.join(' ') + ' = ' + total : String(total) };
+};
+
+document.addEventListener('dblclick', e => {
+  const el = e.target;
+  if (!el.classList.contains('atk-inp')) return;
+  if (el.dataset.ak !== 'degats' && el.dataset.sk !== 'degat') return;
+  const expr = el.value.trim();
+  if (!expr || !/\d/.test(expr)) return;
+  e.preventDefault();
+  const res = rollDiceExpr(expr);
+  const nameEl = el.closest('tr')?.querySelector('[data-ak="name"],[data-sk="name"]');
+  const name = nameEl?.value || 'Dégâts';
+  showDiceRoll(name + ' · ' + expr, 0);
+  document.getElementById('dice-d20').textContent = res.total;
+  document.getElementById('dice-d20').className = 'dice-toast-d20';
+  document.getElementById('dice-total').textContent = res.detail !== String(res.total) ? res.detail : '';
+});
+
+/* ── 15. Jets de mort — bouton auto-roll ── */
+document.getElementById('death-save-roll-btn')?.addEventListener('click', () => {
+  if (!playerData) return;
+  const roll = Math.floor(Math.random() * 20) + 1;
+  const c = C();
+  let succ = parseInt(c.mortSucces) || 0;
+  let fail = parseInt(c.mortEchecs) || 0;
+  if      (roll === 20) { succ = Math.min(3, succ + 2); }
+  else if (roll === 1)  { fail = Math.min(3, fail + 2); }
+  else if (roll >= 10)  { succ = Math.min(3, succ + 1); }
+  else                  { fail = Math.min(3, fail + 1); }
+  c.mortSucces = succ; c.mortEchecs = fail;
+  ['success', 'fail'].forEach(type => {
+    const count = type === 'success' ? succ : fail;
+    document.querySelectorAll(`.death-dot[data-type="${type}"]`).forEach((dot, i) => {
+      dot.classList.toggle('success-on', type === 'success' && i < count);
+      dot.classList.toggle('fail-on',    type === 'fail'    && i < count);
+    });
+  });
+  renderHero(); triggerSave();
+  const msg = roll === 20 ? '✦ Critique! +2 succès'
+            : roll === 1  ? '✕ Catastrophe! +2 échecs'
+            : roll >= 10  ? '✓ Succès' : '✗ Échec';
+  showDiceRoll('Jet de Mort', 0);
+  document.getElementById('dice-total').textContent = msg;
+});
 </script>
 
 
