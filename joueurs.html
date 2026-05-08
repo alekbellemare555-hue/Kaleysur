@@ -1501,6 +1501,19 @@
 /* HP stepper buttons */
 .hp-step-btn { border-radius: 2px !important; }
 
+/* ══ OPTIMISATIONS PERF ══ */
+/* Layout isolation — les changements internes ne déclenchent pas de reflow global */
+.tab-panel { contain: layout style; }
+/* Skip rendering des sections hors écran dans le panel actif */
+.sheet-section { content-visibility: auto; contain-intrinsic-block-size: 280px; }
+/* Contenir les petits composants de liste */
+.sv-row, .sk-row { contain: layout style; }
+/* Promote animated/floating elements vers un composite layer */
+#dice-toast, #dice-tray, #save-flash { will-change: transform, opacity; }
+.modal-overlay, .new-char-modal-overlay, .sr-modal-overlay, .ddb-modal-overlay { will-change: transform; }
+/* Éviter les repaints sur les boutons hover fréquents */
+.roll-trigger, .prof-dot, .cond-badge, .hp-step-btn { will-change: color, background; }
+
   </style>
 
   <!-- PWA -->
@@ -4837,28 +4850,38 @@ function updateMcTotalLevel() {
 }
 
 /* ── Rendu complet ── */
+/* ── Lazy tab rendering ──
+   Only render the active tab immediately; mark others dirty.
+   Each tab's content is (re)built on first visit or when dirty. */
+const _tabDirty = {};
+const _TAB_RENDERERS = {
+  personnage: () => {
+    renderMulticlasses(); renderAbilities(); renderSaves(); renderSkills();
+    renderCombat(); renderSpellSlots(); renderClassFeatures(); renderPassiveSkills();
+    renderResources(); renderConditions(); renderAttacks(); renderCustomFeatures(); renderSpells();
+  },
+  identite:   () => { fillFields(); },
+  inventaire: () => { renderInventory(); renderRationTracker(); renderAttunement(); fillCurrency(); },
+  notes:      () => { renderNotesPages(); loadCurrentNoteInEditor(); },
+  parametres: () => { renderSectionVisibility(); },
+  aide:       null,
+  admin:      () => { renderAdminPanel(); }
+};
+
+function _markAllDirty() {
+  Object.keys(_TAB_RENDERERS).forEach(k => { _tabDirty[k] = true; });
+}
+
+function _renderTab(tabId) {
+  if (!_tabDirty[tabId]) return;
+  _tabDirty[tabId] = false;
+  const fn = _TAB_RENDERERS[tabId];
+  if (fn) fn();
+}
+
 function renderAll() {
   migrateToMulticlass(C());
   fillFields();
-  renderMulticlasses();
-  renderAbilities();
-  renderSaves();
-  renderSkills();
-  renderCombat();
-  renderSpellSlots();
-  renderClassFeatures();
-  renderPassiveSkills();
-  renderResources();
-  renderConditions();
-  renderAttacks();
-  renderCustomFeatures();
-  renderSpells();
-  renderInventory();
-  renderRationTracker();
-  renderAttunement();
-  fillCurrency();
-  renderNotesPages();
-  loadCurrentNoteInEditor();
   updateCharSummary();
   updateProfBonus();
   updateHpBar();
@@ -4866,6 +4889,9 @@ function renderAll() {
   applyCharTheme();
   applyCharBg(C());
   renderHero();
+  _markAllDirty();
+  const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab || 'personnage';
+  _renderTab(activeTab);
 }
 
 /* ════════════════════════════════════════════════
@@ -5076,20 +5102,22 @@ const SAVES = [
 ];
 function renderSaves() {
   const col = document.getElementById('saves-col');
-  col.innerHTML = '<div style="font-size:0.7rem;text-transform:uppercase;color:#666;letter-spacing:0.05em;margin-bottom:0.35rem;">Saving Throws</div>';
   const c = C(); const bonus = pb(getTotalLevel(c));
+  const frag = document.createDocumentFragment();
+  const hdr = document.createElement('div');
+  hdr.style.cssText = 'font-size:0.7rem;text-transform:uppercase;color:#666;letter-spacing:0.05em;margin-bottom:0.35rem;';
+  hdr.textContent = 'Saving Throws';
+  frag.appendChild(hdr);
   SAVES.forEach(sv => {
     const prof = !!c[sv.key];
     const val  = mod(abilScore(sv.attr)) + (prof ? bonus : 0);
     const row  = document.createElement('div');
     row.className = 'sv-row';
-    row.innerHTML = `
-      <div class="prof-dot ${prof ? 'on' : ''}" data-sv="${sv.key}" role="button" tabindex="0" title="Proficiency" aria-label="Maîtrise ${sv.label}"></div>
-      <span class="sv-val roll-trigger" data-roll-label="${sv.label} Save" data-roll-bonus="${val}" title="Lancer d20 + ${val}">${val >= 0 ? '+' : ''}${val}</span>
-      <span>${sv.label}</span>
-    `;
-    col.appendChild(row);
+    row.innerHTML = `<div class="prof-dot ${prof ? 'on' : ''}" data-sv="${sv.key}" role="button" tabindex="0" title="Proficiency" aria-label="Maîtrise ${sv.label}"></div><span class="sv-val roll-trigger" data-roll-label="${sv.label} Save" data-roll-bonus="${val}" title="Lancer d20 + ${val}">${val >= 0 ? '+' : ''}${val}</span><span>${sv.label}</span>`;
+    frag.appendChild(row);
   });
+  col.innerHTML = '';
+  col.appendChild(frag);
 }
 
 /* ── Compétences ── */
@@ -5115,16 +5143,19 @@ const SKILLS = [
 ];
 function renderSkills() {
   const col = document.getElementById('skills-col');
-  col.innerHTML = '<div style="font-size:0.7rem;text-transform:uppercase;color:#666;letter-spacing:0.05em;margin-bottom:0.35rem;">Compétences <span style="font-size:0.6rem;color:#444;font-style:italic;">(clic=maîtrise, 2×=expertise)</span></div>';
   const c = C(); const bonus = pb(getTotalLevel(c));
   const jat = !!c.jackOfAllTrades;
   const halfBonus = Math.floor(bonus / 2);
   const filterQ = (document.getElementById('skill-filter')?.value || '').toLowerCase().trim();
-  // Sync JAT checkbox
   const jatCheck = document.getElementById('jat-check');
   const jatLabel = document.getElementById('jat-label');
-  if (jatCheck) { jatCheck.checked = jat; }
+  if (jatCheck) jatCheck.checked = jat;
   if (jatLabel) jatLabel.classList.toggle('active', jat);
+  const frag = document.createDocumentFragment();
+  const hdr = document.createElement('div');
+  hdr.style.cssText = 'font-size:0.7rem;text-transform:uppercase;color:#666;letter-spacing:0.05em;margin-bottom:0.35rem;';
+  hdr.innerHTML = 'Compétences <span style="font-size:0.6rem;color:#444;font-style:italic;">(clic=maîtrise, 2×=expertise)</span>';
+  frag.appendChild(hdr);
   [...SKILLS].sort((a,b) => a.label.localeCompare(b.label)).forEach(sk => {
     if (filterQ && !sk.label.toLowerCase().includes(filterQ) && !sk.attr.includes(filterQ)) return;
     const profLevel = Math.min(2, Math.max(0, parseInt(c[sk.key]) || (c[sk.key] === true ? 1 : 0)));
@@ -5132,15 +5163,13 @@ function renderSkills() {
     const val = mod(abilScore(sk.attr)) + (profLevel >= 1 ? bonus : 0) + (profLevel >= 2 ? bonus : 0) + jatBonus;
     const dotClass = profLevel === 2 ? 'on expert' : profLevel === 1 ? 'on' : '';
     const title = profLevel === 2 ? 'Expertise (double proficiency)' : profLevel === 1 ? 'Proficiency' : 'Not proficient';
-    const row  = document.createElement('div');
+    const row = document.createElement('div');
     row.className = 'sk-row';
-    row.innerHTML = `
-      <div class="prof-dot ${dotClass}" data-sk="${sk.key}" role="button" tabindex="0" title="${title}" aria-label="Maîtrise ${sk.label}"></div>
-      <span class="sk-val roll-trigger" data-roll-label="${sk.label}" data-roll-bonus="${val}" title="Lancer d20 + ${val}">${val >= 0 ? '+' : ''}${val}</span>
-      <span>${sk.label} <span style="color:#555;font-size:0.72rem;">(${sk.attr.toUpperCase()})</span></span>
-    `;
-    col.appendChild(row);
+    row.innerHTML = `<div class="prof-dot ${dotClass}" data-sk="${sk.key}" role="button" tabindex="0" title="${title}" aria-label="Maîtrise ${sk.label}"></div><span class="sk-val roll-trigger" data-roll-label="${sk.label}" data-roll-bonus="${val}" title="Lancer d20 + ${val}">${val >= 0 ? '+' : ''}${val}</span><span>${sk.label} <span style="color:#555;font-size:0.72rem;">(${sk.attr.toUpperCase()})</span></span>`;
+    frag.appendChild(row);
   });
+  col.innerHTML = '';
+  col.appendChild(frag);
 }
 
 /* ── Combat ── */
@@ -6230,7 +6259,7 @@ function renderCustomFeatures() {
 function renderSpells() {
   const tbody = document.getElementById('spell-tbody');
   if (!tbody) return;
-  tbody.innerHTML = '';
+  const frag = document.createDocumentFragment();
   const spells = C().spells || [];
   const filterQ = (document.getElementById('spell-filter')?.value || '').toLowerCase().trim();
   // Group by level
@@ -6259,31 +6288,23 @@ function renderSpells() {
     hdr.className = 'spell-lvl-header';
     const lvlLabel = lvl === 'cantrip' ? '✧ Cantrips' : `✦ Niveau ${lvl}`;
     hdr.innerHTML = `<td colspan="8">${lvlLabel}<span class="spell-lvl-count">${entries.length} sort${entries.length > 1 ? 's' : ''}</span></td>`;
-    tbody.appendChild(hdr);
+    frag.appendChild(hdr);
     entries.forEach(({ s, i }) => {
       const isConc = !!s.conc;
       const tr = document.createElement('tr');
       tr.className = 'exp-row';
-      tr.innerHTML = `
-        <td style="text-align:center;"><input class="atk-inp" data-spell="${i}" data-sk="level" value="${esc(s.level||'0')}" placeholder="0" style="width:38px;text-align:center;font-size:0.78rem;"></td>
-        <td><input class="atk-inp" data-spell="${i}" data-sk="name"   value="${esc(s.name||'')}"   placeholder="Nom du sort"></td>
-        <td><input class="atk-inp" data-spell="${i}" data-sk="degat"  value="${esc(s.degat||'')}"  placeholder="2d6" style="font-size:0.75rem;"></td>
-        <td><input class="atk-inp" data-spell="${i}" data-sk="typeDegat" value="${esc(s.typeDegat||'')}" placeholder="feu…" style="font-size:0.75rem;"></td>
-        <td><input class="atk-inp" data-spell="${i}" data-sk="portee" value="${esc(s.portee||'')}" placeholder="18m" style="font-size:0.75rem;"></td>
-        <td><input class="atk-inp" data-spell="${i}" data-sk="action" value="${esc(s.action||'')}" placeholder="Action" style="font-size:0.75rem;"></td>
-        <td style="text-align:center;"><button class="spell-conc-btn${isConc?' active':''}" data-conc-spell="${i}" title="Concentrer sur ce sort">◉</button></td>
-        <td style="text-align:center;"><button class="exp-toggle${s._open?' open':''}" data-spell-toggle="${i}" title="Description">▾</button></td>
-        <td><button class="atk-del" data-del-spell="${i}" title="Supprimer">✕</button></td>
-      `;
-      tbody.appendChild(tr);
+      tr.innerHTML = `<td style="text-align:center;"><input class="atk-inp" data-spell="${i}" data-sk="level" value="${esc(s.level||'0')}" placeholder="0" style="width:38px;text-align:center;font-size:0.78rem;"></td><td><input class="atk-inp" data-spell="${i}" data-sk="name" value="${esc(s.name||'')}" placeholder="Nom du sort"></td><td><input class="atk-inp" data-spell="${i}" data-sk="degat" value="${esc(s.degat||'')}" placeholder="2d6" style="font-size:0.75rem;"></td><td><input class="atk-inp" data-spell="${i}" data-sk="typeDegat" value="${esc(s.typeDegat||'')}" placeholder="feu…" style="font-size:0.75rem;"></td><td><input class="atk-inp" data-spell="${i}" data-sk="portee" value="${esc(s.portee||'')}" placeholder="18m" style="font-size:0.75rem;"></td><td><input class="atk-inp" data-spell="${i}" data-sk="action" value="${esc(s.action||'')}" placeholder="Action" style="font-size:0.75rem;"></td><td style="text-align:center;"><button class="spell-conc-btn${isConc?' active':''}" data-conc-spell="${i}" title="Concentrer sur ce sort">◉</button></td><td style="text-align:center;"><button class="exp-toggle${s._open?' open':''}" data-spell-toggle="${i}" title="Description">▾</button></td><td><button class="atk-del" data-del-spell="${i}" title="Supprimer">✕</button></td>`;
+      frag.appendChild(tr);
       if (s._open) {
         const dr = document.createElement('tr');
         dr.className = 'exp-desc-row';
         dr.innerHTML = `<td colspan="9"><textarea class="exp-desc-area" data-spell="${i}" data-sk="desc" placeholder="Description, composantes, concentration…">${esc(s.desc||'')}</textarea></td>`;
-        tbody.appendChild(dr);
+        frag.appendChild(dr);
       }
     });
   });
+  tbody.innerHTML = '';
+  tbody.appendChild(frag);
 }
 
 /* ── Ration Tracker ── */
@@ -7823,9 +7844,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + btn.dataset.tab));
-      if (btn.dataset.tab === 'admin') renderAdminPanel();
-      if (btn.dataset.tab === 'parametres') {
-        renderSectionVisibility();
+      const tabId = btn.dataset.tab;
+      // Render tab content on first visit or when dirty
+      _renderTab(tabId);
+      // Parametres: sync live UI controls each visit (not just first)
+      if (tabId === 'parametres') {
         const ci = document.getElementById('custom-color-inp');
         const ch = document.getElementById('custom-color-hex');
         const gold = getComputedStyle(document.documentElement).getPropertyValue('--gold').trim();
@@ -7837,9 +7860,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       // Bouton Organiser visible uniquement dans l'onglet Personnage
       const organBtn = document.getElementById('btn-layout-edit');
-      if (organBtn) organBtn.style.display = btn.dataset.tab === 'personnage' ? '' : 'none';
+      if (organBtn) organBtn.style.display = tabId === 'personnage' ? '' : 'none';
       // Onglet Identité : scroll jusqu'au formulaire
-      if (btn.dataset.tab === 'identite') {
+      if (tabId === 'identite') {
         requestAnimationFrame(() => {
           document.getElementById('tab-identite')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
