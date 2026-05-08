@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=1320">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Joueurs · Carnet d'Aventurier — Kaleysur</title>
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -88,8 +88,8 @@
     /* ── Hero ── */
     #hero {
       display: grid;
-      grid-template-columns: 260px 1fr 320px;
-      gap: 28px; padding: 32px 40px 20px; align-items: start;
+      grid-template-columns: 240px 1fr 300px;
+      gap: 24px; padding: 28px 32px 20px; align-items: start;
     }
     /* portrait */
     .j-portrait-wrap {
@@ -176,7 +176,7 @@
     .j-btn-rest-l { flex: 1; background: transparent; border: 1px solid #3a4a6a; color: #8ab0e0; padding: 5px; font-size: 9px; border-radius: 3px; font-family: var(--font-title); letter-spacing:.05em; text-transform: uppercase; cursor: pointer; }
 
     /* ── Lower columns ── */
-    #lower { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 28px; padding: 0 40px 32px; }
+    #lower { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; padding: 0 32px 32px; }
     .j-col-title-row { display: flex; align-items: center; justify-content: space-between; padding-bottom: 8px; margin-bottom: 12px; border-bottom: 1px solid var(--border-light); }
     .j-col-title-left { display: flex; align-items: center; gap: 8px; }
     .j-col-rule { width: 18px; height: 1px; background: var(--gold-dark); }
@@ -237,12 +237,25 @@
     .j-btn-confirm { background: rgba(201,162,39,0.12); border: 1px solid var(--gold-dark); color: var(--gold); padding: 7px 16px; border-radius: 3px; font-family: var(--font-title); font-size: 9px; letter-spacing:.08em; text-transform: uppercase; cursor: pointer; }
 
     /* ── Responsive ── */
+    @media (max-width: 1200px) {
+      #hero { grid-template-columns: 200px 1fr 260px; gap: 20px; padding: 24px 24px 16px; }
+      #lower { gap: 20px; padding: 0 24px 28px; }
+      #tab-bar { padding: 0 24px; }
+      #party-ribbon { padding: 0 24px; }
+    }
+    @media (max-width: 1050px) {
+      #hero { grid-template-columns: 180px 1fr 240px; gap: 16px; padding: 20px 20px 14px; }
+      #lower { gap: 16px; padding: 0 20px 24px; }
+      .j-char-name { font-size: 36px; }
+      .j-ability-mod { font-size: 22px; }
+    }
     @media (max-width: 900px) {
       #hero { grid-template-columns: 1fr; padding: 20px; }
       .j-portrait-wrap { aspect-ratio: auto; height: 200px; }
-      #lower { grid-template-columns: 1fr; padding: 0 20px 24px; }
+      #lower { grid-template-columns: 1fr; padding: 0 16px 24px; }
       #tab-bar { padding: 0 16px; }
-      #party-ribbon { padding: 0 16px; }
+      #party-ribbon { padding: 0 16px; overflow-x: auto; flex-wrap: nowrap; }
+      .j-char-name { font-size: 32px; }
     }
   </style>
 </head>
@@ -251,7 +264,7 @@
 <!-- ═══ WIKI NAV ═══ -->
 <nav class="top-nav">
   <div class="nav-left">
-    <button class="hamburger" id="hamburger" aria-label="Menu" onclick="toggleSidebar()">
+    <button class="hamburger" id="hamburger" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
     <a href="index.html" class="nav-logo">
