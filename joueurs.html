@@ -112,7 +112,7 @@
     .sheet-section.collapsed > *:not(:first-child) { display:none !important; }
     .sheet-section.collapsed .sheet-section-title { margin-bottom:0; border-bottom:none; padding-bottom:0; }
     .sheet-section.collapsed { padding-bottom:0.75rem; }
-    .sheet-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:0.75rem; }
+    .sheet-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
     .sheet-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
     .field-group { display:flex; flex-direction:column; gap:0.2rem; }
     .field-label { font-size:0.72rem; color:#888; text-transform:uppercase; letter-spacing:0.05em; }
@@ -1063,8 +1063,8 @@
     }
     #vb-hero-divider { border: none; border-top: 1px solid var(--j-border-col, #4a3510); margin: 0 32px 20px; }
 
-    /* VB: Wider layout */
-    #screen-dashboard .main-content { max-width: none !important; }
+    /* VB: Wider layout — override inline max-width + fix flex min-width shrink bug */
+    main.main-content { max-width: none !important; min-width: 0; overflow-x: hidden; }
     @media (max-width: 900px) {
       #vb-hero { grid-template-columns: 1fr; }
       .vb-char-name { font-size: 28px; }
@@ -1197,6 +1197,112 @@
 /* hp-quick row rebalance */
 .hp-quick { justify-content: flex-start !important; gap: 8px !important; }
 
+/* ════ VB RESPONSIVE ════ */
+
+/* ── Topbar: scrollable tab zone ── */
+.vb-tabs {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  align-self: stretch;
+}
+.vb-tabs::-webkit-scrollbar { display: none; }
+
+/* Fix fixed height — let it breathe if needed */
+.dash-header.vb-topbar { height: auto !important; min-height: 52px; }
+
+/* ── Tablet (≤ 900px) ── */
+@media (max-width: 900px) {
+  /* Topbar */
+  .dash-header.vb-topbar { padding: 0 20px; }
+
+  /* Hero: reorder columns — lead first, vitals second, portrait as landscape banner */
+  #vb-hero { padding: 20px 24px; gap: 18px; }
+  #vb-hero-lead   { order: 1; }
+  #vb-hero-vitals { order: 2; }
+  #vb-hero-portrait { order: 3; }
+  #vb-hero-portrait .vb-portrait-frame { aspect-ratio: 21/9; max-height: 150px; }
+  #vb-hero-portrait .vb-portrait-placeholder { font-size: 2.2rem; }
+  .vb-mini-stats { grid-template-columns: repeat(3, 1fr); }
+
+  /* Layout: 2 columns */
+  .layout-wrapper {
+    grid-template-columns: 1fr 1fr !important;
+    padding: 0 24px 24px !important;
+    gap: 24px !important;
+  }
+
+  /* Party ribbon */
+  .char-cards.vb-party-ribbon { padding: 0 20px; }
+}
+
+/* ── Mobile (≤ 640px) ── */
+@media (max-width: 640px) {
+  /* Topbar: compact */
+  .dash-header.vb-topbar { padding: 0 12px; }
+  .vb-brand { margin-right: 8px; }
+  .vb-brand-sep, .vb-brand-sub { display: none; }
+  #btn-layout-edit { display: none !important; }
+  #btn-logout { font-size: 0 !important; width: 28px; padding: 0 !important;
+                display: flex; align-items: center; justify-content: center; }
+  #btn-logout::before { content: '✕'; font-size: 13px; font-family: 'Cinzel', serif; }
+
+  /* Hero: single column, no portrait */
+  #vb-hero { padding: 16px 16px 12px; gap: 12px; }
+  #vb-hero-portrait { display: none !important; }
+  .vb-folio { display: none; }
+  .vb-char-name { font-size: 22px !important; line-height: 1.1 !important; }
+
+  /* Facts: 3×2 grid instead of single cramped row */
+  .vb-facts {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 10px 8px !important;
+    border-top: 1px solid var(--j-border-col, #4a3510) !important;
+    border-bottom: 1px solid var(--j-border-col, #4a3510) !important;
+    padding: 10px 0 !important;
+    margin-bottom: 14px !important;
+  }
+  .vb-fact { padding-left: 0 !important; border-left: none !important; }
+
+  /* Layout: single column */
+  .layout-wrapper {
+    grid-template-columns: 1fr !important;
+    padding: 0 16px 16px !important;
+    gap: 20px !important;
+  }
+  .layout-bottom { padding: 0 16px 32px !important; }
+  #vb-hero-divider { margin: 0 16px !important; }
+
+  /* Party ribbon */
+  .char-cards.vb-party-ribbon { padding: 0 12px; }
+
+  /* Layout toolbar: hide on mobile */
+  .layout-toolbar { display: none !important; }
+
+  /* Ability grid: 3 cols on mobile */
+  #ability-grid { grid-template-columns: repeat(3, 1fr) !important; }
+
+  /* Form grids: single column on mobile */
+  .sheet-grid, .mait-grid, .sheet-grid-2 { grid-template-columns: 1fr !important; }
+  /* Reset span-2 inline styles — otherwise browser creates an implicit 2nd column */
+  .sheet-grid > *, .mait-grid > *, .sheet-grid-2 > * { grid-column: span 1 !important; }
+
+  /* HP vitals box: tighter */
+  .vb-vitals-box { padding: 14px 14px 12px !important; }
+  .vb-hp-display { gap: 4px !important; }
+  .vb-hp-current { font-size: 36px !important; }
+}
+
+/* ── Small mobile (≤ 400px) ── */
+@media (max-width: 400px) {
+  .vb-brand-name { font-size: 12px; }
+  .vb-facts { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
   </style>
 
   <!-- PWA -->
@@ -1287,13 +1393,15 @@
         <span class="vb-brand-sep">·</span>
         <span class="vb-brand-sub">Adventurer's Log</span>
       </div>
-      <!-- Tabs (same class tab-btn so existing JS picks them up) -->
-      <button class="tab-btn active" data-tab="personnage">Character</button>
-      <button class="tab-btn" data-tab="inventaire">Inventory</button>
-      <button class="tab-btn" data-tab="notes">Notes</button>
-      <button class="tab-btn" data-tab="parametres">Settings</button>
-      <button class="tab-btn" data-tab="aide">Reference</button>
-      <button class="tab-btn" data-tab="admin" id="tab-admin-btn" style="display:none;color:var(--danger);">👁 Admin</button>
+      <!-- Tabs wrapped in scrollable zone so they never push actions off-screen -->
+      <div class="vb-tabs">
+        <button class="tab-btn active" data-tab="personnage">Character</button>
+        <button class="tab-btn" data-tab="inventaire">Inventory</button>
+        <button class="tab-btn" data-tab="notes">Notes</button>
+        <button class="tab-btn" data-tab="parametres">Settings</button>
+        <button class="tab-btn" data-tab="aide">Reference</button>
+        <button class="tab-btn" data-tab="admin" id="tab-admin-btn" style="display:none;color:var(--danger);">👁 Admin</button>
+      </div>
       <!-- Hidden player info (kept for JS) -->
       <div class="dash-player" style="display:none;">
         <div class="dash-avatar" id="dash-avatar">⚔</div>
