@@ -1427,6 +1427,13 @@
 .dice-btn:hover { background:rgba(201,162,39,0.18); }
 .dice-tray-modifier { display:flex; align-items:center; gap:0.35rem; margin-top:0.15rem; font-size:0.75rem; color:#888; }
 .dice-tray-modifier input { width:48px; background:#0a0703; border:1px solid #3a2810; color:var(--j-text,#e2cfa0); font-size:0.82rem; text-align:center; padding:0.2rem; border-radius:2px; }
+/* ── ADV / DIS roll mode ── */
+.dice-roll-mode { display:flex; gap:3px; margin-top:0.35rem; }
+.drm-btn { flex:1; padding:0.22rem 0.3rem; font-family:'Cinzel',serif; font-size:0.65rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; background:rgba(255,255,255,0.03); border:1px solid #3a2810; color:#555; cursor:pointer; transition:all 0.15s; border-radius:2px; }
+.drm-btn:hover { border-color:var(--gold-dark); color:var(--gold-dark); }
+.drm-btn.adv.active  { background:rgba(106,186,106,0.12); border-color:#6aba6a; color:#6aba6a; }
+.drm-btn.norm.active { background:rgba(230,210,122,0.06); border-color:var(--gold-dark); color:var(--gold); }
+.drm-btn.dis.active  { background:rgba(201,122,122,0.12); border-color:#c97a7a; color:#c97a7a; }
 
 /* ── XP progress ── */
 .vb-xp-bar-wrap { margin-top: 6px; }
@@ -1629,6 +1636,11 @@
       <div class="dice-tray-modifier">
         Bonus : <input type="number" id="dice-tray-mod" value="0" placeholder="0">
       </div>
+      <div class="dice-roll-mode">
+        <button class="drm-btn adv"  id="drm-adv"  title="Avantage — 2d20 garder le plus haut">ADV</button>
+        <button class="drm-btn norm active" id="drm-norm" title="Normal">NORM</button>
+        <button class="drm-btn dis"  id="drm-dis"  title="Désavantage — 2d20 garder le plus bas">DIS</button>
+      </div>
     </div>
 
     <div class="read-mode-banner">Mode Lecture — cliquez 🔒 pour modifier</div>
@@ -1704,6 +1716,7 @@
                 <input type="number" class="field-input field-input-sm" data-f="vitesse" value="30" min="0" step="5">
               </div>
             </div>
+            <div style="text-align:right;font-size:0.68rem;color:#555;margin-top:0.15rem;letter-spacing:0.03em;">PP&nbsp;<span id="vb-hero-pp" style="color:var(--gold-dark);font-family:'Cinzel',serif;font-weight:700;">—</span></div>
             <div class="vb-vitals-sep"></div>
 
             <!-- ② Hit Points -->
@@ -5562,6 +5575,12 @@ function renderPassiveSkills() {
     const val  = 10 + mod(abilScore(p.attr)) + (prof ? bonus : 0);
     return `<div class="passive-row"><span>${p.label}${prof ? ' ✦' : ''}</span><span class="passive-val">${val}</span></div>`;
   }).join('');
+  // Sync PP badge in hero
+  const ppEl = document.getElementById('vb-hero-pp');
+  if (ppEl) {
+    const percProf = !!c.perception;
+    ppEl.textContent = 10 + mod(abilScore('sag')) + (percProf ? bonus : 0);
+  }
 }
 
 /* ── Ressources ── */
@@ -8988,8 +9007,63 @@ document.addEventListener('dblclick', e => {
   document.getElementById('dice-total').textContent = res.detail !== String(res.total) ? res.detail : '';
 });
 
-/* ── 15. Jets de mort — bouton auto-roll ── */
-document.getElementById('death-save-roll-btn')?.addEventListener('click', () => {
+/* ── 15. ADV / DIS roll mode + inspiration auto-advantage ── */
+window._rollMode = 'normal';
+
+(function () {
+  const _orig = window.showDiceRoll;
+  window.showDiceRoll = function (label, bonus, modeOverride) {
+    let mode = modeOverride || window._rollMode || 'normal';
+
+    // Inspiration → gratuitous advantage (consumes it)
+    if (mode === 'normal' && playerData?.inspiration) {
+      playerData.inspiration = false;
+      renderInspiration();
+      triggerSave();
+      mode = 'adv';
+      label = '✦ ' + label;
+    }
+
+    // Reset mode UI
+    window._rollMode = 'normal';
+    document.querySelectorAll('.drm-btn').forEach(b =>
+      b.classList.toggle('active', b.id === 'drm-norm'));
+
+    if (mode === 'adv' || mode === 'dis') {
+      const r1 = Math.floor(Math.random() * 20) + 1;
+      const r2 = Math.floor(Math.random() * 20) + 1;
+      const roll = mode === 'adv' ? Math.max(r1, r2) : Math.min(r1, r2);
+      const bonusNum = parseInt(bonus) || 0;
+      const total = roll + bonusNum;
+      const d20El = document.getElementById('dice-d20');
+      const lblEl = document.getElementById('dice-label');
+      const totEl = document.getElementById('dice-total');
+      const t     = document.getElementById('dice-toast');
+      d20El.textContent = roll;
+      d20El.className = 'dice-toast-d20' + (roll === 20 ? ' nat20' : roll === 1 ? ' nat1' : '');
+      lblEl.textContent = (mode === 'adv' ? '⬆ ' : '⬇ ') + label;
+      totEl.textContent = `(${r1}, ${r2})` + (bonusNum !== 0 ? ` ${bonusNum >= 0 ? '+' : ''}${bonusNum} = ${total}` : '');
+      t.classList.add('visible');
+      clearTimeout(window._diceTimerAdv);
+      window._diceTimerAdv = setTimeout(() => t.classList.remove('visible'), 3200);
+    } else {
+      _orig(label, bonus);
+    }
+  };
+})();
+
+// ADV/DIS/NORM button handlers
+['adv', 'norm', 'dis'].forEach(mode => {
+  document.getElementById('drm-' + mode)?.addEventListener('click', () => {
+    window._rollMode = mode === 'norm' ? 'normal' : mode;
+    document.querySelectorAll('.drm-btn').forEach(b =>
+      b.classList.toggle('active', b.id === 'drm-' + mode));
+  });
+});
+
+/* ── 16. Jets de mort — bouton auto-roll ── */
+document.getElementById('death-save-roll-btn')?.addEventListener('click', e => {
+  e.stopPropagation();
   if (!playerData) return;
   const roll = Math.floor(Math.random() * 20) + 1;
   const c = C();
@@ -9011,9 +9085,33 @@ document.getElementById('death-save-roll-btn')?.addEventListener('click', () => 
   const msg = roll === 20 ? '✦ Critique! +2 succès'
             : roll === 1  ? '✕ Catastrophe! +2 échecs'
             : roll >= 10  ? '✓ Succès' : '✗ Échec';
-  showDiceRoll('Jet de Mort', 0);
+  showDiceRoll('Jet de Mort', 0, 'normal');
   document.getElementById('dice-total').textContent = msg;
 });
+
+/* ── 17. Jet de concentration auto — dégâts sur perso concentré ── */
+(function () {
+  const _orig = applyHpChange;
+  applyHpChange = function (delta) {
+    _orig.apply(this, arguments);
+    if (delta < 0 && playerData) {
+      const c = C();
+      const conditions = c.conditions || [];
+      if (conditions.includes('Concentrating')) {
+        const dmg = Math.abs(delta);
+        const dc = Math.max(10, Math.ceil(dmg / 2));
+        const conMod = mod(abilScore('con'));
+        const profBonus = c.saveCon ? pb(getTotalLevel(c)) : 0;
+        const saveBonus = conMod + profBonus;
+        showDiceRoll(`Conc. Save — DD ${dc}`, saveBonus, 'normal');
+        const roll = parseInt(document.getElementById('dice-d20')?.textContent) || 0;
+        const succeeded = (roll + saveBonus) >= dc;
+        document.getElementById('dice-total').textContent =
+          succeeded ? `✓ Concentration maintenue (DD ${dc})` : `✗ Concentration brisée (DD ${dc})`;
+      }
+    }
+  };
+})();
 </script>
 
 
