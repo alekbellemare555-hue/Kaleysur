@@ -1407,6 +1407,27 @@
 .dice-toast-label { font-size: 0.65rem; color: var(--gold-dark); text-transform: uppercase; }
 .dice-toast-total { font-size: 0.85rem; color: var(--j-text, #e2cfa0); }
 
+/* ── Dice tray ── */
+#dice-tray-btn { font-size:0.8rem; padding:0.3rem 0.65rem; }
+#dice-tray {
+  position: fixed; bottom: 1.2rem; right: 1.2rem; z-index: 9990;
+  background: #0e0a04; border: 1px solid var(--gold-dark);
+  padding: 0.6rem 0.75rem; display: none; flex-direction: column; gap: 0.4rem;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.7); border-radius: 2px; min-width: 210px;
+}
+#dice-tray.open { display: flex; }
+.dice-tray-title { font-family:'Cinzel',serif; font-size:0.65rem; color:var(--gold-dark); letter-spacing:.1em; text-transform:uppercase; margin-bottom:0.15rem; }
+.dice-tray-row { display:flex; gap:0.35rem; flex-wrap:wrap; }
+.dice-btn {
+  flex:1; min-width:36px; padding:0.4rem 0.2rem; font-family:'Cinzel',serif;
+  font-size:0.75rem; letter-spacing:.04em; cursor:pointer;
+  background:rgba(201,162,39,0.06); border:1px solid var(--gold-dark); color:var(--gold);
+  transition:background .15s; border-radius:2px; text-align:center;
+}
+.dice-btn:hover { background:rgba(201,162,39,0.18); }
+.dice-tray-modifier { display:flex; align-items:center; gap:0.35rem; margin-top:0.15rem; font-size:0.75rem; color:#888; }
+.dice-tray-modifier input { width:48px; background:#0a0703; border:1px solid #3a2810; color:var(--j-text,#e2cfa0); font-size:0.82rem; text-align:center; padding:0.2rem; border-radius:2px; }
+
 /* ── XP progress ── */
 .vb-xp-bar-wrap { margin-top: 6px; }
 .vb-xp-bar-track { height: 3px; background: rgba(74,53,16,0.5); position: relative; overflow: hidden; }
@@ -1588,7 +1609,25 @@
         <button class="inspiration-btn" id="btn-inspiration" title="Inspiration (avantage sur un jet)">✦</button>
         <button class="btn btn-sm" id="btn-layout-edit" title="Réorganiser les sections">⠿</button>
         <button class="btn btn-sm" id="btn-read-mode" title="Mode Lecture — verrouille la fiche">🔒</button>
+        <button class="btn btn-sm" id="dice-tray-btn" title="Lanceur de dés">⚄</button>
         <button class="btn btn-sm btn-danger" id="btn-logout">Déconnexion</button>
+      </div>
+    </div>
+
+    <!-- Dice tray panel -->
+    <div id="dice-tray">
+      <div class="dice-tray-title">Lanceur de dés</div>
+      <div class="dice-tray-row">
+        <button class="dice-btn" data-sides="4">d4</button>
+        <button class="dice-btn" data-sides="6">d6</button>
+        <button class="dice-btn" data-sides="8">d8</button>
+        <button class="dice-btn" data-sides="10">d10</button>
+        <button class="dice-btn" data-sides="12">d12</button>
+        <button class="dice-btn" data-sides="20">d20</button>
+        <button class="dice-btn" data-sides="100">d%</button>
+      </div>
+      <div class="dice-tray-modifier">
+        Bonus : <input type="number" id="dice-tray-mod" value="0" placeholder="0">
       </div>
     </div>
 
@@ -1801,6 +1840,8 @@
             <input type="checkbox" id="jat-check">
             Jack of All Trades
           </label>
+          <input type="search" id="skill-filter" placeholder="Filtrer…" autocomplete="off"
+            style="width:100%;background:rgba(10,7,3,0.7);border:1px solid #3a2810;color:#e2cfa0;font-size:0.75rem;padding:0.25rem 0.5rem;margin:0.3rem 0 0.4rem;box-sizing:border-box;border-radius:2px;outline:none;">
             <div id="skills-col"></div>
           </div>
         </div>
@@ -4896,6 +4937,10 @@ function renderHero() {
     const bonus  = parseInt(c.initiative) || 0;
     const total  = dexMod + bonus;
     initEl.textContent = (total >= 0 ? '+' : '') + total;
+    initEl.className = 'vb-mini-stat-val roll-trigger';
+    initEl.dataset.rollLabel = 'Initiative';
+    initEl.dataset.rollBonus = total;
+    initEl.title = 'Lancer Initiative (d20 ' + (total >= 0 ? '+' : '') + total + ')';
   }
 
   // Hit Dice
@@ -5053,12 +5098,14 @@ function renderSkills() {
   const c = C(); const bonus = pb(getTotalLevel(c));
   const jat = !!c.jackOfAllTrades;
   const halfBonus = Math.floor(bonus / 2);
+  const filterQ = (document.getElementById('skill-filter')?.value || '').toLowerCase().trim();
   // Sync JAT checkbox
   const jatCheck = document.getElementById('jat-check');
   const jatLabel = document.getElementById('jat-label');
   if (jatCheck) { jatCheck.checked = jat; }
   if (jatLabel) jatLabel.classList.toggle('active', jat);
   [...SKILLS].sort((a,b) => a.label.localeCompare(b.label)).forEach(sk => {
+    if (filterQ && !sk.label.toLowerCase().includes(filterQ) && !sk.attr.includes(filterQ)) return;
     const profLevel = Math.min(2, Math.max(0, parseInt(c[sk.key]) || (c[sk.key] === true ? 1 : 0)));
     const jatBonus = (jat && profLevel === 0) ? halfBonus : 0;
     const val = mod(abilScore(sk.attr)) + (profLevel >= 1 ? bonus : 0) + (profLevel >= 2 ? bonus : 0) + jatBonus;
@@ -5197,7 +5244,7 @@ function renderAttacks() {
       <td><input class="atk-inp" data-atk="${i}" data-ak="typeDegat" value="${esc(atk.typeDegat||'')}" placeholder="tranchant" style="font-size:0.75rem;"></td>
       <td><select class="atk-inp" data-atk="${i}" data-ak="atkType" style="padding:0.18rem 0.2rem;font-size:0.74rem;">${statSelOpts}</select></td>
       <td style="text-align:center;"><input type="checkbox" data-atk="${i}" data-ak="prof" ${atk.prof ? 'checked' : ''} style="accent-color:var(--gold-dark);width:14px;height:14px;cursor:pointer;" title="Proficiency"></td>
-      <td class="atk-bonus-cell">${atkBonus}</td>
+      <td class="atk-bonus-cell roll-trigger" data-roll-label="${esc(atk.name||'Attaque')}" data-roll-bonus="${parseInt(atkBonus)||0}" title="Lancer d20 + ${atkBonus}">${atkBonus}</td>
       <td><button class="atk-del" data-del="${i}" title="Supprimer">✕</button></td>
     `;
     tbody.appendChild(tr);
@@ -5532,6 +5579,21 @@ function renderResources() {
 }
 
 /* ── Conditions ── */
+const CONDITION_DESC = {
+  Blinded:       'Ne peut pas voir. Échoue les jets nécessitant la vue. Attaques contre lui avec avantage, ses attaques avec désavantage.',
+  Charmed:       'Ne peut pas attaquer la source du charme. La source a avantage sur les jets de Charisme avec lui.',
+  Deafened:      'Ne peut pas entendre. Échoue automatiquement les jets nécessitant l\'ouïe.',
+  Frightened:    'Désavantage aux jets d\'attaque et de caractéristique quand la source est en vue. Ne peut pas s\'approcher.',
+  Grappled:      'Vitesse réduite à 0. Se termine si la créature qui agrippe est neutralisée ou s\'éloigne.',
+  Incapacitated: 'Ne peut pas entreprendre d\'actions ni de réactions.',
+  Invisible:     'Impossible à voir sans magie. Considéré fortement obscurci. Attaques avec avantage, attaqué avec désavantage.',
+  Poisoned:      'Désavantage aux jets d\'attaque et aux jets de caractéristique.',
+  Prone:         'Seul mouvement possible : se relever (coûte la moitié de la vitesse). Attaques avec désavantage ; attaqué avec avantage à ≤1,5m, désavantage au-delà.',
+  Restrained:    'Vitesse 0. Désavantage aux jets d\'attaque et aux jets de DEX. Attaqué avec avantage.',
+  Stunned:       'Neutralisé, ne peut pas bouger, parle seulement lentement. Échoue jets FOR et DEX. Attaqué avec avantage.',
+  Unconscious:   'Neutralisé, ne peut pas bouger ni parler. Inconscient des alentours. Tombe à terre. Échoue jets FOR et DEX. Attaqué avec avantage. Les coups à ≤1,5m sont des coups critiques.',
+  Concentrating: 'Maintient un sort de concentration. Tout dégât exige un jet de constitution (DD 10 ou ½ dégâts).',
+};
 function renderConditions() {
   const grid = document.getElementById('conditions-grid');
   if (!grid) return;
@@ -5539,7 +5601,8 @@ function renderConditions() {
   grid.innerHTML = ALL_CONDITIONS.map(cond => {
     const isActive = active.includes(cond);
     const isConc = cond === 'Concentrating';
-    return `<div class="cond-badge${isActive ? ' active' : ''}${isConc && isActive ? ' conc' : ''}" data-cond="${cond}" role="button" tabindex="0" aria-pressed="${isActive}">${cond}</div>`;
+    const desc = CONDITION_DESC[cond] || '';
+    return `<div class="cond-badge${isActive ? ' active' : ''}${isConc && isActive ? ' conc' : ''}" data-cond="${cond}" role="button" tabindex="0" aria-pressed="${isActive}" title="${desc}">${cond}</div>`;
   }).join('');
   // Exhaustion pips
   renderExhaustion();
@@ -8823,7 +8886,34 @@ document.getElementById('btn-read-mode')?.addEventListener('click', () => {
   });
 })();
 
-/* ── 11. Scroll haut au changement d'onglet (sauf identité qui a son propre scroll) ── */
+/* ── 11. Dice tray ── */
+document.getElementById('dice-tray-btn')?.addEventListener('click', e => {
+  e.stopPropagation();
+  document.getElementById('dice-tray').classList.toggle('open');
+});
+document.addEventListener('click', e => {
+  const tray = document.getElementById('dice-tray');
+  if (tray && !tray.contains(e.target) && e.target.id !== 'dice-tray-btn') {
+    tray.classList.remove('open');
+  }
+});
+document.getElementById('dice-tray')?.addEventListener('click', e => {
+  const btn = e.target.closest('.dice-btn');
+  if (!btn) return;
+  const sides = parseInt(btn.dataset.sides);
+  const mod = parseInt(document.getElementById('dice-tray-mod')?.value) || 0;
+  const roll = Math.floor(Math.random() * sides) + 1;
+  showDiceRoll('d' + sides, mod);
+  // Override d20 display with actual die value
+  document.getElementById('dice-d20').textContent = roll;
+  document.getElementById('dice-d20').className = 'dice-toast-d20' + (sides === 20 && roll === 20 ? ' nat20' : sides === 20 && roll === 1 ? ' nat1' : '');
+  document.getElementById('dice-total').textContent = mod !== 0 ? `${roll} ${mod >= 0 ? '+' : ''}${mod} = ${roll + mod}` : '';
+});
+
+/* ── 12. Skill search filter ── */
+document.getElementById('skill-filter')?.addEventListener('input', () => { if (playerData) renderSkills(); });
+
+/* ── 13. Scroll haut au changement d'onglet (sauf identité qui a son propre scroll) ── */
 (function () {
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -8832,6 +8922,7 @@ document.getElementById('btn-read-mode')?.addEventListener('click', () => {
       }
     });
   });
+  // Also handle the dice-tray button — showDiceRoll was referenced above, ensure global
 })();
 </script>
 

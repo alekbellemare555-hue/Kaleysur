@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kaleysur-v44';
+const CACHE_NAME = 'kaleysur-v45';
 
 const ASSETS = [
   'index.html',
