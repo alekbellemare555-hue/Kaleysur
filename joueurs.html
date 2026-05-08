@@ -767,6 +767,329 @@
         linear-gradient(var(--gold-dark), var(--gold-dark)) right 5px bottom 5px / 1px 11px no-repeat,
         var(--j-panel, #221a0e);
     }
+
+    /* ════════════════════════════════════════════════
+       VARIATION B — CARNET D'AVENTURIER
+       New dark palette + hero layout on top of all existing functionality
+    ════════════════════════════════════════════════ */
+
+    /* VB: Global background upgrade */
+    body { background: #0e0a04; }
+    .main-content { background: #0e0a04; }
+
+    /* VB: Sticky top bar (replaces dash-header + tabs) */
+    .dash-header.vb-topbar {
+      position: sticky;
+      top: var(--nav-h, 60px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+      height: 52px;
+      background: #0a0703;
+      border-bottom: 1px solid var(--j-border-col, #4a3510);
+      margin-bottom: 0;
+      gap: 0;
+    }
+    .vb-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      margin-right: 24px;
+    }
+    .vb-brand-sigil { color: var(--gold-dark); font-size: 14px; }
+    .vb-brand-name { font-family: 'Cinzel', serif; color: var(--gold); font-size: 14px; letter-spacing: .05em; }
+    .vb-brand-sep { color: #3a2810; margin: 0 4px; }
+    .vb-brand-sub { font-family: 'Cinzel', serif; font-size: 8px; color: var(--gold-dark); letter-spacing: .12em; text-transform: uppercase; }
+    .vb-topbar .dash-player { display: none; }
+    .vb-topbar .dash-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+    .vb-topbar .tab-btn {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: #888;
+      padding: 0 14px;
+      height: 52px;
+      font-family: 'Cinzel', serif;
+      font-size: 9.5px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color .15s, border-color .15s;
+      margin-bottom: -1px;
+      white-space: nowrap;
+    }
+    .vb-topbar .tab-btn:hover { color: var(--gold); }
+    .vb-topbar .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+    /* VB: Party ribbon (replaces char-cards) */
+    .char-cards.vb-party-ribbon {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      padding: 0 32px;
+      margin-bottom: 0;
+      padding-bottom: 0;
+      background: #0a0703;
+      border-bottom: 1px solid var(--j-border-col, #4a3510);
+      min-height: 54px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .char-cards.vb-party-ribbon::-webkit-scrollbar { display: none; }
+    .char-cards.vb-party-ribbon .char-card {
+      width: auto;
+      flex-shrink: 0;
+      text-align: left;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 18px;
+      border-radius: 0;
+      border: none;
+      border-bottom: 2px solid transparent;
+      border-right: 1px solid rgba(74,53,16,0.5);
+      background: transparent;
+      box-shadow: none;
+      position: relative;
+    }
+    .char-cards.vb-party-ribbon .char-card:hover {
+      background: rgba(201,162,39,0.04);
+      border-color: transparent;
+      border-bottom-color: transparent;
+      border-right-color: rgba(74,53,16,0.5);
+    }
+    .char-cards.vb-party-ribbon .char-card.active {
+      border-bottom-color: var(--gold);
+      background: linear-gradient(180deg, transparent, rgba(201,162,39,0.06));
+      box-shadow: none;
+    }
+    .char-cards.vb-party-ribbon .char-card-avatar {
+      font-size: 1.5rem;
+      margin-bottom: 0;
+      flex-shrink: 0;
+    }
+    .char-cards.vb-party-ribbon .char-card-avatar img {
+      width: 28px; height: 28px; border-radius: 50%;
+    }
+    .char-cards.vb-party-ribbon .char-card-name {
+      font-size: 12px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      max-width: 110px;
+      white-space: nowrap;
+    }
+    .char-cards.vb-party-ribbon .char-card-sub {
+      font-size: 9px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px;
+    }
+    .char-cards.vb-party-ribbon .char-card-species { display: none; }
+    .char-cards.vb-party-ribbon .char-card-hp-wrap { display: none; }
+    .char-cards.vb-party-ribbon .char-card-del {
+      position: static;
+      margin-left: 4px;
+      font-size: 0.6rem;
+    }
+    .char-cards.vb-party-ribbon .char-card-add {
+      flex-direction: row;
+      min-height: auto;
+      min-width: auto;
+      border-style: dashed;
+      border-radius: 99px;
+      padding: 4px 14px;
+      gap: 4px;
+      align-self: center;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+    .char-cards.vb-party-ribbon .char-card-add-icon { font-size: 0.85rem; }
+    .char-cards.vb-party-ribbon .char-card-add-label { font-size: 9.5px; margin: 0; }
+
+    /* Hide old tabs div */
+    .tabs.vb-hidden { display: none !important; }
+
+    /* VB: Hero section */
+    #vb-hero {
+      display: grid;
+      grid-template-columns: 220px 1fr 280px;
+      gap: 24px;
+      padding: 28px 32px 20px;
+      background: #0e0a04;
+    }
+    #vb-hero-portrait { display: flex; flex-direction: column; gap: 12px; }
+    .vb-portrait-frame {
+      aspect-ratio: 3/4;
+      background: linear-gradient(135deg, #1f1709 0%, #0d0905 100%);
+      border: 1px solid var(--gold-dark);
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .vb-portrait-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .vb-portrait-placeholder { font-size: 3rem; opacity: 0.25; color: var(--gold); user-select: none; }
+    .vb-corner { position: absolute; color: var(--gold-dark); opacity: 0.55; font-size: 10px; line-height: 1; pointer-events: none; }
+    .vb-corner.tl { top: 5px; left: 7px; }
+    .vb-corner.tr { top: 5px; right: 7px; }
+    .vb-corner.bl { bottom: 5px; left: 7px; }
+    .vb-corner.br { bottom: 5px; right: 7px; }
+    .vb-mini-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px;
+      background: var(--j-border-col, #4a3510);
+      border: 1px solid var(--j-border-col, #4a3510);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .vb-mini-stat { background: #0e0a04; padding: 10px 4px; text-align: center; }
+    .vb-mini-stat-label {
+      font-family: 'Cinzel', serif;
+      font-size: 8px; color: #555;
+      letter-spacing: .08em; text-transform: uppercase; margin-bottom: 3px;
+    }
+    .vb-mini-stat-val {
+      font-family: 'Cinzel', serif; color: var(--gold); font-size: 18px; line-height: 1;
+    }
+    .vb-folio {
+      font-family: 'Cinzel', serif; font-size: 9px; color: var(--gold-dark);
+      letter-spacing: .12em; text-transform: uppercase; margin-bottom: 6px;
+    }
+    .vb-char-name {
+      font-family: 'Cinzel', serif;
+      font-size: 42px;
+      color: var(--gold);
+      line-height: 1.05;
+      letter-spacing: .02em;
+      margin-bottom: 6px;
+      text-shadow: 0 0 30px rgba(201,162,39,0.18);
+      word-break: break-word;
+    }
+    .vb-class-line {
+      font-family: 'Lora', serif;
+      font-style: italic;
+      color: var(--j-text, #b8a880);
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+    .vb-facts {
+      display: flex;
+      gap: 0;
+      padding: 12px 0;
+      border-top: 1px solid var(--j-border-col, #4a3510);
+      border-bottom: 1px solid var(--j-border-col, #4a3510);
+      margin-bottom: 18px;
+    }
+    .vb-fact { flex: 1; padding-left: 12px; border-left: 1px solid var(--j-border-col, #4a3510); }
+    .vb-fact:first-child { padding-left: 0; border-left: none; }
+    .vb-fact-label {
+      font-family: 'Cinzel', serif; font-size: 8px; color: #555;
+      letter-spacing: .08em; text-transform: uppercase; margin-bottom: 3px;
+    }
+    .vb-fact-val { font-family: 'Cinzel', serif; font-size: 11px; color: var(--j-text, #e2cfa0); }
+    .vb-abilities { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+    .vb-ability {
+      border: 1px solid var(--j-border-col, #4a3510);
+      border-radius: 3px;
+      text-align: center;
+      padding: 10px 3px 8px;
+      background: transparent;
+      transition: border-color .2s;
+    }
+    .vb-ability:hover { border-color: var(--gold-dark); }
+    .vb-ability-key {
+      font-family: 'Cinzel', serif; font-size: 8px; color: var(--gold-dark);
+      letter-spacing: .08em; text-transform: uppercase; margin-bottom: 3px;
+    }
+    .vb-ability-mod {
+      font-family: 'Cinzel', serif; color: var(--gold); font-size: 22px;
+      font-weight: 600; line-height: 1;
+    }
+    .vb-ability-score {
+      font-size: 9px; color: #555; margin-top: 3px;
+      padding-top: 3px; border-top: 1px dashed rgba(74,53,16,0.5);
+    }
+    #vb-hero-vitals { display: flex; flex-direction: column; gap: 12px; }
+    .vb-vitals-box {
+      background: linear-gradient(180deg, #1a1308, #0e0a04);
+      border: 1px solid var(--gold-dark);
+      border-radius: 4px;
+      padding: 16px 16px 14px;
+    }
+    .vb-section-label {
+      font-family: 'Cinzel', serif; font-size: 9px; color: var(--gold-dark);
+      letter-spacing: .08em; text-transform: uppercase; margin-bottom: 8px;
+    }
+    .vb-hp-display { display: flex; align-items: baseline; gap: 6px; margin-bottom: 6px; }
+    .vb-hp-current {
+      font-family: 'Cinzel', serif; font-size: 40px; color: #e8c84a;
+      line-height: 1; text-shadow: 0 0 20px rgba(201,162,39,0.35);
+    }
+    .vb-hp-max { color: #555; font-size: 13px; }
+    .vb-hp-label { font-family: 'Cinzel', serif; font-size: 8px; color: #555; margin-left: auto; }
+    .vb-hp-bar-track {
+      height: 8px; background: #0a0703;
+      border: 1px solid var(--j-border-col, #4a3510);
+      border-radius: 4px; overflow: hidden;
+    }
+    .vb-hp-bar-fill { height: 100%; transition: width .4s ease, background .4s ease; }
+    .vb-mini-btns { display: flex; gap: 6px; margin-top: 10px; }
+    .vb-btn-dmg {
+      flex: 1; background: rgba(201,122,122,0.1); border: 1px solid rgba(201,122,122,0.3);
+      color: var(--danger); padding: 6px 4px; font-size: 10px; border-radius: 3px;
+      font-family: 'Cinzel', serif; cursor: pointer; letter-spacing: .02em;
+      transition: background .15s;
+    }
+    .vb-btn-heal {
+      flex: 1; background: rgba(106,186,106,0.1); border: 1px solid rgba(106,186,106,0.3);
+      color: var(--success); padding: 6px 4px; font-size: 10px; border-radius: 3px;
+      font-family: 'Cinzel', serif; cursor: pointer; letter-spacing: .02em;
+      transition: background .15s;
+    }
+    .vb-btn-dmg:hover { background: rgba(201,122,122,0.2); }
+    .vb-btn-heal:hover { background: rgba(106,186,106,0.2); }
+    .vb-hd-death {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+      margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--j-border-col, #4a3510);
+    }
+    .vb-hd-val { font-family: 'Cinzel', serif; color: var(--gold); font-size: 13px; margin-top: 3px; }
+    .vb-death-pips { display: flex; gap: 3px; flex-wrap: wrap; margin-top: 4px; }
+    .vb-death-pip { width: 9px; height: 9px; border-radius: 50%; border: 2px solid #3a2810; background: transparent; display: inline-block; }
+    .vb-death-pip.success-on { background: var(--success); border-color: var(--success); }
+    .vb-death-pip.fail-on { background: var(--danger); border-color: var(--danger); }
+    .vb-rest-btns { display: flex; gap: 6px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--j-border-col, #4a3510); }
+    .vb-rest-btn-short {
+      flex: 1; background: transparent; border: 1px solid #3a6060; color: #7ababa;
+      padding: 5px 4px; font-size: 9px; border-radius: 3px;
+      font-family: 'Cinzel', serif; letter-spacing: .05em; cursor: pointer;
+      transition: background .15s;
+    }
+    .vb-rest-btn-long {
+      flex: 1; background: transparent; border: 1px solid #3a4a6a; color: #8ab0e0;
+      padding: 5px 4px; font-size: 9px; border-radius: 3px;
+      font-family: 'Cinzel', serif; letter-spacing: .05em; cursor: pointer;
+      transition: background .15s;
+    }
+    .vb-rest-btn-short:hover { background: rgba(58,96,96,0.2); }
+    .vb-rest-btn-long:hover { background: rgba(58,74,106,0.2); }
+    .vb-cond-box {
+      background: var(--j-panel, #1a1308);
+      border: 1px solid var(--j-border-col, #4a3510);
+      border-radius: 4px;
+      padding: 10px 12px;
+    }
+    #vb-hero-divider { border: none; border-top: 1px solid var(--j-border-col, #4a3510); margin: 0 32px 20px; }
+
+    /* VB: Wider layout */
+    #screen-dashboard .main-content { max-width: none !important; }
+    @media (max-width: 900px) {
+      #vb-hero { grid-template-columns: 1fr; }
+      .vb-char-name { font-size: 28px; }
+    }
   </style>
 
   <!-- PWA -->
@@ -791,7 +1114,7 @@
 <!-- ▸ Contenu principal -->
 <div id="char-bg-layer"></div>
 <div class="page-wrapper">
-<main class="main-content" style="max-width:900px;">
+<main class="main-content" style="max-width:1280px;">
 
   <!-- ══ ÉCRAN AUTH ══ -->
   <div class="j-screen active" id="screen-auth">
@@ -848,39 +1171,137 @@
   <!-- ══ DASHBOARD ══ -->
   <div class="j-screen" id="screen-dashboard">
 
-    <!-- En-tête -->
-    <div class="dash-header">
-      <div class="dash-player">
+    <!-- ══ VB: Sticky top bar (brand + tabs + actions) ══ -->
+    <div class="dash-header vb-topbar">
+      <!-- Brand -->
+      <div class="vb-brand">
+        <span class="vb-brand-sigil">✦</span>
+        <span class="vb-brand-name">Kaleysur</span>
+        <span class="vb-brand-sep">·</span>
+        <span class="vb-brand-sub">Adventurer's Log</span>
+      </div>
+      <!-- Tabs (same class tab-btn so existing JS picks them up) -->
+      <button class="tab-btn active" data-tab="personnage">Character</button>
+      <button class="tab-btn" data-tab="inventaire">Inventory</button>
+      <button class="tab-btn" data-tab="notes">Notes</button>
+      <button class="tab-btn" data-tab="parametres">Settings</button>
+      <button class="tab-btn" data-tab="aide">Reference</button>
+      <button class="tab-btn" data-tab="admin" id="tab-admin-btn" style="display:none;color:var(--danger);">👁 Admin</button>
+      <!-- Hidden player info (kept for JS) -->
+      <div class="dash-player" style="display:none;">
         <div class="dash-avatar" id="dash-avatar">⚔</div>
         <div>
           <div class="dash-name" id="dash-name">—</div>
           <div class="dash-char-info" id="dash-info">Aucun personnage</div>
         </div>
       </div>
+      <!-- Actions -->
       <div class="dash-actions">
         <span class="conn-indicator" id="conn-indicator" title="État de la connexion au cloud">…</span>
         <span class="save-badge" id="save-badge"></span>
         <button class="inspiration-btn" id="btn-inspiration" title="Inspiration (avantage sur un jet)">✦</button>
-        <button class="btn btn-sm" id="btn-layout-edit" title="Réorganiser les sections">⠿ Organiser</button>
+        <button class="btn btn-sm" id="btn-layout-edit" title="Réorganiser les sections">⠿</button>
         <button class="btn btn-sm btn-danger" id="btn-logout">Déconnexion</button>
       </div>
     </div>
 
-    <!-- ══ Cartes de personnages ══ -->
-    <div class="char-cards" id="char-cards"></div>
+    <!-- ══ VB: Party ribbon (char-cards as horizontal strip) ══ -->
+    <div class="char-cards vb-party-ribbon" id="char-cards"></div>
 
-    <!-- Onglets -->
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="personnage">⚔ Personnage</button>
-      <button class="tab-btn" data-tab="inventaire">🎒 Inventaire</button>
-      <button class="tab-btn" data-tab="notes">📜 Notes</button>
-      <button class="tab-btn" data-tab="parametres">⚙ Paramètres</button>
-      <button class="tab-btn" data-tab="aide">📋 Aide</button>
-      <button class="tab-btn" data-tab="admin" id="tab-admin-btn" style="display:none;color:var(--danger);">👁 Admin</button>
-    </div>
+    <!-- Old tabs div hidden (all functionality now in vb-topbar) -->
+    <div class="tabs vb-hidden" aria-hidden="true"></div>
 
     <!-- ── Onglet Personnage ── -->
     <div class="tab-panel active" id="tab-personnage">
+
+      <!-- ══ VB HERO SECTION ══ -->
+      <div id="vb-hero">
+
+        <!-- Portrait column -->
+        <div id="vb-hero-portrait">
+          <div class="vb-portrait-frame" id="vb-portrait-frame" title="Change portrait">
+            <div class="vb-portrait-placeholder" id="vb-portrait-placeholder">⚔</div>
+            <img id="vb-portrait-img" src="" alt="Portrait" style="display:none;width:100%;height:100%;object-fit:cover;">
+            <span class="vb-corner tl">✦</span>
+            <span class="vb-corner tr">✦</span>
+            <span class="vb-corner bl">✦</span>
+            <span class="vb-corner br">✦</span>
+          </div>
+          <div class="vb-mini-stats">
+            <div class="vb-mini-stat">
+              <div class="vb-mini-stat-label">AC</div>
+              <div class="vb-mini-stat-val" id="vb-hero-ca">—</div>
+            </div>
+            <div class="vb-mini-stat">
+              <div class="vb-mini-stat-label">INIT</div>
+              <div class="vb-mini-stat-val" id="vb-hero-init">—</div>
+            </div>
+            <div class="vb-mini-stat">
+              <div class="vb-mini-stat-label">SPD</div>
+              <div class="vb-mini-stat-val" id="vb-hero-speed">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lead column: name, class, facts, abilities -->
+        <div id="vb-hero-lead">
+          <div class="vb-folio">Adventurer's Log · Kaleysur</div>
+          <div class="vb-char-name" id="vb-hero-name">—</div>
+          <div class="vb-class-line" id="vb-hero-class">—</div>
+          <div class="vb-facts" id="vb-hero-facts"><!-- filled by renderHero() --></div>
+          <div class="vb-abilities" id="vb-hero-abilities"><!-- filled by renderHero() --></div>
+        </div>
+
+        <!-- Vitals column -->
+        <div id="vb-hero-vitals">
+          <div class="vb-vitals-box">
+            <div class="vb-section-label">Hit Points</div>
+            <div class="vb-hp-display">
+              <span class="vb-hp-current" id="vb-hero-hp-cur">0</span>
+              <span class="vb-hp-max" id="vb-hero-hp-max">/ 0</span>
+              <span class="vb-hp-label">HP</span>
+            </div>
+            <div class="vb-hp-bar-track">
+              <div class="vb-hp-bar-fill" id="vb-hero-hp-bar" style="width:0%;background:#6aba6a;"></div>
+            </div>
+            <div class="vb-mini-btns">
+              <button class="vb-btn-dmg" onclick="document.getElementById('btn-apply-dmg').click()">⚔ Damage</button>
+              <button class="vb-btn-heal" onclick="document.getElementById('btn-apply-heal').click()">✚ Heal</button>
+            </div>
+            <div class="vb-hd-death">
+              <div class="vb-hd">
+                <div class="vb-section-label">Hit Dice</div>
+                <div class="vb-hd-val" id="vb-hero-hd">—</div>
+              </div>
+              <div>
+                <div class="vb-section-label">Death Saves</div>
+                <div class="vb-death-pips" id="vb-hero-death-pips">
+                  <span class="vb-death-pip"></span>
+                  <span class="vb-death-pip"></span>
+                  <span class="vb-death-pip"></span>
+                  <span style="display:inline-block;width:6px;"></span>
+                  <span class="vb-death-pip"></span>
+                  <span class="vb-death-pip"></span>
+                  <span class="vb-death-pip"></span>
+                </div>
+              </div>
+            </div>
+            <div class="vb-rest-btns">
+              <button class="vb-rest-btn-short" onclick="document.getElementById('btn-short-rest').click()">☽ Short Rest</button>
+              <button class="vb-rest-btn-long" onclick="document.getElementById('btn-long-rest').click()">★ Long Rest</button>
+            </div>
+          </div>
+          <div class="vb-cond-box">
+            <div class="vb-section-label">Active Conditions</div>
+            <div class="cond-grid" id="vb-hero-conditions">
+              <span style="font-size:0.75rem;color:#555;font-style:italic;">No conditions</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /#vb-hero -->
+      <hr id="vb-hero-divider">
+
       <div id="layout-toolbar" class="layout-toolbar">
         <span>✦ Glisse les titres pour réorganiser · ↔ pour changer de colonne/zone</span>
         <button class="btn btn-sm" id="btn-reset-layout" style="margin-left:auto;">↺ Défaut</button>
@@ -4009,6 +4430,143 @@ function renderAll() {
   renderHpLog();
   applyCharTheme();
   applyCharBg(C());
+  renderHero();
+}
+
+/* ════════════════════════════════════════════════
+   VB HERO — bridge from old data model to new hero UI
+   ════════════════════════════════════════════════ */
+function renderHero() {
+  const c = C();
+  if (!c) return;
+
+  // Portrait
+  const img = document.getElementById('vb-portrait-img');
+  const ph  = document.getElementById('vb-portrait-placeholder');
+  if (img && ph) {
+    if (c.avatarPng) {
+      img.src = c.avatarPng; img.style.display = ''; ph.style.display = 'none';
+    } else {
+      img.style.display = 'none'; ph.style.display = '';
+      ph.textContent = c.avatar || '⚔';
+    }
+  }
+
+  // Name
+  const nameEl = document.getElementById('vb-hero-name');
+  if (nameEl) nameEl.textContent = c.characterName || '—';
+
+  // Class line
+  const classEl = document.getElementById('vb-hero-class');
+  if (classEl) {
+    const classes = getClasses(c).filter(cl => cl.classe);
+    const classStr = classes.map(cl => cl.classe + ' ' + cl.niveau).join(' / ') || '—';
+    classEl.textContent = classStr + (c.species ? '  ·  ' + c.species : '');
+  }
+
+  // Facts row
+  const factsEl = document.getElementById('vb-hero-facts');
+  if (factsEl) {
+    const lv = getTotalLevel(c);
+    const facts = [
+      ['Species',     c.species     || '—'],
+      ['Background',  c.background  || '—'],
+      ['Alignment',   c.alignement  || '—'],
+      ['Level',       lv            || '—'],
+      ['XP',          (parseInt(c.xp) || 0).toLocaleString()],
+      ['Proficiency', '+' + pb(lv || 1)]
+    ];
+    factsEl.innerHTML = facts.map(([k, v]) =>
+      `<div class="vb-fact"><div class="vb-fact-label">${k}</div><div class="vb-fact-val">${v}</div></div>`
+    ).join('');
+  }
+
+  // Abilities row
+  const abEl = document.getElementById('vb-hero-abilities');
+  if (abEl) {
+    abEl.innerHTML = ABILITIES.map(ab => {
+      const score = abilScore(ab.key);
+      const mod   = Math.floor((score - 10) / 2);
+      const sign  = mod >= 0 ? '+' + mod : '' + mod;
+      return `<div class="vb-ability">
+        <div class="vb-ability-key">${ab.label}</div>
+        <div class="vb-ability-mod">${sign}</div>
+        <div class="vb-ability-score">${score}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // HP
+  const pvMax = parseInt(c.pvMax)    || 0;
+  const pvCur = parseInt(c.pvActuel) || 0;
+  const pct   = pvMax > 0 ? Math.min(100, Math.round(pvCur / pvMax * 100)) : 0;
+  const hpCurEl = document.getElementById('vb-hero-hp-cur');
+  const hpMaxEl = document.getElementById('vb-hero-hp-max');
+  const hpBarEl = document.getElementById('vb-hero-hp-bar');
+  if (hpCurEl) hpCurEl.textContent = pvCur;
+  if (hpMaxEl) hpMaxEl.textContent = '/ ' + pvMax;
+  if (hpBarEl) {
+    hpBarEl.style.width = pct + '%';
+    hpBarEl.style.background = pct > 50 ? '#6aba6a' : pct > 25 ? '#e6d27a' : '#c97a7a';
+  }
+
+  // Mini stats (AC, Initiative, Speed)
+  const caEl   = document.getElementById('vb-hero-ca');
+  const initEl = document.getElementById('vb-hero-init');
+  const spdEl  = document.getElementById('vb-hero-speed');
+  if (caEl)   caEl.textContent  = c.ca    || '10';
+  if (spdEl)  spdEl.textContent = c.vitesse || '30';
+  if (initEl) {
+    const dexMod = Math.floor((abilScore('dex') - 10) / 2);
+    const bonus  = parseInt(c.initiative) || 0;
+    const total  = dexMod + bonus;
+    initEl.textContent = (total >= 0 ? '+' : '') + total;
+  }
+
+  // Hit Dice
+  const hdEl = document.getElementById('vb-hero-hd');
+  if (hdEl) {
+    const ndv = parseInt(c.nbDeVie) || 1;
+    const dv  = c.deVie || '1d8';
+    hdEl.innerHTML = `<span style="font-size:15px;">${ndv}</span><span style="color:#555;font-size:11px;">/${ndv} ${dv}</span>`;
+  }
+
+  // Death save pips
+  const pipsEl = document.getElementById('vb-hero-death-pips');
+  if (pipsEl) {
+    const succ = parseInt(c.mortSucces)  || 0;
+    const fail = parseInt(c.mortEchecs) || 0;
+    const pip = (cls) => `<span class="vb-death-pip ${cls}"></span>`;
+    pipsEl.innerHTML =
+      [0,1,2].map(i => pip(i < succ ? 'success-on' : '')).join('') +
+      '<span style="display:inline-block;width:6px;"></span>' +
+      [0,1,2].map(i => pip(i < fail ? 'fail-on' : '')).join('');
+  }
+
+  // Conditions
+  const condEl = document.getElementById('vb-hero-conditions');
+  if (condEl) {
+    const active = c.conditions || [];
+    condEl.innerHTML = active.length
+      ? active.map(cond => `<span class="cond-badge active" style="font-size:0.65rem;">${cond}</span>`).join('')
+      : '<span style="font-size:0.75rem;color:#555;font-style:italic;">No conditions</span>';
+  }
+
+  // Portrait frame click → open avatar picker (scroll to Settings > Avatar)
+  const frame = document.getElementById('vb-portrait-frame');
+  if (frame && !frame._vbClick) {
+    frame._vbClick = true;
+    frame.addEventListener('click', () => {
+      // switch to settings tab
+      const settingsBtn = document.querySelector('.tab-btn[data-tab="parametres"]');
+      if (settingsBtn) settingsBtn.click();
+      // scroll to avatar section
+      setTimeout(() => {
+        const avSection = document.querySelector('[data-sec="avatar"]') || document.getElementById('avatar-section');
+        if (avSection) avSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 150);
+    });
+  }
 }
 
 /* ── Remplissage champs data-f ── */
