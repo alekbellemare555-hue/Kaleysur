@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Joueurs · Carnet d'Aventurier — Kaleysur</title>
+  <title>Players · Adventurer's Log — Kaleysur</title>
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
@@ -394,15 +394,15 @@
           </svg>
           <span class="j-brand-name">Kaleysur</span>
           <span class="j-brand-sep">·</span>
-          <span class="j-brand-tag">Carnet d'aventurier</span>
+          <span class="j-brand-tag">Adventurer's Log</span>
         </div>
         <div class="j-tabs">
-          <button class="j-tab active" data-tab="personnage">Personnage</button>
-          <button class="j-tab" data-tab="inventaire">Inventaire</button>
-          <button class="j-tab" data-tab="sorts">Sorts</button>
+          <button class="j-tab active" data-tab="personnage">Character</button>
+          <button class="j-tab" data-tab="inventaire">Inventory</button>
+          <button class="j-tab" data-tab="sorts">Spells</button>
           <button class="j-tab" data-tab="notes">Notes</button>
-          <button class="j-tab" data-tab="aide">Aide</button>
-          <button class="j-tab" data-tab="parametres">Paramètres</button>
+          <button class="j-tab" data-tab="aide">Reference</button>
+          <button class="j-tab" data-tab="parametres">Settings</button>
         </div>
       </div>
 
@@ -461,8 +461,8 @@
 
           <div class="j-panel-section">
             <div class="j-col-title-row">
-              <div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Bourse</span></div>
-              <button class="j-col-cta" id="btn-save-currency">Sauvegarder</button>
+              <div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Currency</span></div>
+              <button class="j-col-cta" id="btn-save-currency">Save</button>
             </div>
             <div class="j-currency-grid">
               <div class="j-currency-cell"><div class="j-currency-label">PP</div><input class="j-currency-input" id="c-pp" type="number" min="0"></div>
@@ -479,35 +479,35 @@
             </div>
             <div class="j-ration-row">
               <span class="j-ration-count" id="ration-count">0</span>
-              <span class="j-ration-label">jour(s) de ration</span>
+              <span class="j-ration-label">day(s) of rations</span>
               <div class="j-dmg-row" style="margin:0 0 0 auto">
-                <button class="j-btn-dmg" id="btn-ration-use">− Consommer</button>
+                <button class="j-btn-dmg" id="btn-ration-use">− Consume</button>
                 <input class="j-num-input" type="number" min="1" id="ration-input" placeholder="1">
-                <button class="j-btn-heal" id="btn-ration-add">+ Ajouter</button>
+                <button class="j-btn-heal" id="btn-ration-add">+ Add</button>
               </div>
             </div>
           </div>
 
           <div class="j-panel-section">
             <div class="j-col-title-row">
-              <div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Objets</span></div>
-              <button class="j-col-cta" id="btn-add-item">+ Ajouter un objet</button>
+              <div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Items</span></div>
+              <button class="j-col-cta" id="btn-add-item">+ Add Item</button>
             </div>
             <table class="j-atk-table">
-              <thead><tr><th>Nom</th><th>Qté</th><th>Poids (kg)</th><th>Notes</th><th></th></tr></thead>
+              <thead><tr><th>Name</th><th>Qty</th><th>Weight (kg)</th><th>Notes</th><th></th></tr></thead>
               <tbody id="items-tbody"></tbody>
             </table>
             <div id="item-form" style="display:none;margin-top:12px">
               <div class="j-modal-row">
-                <div><label>Nom</label><input type="text" id="item-name" placeholder="Torche"></div>
-                <div><label>Qté</label><input type="number" id="item-qty" min="1" value="1" style="width:70px"></div>
-                <div><label>Poids (kg)</label><input type="number" id="item-weight" min="0" step="0.1" value="0" style="width:80px"></div>
+                <div><label>Name</label><input type="text" id="item-name" placeholder="Torch"></div>
+                <div><label>Qty</label><input type="number" id="item-qty" min="1" value="1" style="width:70px"></div>
+                <div><label>Weight (kg)</label><input type="number" id="item-weight" min="0" step="0.1" value="0" style="width:80px"></div>
               </div>
               <label>Notes</label>
               <input type="text" id="item-notes" placeholder="Description…">
               <div class="j-modal-footer" style="margin-top:8px">
-                <button class="j-btn-cancel" id="btn-item-cancel">Annuler</button>
-                <button class="j-btn-confirm" id="btn-item-ok">Ajouter</button>
+                <button class="j-btn-cancel" id="btn-item-cancel">Cancel</button>
+                <button class="j-btn-confirm" id="btn-item-ok">Add</button>
               </div>
             </div>
           </div>
@@ -522,19 +522,19 @@
           <div>
             <div class="j-panel-section">
               <div class="j-col-title-row">
-                <div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Emplacements de sorts</span></div>
+                <div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Spell Slots</span></div>
               </div>
               <div id="sorts-slots-panel"></div>
-              <div class="j-subh" style="margin-top:14px">Ajouter un niveau d'emplacement</div>
+              <div class="j-subh" style="margin-top:14px">Add Slot Level</div>
               <div class="j-modal-row" style="margin-top:8px">
-                <div><label>Niveau</label>
+                <div><label>Level</label>
                   <select id="slot-lvl-input">
                     <option>1</option><option>2</option><option>3</option><option>4</option>
                     <option>5</option><option>6</option><option>7</option><option>8</option><option>9</option>
                   </select>
                 </div>
-                <div><label>Emplacements</label><input type="number" id="slot-max-input" min="1" max="9" placeholder="4" style="width:70px"></div>
-                <div style="align-self:flex-end"><button class="j-btn-confirm" id="btn-add-slot">Ajouter</button></div>
+                <div><label>Slots</label><input type="number" id="slot-max-input" min="1" max="9" placeholder="4" style="width:70px"></div>
+                <div style="align-self:flex-end"><button class="j-btn-confirm" id="btn-add-slot">Add</button></div>
               </div>
             </div>
           </div>
@@ -542,17 +542,17 @@
           <div>
             <div class="j-panel-section">
               <div class="j-col-title-row">
-                <div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Sorts connus / préparés</span></div>
-                <button class="j-col-cta" id="btn-show-spell-form">+ Ajouter</button>
+                <div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Known / Prepared Spells</span></div>
+                <button class="j-col-cta" id="btn-show-spell-form">+ Add</button>
               </div>
               <div id="spell-form" style="display:none;margin-bottom:12px">
                 <div class="j-modal-row">
-                  <div><label>Nom du sort</label><input type="text" id="spell-name-input" placeholder="Boule de feu"></div>
-                  <div><label>Niveau (T=tour)</label><input type="text" id="spell-lvl-input" placeholder="T / 1 / 2…" style="width:90px"></div>
+                  <div><label>Spell name</label><input type="text" id="spell-name-input" placeholder="Fireball"></div>
+                  <div><label>Level (C=cantrip)</label><input type="text" id="spell-lvl-input" placeholder="C / 1 / 2…" style="width:90px"></div>
                 </div>
                 <div class="j-modal-footer" style="margin-top:6px">
-                  <button class="j-btn-cancel" id="btn-spell-cancel">Annuler</button>
-                  <button class="j-btn-confirm" id="btn-spell-ok">Ajouter</button>
+                  <button class="j-btn-cancel" id="btn-spell-cancel">Cancel</button>
+                  <button class="j-btn-confirm" id="btn-spell-ok">Add</button>
                 </div>
               </div>
               <div id="sorts-list-panel"></div>
@@ -567,9 +567,9 @@
         <div class="j-panel-wrap">
           <div class="j-panel-section">
             <div class="j-col-title-row">
-              <div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Notes du personnage</span></div>
+              <div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Character Notes</span></div>
             </div>
-            <textarea id="notes-area" class="j-notes-area" placeholder="Notes de session, objectifs, relations, secrets…"></textarea>
+            <textarea id="notes-area" class="j-notes-area" placeholder="Session notes, goals, relationships, secrets…"></textarea>
           </div>
         </div>
       </div>
@@ -580,49 +580,49 @@
           <div class="j-panel-section">
             <div class="j-col-title-row"><div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Conditions</span></div></div>
             <div class="j-aide-list">
-              <div class="j-aide-entry"><span class="j-aide-term">Aveuglé</span><span class="j-aide-def">Échoue automatiquement les checks de vue. Désavantage aux attaques, avantage contre lui.</span></div>
-              <div class="j-aide-entry"><span class="j-aide-term">Charmé</span><span class="j-aide-def">Ne peut pas attaquer la source du charme. Avantage sur les checks de Charisme vs la cible.</span></div>
-              <div class="j-aide-entry"><span class="j-aide-term">Effrayé</span><span class="j-aide-def">Désavantage sur les checks quand la source est en vue. Ne peut pas s'approcher volontairement.</span></div>
-              <div class="j-aide-entry"><span class="j-aide-term">Empoisonné</span><span class="j-aide-def">Désavantage sur les jets d'attaque et de caractéristique.</span></div>
-              <div class="j-aide-entry"><span class="j-aide-term">Étourdi</span><span class="j-aide-def">Incapacité, échoue FOR et DEX. Avantage contre lui, attaques de mêlée à portée = coup critique.</span></div>
-              <div class="j-aide-entry"><span class="j-aide-term">Incapacité</span><span class="j-aide-def">Ne peut pas effectuer d'actions ni de réactions.</span></div>
-              <div class="j-aide-entry"><span class="j-aide-term">Invisible</span><span class="j-aide-def">Avantage aux attaques. Les attaquants ont désavantage contre lui.</span></div>
-              <div class="j-aide-entry"><span class="j-aide-term">Paralysé</span><span class="j-aide-def">Incapacité, échoue FOR et DEX. Attaques contre lui = avantage + critique à portée de mêlée.</span></div>
-              <div class="j-aide-entry"><span class="j-aide-term">Pétrifié</span><span class="j-aide-def">Transformé en pierre. Immunité à poison et maladie. Avantage contre lui.</span></div>
-              <div class="j-aide-entry"><span class="j-aide-term">Terrorisé</span><span class="j-aide-def">Vitesse 0. Désavantage checks et attaques. Peut tenter un JdS SAG en fin de tour.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Blinded</span><span class="j-aide-def">Automatically fails sight-based checks. Disadvantage on attacks, attackers have advantage.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Charmed</span><span class="j-aide-def">Can't attack the charmer. Charmer has advantage on Charisma checks against target.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Frightened</span><span class="j-aide-def">Disadvantage on checks while source is in sight. Can't willingly move closer to source.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Poisoned</span><span class="j-aide-def">Disadvantage on attack rolls and ability checks.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Stunned</span><span class="j-aide-def">Incapacitated, fails STR and DEX saves. Attackers have advantage, melee hits within 5 ft are critical.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Incapacitated</span><span class="j-aide-def">Can't take actions or reactions.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Invisible</span><span class="j-aide-def">Advantage on attacks. Attackers have disadvantage against it.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Paralyzed</span><span class="j-aide-def">Incapacitated, fails STR and DEX saves. Attackers have advantage and auto-crit in melee.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Petrified</span><span class="j-aide-def">Transformed to stone. Immune to poison and disease. Attackers have advantage.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Panicked</span><span class="j-aide-def">Speed 0. Disadvantage on checks and attacks. Can make a WIS save at end of turn.</span></div>
             </div>
           </div>
           <div class="j-panel-section">
-            <div class="j-col-title-row"><div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Jet de caractéristique</span></div></div>
+            <div class="j-col-title-row"><div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Ability Check</span></div></div>
             <div class="j-aide-list">
-              <div class="j-aide-entry"><span class="j-aide-term">DDs courants</span><span class="j-aide-def">Facile 10 · Moyen 15 · Difficile 20 · Très difficile 25 · Presque impossible 30</span></div>
-              <div class="j-aide-entry"><span class="j-aide-term">Maîtrise</span><span class="j-aide-def">Ajouter le bonus de maîtrise si la compétence est maîtrisée.</span></div>
-              <div class="j-aide-entry"><span class="j-aide-term">Avantage</span><span class="j-aide-def">Lancer 2d20, garder le plus élevé.</span></div>
-              <div class="j-aide-entry"><span class="j-aide-term">Désavantage</span><span class="j-aide-def">Lancer 2d20, garder le plus bas.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Common DCs</span><span class="j-aide-def">Easy 10 · Medium 15 · Hard 20 · Very Hard 25 · Nearly Impossible 30</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Proficiency</span><span class="j-aide-def">Add proficiency bonus if you are proficient in the skill.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Advantage</span><span class="j-aide-def">Roll 2d20, keep the highest.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Disadvantage</span><span class="j-aide-def">Roll 2d20, keep the lowest.</span></div>
             </div>
-            <div class="j-col-title-row" style="margin-top:20px"><div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Actions en combat</span></div></div>
+            <div class="j-col-title-row" style="margin-top:20px"><div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Combat Actions</span></div></div>
             <div class="j-aide-list">
-              <div class="j-aide-entry"><span class="j-aide-term">Attaquer</span><span class="j-aide-def">Une ou plusieurs attaques selon la classe.</span></div>
-              <div class="j-aide-entry"><span class="j-aide-term">Lancer un sort</span><span class="j-aide-def">Utilise un emplacement du niveau approprié.</span></div>
-              <div class="j-aide-entry"><span class="j-aide-term">Esquiver</span><span class="j-aide-def">Attaques contre vous = désavantage. Vous = avantage sur DEX.</span></div>
-              <div class="j-aide-entry"><span class="j-aide-term">Aider</span><span class="j-aide-def">Un allié obtient l'avantage sur son prochain jet.</span></div>
-              <div class="j-aide-entry"><span class="j-aide-term">Se précipiter</span><span class="j-aide-def">Double votre vitesse ce tour.</span></div>
-              <div class="j-aide-entry"><span class="j-aide-term">Se désengager</span><span class="j-aide-def">Votre mouvement ne provoque pas d'attaque d'opportunité.</span></div>
-              <div class="j-aide-entry"><span class="j-aide-term">Se cacher</span><span class="j-aide-def">Check de Discrétion contre Perception passive des ennemis.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Attack</span><span class="j-aide-def">One or more attacks depending on class.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Cast a Spell</span><span class="j-aide-def">Uses a spell slot of the appropriate level.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Dodge</span><span class="j-aide-def">Attacks against you have disadvantage. You have advantage on DEX saves.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Help</span><span class="j-aide-def">One ally gains advantage on their next roll.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Dash</span><span class="j-aide-def">Double your speed this turn.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Disengage</span><span class="j-aide-def">Your movement doesn't provoke opportunity attacks.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Hide</span><span class="j-aide-def">Stealth check vs. enemies' passive Perception.</span></div>
             </div>
           </div>
           <div class="j-panel-section">
-            <div class="j-col-title-row"><div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Repos</span></div></div>
+            <div class="j-col-title-row"><div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Rests</span></div></div>
             <div class="j-aide-list">
-              <div class="j-aide-entry"><span class="j-aide-term">Court (1h)</span><span class="j-aide-def">Dépenser des Dés de Vie pour récupérer des PV. Certaines capacités se réinitialisent.</span></div>
-              <div class="j-aide-entry"><span class="j-aide-term">Long (8h)</span><span class="j-aide-def">Récupérer tous les PV. Regagner la moitié des DV max. Réinitialiser la plupart des ressources.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Short Rest (1h)</span><span class="j-aide-def">Spend Hit Dice to recover HP. Some abilities recharge.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Long Rest (8h)</span><span class="j-aide-def">Recover all HP. Regain half your max Hit Dice. Reset most resources.</span></div>
             </div>
-            <div class="j-col-title-row" style="margin-top:20px"><div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">À 0 PV</span></div></div>
+            <div class="j-col-title-row" style="margin-top:20px"><div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">At 0 HP</span></div></div>
             <div class="j-aide-list">
-              <div class="j-aide-entry"><span class="j-aide-term">Instable</span><span class="j-aide-def">Jet de Sauvegarde de Constitution DD 10 à chaque tour. Échec = 1 jet de mort raté. Succès = 1 jet de mort réussi.</span></div>
-              <div class="j-aide-entry"><span class="j-aide-term">3 réussites</span><span class="j-aide-def">Stable (mais toujours inconscient à 0 PV).</span></div>
-              <div class="j-aide-entry"><span class="j-aide-term">3 échecs</span><span class="j-aide-def">Le personnage meurt.</span></div>
-              <div class="j-aide-entry"><span class="j-aide-term">Critique en attaque</span><span class="j-aide-def">Un coup critique à 0 PV = 2 jets de mort ratés.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Unstable</span><span class="j-aide-def">Make a DC 10 CON death saving throw each turn. Fail = 1 failed death save. Success = 1 successful death save.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">3 Successes</span><span class="j-aide-def">Stable (but still unconscious at 0 HP).</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">3 Failures</span><span class="j-aide-def">The character dies.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Critical Hit</span><span class="j-aide-def">A critical hit at 0 HP = 2 failed death saves.</span></div>
             </div>
           </div>
         </div>
@@ -634,36 +634,36 @@
 
           <div class="j-panel-section">
             <div class="j-col-title-row">
-              <div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Identité</span></div>
-              <button class="j-btn-confirm" id="btn-save-params" style="font-size:9px;padding:4px 12px">Sauvegarder</button>
+              <div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Identity</span></div>
+              <button class="j-btn-confirm" id="btn-save-params" style="font-size:9px;padding:4px 12px">Save</button>
             </div>
             <div class="j-params-grid">
-              <div><label>Nom du personnage</label><input type="text" id="p-name"></div>
-              <div><label>Joueur</label><input type="text" id="p-player"></div>
-              <div><label>Classe &amp; Sous-classe</label><input type="text" id="p-class"></div>
-              <div><label>Espèce</label><input type="text" id="p-species"></div>
+              <div><label>Character Name</label><input type="text" id="p-name"></div>
+              <div><label>Player</label><input type="text" id="p-player"></div>
+              <div><label>Class &amp; Subclass</label><input type="text" id="p-class"></div>
+              <div><label>Species</label><input type="text" id="p-species"></div>
               <div><label>Background</label><input type="text" id="p-bg"></div>
-              <div><label>Alignement</label><input type="text" id="p-align"></div>
-              <div><label>Niveau</label><input type="number" id="p-level" min="1" max="20"></div>
+              <div><label>Alignment</label><input type="text" id="p-align"></div>
+              <div><label>Level</label><input type="number" id="p-level" min="1" max="20"></div>
               <div><label>XP</label><input type="number" id="p-xp" min="0"></div>
-              <div><label>Bonus de maîtrise</label><input type="number" id="p-prof" min="2" max="6"></div>
+              <div><label>Proficiency Bonus</label><input type="number" id="p-prof" min="2" max="6"></div>
             </div>
           </div>
 
           <div class="j-panel-section">
             <div class="j-col-title-row"><div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Combat</span></div></div>
             <div class="j-params-grid">
-              <div><label>PV max</label><input type="number" id="p-hpmax" min="1"></div>
-              <div><label>CA</label><input type="number" id="p-ac"></div>
+              <div><label>Max HP</label><input type="number" id="p-hpmax" min="1"></div>
+              <div><label>AC</label><input type="number" id="p-ac"></div>
               <div><label>Initiative</label><input type="number" id="p-init"></div>
-              <div><label>Vitesse (m)</label><input type="number" id="p-speed"></div>
-              <div><label>Dés de Vie (ex: 1d8)</label><input type="text" id="p-hd"></div>
-              <div><label>Nombre de DV max</label><input type="number" id="p-hdmax" min="1"></div>
+              <div><label>Speed (m)</label><input type="number" id="p-speed"></div>
+              <div><label>Hit Dice (e.g. 1d8)</label><input type="text" id="p-hd"></div>
+              <div><label>Max Hit Dice</label><input type="number" id="p-hdmax" min="1"></div>
             </div>
           </div>
 
           <div class="j-panel-section">
-            <div class="j-col-title-row"><div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Caractéristiques</span></div></div>
+            <div class="j-col-title-row"><div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Ability Scores</span></div></div>
             <div class="j-params-abil-grid" id="p-abilities-grid"></div>
           </div>
 
@@ -673,18 +673,18 @@
               <div class="j-portrait-preview" id="p-portrait-preview"></div>
               <div>
                 <input type="file" id="p-portrait-file" accept="image/*" style="display:none">
-                <button class="j-col-cta" id="p-portrait-btn" style="display:block;margin-bottom:8px">Choisir une image</button>
-                <button class="j-btn-cancel" id="p-portrait-rm">Retirer le portrait</button>
+                <button class="j-col-cta" id="p-portrait-btn" style="display:block;margin-bottom:8px">Choose image</button>
+                <button class="j-btn-cancel" id="p-portrait-rm">Remove portrait</button>
               </div>
             </div>
           </div>
 
           <div class="j-panel-section">
-            <div class="j-col-title-row"><div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Données</span></div></div>
+            <div class="j-col-title-row"><div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Data</span></div></div>
             <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-              <button class="j-col-cta" id="btn-export-char">Exporter JSON</button>
-              <label class="j-col-cta" style="cursor:pointer">Importer JSON<input type="file" id="p-import-file" accept=".json" style="display:none"></label>
-              <button class="j-btn-cancel" id="btn-delete-char" style="border-color:var(--danger);color:var(--danger)">Supprimer ce personnage</button>
+              <button class="j-col-cta" id="btn-export-char">Export JSON</button>
+              <label class="j-col-cta" style="cursor:pointer">Import JSON<input type="file" id="p-import-file" accept=".json" style="display:none"></label>
+              <button class="j-btn-cancel" id="btn-delete-char" style="border-color:var(--danger);color:var(--danger)">Delete this character</button>
             </div>
           </div>
 
@@ -695,26 +695,26 @@
   </main>
 </div>
 
-<!-- ═══ MODAL: Nouveau personnage ═══ -->
+<!-- ═══ MODAL: New Character ═══ -->
 <div class="j-modal-bg" id="modal-new">
   <div class="j-modal">
-    <div class="j-modal-title">Nouveau Personnage</div>
+    <div class="j-modal-title">New Character</div>
     <div class="j-modal-row">
       <div>
-        <label>Nom du personnage</label>
+        <label>Character Name</label>
         <input type="text" id="new-name" placeholder="Vaelys Kaer">
       </div>
       <div>
-        <label>Joueur</label>
+        <label>Player</label>
         <input type="text" id="new-player" placeholder="Lior">
       </div>
     </div>
-    <label>Classe &amp; Sous-classe</label>
-    <input type="text" id="new-class" placeholder="Sorcier 1 · Lignée Draconique">
+    <label>Class &amp; Subclass</label>
+    <input type="text" id="new-class" placeholder="Sorcerer 1 · Draconic Bloodline">
     <div class="j-modal-row">
       <div>
-        <label>Espèce</label>
-        <input type="text" id="new-species" placeholder="Humain">
+        <label>Species</label>
+        <input type="text" id="new-species" placeholder="Human">
       </div>
       <div>
         <label>Background</label>
@@ -723,7 +723,7 @@
     </div>
     <div class="j-modal-row">
       <div>
-        <label>Icône</label>
+        <label>Icon</label>
         <select id="new-icon">
           <option value="✦">✦</option><option value="✚">✚</option>
           <option value="❂">❂</option><option value="❦">❦</option>
@@ -731,45 +731,45 @@
         </select>
       </div>
       <div>
-        <label>Couleur</label>
+        <label>Color</label>
         <select id="new-color">
-          <option value="#c9a227">Or</option>
-          <option value="#e6d27a">Or clair</option>
-          <option value="#7a9fd4">Bleu</option>
-          <option value="#6aba6a">Vert</option>
-          <option value="#c97a7a">Rouge</option>
-          <option value="#c0a0f0">Violet</option>
+          <option value="#c9a227">Gold</option>
+          <option value="#e6d27a">Light Gold</option>
+          <option value="#7a9fd4">Blue</option>
+          <option value="#6aba6a">Green</option>
+          <option value="#c97a7a">Red</option>
+          <option value="#c0a0f0">Purple</option>
         </select>
       </div>
     </div>
     <div class="j-modal-footer">
-      <button class="j-btn-cancel" id="modal-new-cancel">Annuler</button>
-      <button class="j-btn-confirm" id="modal-new-confirm">Créer</button>
+      <button class="j-btn-cancel" id="modal-new-cancel">Cancel</button>
+      <button class="j-btn-confirm" id="modal-new-confirm">Create</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ MODAL: Ajouter attaque ═══ -->
+<!-- ═══ MODAL: Add Attack ═══ -->
 <div class="j-modal-bg" id="modal-atk">
   <div class="j-modal">
-    <div class="j-modal-title">Ajouter une Attaque</div>
-    <label>Nom</label>
-    <input type="text" id="atk-name" placeholder="Trait de feu">
+    <div class="j-modal-title">Add Attack</div>
+    <label>Name</label>
+    <input type="text" id="atk-name" placeholder="Fire Bolt">
     <div class="j-modal-row">
       <div>
         <label>Bonus</label>
         <input type="text" id="atk-bonus" placeholder="+7">
       </div>
       <div>
-        <label>Dégâts</label>
+        <label>Damage</label>
         <input type="text" id="atk-dmg" placeholder="2d10">
       </div>
     </div>
     <label>Type</label>
-    <input type="text" id="atk-type" placeholder="Feu">
+    <input type="text" id="atk-type" placeholder="Fire">
     <div class="j-modal-footer">
-      <button class="j-btn-cancel" id="modal-atk-cancel">Annuler</button>
-      <button class="j-btn-confirm" id="modal-atk-confirm">Ajouter</button>
+      <button class="j-btn-cancel" id="modal-atk-cancel">Cancel</button>
+      <button class="j-btn-confirm" id="modal-atk-confirm">Add</button>
     </div>
   </div>
 </div>
@@ -789,9 +789,9 @@
 
   const DEFAULT_CHAR = () => ({
     id: uid(),
-    name: 'Nouveau Personnage',
+    name: 'New Character',
     player: '',
-    classLine: 'Classe 1',
+    classLine: 'Class 1',
     species: '—',
     background: '—',
     alignment: '—',
@@ -805,30 +805,30 @@
     portrait: null,
     deathSaves: { success: 0, fail: 0 },
     abilities: [
-      { k: 'FOR', n: 'Force',        sc: 10, m: 0 },
-      { k: 'DEX', n: 'Dextérité',    sc: 10, m: 0 },
+      { k: 'STR', n: 'Strength',     sc: 10, m: 0 },
+      { k: 'DEX', n: 'Dexterity',    sc: 10, m: 0 },
       { k: 'CON', n: 'Constitution', sc: 10, m: 0 },
       { k: 'INT', n: 'Intelligence', sc: 10, m: 0 },
-      { k: 'SAG', n: 'Sagesse',      sc: 10, m: 0 },
-      { k: 'CHA', n: 'Charisme',     sc: 10, m: 0 },
+      { k: 'WIS', n: 'Wisdom',       sc: 10, m: 0 },
+      { k: 'CHA', n: 'Charisma',     sc: 10, m: 0 },
     ],
     saves:  [
-      { n: 'Force',        v: 0,  p: false },
-      { n: 'Dextérité',    v: 0,  p: false },
+      { n: 'Strength',     v: 0,  p: false },
+      { n: 'Dexterity',    v: 0,  p: false },
       { n: 'Constitution', v: 0,  p: false },
       { n: 'Intelligence', v: 0,  p: false },
-      { n: 'Sagesse',      v: 0,  p: false },
-      { n: 'Charisme',     v: 0,  p: false },
+      { n: 'Wisdom',       v: 0,  p: false },
+      { n: 'Charisma',     v: 0,  p: false },
     ],
     skills: [
-      { n: 'Arcanes',       a: 'INT', v: 0, p: false },
-      { n: 'Athlétisme',    a: 'FOR', v: 0, p: false },
-      { n: 'Discrétion',    a: 'DEX', v: 0, p: false },
-      { n: 'Histoire',      a: 'INT', v: 0, p: false },
+      { n: 'Arcana',        a: 'INT', v: 0, p: false },
+      { n: 'Athletics',     a: 'STR', v: 0, p: false },
+      { n: 'Stealth',       a: 'DEX', v: 0, p: false },
+      { n: 'History',       a: 'INT', v: 0, p: false },
       { n: 'Investigation', a: 'INT', v: 0, p: false },
-      { n: 'Perception',    a: 'SAG', v: 0, p: false },
+      { n: 'Perception',    a: 'WIS', v: 0, p: false },
       { n: 'Persuasion',    a: 'CHA', v: 0, p: false },
-      { n: 'Tromperie',     a: 'CHA', v: 0, p: false },
+      { n: 'Deception',     a: 'CHA', v: 0, p: false },
     ],
     attacks:    [],
     spellSlots: [],
@@ -846,8 +846,8 @@
     const c = DEFAULT_CHAR();
     Object.assign(c, {
       name: 'Vaelys Kaer', player: 'Lior',
-      classLine: 'Sorcier 5 · Lignée Draconique',
-      species: 'Demi-elfe', background: 'Sage', alignment: 'Chaotique Bon',
+      classLine: 'Sorcerer 5 · Draconic Bloodline',
+      species: 'Half-elf', background: 'Sage', alignment: 'Chaotic Good',
       level: 5, xp: 6500, prof: 3,
       hp: 28, hpMax: 38, hpTemp: 4,
       ac: 14, init: 3, speed: 30,
@@ -855,35 +855,35 @@
       partyIcon: '✦', partyColor: '#c9a227',
       deathSaves: { success: 0, fail: 0 },
       abilities: [
-        { k: 'FOR', n: 'Force',        sc: 8,  m: -1 },
-        { k: 'DEX', n: 'Dextérité',    sc: 16, m: +3 },
+        { k: 'STR', n: 'Strength',     sc: 8,  m: -1 },
+        { k: 'DEX', n: 'Dexterity',    sc: 16, m: +3 },
         { k: 'CON', n: 'Constitution', sc: 14, m: +2 },
         { k: 'INT', n: 'Intelligence', sc: 12, m: +1 },
-        { k: 'SAG', n: 'Sagesse',      sc: 11, m: 0  },
-        { k: 'CHA', n: 'Charisme',     sc: 18, m: +4 },
+        { k: 'WIS', n: 'Wisdom',       sc: 11, m: 0  },
+        { k: 'CHA', n: 'Charisma',     sc: 18, m: +4 },
       ],
       saves: [
-        { n: 'Force',        v: -1, p: false },
-        { n: 'Dextérité',    v: +3, p: false },
+        { n: 'Strength',     v: -1, p: false },
+        { n: 'Dexterity',    v: +3, p: false },
         { n: 'Constitution', v: +5, p: true  },
         { n: 'Intelligence', v: +1, p: false },
-        { n: 'Sagesse',      v: 0,  p: false },
-        { n: 'Charisme',     v: +7, p: true  },
+        { n: 'Wisdom',       v: 0,  p: false },
+        { n: 'Charisma',     v: +7, p: true  },
       ],
       skills: [
-        { n: 'Arcanes',       a: 'INT', v: +4, p: true  },
-        { n: 'Histoire',      a: 'INT', v: +4, p: true  },
+        { n: 'Arcana',        a: 'INT', v: +4, p: true  },
+        { n: 'History',       a: 'INT', v: +4, p: true  },
         { n: 'Persuasion',    a: 'CHA', v: +7, p: true  },
-        { n: 'Tromperie',     a: 'CHA', v: +7, p: true  },
-        { n: 'Perception',    a: 'SAG', v: 0,  p: false },
-        { n: 'Discrétion',    a: 'DEX', v: +3, p: false },
-        { n: 'Athlétisme',    a: 'FOR', v: -1, p: false },
+        { n: 'Deception',     a: 'CHA', v: +7, p: true  },
+        { n: 'Perception',    a: 'WIS', v: 0,  p: false },
+        { n: 'Stealth',       a: 'DEX', v: +3, p: false },
+        { n: 'Athletics',     a: 'STR', v: -1, p: false },
         { n: 'Investigation', a: 'INT', v: +1, p: false },
       ],
       attacks: [
-        { n: 'Trait de feu', bonus: '+7', dmg: '2d10',  type: 'Feu' },
-        { n: 'Dague',        bonus: '+6', dmg: '1d4+3', type: 'Perçant' },
-        { n: 'Boule de feu', bonus: 'DC 15', dmg: '8d6', type: 'Feu (zone)' },
+        { n: 'Fire Bolt',  bonus: '+7',   dmg: '2d10',  type: 'Fire' },
+        { n: 'Dagger',     bonus: '+6',   dmg: '1d4+3', type: 'Piercing' },
+        { n: 'Fireball',   bonus: 'DC 15', dmg: '8d6',  type: 'Fire (AoE)' },
       ],
       spellSlots: [
         { lvl: 1, max: 4, used: 1 },
@@ -891,28 +891,28 @@
         { lvl: 3, max: 2, used: 0 },
       ],
       resources: [
-        { n: 'Points de Sorcier', cur: 3, max: 5, reset: 'Long' },
-        { n: 'Inspiration',       cur: 1, max: 1, reset: '—'    },
+        { n: 'Sorcery Points', cur: 3, max: 5, reset: 'Long' },
+        { n: 'Inspiration',    cur: 1, max: 1, reset: '—'    },
       ],
       conditions: [
         { n: 'Concentration', on: true,  type: 'conc' },
-        { n: 'Lié',           on: true,  type: 'neg'  },
+        { n: 'Restrained',    on: true,  type: 'neg'  },
       ],
       features: [
-        { n: 'Origine arcanique : Draconique', src: 'Sorcier 1' },
-        { n: 'Métamagie (Distant, Subtil)',    src: 'Sorcier 3' },
-        { n: 'Résilience draconique',          src: 'Sorcier 1' },
+        { n: 'Draconic Bloodline',         src: 'Sorcerer 1' },
+        { n: 'Metamagic (Distant, Subtle)', src: 'Sorcerer 3' },
+        { n: 'Draconic Resilience',        src: 'Sorcerer 1' },
       ],
       spells: [
         { lvl: 'T', n: 'Prestidigitation' },
-        { lvl: 'T', n: 'Trait de feu'     },
-        { lvl: 'T', n: 'Lumière'          },
-        { lvl: 1,   n: 'Bouclier'         },
-        { lvl: 1,   n: 'Mains brûlantes'  },
-        { lvl: 2,   n: 'Image-miroir'     },
+        { lvl: 'T', n: 'Fire Bolt'        },
+        { lvl: 'T', n: 'Light'            },
+        { lvl: 1,   n: 'Shield'           },
+        { lvl: 1,   n: 'Burning Hands'    },
+        { lvl: 2,   n: 'Mirror Image'     },
         { lvl: 2,   n: 'Suggestion'       },
-        { lvl: 3,   n: 'Boule de feu'     },
-        { lvl: 3,   n: 'Contresort'       },
+        { lvl: 3,   n: 'Fireball'         },
+        { lvl: 3,   n: 'Counterspell'     },
       ],
     });
     return c;
@@ -968,12 +968,12 @@
         <span class="j-party-icon" style="color:${c.partyColor || '#c9a227'}">${c.partyIcon || '✦'}</span>
         <div>
           <div class="j-party-name">${esc(c.name)}</div>
-          <div class="j-party-sub">${esc(c.classLine)} · ${c.hp}/${c.hpMax} pv</div>
+          <div class="j-party-sub">${esc(c.classLine)} · ${c.hp}/${c.hpMax} hp</div>
         </div>`;
       div.addEventListener('click', () => { state.activeId = c.id; save(); render(); });
       ribbon.appendChild(div);
     });
-    const addBtn = mk('button', 'j-new-btn', '+ Nouveau personnage');
+    const addBtn = mk('button', 'j-new-btn', '+ New Character');
     addBtn.addEventListener('click', () => openModal('new'));
     ribbon.appendChild(addBtn);
   }
@@ -998,7 +998,7 @@
     }
 
     /* mini stats */
-    el('mini-stats').innerHTML = [['CA', C.ac], ['INIT', sgn(C.init)], ['VIT', C.speed + 'm']]
+    el('mini-stats').innerHTML = [['AC', C.ac], ['INIT', sgn(C.init)], ['SPD', C.speed + 'ft']]
       .map(([l, v]) => `<div class="j-mini-stat"><div class="j-mini-label">${l}</div><div class="j-mini-value">${v}</div></div>`)
       .join('');
 
@@ -1006,8 +1006,8 @@
     el('lead-name').textContent = C.name;
     el('lead-class').textContent = C.classLine;
     el('lead-facts').innerHTML = [
-      ['Espèce', C.species], ['Background', C.background], ['Alignement', C.alignment],
-      ['Niveau', C.level], ['XP', Number(C.xp).toLocaleString('fr')], ['Maîtrise', `+${C.prof}`],
+      ['Species', C.species], ['Background', C.background], ['Alignment', C.alignment],
+      ['Level', C.level], ['XP', Number(C.xp).toLocaleString()], ['Proficiency', `+${C.prof}`],
     ].map(([k, v], i) => `<div class="j-fact${i ? '' : ''}">
       <div class="j-fact-label">${k}</div>
       <div class="j-fact-value">${esc(String(v))}</div>
@@ -1028,7 +1028,7 @@
     const dsFail = [0,1,2].map(i => `<span class="j-ds-circle j-ds-fail${i < ds.fail ? ' filled' : ''}" data-type="fail" data-i="${i}"></span>`).join('');
     const condChips = (C.conditions || []).filter(c => c.on).map(c =>
       `<span class="j-chip ${c.type === 'conc' ? 'conc' : 'neg'}" data-cond="${esc(c.n)}">${esc(c.n)}</span>`
-    ).join('') + `<span class="j-chip add" id="add-cond-btn">+ statut</span>`;
+    ).join('') + `<span class="j-chip add" id="add-cond-btn">+ condition</span>`;
     const resRows = (C.resources || []).map(r => {
       const pips = Array.from({ length: r.max }, (_, j) =>
         `<span class="j-res-pip${j < r.cur ? ' filled' : ''}" data-res="${esc(r.n)}" data-j="${j}"></span>`
@@ -1038,25 +1038,25 @@
 
     el('vitals-rail').innerHTML = `
       <div class="vitals-card">
-        <div class="j-sub-title" style="margin-bottom:10px">Vitalité</div>
+        <div class="j-sub-title" style="margin-bottom:10px">Vitality</div>
         <div class="j-hp-row">
           <span class="j-hp-num" id="hp-display">${C.hp}</span>
           <span class="j-hp-max">/ ${C.hpMax}</span>
-          <span class="j-hp-label">PV</span>
+          <span class="j-hp-label">HP</span>
         </div>
         <div class="j-hp-bar-wrap">
           <div class="j-hp-bar-fill" style="width:${hpPct}%;background:${barColor}"></div>
           ${C.hpTemp > 0 ? `<div class="j-hp-temp-fill" style="width:${Math.min(100,(C.hpTemp/C.hpMax)*100)}%"></div>` : ''}
         </div>
-        ${C.hpTemp > 0 ? `<div class="j-hp-temp-label">+${C.hpTemp} pv temporaires</div>` : ''}
+        ${C.hpTemp > 0 ? `<div class="j-hp-temp-label">+${C.hpTemp} temp HP</div>` : ''}
         <div class="j-dmg-row">
-          <button class="j-btn-dmg" id="btn-dmg">⚔ Blesser</button>
+          <button class="j-btn-dmg" id="btn-dmg">⚔ Damage</button>
           <input class="j-num-input" type="number" min="0" id="hp-input" placeholder="0">
-          <button class="j-btn-heal" id="btn-heal">✚ Soigner</button>
+          <button class="j-btn-heal" id="btn-heal">✚ Heal</button>
         </div>
         <div class="j-hd-death">
           <div>
-            <div class="j-sub-title">Dés de Vie</div>
+            <div class="j-sub-title">Hit Dice</div>
             <div class="j-hd-val">${C.hdLeft}<span class="j-hd-max">/${C.hdMax} ${C.hd}</span></div>
           </div>
           <div>
@@ -1068,15 +1068,15 @@
         </div>
       </div>
       <div class="j-sub-card">
-        <div class="j-sub-title">Statuts actifs</div>
+        <div class="j-sub-title">Active Conditions</div>
         <div class="j-chips" id="cond-chips">${condChips}</div>
       </div>
       <div class="j-sub-card">
-        <div class="j-sub-title">Ressources</div>
+        <div class="j-sub-title">Resources</div>
         <div id="res-rows">${resRows}</div>
         <div class="j-rest-row">
-          <button class="j-btn-rest-s" id="btn-short-rest">☽ Court</button>
-          <button class="j-btn-rest-l" id="btn-long-rest">★ Long</button>
+          <button class="j-btn-rest-s" id="btn-short-rest">☽ Short Rest</button>
+          <button class="j-btn-rest-l" id="btn-long-rest">★ Long Rest</button>
         </div>
       </div>`;
 
@@ -1085,11 +1085,11 @@
     /* saves & skills */
     el('col-saves').innerHTML = `
       <div class="j-col-title-row">
-        <div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Sauvegardes &amp; Compétences</span></div>
+        <div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Saving Throws &amp; Skills</span></div>
       </div>
-      <div class="j-subh">Sauvegardes</div>
+      <div class="j-subh">Saving Throws</div>
       ${C.saves.map(s => bline(s.p, s.n, '', sgn(s.v))).join('')}
-      <div class="j-subh" style="margin-top:14px">Compétences</div>
+      <div class="j-subh" style="margin-top:14px">Skills</div>
       ${C.skills.map(s => bline(s.p, s.n, s.a, sgn(s.v))).join('')}`;
 
     el('col-saves').querySelectorAll('.j-bline').forEach(row => {
@@ -1117,16 +1117,16 @@
       </div>`).join('');
     el('col-attacks').innerHTML = `
       <div class="j-col-title-row">
-        <div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Attaques</span></div>
-        <button class="j-col-cta" id="btn-add-atk">+ Ajouter</button>
+        <div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Attacks</span></div>
+        <button class="j-col-cta" id="btn-add-atk">+ Add</button>
       </div>
       <table class="j-atk-table">
         <thead><tr>
-          <th>Nom</th><th>Bonus</th><th>Dégâts</th><th>Type</th>
+          <th>Name</th><th>Bonus</th><th>Damage</th><th>Type</th>
         </tr></thead>
         <tbody>${atkRows}</tbody>
       </table>
-      <div class="j-subh" style="margin-top:16px">Traits &amp; Capacités</div>
+      <div class="j-subh" style="margin-top:16px">Traits &amp; Features</div>
       ${feats}`;
     el('btn-add-atk').addEventListener('click', () => openModal('atk'));
 
@@ -1135,7 +1135,7 @@
       const pips = Array.from({ length: s.max }, (_, j) =>
         `<span class="j-slot-pip${j < s.used ? ' used' : ''}" data-si="${si}" data-j="${j}"></span>`
       ).join('');
-      return `<div class="j-slots-row"><span class="j-slot-label">Niv. ${s.lvl}</span><div class="j-slot-pips">${pips}</div></div>`;
+      return `<div class="j-slots-row"><span class="j-slot-label">Lv. ${s.lvl}</span><div class="j-slot-pips">${pips}</div></div>`;
     }).join('');
 
     const grouped = {};
@@ -1143,7 +1143,7 @@
     const order = ['T', ...Array.from({ length: 9 }, (_, i) => i + 1)];
     const spellGroups = order.filter(k => grouped[k]).map(k => `
       <div class="j-spell-group">
-        <div class="j-spell-group-label">${k === 'T' ? 'Tours de magie' : `Niveau ${k}`}</div>
+        <div class="j-spell-group-label">${k === 'T' ? 'Cantrips' : `Level ${k}`}</div>
         <div class="j-spell-chips">
           ${grouped[k].map(n => `<span class="j-spell-chip">${esc(n)}</span>`).join('')}
         </div>
@@ -1151,10 +1151,10 @@
 
     el('col-magic').innerHTML = `
       <div class="j-col-title-row">
-        <div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Magie</span></div>
+        <div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Spellcasting</span></div>
       </div>
-      ${C.spellSlots.length ? `<div class="j-subh">Emplacements</div>${slotRows}` : ''}
-      ${C.spells.length ? `<div class="j-subh" style="margin-top:14px">Sorts préparés</div>${spellGroups}` : ''}`;
+      ${C.spellSlots.length ? `<div class="j-subh">Spell Slots</div>${slotRows}` : ''}
+      ${C.spells.length ? `<div class="j-subh" style="margin-top:14px">Prepared Spells</div>${spellGroups}` : ''}`;
 
     /* spell slot toggle */
     el('col-magic').querySelectorAll('.j-slot-pip').forEach(pip => {
@@ -1220,7 +1220,7 @@
 
   function shortRest() {
     const C = state.chars[state.activeId];
-    C.resources.forEach(r => { if (r.reset === 'Court' || r.reset === 'Long') r.cur = r.max; });
+    C.resources.forEach(r => { if (r.reset === 'Short' || r.reset === 'Long') r.cur = r.max; });
     save(); renderChar();
   }
 
@@ -1247,9 +1247,9 @@
   el('modal-new-cancel').addEventListener('click', () => closeModal('new'));
   el('modal-new').addEventListener('click', e => { if (e.target === el('modal-new')) closeModal('new'); });
   el('modal-new-confirm').addEventListener('click', () => {
-    const name  = el('new-name').value.trim()   || 'Nouveau Personnage';
+    const name  = el('new-name').value.trim()   || 'New Character';
     const player= el('new-player').value.trim();
-    const cls   = el('new-class').value.trim()  || 'Classe 1';
+    const cls   = el('new-class').value.trim()  || 'Class 1';
     const sp    = el('new-species').value.trim()|| '—';
     const bg    = el('new-bg').value.trim()     || '—';
     const icon  = el('new-icon').value;
@@ -1326,11 +1326,11 @@
       const pips = Array.from({length:s.max},(_,j) =>
         `<span class="j-slot-pip${j<s.used?' used':''}" data-si="${si}" data-j="${j}"></span>`).join('');
       return `<div class="j-slots-row">
-        <span class="j-slot-label">Niv. ${s.lvl}</span>
+        <span class="j-slot-label">Lv. ${s.lvl}</span>
         <div class="j-slot-pips">${pips}</div>
         <button class="j-item-del" data-rmslot="${si}" style="margin-left:auto">✕</button>
       </div>`;
-    }).join('') || '<div style="color:var(--text-muted);font-size:11px;padding:8px 0">Aucun emplacement — ajoute un niveau ci-dessous.</div>';
+    }).join('') || '<div style="color:var(--text-muted);font-size:11px;padding:8px 0">No slots — add a level below.</div>';
     slotsEl.querySelectorAll('.j-slot-pip').forEach(pip => {
       pip.addEventListener('click', () => {
         const si=+pip.dataset.si, j=+pip.dataset.j, slot=C.spellSlots[si];
@@ -1354,13 +1354,13 @@
     const listEl = el('sorts-list-panel');
     listEl.innerHTML = order.filter(k=>grouped[k]).map(k=>`
       <div class="j-spell-group" style="margin-bottom:10px">
-        <div class="j-spell-group-label">${k==='T'?'Tours de magie':'Niveau '+k}</div>
+        <div class="j-spell-group-label">${k==='T'?'Cantrips':'Level '+k}</div>
         ${grouped[k].map(s=>`<div class="j-spell-entry">
-          <span class="j-spell-entry-lvl">${s.lvl==='T'?'Tour':s.lvl}</span>
+          <span class="j-spell-entry-lvl">${s.lvl==='T'?'Cantrip':s.lvl}</span>
           <span class="j-spell-entry-name">${esc(s.n)}</span>
           <button class="j-spell-del" data-idx="${s.i}">✕</button>
         </div>`).join('')}
-      </div>`).join('') || '<div style="color:var(--text-muted);font-size:11px;padding:8px 0">Aucun sort — ajoute un sort ci-dessus.</div>';
+      </div>`).join('') || '<div style="color:var(--text-muted);font-size:11px;padding:8px 0">No spells — add one above.</div>';
     listEl.querySelectorAll('.j-spell-del').forEach(btn => {
       btn.addEventListener('click', () => { C.spells.splice(+btn.dataset.idx,1); save(); renderSorts(); renderChar(); });
     });
@@ -1409,7 +1409,7 @@
       </div>`).join('');
     // Portrait preview
     const prev = el('p-portrait-preview');
-    prev.innerHTML = C.portrait ? `<img src="${C.portrait}" alt="portrait">` : `<span style="color:var(--text-muted);font-size:10px;text-align:center;padding:4px">Aucun portrait</span>`;
+    prev.innerHTML = C.portrait ? `<img src="${C.portrait}" alt="portrait">` : `<span style="color:var(--text-muted);font-size:10px;text-align:center;padding:4px">No portrait</span>`;
     // Save handler
     el('btn-save-params').onclick = () => {
       C.name       = el('p-name').value.trim() || C.name;
@@ -1450,7 +1450,7 @@
     el('btn-export-char').onclick = () => {
       const blob = new Blob([JSON.stringify(C, null, 2)], {type:'application/json'});
       const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-      a.download = (C.name.replace(/[^a-z0-9]/gi,'_')||'personnage') + '.json';
+      a.download = (C.name.replace(/[^a-z0-9]/gi,'_')||'character') + '.json';
       a.click(); URL.revokeObjectURL(a.href);
     };
     // Import
@@ -1460,19 +1460,19 @@
       reader.onload = ev => {
         try {
           const imported = JSON.parse(ev.target.result);
-          if (!imported.name) return alert('Fichier JSON invalide.');
+          if (!imported.name) return alert('Invalid JSON file.');
           imported.id = imported.id || uid();
           state.chars[imported.id] = imported;
           state.activeId = imported.id;
           save(); render(); renderParametres();
-        } catch { alert('Erreur de lecture du fichier JSON.'); }
+        } catch { alert('Error reading JSON file.'); }
       };
       reader.readAsText(file);
     };
     // Delete
     el('btn-delete-char').onclick = () => {
-      if (Object.keys(state.chars).length <= 1) { alert('Impossible de supprimer le seul personnage.'); return; }
-      if (!confirm(`Supprimer définitivement ${C.name} ?`)) return;
+      if (Object.keys(state.chars).length <= 1) { alert('Cannot delete the only character.'); return; }
+      if (!confirm(`Permanently delete ${C.name}?`)) return;
       delete state.chars[state.activeId];
       state.activeId = Object.keys(state.chars)[0];
       save(); render(); renderParametres();
