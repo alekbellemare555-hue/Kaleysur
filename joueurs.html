@@ -991,28 +991,7 @@
       letter-spacing: .08em; text-transform: uppercase; margin-bottom: 3px;
     }
     .vb-fact-val { font-family: 'Cinzel', serif; font-size: 11px; color: var(--j-text, #e2cfa0); }
-    .vb-abilities { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
-    .vb-ability {
-      border: 1px solid var(--j-border-col, #4a3510);
-      border-radius: 3px;
-      text-align: center;
-      padding: 10px 3px 8px;
-      background: transparent;
-      transition: border-color .2s;
-    }
-    .vb-ability:hover { border-color: var(--gold-dark); }
-    .vb-ability-key {
-      font-family: 'Cinzel', serif; font-size: 8px; color: var(--gold-dark);
-      letter-spacing: .08em; text-transform: uppercase; margin-bottom: 3px;
-    }
-    .vb-ability-mod {
-      font-family: 'Cinzel', serif; color: var(--gold); font-size: 22px;
-      font-weight: 600; line-height: 1;
-    }
-    .vb-ability-score {
-      font-size: 9px; color: #555; margin-top: 3px;
-      padding-top: 3px; border-top: 1px dashed rgba(74,53,16,0.5);
-    }
+    /* ability-grid lives inside #vb-hero-lead — inherits existing .ability-grid/.ability-box CSS */
     #vb-hero-vitals { display: flex; flex-direction: column; gap: 12px; }
     .vb-vitals-box {
       background: linear-gradient(180deg, #1a1308, #0e0a04);
@@ -1249,7 +1228,8 @@
           <div class="vb-char-name" id="vb-hero-name">—</div>
           <div class="vb-class-line" id="vb-hero-class">—</div>
           <div class="vb-facts" id="vb-hero-facts"><!-- filled by renderHero() --></div>
-          <div class="vb-abilities" id="vb-hero-abilities"><!-- filled by renderHero() --></div>
+          <!-- Ability grid lives here — rendered by renderAbilities() -->
+          <div class="ability-grid" id="ability-grid" style="margin-top:14px;"></div>
         </div>
 
         <!-- Vitals column -->
@@ -1305,12 +1285,6 @@
       <div id="layout-toolbar" class="layout-toolbar">
         <span>✦ Glisse les titres pour réorganiser · ↔ pour changer de colonne/zone</span>
         <button class="btn btn-sm" id="btn-reset-layout" style="margin-left:auto;">↺ Défaut</button>
-      </div>
-
-      <!-- Caractéristiques : pleine largeur au-dessus des colonnes -->
-      <div class="sheet-section sheet-section-full" data-sec="caracteristiques">
-        <div class="sheet-section-title">Ability Scores</div>
-        <div class="ability-grid" id="ability-grid"></div>
       </div>
 
       <div class="layout-wrapper" id="layout-wrapper">
@@ -1421,26 +1395,24 @@
 
         <div class="sheet-section" data-sec="combat">
           <div class="sheet-section-title">Combat</div>
-          <!-- Bulles CA / Initiative / Vitesse -->
-          <div class="combat-stats-bubbles">
-            <div class="stat-bubble" title="Classe d'Armure">
-              <div class="stat-bubble-label">CA</div>
-              <input type="number" data-f="ca" value="10" min="0">
-              <div class="stat-bubble-sub">Armure</div>
+          <!-- CA / Initiative / Speed — compact editable row (displayed in hero mini-stats above) -->
+          <div style="display:flex;gap:0.65rem;margin-bottom:0.85rem;flex-wrap:wrap;align-items:flex-end;">
+            <div class="combat-field">
+              <label class="field-label">AC</label>
+              <input type="number" class="field-input field-input-sm" data-f="ca" value="10" min="0">
             </div>
-            <div class="stat-bubble" title="Initiative (auto DEX mod)">
-              <div class="stat-bubble-label">Initiative</div>
-              <input type="number" data-f="initiative" value="0" id="inp-initiative">
-              <div class="stat-bubble-sub" id="init-auto-label">auto DEX</div>
+            <div class="combat-field">
+              <label class="field-label">Initiative Bonus</label>
+              <input type="number" class="field-input field-input-sm" data-f="initiative" value="0" id="inp-initiative">
+              <div style="font-size:0.62rem;color:#555;text-align:center;margin-top:0.15rem;" id="init-auto-label">auto DEX</div>
             </div>
-            <div class="stat-bubble" title="Vitesse en pieds">
-              <div class="stat-bubble-label">Speed</div>
-              <input type="number" data-f="vitesse" value="30" min="0" step="5">
-              <div class="stat-bubble-sub">pieds</div>
+            <div class="combat-field">
+              <label class="field-label">Speed (ft)</label>
+              <input type="number" class="field-input field-input-sm" data-f="vitesse" value="30" min="0" step="5">
             </div>
           </div>
 
-          <!-- PV + Dés de vie -->
+          <!-- HP inputs -->
           <div class="combat-pv-row">
             <div class="combat-field">
               <label class="field-label">Max HP</label>
@@ -1456,25 +1428,20 @@
             </div>
           </div>
 
-          <!-- Barre de PV -->
-          <div class="hp-bar-wrap">
-            <div class="hp-bar-row">
-              <span id="hp-bar-label">PV : 0 / 0</span>
-              <span id="hp-bar-pct">0%</span>
-            </div>
-            <div class="hp-bar-track">
-              <div class="hp-bar-fill" id="hp-bar-fill" style="width:0%;"></div>
-              <div class="hp-bar-temp" id="hp-bar-temp"></div>
-            </div>
+          <!-- HP bar & quick buttons are in the hero vitals above; keep hidden anchors for JS -->
+          <div style="display:none;">
+            <div class="hp-bar-fill" id="hp-bar-fill"></div>
+            <div class="hp-bar-temp" id="hp-bar-temp"></div>
+            <span id="hp-bar-label"></span>
+            <span id="hp-bar-pct"></span>
+            <button id="btn-apply-dmg"></button>
+            <button id="btn-apply-heal"></button>
           </div>
-
-          <!-- ± PV rapide -->
-          <div class="hp-quick">
-            <button class="btn btn-sm btn-dmg" id="btn-apply-dmg">⚔ Blesser</button>
+          <!-- HP amount input + history (visible, functional) -->
+          <div class="hp-quick" style="margin-bottom:0.5rem;">
+            <span style="font-size:0.78rem;color:#888;">HP change ±</span>
             <input type="number" class="hp-quick-input" id="hp-quick-val" min="0" placeholder="0">
-            <button class="btn btn-sm btn-heal" id="btn-apply-heal">✚ Soigner</button>
           </div>
-          <!-- Historique PV -->
           <div class="hp-log-toggle j-hidden" id="hp-log-toggle">▾ Historique</div>
           <div class="hp-log j-hidden" id="hp-log"></div>
 
@@ -4481,20 +4448,7 @@ function renderHero() {
     ).join('');
   }
 
-  // Abilities row
-  const abEl = document.getElementById('vb-hero-abilities');
-  if (abEl) {
-    abEl.innerHTML = ABILITIES.map(ab => {
-      const score = abilScore(ab.key);
-      const mod   = Math.floor((score - 10) / 2);
-      const sign  = mod >= 0 ? '+' + mod : '' + mod;
-      return `<div class="vb-ability">
-        <div class="vb-ability-key">${ab.label}</div>
-        <div class="vb-ability-mod">${sign}</div>
-        <div class="vb-ability-score">${score}</div>
-      </div>`;
-    }).join('');
-  }
+  // Abilities are rendered directly by renderAbilities() into #ability-grid inside the hero.
 
   // HP
   const pvMax = parseInt(c.pvMax)    || 0;
