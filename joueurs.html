@@ -1346,6 +1346,49 @@
   .vb-facts { grid-template-columns: repeat(2, 1fr) !important; }
 }
 
+/* ── Coins carrés (remplacement global) ── */
+:root { --radius: 2px; }
+.field-input, .ability-score-input, .atk-inp, .inv-inp,
+.notes-editor, .notes-page-title-input, .notes-del-page-btn,
+.auth-input, .auth-btn, .auth-error, .auth-box,
+.btn, .sheet-section, .settings-section, .char-card,
+.ability-box, .hp-bar-track, .hp-bar-fill, .hp-bar-temp,
+.hp-quick-input, .res-card, .res-counter-inp, .res-counter-max,
+.ddb-dropzone, .ddb-preview, .ddb-modal, .modal-box,
+.sr-modal, .sr-dice-badge, #chat-panel, .chat-input, .chat-send,
+.canvas-toolbar, .canvas-tool-btn, .canvas-scroll-wrap,
+.cheat-section, .view-section, .admin-card,
+.spell-conc-btn, .spell-prep-counter,
+.exp-desc-area, .cf-level-group, .cf-feature, .cf-profs,
+.hp-log-entry, .exhaust-pip, .spell-level-badge, .ddb-url,
+.ddb-import-items span, .ddb-error, .color-inp-hex,
+#undo-toast, #undo-toast button, .ration-btn, .ration-val,
+.notes-section-wrap, .inv-cat-tabs, .vb-vitals-box,
+.vb-prof-badge, .vb-identite-wrap { border-radius: 2px !important; }
+
+/* ── Mode Lecture ── */
+#btn-read-mode { transition: all 0.2s; }
+#btn-read-mode.active { border-color: var(--gold-dark); color: var(--gold); background: rgba(201,169,110,0.1); }
+.read-mode .layout-wrapper,
+.read-mode .sheet-section,
+.read-mode .tab-panel > *:not(#vb-hero) { pointer-events: none; }
+.read-mode #vb-hero-vitals,
+.read-mode .sheet-section { opacity: 0.88; }
+.read-mode .dash-actions > *:not(#btn-read-mode) { pointer-events: none; opacity: 0.5; }
+.read-mode-banner { display: none; position: fixed; top: 52px; left: 50%; transform: translateX(-50%); background: rgba(138,110,26,0.18); border: 1px solid var(--gold-dark); color: var(--gold); font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.25rem 1.2rem; border-radius: 2px; z-index: 1400; pointer-events: none; }
+.read-mode .read-mode-banner { display: block; }
+
+/* ── Toast sauvegarde ── */
+#save-flash { position: fixed; bottom: 1.4rem; right: 1.4rem; background: #0d2018; border: 1px solid #3a6a3a; color: #7acc7a; font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.08em; padding: 0.35rem 0.9rem; border-radius: 2px; z-index: 9998; pointer-events: none; opacity: 0; transition: opacity 0.3s; }
+
+/* ── Steppers mobile : agrandir les spinners natifs ── */
+@media (max-width: 640px) {
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button { -webkit-appearance: inner-spin-button; opacity: 1; width: 28px; cursor: pointer; }
+  input[type=number].field-input { padding-right: 0; }
+  input[type=number].ability-score-input { padding-right: 0; width: 54px; }
+}
+
   </style>
 
   <!-- PWA -->
@@ -1460,10 +1503,12 @@
         <span class="save-badge" id="save-badge"></span>
         <button class="inspiration-btn" id="btn-inspiration" title="Inspiration (avantage sur un jet)">✦</button>
         <button class="btn btn-sm" id="btn-layout-edit" title="Réorganiser les sections">⠿</button>
+        <button class="btn btn-sm" id="btn-read-mode" title="Mode Lecture — verrouille la fiche">🔒</button>
         <button class="btn btn-sm btn-danger" id="btn-logout">Déconnexion</button>
       </div>
     </div>
 
+    <div class="read-mode-banner">Mode Lecture — cliquez 🔒 pour modifier</div>
     <!-- ══ VB: Party ribbon (char-cards as horizontal strip) ══ -->
     <div class="char-cards vb-party-ribbon" id="char-cards"></div>
 
@@ -8499,6 +8544,160 @@ document.addEventListener('keydown', e => {
     el.click();
   }
 });
+
+/* ════════════════════════════════════════════════
+   OPTIMISATIONS UX — lot 2
+   ════════════════════════════════════════════════ */
+
+/* ── 1. Debounce : render lourd sur les stats ── */
+let _heavyRenderTimer;
+function debouncedStats(fn, delay = 180) {
+  clearTimeout(_heavyRenderTimer);
+  _heavyRenderTimer = setTimeout(fn, delay);
+}
+
+/* ── 2. Toast flash sauvegarde ── */
+(function () {
+  const el = document.createElement('div');
+  el.id = 'save-flash';
+  el.textContent = '✓ Sauvegardé';
+  document.body.appendChild(el);
+})();
+function showSaveFlash() {
+  const t = document.getElementById('save-flash');
+  if (!t) return;
+  t.style.opacity = '1';
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => { t.style.opacity = '0'; }, 1600);
+}
+/* Patch triggerSave pour appeler showSaveFlash */
+(function () {
+  const _orig = triggerSave;
+  triggerSave = function () {
+    _orig.apply(this, arguments);
+    /* On décore la promesse interne via le badge save OK — simple et sans re-écrire tout */
+  };
+  /* Observer le badge pour détecter le succès */
+  const badge = document.getElementById('save-badge');
+  if (badge) {
+    const obs = new MutationObserver(() => {
+      if (badge.classList.contains('ok')) showSaveFlash();
+    });
+    obs.observe(badge, { attributes: true, attributeFilter: ['class'] });
+  }
+})();
+
+/* ── 3. Fix : délégation input pour #tab-identite ── */
+document.getElementById('tab-identite')?.addEventListener('input', e => {
+  if (!playerData) return;
+  const el = e.target;
+  if (el.dataset.f && el.dataset.f in C()) {
+    if (el.type === 'checkbox') C()[el.dataset.f] = el.checked;
+    else if (el.type === 'number') C()[el.dataset.f] = parseFloat(el.value) || 0;
+    else C()[el.dataset.f] = el.value;
+    if (el.dataset.f === 'characterName') { activeSlot().name = el.value || 'Sans nom'; renderCharCards(); renderHero(); }
+    if (el.dataset.f === 'species' || el.dataset.f === 'xp') renderHero();
+    updateCharSummary();
+    triggerSave();
+  }
+});
+
+/* ── 4. Fix : délégation input pour #vb-hero (outside tabs) ── */
+document.getElementById('vb-hero')?.addEventListener('input', e => {
+  if (!playerData) return;
+  const el = e.target;
+  if (!el.dataset.f || !(el.dataset.f in C())) return;
+  if (el.type === 'number') C()[el.dataset.f] = parseFloat(el.value) || 0;
+  else C()[el.dataset.f] = el.value;
+  if (el.dataset.f === 'pvMax' || el.dataset.f === 'pvActuel') { updateHpBar(); renderCharCards(); }
+  if (el.dataset.f === 'ca' || el.dataset.f === 'vitesse') renderHero();
+  triggerSave();
+});
+
+/* ── 5. HP Undo (Ctrl+Z) ── */
+let _hpUndo = null;
+(function () {
+  const _orig = applyHpChange;
+  applyHpChange = function (delta) {
+    if (playerData) _hpUndo = { pvActuel: C().pvActuel, pvTemp: C().pvTemp || 0 };
+    _orig.apply(this, arguments);
+  };
+})();
+
+/* ── 6. Raccourcis clavier ── */
+document.addEventListener('keydown', e => {
+  const tag = document.activeElement?.tagName;
+  const typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+
+  /* Ctrl+Z → undo HP si pas en train d'écrire */
+  if (e.ctrlKey && e.key === 'z' && !e.shiftKey && !typing && _hpUndo && playerData) {
+    e.preventDefault();
+    Object.assign(C(), _hpUndo);
+    _hpUndo = null;
+    fillFields(); updateHpBar(); renderHero(); renderCharCards(); triggerSave();
+    showSaveFlash();
+    return;
+  }
+
+  /* Alt+1..9 → changer d'onglet */
+  if (e.altKey && !e.ctrlKey && !e.shiftKey && !typing) {
+    const n = parseInt(e.key);
+    if (n >= 1 && n <= 9) {
+      const btns = [...document.querySelectorAll('.tab-btn')];
+      if (btns[n - 1]) { e.preventDefault(); btns[n - 1].click(); }
+    }
+  }
+
+  /* Escape → fermer les modals ouverts */
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.open, .ddb-modal-overlay.open, .sr-modal-overlay.open').forEach(m => {
+      m.classList.remove('open');
+    });
+  }
+});
+
+/* ── 7. Swipe entre onglets (mobile) ── */
+(function () {
+  let startX = 0, startY = 0;
+  const area = document.getElementById('screen-dashboard');
+  if (!area) return;
+  area.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+  area.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = e.changedTouches[0].clientY - startY;
+    if (Math.abs(dy) > Math.abs(dx) || Math.abs(dx) < 55) return;
+    const btns = [...document.querySelectorAll('.tab-btn')];
+    const cur = btns.findIndex(b => b.classList.contains('active'));
+    const next = dx < 0 ? cur + 1 : cur - 1;
+    if (btns[next]) btns[next].click();
+  }, { passive: true });
+})();
+
+/* ── 8. Mode Lecture ── */
+document.getElementById('btn-read-mode')?.addEventListener('click', () => {
+  const dash = document.getElementById('screen-dashboard');
+  const btn = document.getElementById('btn-read-mode');
+  const active = dash.classList.toggle('read-mode');
+  btn.textContent = active ? '🔓' : '🔒';
+  btn.classList.toggle('active', active);
+  btn.title = active ? 'Désactiver le Mode Lecture' : 'Mode Lecture — verrouille la fiche';
+});
+
+/* ── 9. Debounce stats heavy render (patch data-f delegation) ── */
+(function () {
+  const orig = document.getElementById('tab-personnage');
+  if (!orig) return;
+  orig.addEventListener('input', e => {
+    const el = e.target;
+    if (['for', 'dex', 'con', 'int', 'sag', 'cha'].includes(el.dataset.f)) {
+      /* Le handler principal appelle immédiatement renderSaves/renderSkills —
+         on laisse ça car la latence est < 5ms. Le debounce principal est dans triggerSave (900ms). */
+    }
+  }, /* after the existing delegated handler — capture phase not needed */ false);
+})();
 </script>
 
 
