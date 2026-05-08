@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
@@ -7,214 +7,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
-  <style>
-    /* ── Carte wrapper ── */
-    .map-area {
-      width: 100%;
-      background: #0a0804;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-    }
-
-    /* Controls bar */
-    .map-controls {
-      display: flex;
-      gap: 0.5rem;
-      padding: 0.6rem 1rem;
-      border-bottom: 1px solid var(--border);
-      background: var(--bg-secondary);
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .map-btn {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      color: var(--text-secondary);
-      font-family: var(--font-ui);
-      font-size: 0.7rem;
-      letter-spacing: 0.05em;
-      padding: 0.3rem 0.75rem;
-      border-radius: 3px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .map-btn:hover, .map-btn.active {
-      background: var(--bg-card-hover);
-      border-color: var(--gold-dark);
-      color: var(--gold);
-    }
-    .map-hint {
-      margin-left: auto;
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      font-style: italic;
-    }
-
-    /* Map viewport — pan & zoom container */
-    .map-viewport {
-      width: 100%;
-      aspect-ratio: 4096 / 2304;
-      overflow: hidden;
-      position: relative;
-      cursor: grab;
-      user-select: none;
-      background: #1a1208;
-    }
-    .map-viewport:active { cursor: grabbing; }
-
-    /* Inner layer that actually transforms */
-    .map-inner {
-      position: absolute;
-      inset: 0;
-      transform-origin: top left;
-      transition: transform 0.05s linear;
-    }
-
-    /* The real map image */
-    .map-img {
-      width: 100%;
-      height: 100%;
-      display: block;
-      object-fit: cover;
-      pointer-events: none;
-      image-rendering: auto;
-    }
-
-    /* Placeholder shown when image is missing */
-    .map-placeholder {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
-      background: linear-gradient(135deg, #1a1208 0%, #0d0a05 100%);
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      text-align: center;
-    }
-    .map-placeholder .placeholder-icon { font-size: 3rem; opacity: 0.4; }
-    .map-placeholder code {
-      background: var(--bg-card);
-      padding: 0.2rem 0.5rem;
-      border-radius: 3px;
-      color: var(--gold-light);
-      font-size: 0.8rem;
-    }
-
-    /* SVG overlay — covers the image exactly */
-    .map-svg-overlay {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    /* Clickable continent zones */
-    .zone {
-      cursor: pointer;
-      fill: transparent;
-      stroke: transparent;
-      stroke-width: 3;
-      transition: fill 0.2s, stroke 0.2s;
-    }
-    .zone:hover {
-      fill: rgba(201, 162, 39, 0.15);
-      stroke: rgba(201, 162, 39, 0.6);
-    }
-    .zone.active-zone {
-      fill: rgba(201, 162, 39, 0.2);
-      stroke: rgba(201, 162, 39, 0.8);
-    }
-
-    /* Floating tooltip */
-    .map-tooltip {
-      position: absolute;
-      background: rgba(17, 13, 7, 0.92);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 0.35rem 0.7rem;
-      font-family: var(--font-title);
-      font-size: 0.78rem;
-      color: var(--gold);
-      pointer-events: none;
-      display: none;
-      z-index: 100;
-      white-space: nowrap;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.7);
-    }
-
-    /* Info panel */
-    .map-info {
-      padding: 0.85rem 1.25rem;
-      border-top: 1px solid var(--border);
-      display: flex;
-      gap: 1.5rem;
-      align-items: center;
-      flex-wrap: wrap;
-      min-height: 64px;
-      background: var(--bg-secondary);
-    }
-    .map-info-icon { font-size: 1.5rem; flex-shrink: 0; }
-    .map-info-name {
-      font-family: var(--font-title);
-      color: var(--gold);
-      font-size: 1rem;
-      margin-bottom: 0.15rem;
-    }
-    .map-info-desc {
-      color: var(--text-secondary);
-      font-size: 0.82rem;
-    }
-    .map-info-link {
-      font-size: 0.78rem;
-      color: var(--gold-dark);
-      margin-top: 0.2rem;
-      display: inline-block;
-      text-decoration: none;
-    }
-    .map-info-link:hover { color: var(--gold); text-decoration: underline; }
-
-    /* Quick-nav cards */
-    .map-quick-nav {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 0.75rem;
-      margin-top: 1.5rem;
-    }
-    .map-quick-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 1rem 0.75rem;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      text-decoration: none;
-      color: var(--text-primary);
-      text-align: center;
-      transition: all 0.2s;
-    }
-    .map-quick-card:hover {
-      border-color: var(--gold-dark);
-      background: var(--bg-card-hover);
-      transform: translateY(-2px);
-    }
-    .map-quick-card .qc-icon { font-size: 1.6rem; }
-    .map-quick-card .qc-name {
-      font-family: var(--font-title);
-      font-size: 0.82rem;
-      color: var(--gold);
-    }
-    .map-quick-card .qc-desc {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-    }
-  </style>
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
@@ -227,162 +19,9 @@
   <link rel="icon" type="image/png" href="favicon.png">
 </head>
 <body>
-<nav class="top-nav">
-  <a href="index.html" class="nav-brand"><span class="nav-brand-icon">⚜</span><span class="nav-brand-text">Kaleysur</span></a>
-  <div class="nav-right">
-    <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="search-input" type="text" placeholder="Rechercher…" autocomplete="off"><div class="search-results" id="search-results"></div></div>
-    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
-  </div>
-</nav>
+<nav class="top-nav" id="main-nav"></nav>
 <div class="sidebar-overlay" id="sidebar-overlay"></div>
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-section"><div class="sidebar-section-title">Navigation</div>
-    <a href="index.html" class="sidebar-link"><span class="icon">🏠</span> Accueil</a>
-    <a href="chronologie.html" class="sidebar-link"><span class="icon">📜</span> Chronologie</a>
-    <a href="carte.html" class="sidebar-link"><span class="icon">🗺️</span> Carte du Monde</a>
-    <a href="calendrier.html" class="sidebar-link"><span class="icon">📅</span> Calendrier</a>
-    <a href="joueurs.html" class="sidebar-link"><span class="icon">🎲</span> Joueurs</a>
-  </div>
-  <hr class="sidebar-divider">
-  <div class="sidebar-section"><div class="sidebar-section-title">Astoryem</div>
-    <a href="astoryem/astoryem.html" class="sidebar-link"><span class="icon">🌐</span> Astoryem</a>
-    <a href="astoryem/feymundi.html" class="sidebar-link sidebar-sublink"><span class="icon">🏰</span> Feymundi</a>
-    <a href="astoryem/waterflow.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Waterflow</a>
-    <a href="astoryem/ville-tempete.html" class="sidebar-link sidebar-sublink"><span class="icon">⚡</span> Ville Tempête</a>
-    <a href="astoryem/arcanumbra.html" class="sidebar-link sidebar-sublink"><span class="icon">⌛</span> Arcanumbra</a>
-    <a href="astoryem/cite-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌑</span> Cité des Ombres</a>
-  </div>
-  <hr class="sidebar-divider">
-  <div class="sidebar-section"><div class="sidebar-section-title">Ayakan</div>
-    <a href="ayakan/ayakan.html" class="sidebar-link"><span class="icon">🌐</span> Ayakan</a>
-    <div class="sidebar-region-label">Grand Plateau</div>
-    <a href="ayakan/comhan-de-na.html" class="sidebar-link sidebar-sublink"><span class="icon">⚙️</span> Comhan De Na</a>
-    <a href="ayakan/grand-plateau.html" class="sidebar-link sidebar-sublink"><span class="icon">⚒️</span> Grand Plateau</a>
-    <a href="ayakan/armalak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Armalak</a>
-    <a href="ayakan/fios.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔬</span> Fios</a>
-    <a href="ayakan/indelair.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚗️</span> Indelair</a>
-    <a href="ayakan/lukd-oigrid.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Lukd Oigrid</a>
-    <a href="ayakan/lukd-naek.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🪡</span> Lukd Naek</a>
-    <a href="ayakan/lukd-tagil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏗️</span> Lukd Tagil</a>
-    <a href="ayakan/lukd-trenay.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐎</span> Lukd Trenay</a>
-    <a href="ayakan/lukd-tuanak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Lukd Tuanak</a>
-    <a href="ayakan/creidak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🕊️</span> Creidak</a>
-    <a href="ayakan/curcodak.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎪</span> Curcodak</a>
-    <div class="sidebar-region-label">Ouestvir</div>
-    <a href="ayakan/ouestvir.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Ouestvir</a>
-    <a href="ayakan/yokoki.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Yokoki</a>
-    <a href="ayakan/laryok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Laryok</a>
-    <a href="ayakan/yoklar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Yoklar</a>
-    <a href="ayakan/kasvir.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Kasvir</a>
-    <a href="ayakan/rusvar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Rusvar</a>
-    <a href="ayakan/sordas.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔔</span> Sordas</a>
-    <a href="ayakan/sunkur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Sunkur</a>
-    <a href="ayakan/portlune.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Portlune</a>
-    <a href="ayakan/kayadur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Kayadur</a>
-    <a href="ayakan/zodory.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Zodory</a>
-    <a href="ayakan/kolandur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Kolandur</a>
-    <a href="ayakan/staurdur.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Staurdur</a>
-    <div class="sidebar-region-label">Régions</div>
-        <a href="ayakan/creve-glace.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Crève Glace</a>
-    <a href="ayakan/varask.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Varask</a>
-    <a href="ayakan/mornea.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Mornea</a>
-    <a href="ayakan/thyrne.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">♨️</span> Thyrne</a>
-    <a href="ayakan/selvend.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛒</span> Selvend</a>
-    <a href="ayakan/frayakin.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Frayakin</a>
-    <a href="ayakan/solcara.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌟</span> Solcara</a>
-    <a href="ayakan/pyrael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔶</span> Pyraël</a>
-    <a href="ayakan/leth.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Leth</a>
-    <a href="ayakan/faran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Faran</a>
-    <a href="ayakan/chaines-verre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎶</span> Chaînes de Verre</a>
-  </div>
-  <hr class="sidebar-divider">
-  <div class="sidebar-section"><div class="sidebar-section-title">Musiyav</div>
-    <a href="musiyav/musiyav.html" class="sidebar-link"><span class="icon">🌐</span> Musiyav</a>
-    <div class="sidebar-region-label">Nord</div>
-    <a href="musiyav/terres-gelees.html" class="sidebar-link sidebar-sublink"><span class="icon">❄️</span> Terres Gelées</a>
-    <a href="musiyav/munabenn.html" class="sidebar-link sidebar-sublink"><span class="icon">⛏️</span> Munabenn</a>
-    <a href="musiyav/creastail.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚡</span> Creastail</a>
-    <a href="musiyav/stasmoc.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Stasmoc</a>
-    <a href="musiyav/clagrayn.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Clagrayn</a>
-    <a href="musiyav/fedhidom.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌑</span> Fedhidom</a>
-    <a href="musiyav/cricrosal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💎</span> Cricrosal</a>
-    <a href="musiyav/ellirhom.html" class="sidebar-link sidebar-sublink"><span class="icon">🍃</span> Éllirhom</a>
-    <div class="sidebar-region-label">Centre</div>
-    <a href="musiyav/murblan.html" class="sidebar-link sidebar-sublink"><span class="icon">⚖️</span> Murblan</a>
-    <a href="musiyav/bekai-keal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏙️</span> Bekai Keal</a>
-    <a href="musiyav/thylkarok.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎨</span> Thylkarok</a>
-    <a href="musiyav/carroval.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🗿</span> Carroval</a>
-    <a href="musiyav/caudherra.html" class="sidebar-link sidebar-sublink"><span class="icon">🐘</span> Caudherra</a>
-    <a href="musiyav/saldromil.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎵</span> Saldromil</a>
-    <a href="musiyav/kandor-zei.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Kandor-Zeï</a>
-    <a href="musiyav/mirsha-lu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐘</span> Mirsha Lû</a>
-    <a href="musiyav/ukar-tal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📜</span> Ukar Tal</a>
-    <a href="musiyav/brastelma.html" class="sidebar-link sidebar-sublink"><span class="icon">🌿</span> Brastelma</a>
-    <a href="musiyav/xalatlal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐆</span> Xalatlal</a>
-    <a href="musiyav/tochion.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌊</span> Tochion</a>
-    <a href="musiyav/yabalta.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌋</span> Yabalta</a>
-    <a href="musiyav/solgirne.html" class="sidebar-link sidebar-sublink"><span class="icon">🌾</span> Solgirne</a>
-    <a href="musiyav/varnestal.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Varnestal</a>
-    <a href="musiyav/linvelar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌲</span> Linvelar</a>
-    <a href="musiyav/eldmire.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🐟</span> Eldmire</a>
-    <a href="musiyav/cairondel.html" class="sidebar-link sidebar-sublink"><span class="icon">🗿</span> Cairondel</a>
-    <a href="musiyav/gravantempe.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏔️</span> Gravantempe</a>
-    <a href="musiyav/treufloran.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Treufloran</a>
-    <a href="musiyav/valtendre.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💧</span> Valtendre</a>
-    <div class="sidebar-region-label">Ouest</div>
-    <a href="musiyav/valacorra.html" class="sidebar-link sidebar-sublink"><span class="icon">⚜️</span> Valacorra</a>
-    <a href="musiyav/aunthrevin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏛️</span> Aunthrevin</a>
-    <a href="musiyav/vendrolis.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🎭</span> Vendrolis</a>
-    <a href="musiyav/darn-merath.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Darn Merath</a>
-    <a href="musiyav/dusalain.html" class="sidebar-link sidebar-sublink"><span class="icon">🏜️</span> Dusalain</a>
-    <a href="musiyav/sarathiil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌊</span> Sarathiil</a>
-    <a href="musiyav/akalima.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚓</span> Akalima</a>
-    <a href="musiyav/yndarev.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">💨</span> Yndarev</a>
-    <a href="musiyav/sillu.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌾</span> Sillu</a>
-    <div class="sidebar-region-label">Sud</div>
-    <a href="musiyav/xamaris.html" class="sidebar-link sidebar-sublink"><span class="icon">🚫</span> Xamaris</a>
-    <a href="musiyav/xakaril.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🏰</span> Xakaril</a>
-    <a href="musiyav/marolzhad.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚖️</span> Marolzhad</a>
-    <a href="musiyav/dorvenkar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚒️</span> Dorvenkar</a>
-    <a href="musiyav/naskarrem.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛏️</span> Naskarrem</a>
-    <a href="musiyav/khaelbar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⚔️</span> Khaëlbar</a>
-    <a href="musiyav/tol-vekrah.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📖</span> Tol Vekrah</a>
-    <a href="musiyav/krelsum.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🧱</span> Krelsum</a>
-    <a href="musiyav/falstrein.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🚢</span> Falstrein</a>
-    <a href="musiyav/terres-pieuses.html" class="sidebar-link sidebar-sublink"><span class="icon">✨</span> Terres Pieuses</a>
-    <a href="musiyav/templum-triarii.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">⛪</span> Templum Triarii</a>
-    <a href="musiyav/forge-vivante.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🔥</span> Forge Vivante</a>
-    <a href="musiyav/isvarun.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌅</span> Isvarun</a>
-    <a href="musiyav/callafhar.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">📚</span> Callafhar</a>
-    <a href="musiyav/auranthil.html" class="sidebar-link sidebar-sublink"><span class="icon">🌲</span> Auranthil</a>
-    <a href="musiyav/elvar-tyl.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌳</span> Elvarë Tyl</a>
-    <a href="musiyav/lunemiral.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌙</span> Lunemiral</a>
-    <a href="musiyav/miriathael.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🌿</span> Mirithaël</a>
-    <a href="musiyav/faelorrin.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">🛡️</span> Faelorrin</a>
-    <div class="sidebar-region-label">Est</div>
-    <a href="musiyav/terres-sauvages.html" class="sidebar-link sidebar-sublink"><span class="icon">🌋</span> Terres Sauvages</a>
-    <a href="musiyav/kaelyth.html" class="sidebar-link sidebar-sublink"><span class="icon">⚔️</span> Viremarche</a>
-    <a href="musiyav/briseneige.html" class="sidebar-link sidebar-sublink sidebar-sub2link"><span class="icon">❄️</span> Briseneige</a>
-    <div class="sidebar-region-label">Terres Isolées</div>
-    <a href="musiyav/tinneas.html" class="sidebar-link sidebar-sublink"><span class="icon">🦴</span> Tinneas A'Bhàis</a>
-    <a href="musiyav/shurakai.html" class="sidebar-link sidebar-sublink"><span class="icon">🌫️</span> Shurakai</a>
-    <a href="musiyav/narkun.html" class="sidebar-link sidebar-sublink"><span class="icon">🔥</span> Narkûn</a>
-  </div>
-  <hr class="sidebar-divider">
-  <div class="sidebar-section"><div class="sidebar-section-title">Régions Éloignées</div>
-    <a href="musiyav/anneau-dieux.html" class="sidebar-link"><span class="icon">⚫</span> Anneau des Dieux</a>
-    <a href="musiyav/archipel-ombres.html" class="sidebar-link sidebar-sublink"><span class="icon">🌙</span> Archipel des Ombres</a>
-    <a href="musiyav/darnobscur.html" class="sidebar-link sidebar-sublink"><span class="icon">🩸</span> Darnobscur</a>
-    <a href="musiyav/iles-hagruk.html" class="sidebar-link sidebar-sublink"><span class="icon">⚔️</span> Îles Hagruk</a>
-  </div>
-  <hr class="sidebar-divider">
-  <div class="sidebar-section"><div class="sidebar-section-title">Personnages & Lore</div>
-    <a href="lore/personnages.html" class="sidebar-link"><span class="icon">🧙</span> Personnages</a>
-    <a href="lore/journal-arzi.html" class="sidebar-link sidebar-sublink"><span class="icon">📖</span> Journal d'Arzi</a>
-    <a href="lore/organisations.html" class="sidebar-link"><span class="icon">⚔️</span> Organisations</a>
-    <a href="lore/dieux.html" class="sidebar-link"><span class="icon">✨</span> Dieux & Trinités</a>
-  </div>
-</aside>
+<aside class="sidebar" id="sidebar"></aside>
 
 <div class="page-wrapper">
   <main class="main-content">
@@ -438,172 +77,172 @@
             xmlns="http://www.w3.org/2000/svg"
           >
             <!-- ══ CRÈVE-GLACE ══ -->
-            <polygon class="zone" id="zone-creve-glace" data-name="Crève-Glace" data-icon="" data-url="ayakan/creve-glace.html" data-desc="Région glaciaire du nord — Varask, Mornea, Thyrne, Selvend" points="1995,1357 2001,1361 2020,1356 2043,1362 2063,1352 2127,1318 2135,1299 2113,1243 2095,1212 2097,1162 2080,1154 2068,1127 2066,1088 2056,1080 2046,1052 2033,1043 2022,1031 2029,1013 2006,971 1992,963 1994,935 1977,911 1966,904 1960,888 1950,886 1939,892 1928,902 1927,918 1903,924 1914,948 1911,973 1904,986 1905,1003 1892,1023 1900,1042 1878,1067 1888,1089 1885,1133 1909,1155 1909,1195 1898,1205 1881,1247 1885,1265 1878,1271 1903,1298 1924,1329 1955,1339 1988,1354"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-creve-glace" data-name="Crève-Glace" aria-label="Crève-Glace" data-icon="" data-url="ayakan/creve-glace.html" data-desc="Région glaciaire du nord — Varask, Mornea, Thyrne, Selvend" points="1995,1357 2001,1361 2020,1356 2043,1362 2063,1352 2127,1318 2135,1299 2113,1243 2095,1212 2097,1162 2080,1154 2068,1127 2066,1088 2056,1080 2046,1052 2033,1043 2022,1031 2029,1013 2006,971 1992,963 1994,935 1977,911 1966,904 1960,888 1950,886 1939,892 1928,902 1927,918 1903,924 1914,948 1911,973 1904,986 1905,1003 1892,1023 1900,1042 1878,1067 1888,1089 1885,1133 1909,1155 1909,1195 1898,1205 1881,1247 1885,1265 1878,1271 1903,1298 1924,1329 1955,1339 1988,1354"/>
             <!-- ══ AYAKAN (île centrale) ══ -->
-            <polygon class="zone" id="zone-ayakan-ile" data-name="Ayakan" data-icon="" data-url="ayakan/ayakan.html" data-desc="Le Continent des Quatre Fronts — technomagie, guildes, Grand Plateau, Ouestvir, Frayakin, Crève Glace" points="1610,1156 1630,1225 1697,1218 1697,1205 1715,1216 1830,1215 1856,1159 1799,1143 1788,1161 1788,1143 1691,1144 1610,1157"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-ayakan-ile" data-name="Ayakan" aria-label="Ayakan" data-icon="" data-url="ayakan/ayakan.html" data-desc="Le Continent des Quatre Fronts — technomagie, guildes, Grand Plateau, Ouestvir, Frayakin, Crève Glace" points="1610,1156 1630,1225 1697,1218 1697,1205 1715,1216 1830,1215 1856,1159 1799,1143 1788,1161 1788,1143 1691,1144 1610,1157"/>
             <!-- ══ LARYOK ══ -->
-            <polygon class="zone" id="zone-laryok" data-name="Laryok" data-icon="" data-url="ayakan/laryok.html" data-desc="Province Magique de Ouestvir — dirigé par le Conseil Astral" points="1556,1370 1560,1363 1628,1371 1629,1387 1638,1394 1628,1444 1595,1474 1576,1464 1559,1470 1548,1456 1527,1460 1523,1439 1534,1422 1528,1399 1555,1371"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-laryok" data-name="Laryok" aria-label="Laryok" data-icon="" data-url="ayakan/laryok.html" data-desc="Province Magique de Ouestvir — dirigé par le Conseil Astral" points="1556,1370 1560,1363 1628,1371 1629,1387 1638,1394 1628,1444 1595,1474 1576,1464 1559,1470 1548,1456 1527,1460 1523,1439 1534,1422 1528,1399 1555,1371"/>
             <!-- ══ ZODORY ══ -->
-            <polygon class="zone" id="zone-zodory" data-name="Zodory" data-icon="" data-url="ayakan/zodory.html" data-desc="Province des hauts elfes — illusion, étiquette tranchante, palais en lévitation" points="1640,1393 1705,1358 1707,1339 1725,1329 1737,1319 1767,1318 1749,1362 1722,1396 1679,1422 1627,1438"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-zodory" data-name="Zodory" aria-label="Zodory" data-icon="" data-url="ayakan/zodory.html" data-desc="Province des hauts elfes — illusion, étiquette tranchante, palais en lévitation" points="1640,1393 1705,1358 1707,1339 1725,1329 1737,1319 1767,1318 1749,1362 1722,1396 1679,1422 1627,1438"/>
             <!-- ══ SUNKUR ══ -->
-            <polygon class="zone" id="zone-sunkur" data-name="Sunkur" data-icon="" data-url="ayakan/sunkur.html" data-desc="Marécages d'Ouestvir — neutralité absolue, contrats sur peau d'anguille" points="1767,1320 1783,1311 1807,1311 1824,1296 1872,1271 1901,1296 1907,1306 1868,1342 1823,1358 1750,1361 1768,1320"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-sunkur" data-name="Sunkur" aria-label="Sunkur" data-icon="" data-url="ayakan/sunkur.html" data-desc="Marécages d'Ouestvir — neutralité absolue, contrats sur peau d'anguille" points="1767,1320 1783,1311 1807,1311 1824,1296 1872,1271 1901,1296 1907,1306 1868,1342 1823,1358 1750,1361 1768,1320"/>
             <!-- ══ KAYADUR ══ -->
-            <polygon class="zone" id="zone-kayadur" data-name="Kayadur" data-icon="" data-url="ayakan/kayadur.html" data-desc="Pays de cendre et de verre — Tour Inversée, zones d'annulation magique" points="1830,1358 1873,1342 1907,1305 1929,1334 1958,1339 1993,1360 1975,1379 1954,1396 1928,1408 1902,1412 1871,1399 1830,1416 1824,1420 1821,1396 1828,1361"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-kayadur" data-name="Kayadur" aria-label="Kayadur" data-icon="" data-url="ayakan/kayadur.html" data-desc="Pays de cendre et de verre — Tour Inversée, zones d'annulation magique" points="1830,1358 1873,1342 1907,1305 1929,1334 1958,1339 1993,1360 1975,1379 1954,1396 1928,1408 1902,1412 1871,1399 1830,1416 1824,1420 1821,1396 1828,1361"/>
             <!-- ══ YOKOKI ══ -->
-            <polygon class="zone" id="zone-yokoki" data-name="Yokoki" data-icon="" data-url="ayakan/yokoki.html" data-desc="Forêt consciente — chemins mobiles selon les intentions, Cercles de Racine" points="1720,1396 1741,1445 1763,1461 1780,1463 1799,1463 1810,1459 1824,1420 1821,1400 1829,1357 1749,1361"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-yokoki" data-name="Yokoki" aria-label="Yokoki" data-icon="" data-url="ayakan/yokoki.html" data-desc="Forêt consciente — chemins mobiles selon les intentions, Cercles de Racine" points="1720,1396 1741,1445 1763,1461 1780,1463 1799,1463 1810,1459 1824,1420 1821,1400 1829,1357 1749,1361"/>
             <!-- ══ KOLANDUR ══ -->
-            <polygon class="zone" id="zone-kolandur" data-name="Kolandur" data-icon="" data-url="ayakan/kolandur.html" data-desc="Cent Rivières, Guilde Nautique, Alchimie Naturelle" points="1758,1496 1783,1486 1798,1477 1809,1460 1775,1466 1741,1445 1720,1397 1681,1420 1629,1435 1629,1447 1593,1477 1603,1489 1630,1493 1636,1499 1653,1482 1671,1480 1690,1477 1710,1494 1722,1493 1736,1499 1755,1498"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-kolandur" data-name="Kolandur" aria-label="Kolandur" data-icon="" data-url="ayakan/kolandur.html" data-desc="Cent Rivières, Guilde Nautique, Alchimie Naturelle" points="1758,1496 1783,1486 1798,1477 1809,1460 1775,1466 1741,1445 1720,1397 1681,1420 1629,1435 1629,1447 1593,1477 1603,1489 1630,1493 1636,1499 1653,1482 1671,1480 1690,1477 1710,1494 1722,1493 1736,1499 1755,1498"/>
             <!-- ══ STAURDUR ══ -->
-            <polygon class="zone" id="zone-staurdur" data-name="Staurdur" data-icon="" data-url="ayakan/staurdur.html" data-desc="Collines arides, oracles du vent, exil" points="1831,1551 1864,1555 1898,1558 1918,1558 1943,1552 1947,1507 1958,1484 1979,1468 1997,1444 1997,1414 1987,1389 1983,1374 1994,1362 1969,1383 1959,1396 1935,1406 1912,1411 1904,1411 1870,1400 1824,1421 1807,1461 1795,1478 1781,1488 1756,1500 1773,1507 1780,1523 1822,1528 1833,1552"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-staurdur" data-name="Staurdur" aria-label="Staurdur" data-icon="" data-url="ayakan/staurdur.html" data-desc="Collines arides, oracles du vent, exil" points="1831,1551 1864,1555 1898,1558 1918,1558 1943,1552 1947,1507 1958,1484 1979,1468 1997,1444 1997,1414 1987,1389 1983,1374 1994,1362 1969,1383 1959,1396 1935,1406 1912,1411 1904,1411 1870,1400 1824,1421 1807,1461 1795,1478 1781,1488 1756,1500 1773,1507 1780,1523 1822,1528 1833,1552"/>
             <!-- ══ GRAND PLATEAU ══ -->
-            <polygon class="zone" id="zone-grand-plateau" data-name="Grand Plateau" data-icon="" data-url="ayakan/grand-plateau.html" data-desc="Terres des guildes, pays de progrès" points="2134,1310 2043,1362 2020,1355 2001,1363 1995,1364 1986,1374 1989,1393 1999,1417 1999,1442 1981,1468 1959,1486 1949,1502 1946,1536 1946,1554 1960,1565 1985,1570 2011,1566 2047,1564 2079,1561 2096,1569 2106,1548 2143,1549 2152,1537 2168,1543 2183,1531 2195,1528 2208,1546 2242,1522 2281,1518 2295,1527 2312,1523 2318,1510 2330,1510 2338,1515 2357,1509 2369,1510 2397,1527 2411,1522 2421,1511 2456,1521 2469,1517 2482,1509 2513,1520 2529,1521 2553,1516 2571,1499 2567,1485 2549,1479 2524,1458 2482,1459 2465,1448 2446,1445 2426,1446 2409,1429 2391,1429 2380,1417 2359,1423 2348,1433 2338,1430 2329,1415 2297,1398 2282,1401 2267,1383 2242,1388 2224,1385 2211,1373 2156,1355 2151,1333 2133,1323 2135,1311"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-grand-plateau" data-name="Grand Plateau" aria-label="Grand Plateau" data-icon="" data-url="ayakan/grand-plateau.html" data-desc="Terres des guildes, pays de progrès" points="2134,1310 2043,1362 2020,1355 2001,1363 1995,1364 1986,1374 1989,1393 1999,1417 1999,1442 1981,1468 1959,1486 1949,1502 1946,1536 1946,1554 1960,1565 1985,1570 2011,1566 2047,1564 2079,1561 2096,1569 2106,1548 2143,1549 2152,1537 2168,1543 2183,1531 2195,1528 2208,1546 2242,1522 2281,1518 2295,1527 2312,1523 2318,1510 2330,1510 2338,1515 2357,1509 2369,1510 2397,1527 2411,1522 2421,1511 2456,1521 2469,1517 2482,1509 2513,1520 2529,1521 2553,1516 2571,1499 2567,1485 2549,1479 2524,1458 2482,1459 2465,1448 2446,1445 2426,1446 2409,1429 2391,1429 2380,1417 2359,1423 2348,1433 2338,1430 2329,1415 2297,1398 2282,1401 2267,1383 2242,1388 2224,1385 2211,1373 2156,1355 2151,1333 2133,1323 2135,1311"/>
             <!-- ══ FRAYAKIN ══ -->
-            <polygon class="zone" id="zone-frayakin" data-name="Frayakin" data-icon="" data-url="ayakan/frayakin.html" data-desc="Terres de feu et de cendres — volcans, guerriers du soleil" points="1942,1553 1917,1562 1878,1558 1829,1553 1823,1562 1833,1598 1823,1628 1825,1637 1834,1641 1847,1643 1848,1658 1844,1667 1848,1678 1844,1691 1849,1712 1851,1725 1859,1730 1851,1746 1870,1792 1859,1824 1847,1829 1850,1848 1849,1857 1841,1874 1854,1891 1854,1898 1866,1917 1861,1935 1875,1953 1873,1968 1878,1983 1893,1987 1902,1978 1914,1970 1927,1967 1932,1957 1924,1941 1906,1937 1908,1924 1916,1918 1938,1921 1949,1903 1940,1894 1961,1875 1973,1872 1975,1846 1998,1827 1999,1808 2009,1790 2007,1778 2018,1757 2006,1736 2008,1724 2022,1717 2030,1702 2029,1681 2023,1663 2035,1644 2054,1636 2058,1614 2070,1605 2070,1589 2092,1581 2093,1569 2079,1561 2010,1566 1985,1570 1959,1565 1942,1553"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-frayakin" data-name="Frayakin" aria-label="Frayakin" data-icon="" data-url="ayakan/frayakin.html" data-desc="Terres de feu et de cendres — volcans, guerriers du soleil" points="1942,1553 1917,1562 1878,1558 1829,1553 1823,1562 1833,1598 1823,1628 1825,1637 1834,1641 1847,1643 1848,1658 1844,1667 1848,1678 1844,1691 1849,1712 1851,1725 1859,1730 1851,1746 1870,1792 1859,1824 1847,1829 1850,1848 1849,1857 1841,1874 1854,1891 1854,1898 1866,1917 1861,1935 1875,1953 1873,1968 1878,1983 1893,1987 1902,1978 1914,1970 1927,1967 1932,1957 1924,1941 1906,1937 1908,1924 1916,1918 1938,1921 1949,1903 1940,1894 1961,1875 1973,1872 1975,1846 1998,1827 1999,1808 2009,1790 2007,1778 2018,1757 2006,1736 2008,1724 2022,1717 2030,1702 2029,1681 2023,1663 2035,1644 2054,1636 2058,1614 2070,1605 2070,1589 2092,1581 2093,1569 2079,1561 2010,1566 1985,1570 1959,1565 1942,1553"/>
             <!-- ══ ZONE ASTORYEM SUD ══ -->
-            <polygon class="zone" id="zone-astoryem-sud" data-name="Astoryem" data-icon="" data-url="astoryem/astoryem.html" data-desc="Continent des Miroirs" points="2719,774 2803,797 2878,835 2868,852 2887,840 2929,868 2895,915 2787,866 2779,861 2776,853 2777,859 2711,841"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-astoryem-sud" data-name="Astoryem" aria-label="Astoryem" data-icon="" data-url="astoryem/astoryem.html" data-desc="Continent des Miroirs" points="2719,774 2803,797 2878,835 2868,852 2887,840 2929,868 2895,915 2787,866 2779,861 2776,853 2777,859 2711,841"/>
             <!-- ══ MONTAGNES DE ULTOH-KRAG ══ -->
-            <polygon class="zone" id="zone-ultoh-krag" data-name="Montagnes de Ultoh-Krag" data-icon="" data-url="astoryem/astoryem.html" data-desc="Le Cercle des Titans — grande chaîne de montagnes formant un cercle non naturel" points="2688,966 2710,986 2714,1025 2683,1024 2661,1011 2642,979 2643,949 2652,959 2665,958 2681,968 2689,966"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-ultoh-krag" data-name="Montagnes de Ultoh-Krag" aria-label="Montagnes de Ultoh-Krag" data-icon="" data-url="astoryem/astoryem.html" data-desc="Le Cercle des Titans — grande chaîne de montagnes formant un cercle non naturel" points="2688,966 2710,986 2714,1025 2683,1024 2661,1011 2642,979 2643,949 2652,959 2665,958 2681,968 2689,966"/>
             <!-- ══ CITÉ DES OMBRES ══ -->
-            <polygon class="zone" id="zone-cite-ombres" data-name="Cité des Ombres" data-icon="" data-url="astoryem/cite-ombres.html" data-desc="Cadavre d'une civilisation maudite" points="2644,949 2648,937 2640,918 2642,909 2655,903 2655,890 2644,880 2644,869 2661,847 2640,838 2645,810 2622,802 2620,780 2614,774 2617,755 2609,743 2592,743 2587,755 2565,763 2569,778 2565,790 2569,803 2581,812 2581,826 2572,853 2559,865 2560,879 2575,892 2576,909 2564,921 2564,940 2558,949 2572,992 2572,998 2587,1014 2594,1008 2591,996 2598,986 2592,975 2589,957 2599,933 2599,919 2594,886 2601,884 2604,910 2611,930 2623,938 2637,941 2646,930 2640,919"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-cite-ombres" data-name="Cité des Ombres" aria-label="Cité des Ombres" data-icon="" data-url="astoryem/cite-ombres.html" data-desc="Cadavre d'une civilisation maudite" points="2644,949 2648,937 2640,918 2642,909 2655,903 2655,890 2644,880 2644,869 2661,847 2640,838 2645,810 2622,802 2620,780 2614,774 2617,755 2609,743 2592,743 2587,755 2565,763 2569,778 2565,790 2569,803 2581,812 2581,826 2572,853 2559,865 2560,879 2575,892 2576,909 2564,921 2564,940 2558,949 2572,992 2572,998 2587,1014 2594,1008 2591,996 2598,986 2592,975 2589,957 2599,933 2599,919 2594,886 2601,884 2604,910 2611,930 2623,938 2637,941 2646,930 2640,919"/>
             <!-- ══ TERRITOIRE FEY ══ -->
-            <polygon class="zone" id="zone-territoire-fey" data-name="Territoire Fey" data-icon="" data-url="astoryem/feymundi.html" data-desc="Territoire fey sous le contrôle de Feymundi — druides nuit-étoilée, portails féeriques" points="2886,1197 2869,1211 2829,1204 2806,1193 2785,1203 2768,1192 2743,1204 2724,1191 2702,1203 2686,1197 2664,1202 2663,1228 2642,1240 2643,1264 2623,1276 2621,1300 2629,1303 2644,1300 2654,1290 2668,1291 2685,1304 2699,1293 2723,1294 2751,1272 2769,1272 2781,1262 2807,1271 2838,1281 2873,1275 2880,1287 2889,1289 2898,1280 2897,1261 2905,1248 2902,1221 2887,1198"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-territoire-fey" data-name="Territoire Fey" aria-label="Territoire Fey" data-icon="" data-url="astoryem/feymundi.html" data-desc="Territoire fey sous le contrôle de Feymundi — druides nuit-étoilée, portails féeriques" points="2886,1197 2869,1211 2829,1204 2806,1193 2785,1203 2768,1192 2743,1204 2724,1191 2702,1203 2686,1197 2664,1202 2663,1228 2642,1240 2643,1264 2623,1276 2621,1300 2629,1303 2644,1300 2654,1290 2668,1291 2685,1304 2699,1293 2723,1294 2751,1272 2769,1272 2781,1262 2807,1271 2838,1281 2873,1275 2880,1287 2889,1289 2898,1280 2897,1261 2905,1248 2902,1221 2887,1198"/>
             <!-- ══ MHORILLÉ ══ -->
-            <polygon class="zone" id="zone-mhorille" data-name="Mhorillé" data-icon="" data-url="astoryem/astoryem.html" data-desc="Grande forêt sylvestre qui respire la magie" points="2666,1200 2672,1182 2664,1173 2661,1169 2659,1166 2657,1158 2657,1151 2657,1146 2665,1136 2658,1129 2653,1125 2647,1108 2649,1101 2651,1089 2656,1075 2646,1061 2650,1035 2658,1026 2661,1011 2642,979 2643,948 2643,945 2633,949 2626,949 2615,945 2599,920 2600,933 2589,957 2592,975 2598,986 2592,996 2594,1008 2588,1014 2578,1025 2578,1040 2583,1046 2583,1063 2587,1071 2593,1090 2580,1103 2578,1114 2579,1123 2590,1132 2588,1151 2579,1168 2578,1179 2588,1193 2604,1195 2596,1222 2592,1244 2602,1255 2616,1262 2624,1266 2627,1274 2643,1263 2642,1239 2663,1227 2663,1205"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-mhorille" data-name="Mhorillé" aria-label="Mhorillé" data-icon="" data-url="astoryem/astoryem.html" data-desc="Grande forêt sylvestre qui respire la magie" points="2666,1200 2672,1182 2664,1173 2661,1169 2659,1166 2657,1158 2657,1151 2657,1146 2665,1136 2658,1129 2653,1125 2647,1108 2649,1101 2651,1089 2656,1075 2646,1061 2650,1035 2658,1026 2661,1011 2642,979 2643,948 2643,945 2633,949 2626,949 2615,945 2599,920 2600,933 2589,957 2592,975 2598,986 2592,996 2594,1008 2588,1014 2578,1025 2578,1040 2583,1046 2583,1063 2587,1071 2593,1090 2580,1103 2578,1114 2579,1123 2590,1132 2588,1151 2579,1168 2578,1179 2588,1193 2604,1195 2596,1222 2592,1244 2602,1255 2616,1262 2624,1266 2627,1274 2643,1263 2642,1239 2663,1227 2663,1205"/>
             <!-- ══ VILLE TEMPÊTE ══ -->
-            <polygon class="zone" id="zone-ville-tempete" data-name="Ville Tempête" data-icon="" data-url="astoryem/ville-tempete.html" data-desc="Foyer des Bestiaux sur Astoryem" points="2663,1134 2683,1121 2703,1132 2723,1120 2724,1109 2706,1097 2701,1085 2696,1066 2677,1053 2651,1035 2646,1061 2657,1073 2652,1090 2647,1108 2653,1126 2662,1133"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-ville-tempete" data-name="Ville Tempête" aria-label="Ville Tempête" data-icon="" data-url="astoryem/ville-tempete.html" data-desc="Foyer des Bestiaux sur Astoryem" points="2663,1134 2683,1121 2703,1132 2723,1120 2724,1109 2706,1097 2701,1085 2696,1066 2677,1053 2651,1035 2646,1061 2657,1073 2652,1090 2647,1108 2653,1126 2662,1133"/>
             <!-- ══ ARCANUMBRA ══ -->
-            <polygon class="zone" id="zone-arcanumbra" data-name="Arcanumbra" data-icon="" data-url="astoryem/arcanumbra.html" data-desc="Cité religieuse à l'ombre de la Tour des Sœurs du Temps — grand relais économique" points="2872,1155 2848,1167 2849,1183 2867,1188 2887,1189 2887,1167 2873,1155"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-arcanumbra" data-name="Arcanumbra" aria-label="Arcanumbra" data-icon="" data-url="astoryem/arcanumbra.html" data-desc="Cité religieuse à l'ombre de la Tour des Sœurs du Temps — grand relais économique" points="2872,1155 2848,1167 2849,1183 2867,1188 2887,1189 2887,1167 2873,1155"/>
             <!-- ══ TERRES LIBRES ══ -->
-            <polygon class="zone" id="zone-terres-libres" data-name="Terres Libres" data-icon="" data-url="astoryem/astoryem.html" data-desc="Terres disputées entre factions d'Astoryem" points="2665,1043 2667,1040 2672,1040 2688,1050 2702,1060 2710,1087 2716,1093 2728,1099 2768,1112 2805,1128 2818,1139 2825,1149 2830,1160 2834,1172 2840,1179 2848,1181 2847,1169 2875,1156 2857,1151 2854,1133 2861,1122 2851,1115 2850,1095 2821,1095 2810,1089 2791,1095 2778,1081 2749,1084 2734,1064 2705,1044 2703,1024 2683,1025 2662,1013 2659,1026 2651,1036 2663,1044"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-terres-libres" data-name="Terres Libres" aria-label="Terres Libres" data-icon="" data-url="astoryem/astoryem.html" data-desc="Terres disputées entre factions d'Astoryem" points="2665,1043 2667,1040 2672,1040 2688,1050 2702,1060 2710,1087 2716,1093 2728,1099 2768,1112 2805,1128 2818,1139 2825,1149 2830,1160 2834,1172 2840,1179 2848,1181 2847,1169 2875,1156 2857,1151 2854,1133 2861,1122 2851,1115 2850,1095 2821,1095 2810,1089 2791,1095 2778,1081 2749,1084 2734,1064 2705,1044 2703,1024 2683,1025 2662,1013 2659,1026 2651,1036 2663,1044"/>
             <!-- ══ ILE MARIE ══ -->
-            <polygon class="zone" id="zone-ile-marie" data-name="Ile Marie" data-icon="" data-url="astoryem/astoryem.html" data-desc="Ancien refuge entre les plaines" points="2967,1089 2961,1109 2956,1115 2963,1141 2974,1143 2993,1110 2987,1090 2992,1079 2987,1068 2973,1062 2958,1046 2943,1056 2943,1068 2950,1079 2960,1081 2967,1088"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-ile-marie" data-name="Ile Marie" aria-label="Ile Marie" data-icon="" data-url="astoryem/astoryem.html" data-desc="Ancien refuge entre les plaines" points="2967,1089 2961,1109 2956,1115 2963,1141 2974,1143 2993,1110 2987,1090 2992,1079 2987,1068 2973,1062 2958,1046 2943,1056 2943,1068 2950,1079 2960,1081 2967,1088"/>
             <!-- ══ XAMARIS ══ -->
-            <polygon class="zone" id="zone-xamaris" data-name="Xamaris" data-icon="" data-url="musiyav/xamaris.html" data-desc="Région austère, sèche et presque stérile" points="2964,1809 2995,1832 3012,1856 3018,1880 2999,1908 2981,1902 2978,1882 2969,1864 2957,1843 2971,1824 2956,1772 2968,1751 2963,1737 2965,1713 2991,1709 3016,1730 3089,1716 3103,1727 3118,1713 3183,1697 3237,1682 3252,1699 3264,1760 3238,1803 3194,1816 3178,1847 3147,1914 3119,1943 3064,1946 3041,1958 3024,1968 3003,1956 2994,1963 2978,1946 2983,1931 3003,1920 2980,1901 3002,1920 2983,1931 2978,1945 2995,1964 3003,1955 3026,1967 3044,1959 3049,1945 3067,1945 3121,1941 3146,1913 3178,1846 3194,1816 3238,1800 3263,1761 3252,1699 3237,1681 3184,1700 3116,1716 3102,1730 3087,1716 3015,1732 2991,1711 2969,1715"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-xamaris" data-name="Xamaris" aria-label="Xamaris" data-icon="" data-url="musiyav/xamaris.html" data-desc="Région austère, sèche et presque stérile" points="2964,1809 2995,1832 3012,1856 3018,1880 2999,1908 2981,1902 2978,1882 2969,1864 2957,1843 2971,1824 2956,1772 2968,1751 2963,1737 2965,1713 2991,1709 3016,1730 3089,1716 3103,1727 3118,1713 3183,1697 3237,1682 3252,1699 3264,1760 3238,1803 3194,1816 3178,1847 3147,1914 3119,1943 3064,1946 3041,1958 3024,1968 3003,1956 2994,1963 2978,1946 2983,1931 3003,1920 2980,1901 3002,1920 2983,1931 2978,1945 2995,1964 3003,1955 3026,1967 3044,1959 3049,1945 3067,1945 3121,1941 3146,1913 3178,1846 3194,1816 3238,1800 3263,1761 3252,1699 3237,1681 3184,1700 3116,1716 3102,1730 3087,1716 3015,1732 2991,1711 2969,1715"/>
             <!-- ══ TINNEAS A'BHÀIS ══ -->
-            <polygon class="zone" id="zone-tinneas-a-bhais" data-name="Tinneas A'Bhàis" data-icon="" data-url="musiyav/tinneas.html" data-desc="Anciennement l'île de la joie, son nom veut aujourd'hui dire La Maladie de La Morte" points="3003,1411 2962,1445 2933,1467 2932,1493 2975,1525 3000,1528 3031,1527 3063,1556 3097,1568 3144,1555 3160,1487 3183,1498 3196,1493 3206,1467 3230,1412 3219,1363 3202,1343 3219,1320 3210,1305 3185,1301 3144,1324 3093,1308 3080,1316 3061,1316 3044,1319 3022,1311 3012,1333 3024,1377 3020,1399 3003,1411"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-tinneas-a-bhais" data-name="Tinneas A'Bhàis" aria-label="Tinneas A'Bhàis" data-icon="" data-url="musiyav/tinneas.html" data-desc="Anciennement l'île de la joie, son nom veut aujourd'hui dire La Maladie de La Morte" points="3003,1411 2962,1445 2933,1467 2932,1493 2975,1525 3000,1528 3031,1527 3063,1556 3097,1568 3144,1555 3160,1487 3183,1498 3196,1493 3206,1467 3230,1412 3219,1363 3202,1343 3219,1320 3210,1305 3185,1301 3144,1324 3093,1308 3080,1316 3061,1316 3044,1319 3022,1311 3012,1333 3024,1377 3020,1399 3003,1411"/>
             <!-- ══ ELLIRHOM ══ -->
-            <polygon class="zone" id="zone-ellirhom" data-name="Éllirhom" data-icon="" data-url="musiyav/ellirhom.html" data-desc="Forêt du Reflet, saturée de magie, terres sylvanes" points="2966,1715 2963,1737 2970,1752 2956,1775 2966,1809 2996,1833 3012,1855 3021,1881 2997,1908 3002,1922 2984,1932 2978,1944 2995,1963 3004,1955 3026,1967 3044,1959 3049,1945 3067,1945 3121,1941 3146,1913 3178,1846 3194,1816 3238,1800 3263,1761 3252,1699 3237,1681 3184,1700 3116,1716 3102,1730 3087,1716 3015,1732 2991,1711 2969,1715"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-ellirhom" data-name="Éllirhom" aria-label="Éllirhom" data-icon="" data-url="musiyav/ellirhom.html" data-desc="Forêt du Reflet, saturée de magie, terres sylvanes" points="2966,1715 2963,1737 2970,1752 2956,1775 2966,1809 2996,1833 3012,1855 3021,1881 2997,1908 3002,1922 2984,1932 2978,1944 2995,1963 3004,1955 3026,1967 3044,1959 3049,1945 3067,1945 3121,1941 3146,1913 3178,1846 3194,1816 3238,1800 3263,1761 3252,1699 3237,1681 3184,1700 3116,1716 3102,1730 3087,1716 3015,1732 2991,1711 2969,1715"/>
             <!-- ══ TERRES PIEUSES ══ -->
-            <polygon class="zone" id="zone-terres-pieuses" data-name="Terres Pieuses" data-icon="" data-url="musiyav/terres-pieuses.html" data-desc="Vaste plateau de vallées fertiles, terres religieuses de Kaleysur" points="3110,1960 3222,1938 3268,1968 3399,1937 3465,1899 3509,1847 3604,1792 3657,1817 3611,1873 3641,2047 3620,2160 3577,2195 3247,2178 3065,2136 3015,2082 3001,2008"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-terres-pieuses" data-name="Terres Pieuses" aria-label="Terres Pieuses" data-icon="" data-url="musiyav/terres-pieuses.html" data-desc="Vaste plateau de vallées fertiles, terres religieuses de Kaleysur" points="3110,1960 3222,1938 3268,1968 3399,1937 3465,1899 3509,1847 3604,1792 3657,1817 3611,1873 3641,2047 3620,2160 3577,2195 3247,2178 3065,2136 3015,2082 3001,2008"/>
             <!-- ══ TERRES SAUVAGES ══ -->
-            <polygon class="zone" id="zone-terres-sauvages" data-name="Terres Sauvages" data-icon="" data-url="musiyav/terres-sauvages.html" data-desc="Royaume d'instinct, de ruines et de résistance" points="3736,2002 3855,2107 3864,2155 3784,2201 3659,2205 3638,2132 3643,1885 3787,1743 3730,1663 3638,1661 3624,1657 3622,1509 3660,1424 3737,1270 3786,1235 3809,1234 3859,1246 3909,1269 3938,1288 3947,1347 3951,1608 3942,1938 3899,1973 3768,1988 3736,2002"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-terres-sauvages" data-name="Terres Sauvages" aria-label="Terres Sauvages" data-icon="" data-url="musiyav/terres-sauvages.html" data-desc="Royaume d'instinct, de ruines et de résistance" points="3736,2002 3855,2107 3864,2155 3784,2201 3659,2205 3638,2132 3643,1885 3787,1743 3730,1663 3638,1661 3624,1657 3622,1509 3660,1424 3737,1270 3786,1235 3809,1234 3859,1246 3909,1269 3938,1288 3947,1347 3951,1608 3942,1938 3899,1973 3768,1988 3736,2002"/>
             <!-- ══ NARKUN ══ -->
-            <polygon class="zone" id="zone-narkun" data-name="Narkun" data-icon="" data-url="musiyav/narkun.html" data-desc="Région volcanique isolée — laves, créatures de feu primordiales" points="3113,1963 3220,1945 3271,1969 3245,2042 3255,2050 3275,2022 3308,2017 3326,2019 3325,2058 3217,2171 3051,2135 3014,2084 3000,2007 3110,1962"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-narkun" data-name="Narkun" aria-label="Narkun" data-icon="" data-url="musiyav/narkun.html" data-desc="Région volcanique isolée — laves, créatures de feu primordiales" points="3113,1963 3220,1945 3271,1969 3245,2042 3255,2050 3275,2022 3308,2017 3326,2019 3325,2058 3217,2171 3051,2135 3014,2084 3000,2007 3110,1962"/>
             <!-- ══ MURBLAN ══ -->
-            <polygon class="zone" id="zone-murblan" data-name="Murblan" data-icon="" data-url="musiyav/murblan.html" data-desc="Presqu'île lumineuse — capitale Bekai Keal, grand mur de marbre" points="3565,1517 3613,1497 3621,1508 3623,1656 3594,1672 3571,1665 3560,1673 3539,1674 3528,1688 3480,1692 3472,1671 3488,1652 3478,1626 3480,1609 3474,1594 3481,1577 3503,1570 3520,1586 3544,1572 3561,1571 3578,1559 3595,1556 3590,1542 3569,1536 3566,1517"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-murblan" data-name="Murblan" aria-label="Murblan" data-icon="" data-url="musiyav/murblan.html" data-desc="Presqu'île lumineuse — capitale Bekai Keal, grand mur de marbre" points="3565,1517 3613,1497 3621,1508 3623,1656 3594,1672 3571,1665 3560,1673 3539,1674 3528,1688 3480,1692 3472,1671 3488,1652 3478,1626 3480,1609 3474,1594 3481,1577 3503,1570 3520,1586 3544,1572 3561,1571 3578,1559 3595,1556 3590,1542 3569,1536 3566,1517"/>
             <!-- ══ CAUDHERRA ══ -->
-            <polygon class="zone" id="zone-caudherra" data-name="Caudherra" data-icon="" data-url="musiyav/caudherra.html" data-desc="Terres de la jungle centrale — éléphants, chefs de guerre" points="3452,1372 3462,1421 3481,1459 3481,1485 3501,1507 3518,1490 3545,1506 3553,1518 3566,1517 3613,1497 3621,1446 3571,1442 3528,1433"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-caudherra" data-name="Caudherra" aria-label="Caudherra" data-icon="" data-url="musiyav/caudherra.html" data-desc="Terres de la jungle centrale — éléphants, chefs de guerre" points="3452,1372 3462,1421 3481,1459 3481,1485 3501,1507 3518,1490 3545,1506 3553,1518 3566,1517 3613,1497 3621,1446 3571,1442 3528,1433"/>
             <!-- ══ SOLGIRNE ══ -->
-            <polygon class="zone" id="zone-solgirne" data-name="Solgirne" data-icon="" data-url="musiyav/solgirne.html" data-desc="Terres agricoles dorées — greniers de Musiyav" points="3445,1290 3438,1353 3453,1374 3528,1432 3571,1441 3619,1445 3614,1434 3596,1430 3582,1381 3575,1361 3561,1354 3558,1339 3507,1309 3493,1308 3463,1290 3445,1291"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-solgirne" data-name="Solgirne" aria-label="Solgirne" data-icon="" data-url="musiyav/solgirne.html" data-desc="Terres agricoles dorées — greniers de Musiyav" points="3445,1290 3438,1353 3453,1374 3528,1432 3571,1441 3619,1445 3614,1434 3596,1430 3582,1381 3575,1361 3561,1354 3558,1339 3507,1309 3493,1308 3463,1290 3445,1291"/>
             <!-- ══ BRASTELMA ══ -->
-            <polygon class="zone" id="zone-brastelma" data-name="Brastelma" data-icon="" data-url="musiyav/brastelma.html" data-desc="Forêts tropicales et cités flottantes de la côte ouest" points="3450,1372 3461,1421 3480,1460 3480,1483 3457,1493 3431,1503 3388,1491 3359,1482 3332,1464 3300,1440 3295,1417 3295,1399 3367,1402 3421,1390 3451,1374"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-brastelma" data-name="Brastelma" aria-label="Brastelma" data-icon="" data-url="musiyav/brastelma.html" data-desc="Forêts tropicales et cités flottantes de la côte ouest" points="3450,1372 3461,1421 3480,1460 3480,1483 3457,1493 3431,1503 3388,1491 3359,1482 3332,1464 3300,1440 3295,1417 3295,1399 3367,1402 3421,1390 3451,1374"/>
             <!-- ══ CAIRONDEL ══ -->
-            <polygon class="zone" id="zone-cairondel" data-name="Cairondel" data-icon="" data-url="musiyav/cairondel.html" data-desc="Landes de pierres levées et de mégalithes anciens" points="3445,1292 3403,1268 3387,1273 3377,1285 3350,1296 3332,1338 3291,1387 3293,1398 3367,1401 3421,1389 3451,1373 3435,1352"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-cairondel" data-name="Cairondel" aria-label="Cairondel" data-icon="" data-url="musiyav/cairondel.html" data-desc="Landes de pierres levées et de mégalithes anciens" points="3445,1292 3403,1268 3387,1273 3377,1285 3350,1296 3332,1338 3291,1387 3293,1398 3367,1401 3421,1389 3451,1373 3435,1352"/>
             <!-- ══ VALACORRA ══ -->
-            <polygon class="zone" id="zone-valacorra" data-name="Valacorra" data-icon="" data-url="musiyav/valacorra.html" data-desc="Côte ouest — ports, commerce maritime, noblesse marchande" points="3398,1267 3435,1284 3411,1244 3382,1243 3368,1230 3344,1237 3291,1233 3271,1247 3265,1272 3276,1290 3262,1324 3267,1348 3271,1373 3286,1381 3291,1393 3333,1336 3349,1295 3376,1283 3387,1273 3400,1269"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-valacorra" data-name="Valacorra" aria-label="Valacorra" data-icon="" data-url="musiyav/valacorra.html" data-desc="Côte ouest — ports, commerce maritime, noblesse marchande" points="3398,1267 3435,1284 3411,1244 3382,1243 3368,1230 3344,1237 3291,1233 3271,1247 3265,1272 3276,1290 3262,1324 3267,1348 3271,1373 3286,1381 3291,1393 3333,1336 3349,1295 3376,1283 3387,1273 3400,1269"/>
             <!-- ══ DUSALAIN ══ -->
-            <polygon class="zone" id="zone-dusalain" data-name="Dusalain" data-icon="" data-url="musiyav/dusalain.html" data-desc="Terres désertiques de l'ouest — tribus nomades, secrets enfouis" points="3290,1233 3302,1220 3292,1208 3320,1214 3345,1202 3362,1179 3364,1164 3354,1148 3353,1138 3373,1115 3375,1087 3406,1093 3408,1108 3424,1117 3450,1106 3464,1101 3495,1107 3535,1141 3558,1164 3488,1198 3458,1234 3465,1263 3443,1252 3450,1230 3435,1213 3416,1221 3401,1219 3410,1243 3383,1243 3367,1232 3340,1239"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-dusalain" data-name="Dusalain" aria-label="Dusalain" data-icon="" data-url="musiyav/dusalain.html" data-desc="Terres désertiques de l'ouest — tribus nomades, secrets enfouis" points="3290,1233 3302,1220 3292,1208 3320,1214 3345,1202 3362,1179 3364,1164 3354,1148 3353,1138 3373,1115 3375,1087 3406,1093 3408,1108 3424,1117 3450,1106 3464,1101 3495,1107 3535,1141 3558,1164 3488,1198 3458,1234 3465,1263 3443,1252 3450,1230 3435,1213 3416,1221 3401,1219 3410,1243 3383,1243 3367,1232 3340,1239"/>
             <!-- ══ VIREMARCHE ══ -->
-            <polygon class="zone" id="zone-viremarche" data-name="Viremarche" data-icon="" data-url="musiyav/kaelyth.html" data-desc="Cité des Chevaliers du Lys — forteresse de l'est, gardiens du nord" points="3592,1021 3577,1069 3558,1163 3487,1199 3458,1232 3466,1265 3561,1313 3604,1284 3706,1150 3706,1129 3844,1150 3931,1081 3953,1011 3849,1047 3781,1050 3710,1042 3633,1028"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-viremarche" data-name="Viremarche" aria-label="Viremarche" data-icon="" data-url="musiyav/kaelyth.html" data-desc="Cité des Chevaliers du Lys — forteresse de l'est, gardiens du nord" points="3592,1021 3577,1069 3558,1163 3487,1199 3458,1232 3466,1265 3561,1313 3604,1284 3706,1150 3706,1129 3844,1150 3931,1081 3953,1011 3849,1047 3781,1050 3710,1042 3633,1028"/>
             <!-- ══ TERRES GELÉES ══ -->
-            <polygon class="zone" id="zone-terres-gelees" data-name="Terres Gelées" data-icon="" data-url="musiyav/terres-gelees.html" data-desc="Remparts givrés du nord — forts des Chevaliers du Lys contre les raids Hagruk" points="3552,734 3600,796 3630,811 3636,870 3634,924 3608,981 3631,1027 3774,1049 3852,1046 3953,1011 3933,936 3947,909 3929,876 3936,861 3897,837 3898,815 3857,742 3805,689 3714,681 3612,693 3558,719"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-terres-gelees" data-name="Terres Gelées" aria-label="Terres Gelées" data-icon="" data-url="musiyav/terres-gelees.html" data-desc="Remparts givrés du nord — forts des Chevaliers du Lys contre les raids Hagruk" points="3552,734 3600,796 3630,811 3636,870 3634,924 3608,981 3631,1027 3774,1049 3852,1046 3953,1011 3933,936 3947,909 3929,876 3936,861 3897,837 3898,815 3857,742 3805,689 3714,681 3612,693 3558,719"/>
             <!-- ══ SARATHIIL ══ -->
-            <polygon class="zone" id="zone-sarathiil" data-name="Sarathiil" data-icon="" data-url="musiyav/sarathiil.html" data-desc="Côtes battues par les vents — ports de pêche, familles rivales" points="3187,939 3200,933 3223,936 3267,927 3269,950 3338,987 3358,1020 3380,1062 3375,1086 3371,1117 3350,1142 3365,1166 3349,1196 3321,1210 3291,1207 3286,1192 3298,1175 3273,1070 3263,1040 3230,1025 3213,987 3223,965 3196,959"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-sarathiil" data-name="Sarathiil" aria-label="Sarathiil" data-icon="" data-url="musiyav/sarathiil.html" data-desc="Côtes battues par les vents — ports de pêche, familles rivales" points="3187,939 3200,933 3223,936 3267,927 3269,950 3338,987 3358,1020 3380,1062 3375,1086 3371,1117 3350,1142 3365,1166 3349,1196 3321,1210 3291,1207 3286,1192 3298,1175 3273,1070 3263,1040 3230,1025 3213,987 3223,965 3196,959"/>
             <!-- ══ ÉLLIRHOM (forêt) ══ -->
-            <polygon class="zone" id="zone-ellirhom-foret" data-name="Éllirhom" data-icon="" data-url="musiyav/ellirhom.html" data-desc="Forêt du Reflet — saturée de magie sylvane" points="3266,929 3272,936 3288,926 3288,912 3297,898 3294,877 3308,833 3326,811 3351,808 3358,823 3383,811 3403,825 3393,848 3400,858 3425,844 3451,857 3476,832 3516,834 3547,874 3542,940 3529,976 3586,1003 3593,1021 3578,1065 3536,1080 3465,1081 3407,1070 3406,1093 3376,1087 3381,1061 3357,1019 3337,985 3268,950"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-ellirhom-foret" data-name="Éllirhom" aria-label="Éllirhom" data-icon="" data-url="musiyav/ellirhom.html" data-desc="Forêt du Reflet — saturée de magie sylvane" points="3266,929 3272,936 3288,926 3288,912 3297,898 3294,877 3308,833 3326,811 3351,808 3358,823 3383,811 3403,825 3393,848 3400,858 3425,844 3451,857 3476,832 3516,834 3547,874 3542,940 3529,976 3586,1003 3593,1021 3578,1065 3536,1080 3465,1081 3407,1070 3406,1093 3376,1087 3381,1061 3357,1019 3337,985 3268,950"/>
             <!-- ══ MUNABENN ══ -->
-            <polygon class="zone" id="zone-munabenn" data-name="Munabenn" data-icon="" data-url="musiyav/munabenn.html" data-desc="Mines du nord — fer, cristaux et villes creusées dans la roche" points="3134,774 3130,784 3136,801 3120,849 3131,872 3159,883 3168,906 3183,917 3184,939 3202,931 3222,933 3268,924 3268,914 3274,903 3270,889 3262,880 3262,868 3272,860 3262,834 3276,825 3283,813 3304,804 3326,770 3307,753 3268,733 3191,740 3162,761"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-munabenn" data-name="Munabenn" aria-label="Munabenn" data-icon="" data-url="musiyav/munabenn.html" data-desc="Mines du nord — fer, cristaux et villes creusées dans la roche" points="3134,774 3130,784 3136,801 3120,849 3131,872 3159,883 3168,906 3183,917 3184,939 3202,931 3222,933 3268,924 3268,914 3274,903 3270,889 3262,880 3262,868 3272,860 3262,834 3276,825 3283,813 3304,804 3326,770 3307,753 3268,733 3191,740 3162,761"/>
             <!-- ══ ÎLES HAGRUK ══ -->
-            <polygon class="zone" id="zone-iles-hagruk" data-name="Îles Hagruk" data-icon="" data-url="musiyav/iles-hagruk.html" data-desc="Archipel gelé des clans orcs vikings — drakkars noirs, raid perpétuels" points="3535,190 3404,298 3403,379 3448,476 3495,533 3563,575 3677,587 3807,538 3883,473 3920,404 3928,329 3907,251 3836,201 3782,190 3622,195"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-iles-hagruk" data-name="Îles Hagruk" aria-label="Îles Hagruk" data-icon="" data-url="musiyav/iles-hagruk.html" data-desc="Archipel gelé des clans orcs vikings — drakkars noirs, raid perpétuels" points="3535,190 3404,298 3403,379 3448,476 3495,533 3563,575 3677,587 3807,538 3883,473 3920,404 3928,329 3907,251 3836,201 3782,190 3622,195"/>
             <!-- ══ ANNEAU DES DIEUX — Archipel ══ -->
             <!-- La Plaine -->
-            <polygon class="zone" id="zone-la-plaine" data-name="La Plaine" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 1 de l'Anneau des Dieux" points="2053,473 2023,494 1988,564 2004,599 2020,599 2045,577 2057,537 2062,522 2082,547 2103,557 2116,553 2124,564 2147,573 2188,568 2190,554 2176,539 2143,526 2114,526 2091,498 2072,491"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-la-plaine" data-name="La Plaine" aria-label="La Plaine" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 1 de l'Anneau des Dieux" points="2053,473 2023,494 1988,564 2004,599 2020,599 2045,577 2057,537 2062,522 2082,547 2103,557 2116,553 2124,564 2147,573 2188,568 2190,554 2176,539 2143,526 2114,526 2091,498 2072,491"/>
             <!-- Château de Cristal -->
-            <polygon class="zone" id="zone-chateau-cristal" data-name="Château de Cristal" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 2 de l'Anneau des Dieux" points="1948,450 1968,447 1988,460 2001,481 1991,500 1962,496 1942,473 1945,451"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-chateau-cristal" data-name="Château de Cristal" aria-label="Château de Cristal" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 2 de l'Anneau des Dieux" points="1948,450 1968,447 1988,460 2001,481 1991,500 1962,496 1942,473 1945,451"/>
             <!-- Trône Tordu -->
-            <polygon class="zone" id="zone-trone-tordu" data-name="Trône Tordu" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 4 — domaine des fomorians psioniques et de Morbhan le Scellé" points="2078,319 2101,330 2083,346 2091,373 2106,366 2130,385 2147,426 2113,452 2072,452 2057,406 2066,377 2063,351 2063,333"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-trone-tordu" data-name="Trône Tordu" aria-label="Trône Tordu" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 4 — domaine des fomorians psioniques et de Morbhan le Scellé" points="2078,319 2101,330 2083,346 2091,373 2106,366 2130,385 2147,426 2113,452 2072,452 2057,406 2066,377 2063,351 2063,333"/>
             <!-- Fort Naga -->
-            <polygon class="zone" id="zone-fort-naga" data-name="Fort Naga" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 5 — forteresse mi-engloutie dominée par des nagas immortels" points="1962,325 1975,314 1993,324 2010,315 2016,336 1995,346 2010,363 2028,360 2036,386 2023,411 1990,421 1979,412 1976,384 1992,383"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-fort-naga" data-name="Fort Naga" aria-label="Fort Naga" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 5 — forteresse mi-engloutie dominée par des nagas immortels" points="1962,325 1975,314 1993,324 2010,315 2016,336 1995,346 2010,363 2028,360 2036,386 2023,411 1990,421 1979,412 1976,384 1992,383"/>
             <!-- Sanctuaire de l'Équilibre Profané -->
-            <polygon class="zone" id="zone-sanctuaire" data-name="Sanctuaire de l'Équilibre Profané" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 3 — plaine brisée et temple dual entre ordre et chaos" points="1795,403 1854,404 1859,384 1832,341 1849,324 1891,335 1913,362 1889,388 1899,406 1946,412 1960,394 1935,372 1935,349 1920,303 1868,292 1830,296 1811,309 1802,347 1791,383 1789,399 1793,404"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-sanctuaire" data-name="Sanctuaire de l'Équilibre Profané" aria-label="Sanctuaire de l'Équilibre Profané" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 3 — plaine brisée et temple dual entre ordre et chaos" points="1795,403 1854,404 1859,384 1832,341 1849,324 1891,335 1913,362 1889,388 1899,406 1946,412 1960,394 1935,372 1935,349 1920,303 1868,292 1830,296 1811,309 1802,347 1791,383 1789,399 1793,404"/>
             <!-- L'Assemblée Primordiale -->
-            <polygon class="zone" id="zone-assemblee-primordiale" data-name="L'Assemblée Primordiale" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 8 — sanctuaire des géants primordiaux autour du Pilier-Monde" points="1730,289 1725,320 1721,369 1735,406 1765,397 1784,360 1798,331 1799,300 1764,290 1756,297 1730,287"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-assemblee-primordiale" data-name="L'Assemblée Primordiale" aria-label="L'Assemblée Primordiale" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 8 — sanctuaire des géants primordiaux autour du Pilier-Monde" points="1730,289 1725,320 1721,369 1735,406 1765,397 1784,360 1798,331 1799,300 1764,290 1756,297 1730,287"/>
             <!-- Orbe de Nuage -->
-            <polygon class="zone" id="zone-orbe-nuage" data-name="Orbe de Nuage" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 6 — avant-poste infernal de Zargothrak le Stratège Rouge" points="1925,221 1964,229 1984,260 1961,310 1900,292 1898,248"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-orbe-nuage" data-name="Orbe de Nuage" aria-label="Orbe de Nuage" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 6 — avant-poste infernal de Zargothrak le Stratège Rouge" points="1925,221 1964,229 1984,260 1961,310 1900,292 1898,248"/>
             <!-- Archipel des Ombres (île) -->
-            <polygon class="zone" id="zone-anneau-archipel-ombres" data-name="Archipel des Ombres" data-icon="" data-url="musiyav/archipel-ombres.html" data-desc="Île 10 — brume éternelle, vampires et ombres dansantes" points="2009,182 2012,206 2029,226 2046,244 2031,252 2011,255 2006,304 2023,314 2038,314 2070,317 2084,292 2092,264 2084,213 2067,191 2033,177"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-anneau-archipel-ombres" data-name="Archipel des Ombres" aria-label="Archipel des Ombres" data-icon="" data-url="musiyav/archipel-ombres.html" data-desc="Île 10 — brume éternelle, vampires et ombres dansantes" points="2009,182 2012,206 2029,226 2046,244 2031,252 2011,255 2006,304 2023,314 2038,314 2070,317 2084,292 2092,264 2084,213 2067,191 2033,177"/>
             <!-- Domaine Vampire -->
-            <polygon class="zone" id="zone-domaine-vampire" data-name="Domaine Vampire" data-icon="" data-url="musiyav/archipel-ombres.html" data-desc="Île 11 — domaine vampire, nuit permanente" points="1977,206 1996,204 2008,217 1995,241 1979,239 1967,221 1976,206"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-domaine-vampire" data-name="Domaine Vampire" aria-label="Domaine Vampire" data-icon="" data-url="musiyav/archipel-ombres.html" data-desc="Île 11 — domaine vampire, nuit permanente" points="1977,206 1996,204 2008,217 1995,241 1979,239 1967,221 1976,206"/>
             <!-- Avant-Poste Infernus -->
-            <polygon class="zone" id="zone-avant-poste-infernus" data-name="Avant-Poste Infernus" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 6 — bastion infernal de Zargothrak le Stratège Rouge" points="1850,155 1901,175 1892,195 1875,207 1879,248 1876,272 1845,278 1824,266 1821,239 1827,209 1839,161"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-avant-poste-infernus" data-name="Avant-Poste Infernus" aria-label="Avant-Poste Infernus" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 6 — bastion infernal de Zargothrak le Stratège Rouge" points="1850,155 1901,175 1892,195 1875,207 1879,248 1876,272 1845,278 1824,266 1821,239 1827,209 1839,161"/>
             <!-- Matrice d'Harmonie -->
-            <polygon class="zone" id="zone-matrice-harmonie" data-name="Matrice d'Harmonie" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 12 — société modronne et cité géométrique" points="1775,108 1795,93 1816,110 1809,135 1783,136"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-matrice-harmonie" data-name="Matrice d'Harmonie" aria-label="Matrice d'Harmonie" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 12 — société modronne et cité géométrique" points="1775,108 1795,93 1816,110 1809,135 1783,136"/>
             <!-- Résonance Jurassique -->
-            <polygon class="zone" id="zone-resonance-jurassique" data-name="Résonance Jurassique" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 13 — jungle préhistorique et dinosaures titanesques" points="1739,145 1776,139 1800,150 1828,195 1809,221 1786,224 1784,259 1745,278 1713,262 1727,247 1714,236 1717,196 1711,183"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-resonance-jurassique" data-name="Résonance Jurassique" aria-label="Résonance Jurassique" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 13 — jungle préhistorique et dinosaures titanesques" points="1739,145 1776,139 1800,150 1828,195 1809,221 1786,224 1784,259 1745,278 1713,262 1727,247 1714,236 1717,196 1711,183"/>
             <!-- Temple du Dieu Unique -->
-            <polygon class="zone" id="zone-temple-dieu-unique" data-name="Temple du Dieu Unique" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 14 — prison d'un dieu antérieur aux Trinités, scellée par 27 chaînes divines" points="1856,99 1878,114 1895,123 1918,138 1915,157 1869,146 1847,109"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-temple-dieu-unique" data-name="Temple du Dieu Unique" aria-label="Temple du Dieu Unique" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 14 — prison d'un dieu antérieur aux Trinités, scellée par 27 chaînes divines" points="1856,99 1878,114 1895,123 1918,138 1915,157 1869,146 1847,109"/>
             <!-- L'Enclave des Gemmes -->
-            <polygon class="zone" id="zone-enclave-gemmes" data-name="L'Enclave des Gemmes" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 9 — pics cristallins et dragons de gemmes primordiaux" points="1945,120 2001,95 2039,86 2093,96 2101,143 2094,162 2074,174 2053,146 2053,119 1983,165 1942,162 1940,146"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-enclave-gemmes" data-name="L'Enclave des Gemmes" aria-label="L'Enclave des Gemmes" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 9 — pics cristallins et dragons de gemmes primordiaux" points="1945,120 2001,95 2039,86 2093,96 2101,143 2094,162 2074,174 2053,146 2053,119 1983,165 1942,162 1940,146"/>
             <!-- Cœur Abyssal -->
-            <polygon class="zone" id="zone-coeur-abyssal" data-name="Cœur Abyssal" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 7 — temple cyclopéen et œil des Abysses scellé" points="2108,181 2156,178 2156,197 2145,201 2144,230 2171,244 2190,267 2175,292 2156,319 2126,320 2095,277 2105,219 2103,204"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-coeur-abyssal" data-name="Cœur Abyssal" aria-label="Cœur Abyssal" data-icon="" data-url="musiyav/anneau-dieux.html" data-desc="Île 7 — temple cyclopéen et œil des Abysses scellé" points="2108,181 2156,178 2156,197 2145,201 2144,230 2171,244 2190,267 2175,292 2156,319 2126,320 2095,277 2105,219 2103,204"/>
             <!-- Mystère ??? -->
-            <polygon class="zone" id="zone-mystere-1" data-name="???" data-icon="" data-url="#" data-desc="?????????????????" points="2295,1849 2338,1815 2366,1809 2397,1817 2398,1955 2377,1962 2317,1908 2290,1878"/>
-            <polygon class="zone" id="zone-mystere-2" data-name="???" data-icon="" data-url="#" data-desc="????????????" points="2637,1723 2684,1719 2707,1820 2651,1831 2611,1773"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-mystere-1" data-name="???" aria-label="???" data-icon="" data-url="#" data-desc="?????????????????" points="2295,1849 2338,1815 2366,1809 2397,1817 2398,1955 2377,1962 2317,1908 2290,1878"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-mystere-2" data-name="???" aria-label="???" data-icon="" data-url="#" data-desc="????????????" points="2637,1723 2684,1719 2707,1820 2651,1831 2611,1773"/>
             <!-- Zone nord (île non nommée) -->
-            <polygon class="zone" id="zone-ile-nord" data-name="Île Nordique" data-icon="" data-url="#" data-desc="Île mystérieuse du nord" points="1421,106 1483,95 1595,95 1590,115 1599,94 1654,106 1638,165 1516,166 1505,158 1504,165 1439,169 1420,106"/>
+            <polygon class="zone" role="button" tabindex="0" id="zone-ile-nord" data-name="Île Nordique" aria-label="Île Nordique" data-icon="" data-url="#" data-desc="Île mystérieuse du nord" points="1421,106 1483,95 1595,95 1590,115 1599,94 1654,106 1638,165 1516,166 1505,158 1504,165 1439,169 1420,106"/>
             <!-- ══ MARQUEURS ══ -->
-            <circle class="zone" cx="3220" cy="1657" r="18" data-name="Dorvenkar" data-url="musiyav/dorvenkar.html" data-desc="Cité des forges naines du sud"/>
-            <circle class="zone" cx="3288" cy="1714" r="18" data-name="Khaëlbar" data-url="musiyav/khaelbar.html" data-desc="Forteresse frontalière du sud"/>
-            <circle class="zone" cx="3269" cy="1804" r="18" data-name="Tol Vekrah" data-url="musiyav/tol-vekrah.html" data-desc="Archives de pierre, bibliothèque immémoriale"/>
-            <circle class="zone" cx="3235" cy="1873" r="18" data-name="Falstrein" data-url="musiyav/falstrein.html" data-desc="Port du sud, commerce maritime avec les Terres Pieuses"/>
-            <circle class="zone" cx="2990" cy="1861" r="18" data-name="Krelsum" data-url="musiyav/krelsum.html" data-desc="Ville murée de l'est, dernière ligne avant les terres sauvages"/>
-            <circle class="zone" cx="3330" cy="1826" r="18" data-name="Naskarrem" data-url="musiyav/naskarrem.html" data-desc="Mines à ciel ouvert, extraction de minerais rares"/>
-            <circle class="zone" cx="3451" cy="1772" r="18" data-name="Marolzhad" data-url="musiyav/marolzhad.html" data-desc="Carrefour marchand des Terres Pieuses"/>
-            <circle class="zone" cx="3707" cy="1739" r="18" data-name="Xakaril" data-url="musiyav/xakaril.html" data-desc="Cité-forteresse des Terres Sauvages"/>
-            <circle class="zone" cx="3494" cy="1590" r="18" data-name="Carroval" data-url="musiyav/carroval.html" data-desc="Ville des monolithes — pierres levées et rituals anciens"/>
-            <circle class="zone" cx="3536" cy="1491" r="18" data-name="Saldromil" data-url="musiyav/saldromil.html" data-desc="Capitale musicale — bardes, ménestrels et enchanteurs"/>
-            <circle class="zone" cx="3598" cy="1553" r="18" data-name="Bekai Keal" data-url="musiyav/bekai-keal.html" data-desc="Capitale de Murblan — plus grande ville de Kaleysur"/>
-            <circle class="zone" cx="3455" cy="1339" r="18" data-name="Varnestal" data-url="musiyav/varnestal.html" data-desc="Ville-garnison de Solgirne, défense agricole"/>
-            <circle class="zone" cx="3287" cy="1285" r="18" data-name="Aunthrevin" data-url="musiyav/aunthrevin.html" data-desc="Cité elfique de la côte ouest, architecture en spirale"/>
-            <circle class="zone" cx="3307" cy="1158" r="18" data-name="Akalima" data-url="musiyav/akalima.html" data-desc="Port de Sarathiil, pirates et marchands"/>
-            <circle class="zone" cx="3211" cy="953" r="18" data-name="Yndarev" data-url="musiyav/yndarev.html" data-desc="Avant-poste côtier de Sarathiil"/>
-            <circle class="zone" cx="2811" cy="1233" r="18" data-name="Feymundi" data-url="astoryem/feymundi.html" data-desc="Cité des Éladrines — pieds du monde féerique sur Kaleysur"/>
-            <circle class="zone" cx="1966" cy="1537" r="18" data-name="Armalak" data-url="ayakan/armalak.html" data-desc="Guilde Arsenal, centre de défense"/>
-            <circle class="zone" cx="2006" cy="1446" r="18" data-name="Indelair" data-url="ayakan/indelair.html" data-desc="Ville mécanique, centre de construction des prototypes"/>
-            <circle class="zone" cx="2021" cy="1353" r="18" data-name="Lukd Oigrid" data-url="ayakan/lukd-oigrid.html" data-desc="Guilde minière, centre de réserves des cristaux bruts"/>
-            <circle class="zone" cx="2224" cy="1380" r="18" data-name="Fios" data-url="ayakan/fios.html" data-desc="Guilde du savoir, centres de recherches, grandes bibliothèques"/>
-            <circle class="zone" cx="2217" cy="1515" r="18" data-name="Lukd Naek" data-url="ayakan/lukd-naek.html" data-desc="Guilde orfèvre, raffinement des cristaux"/>
-            <circle class="zone" cx="2329" cy="1417" r="18" data-name="Lukd Trenay" data-url="ayakan/lukd-trenay.html" data-desc="Guilde symbiose, bête-homme-machine"/>
-            <circle class="zone" cx="2314" cy="1496" r="18" data-name="Lukd Tagil" data-url="ayakan/lukd-tagil.html" data-desc="Guilde bâtisseuse, ponts et grandes structures"/>
-            <circle class="zone" cx="2386" cy="1417" r="18" data-name="Lukd Tuanak" data-url="ayakan/lukd-tuanak.html" data-desc="Guilde nourricière, fermes et greniers collectifs"/>
-            <circle class="zone" cx="2385" cy="1500" r="18" data-name="Curcodak" data-url="ayakan/curcodak.html" data-desc="Guilde nourricière, jardins et cuisines"/>
-            <circle class="zone" cx="2571" cy="1475" r="18" data-name="Creidak" data-url="ayakan/creidak.html" data-desc="Guilde religieuse, respect des Trinités"/>
-            <circle class="zone" cx="2833" cy="1035" r="18" data-name="Waterflow" data-url="astoryem/waterflow.html" data-desc="Mégapole tentaculaire d'Astoryem"/>
-            <circle class="zone" cx="2784" cy="923" r="18" data-name="Ignivomile" data-url="astoryem/astoryem.html" data-desc="Volcan isolé, l'un des plus hauts sommets de Kaleysur"/>
-            <circle class="zone" cx="3621" cy="1622" r="18" data-name="Thylkarok" data-url="musiyav/thylkarok.html" data-desc="Cité des artisans et peintres de Murblan"/>
-            <circle class="zone" cx="3423" cy="1449" r="18" data-name="Tochion" data-url="musiyav/tochion.html" data-desc="Village côtier de Brastelma"/>
-            <circle class="zone" cx="3372" cy="1422" r="18" data-name="Xalatlal" data-url="musiyav/xalatlal.html" data-desc="Cité aztèque-amazonienne de Brastelma"/>
-            <circle class="zone" cx="3430" cy="1402" r="18" data-name="Yabalta" data-url="musiyav/yabalta.html" data-desc="Village volcanique de Brastelma"/>
-            <circle class="zone" cx="3519" cy="1354" r="18" data-name="Eldmire" data-url="musiyav/eldmire.html" data-desc="Village de pêcheurs de Solgirne"/>
-            <circle class="zone" cx="3551" cy="1395" r="18" data-name="Linvelar" data-url="musiyav/linvelar.html" data-desc="Forêt-ville de Solgirne"/>
-            <circle class="zone" cx="3382" cy="1292" r="18" data-name="Gravantempe" data-url="musiyav/gravantempe.html" data-desc="Cité des tempêtes permanentes de Cairondel"/>
-            <circle class="zone" cx="3397" cy="1311" r="18" data-name="Treufloran" data-url="musiyav/treufloran.html" data-desc="Village fleuri de Cairondel"/>
-            <circle class="zone" cx="3369" cy="1355" r="18" data-name="Valtendre" data-url="musiyav/valtendre.html" data-desc="Ville thermale de Cairondel"/>
-            <circle class="zone" cx="3420" cy="1244" r="18" data-name="Vendrolis" data-url="musiyav/vendrolis.html" data-desc="Port théâtral de Valacorra"/>
-            <circle class="zone" cx="3358" cy="1221" r="18" data-name="Darn Merath" data-url="musiyav/darn-merath.html" data-desc="Cité-ruine de Valacorra"/>
-            <circle class="zone" cx="3280" cy="1022" r="18" data-name="Sillu" data-url="musiyav/sillu.html" data-desc="Village de pêcheurs de Sarathiil"/>
-            <circle class="zone" cx="3267" cy="815" r="18" data-name="Cricrosal" data-url="musiyav/cricrosal.html" data-desc="Ville minière de Munabenn"/>
-            <circle class="zone" cx="3133" cy="775" r="18" data-name="Clagrayn" data-url="musiyav/clagrayn.html" data-desc="Port de Munabenn"/>
-            <circle class="zone" cx="3162" cy="873" r="18" data-name="Stasmoc" data-url="musiyav/stasmoc.html" data-desc="Forge volcanique de Munabenn"/>
-            <circle class="zone" cx="3220" cy="789" r="18" data-name="Creastail" data-url="musiyav/creastail.html" data-desc="Citadelle électrique de Munabenn"/>
-            <circle class="zone" cx="3226" cy="883" r="18" data-name="Fedhidom" data-url="musiyav/fedhidom.html" data-desc="Village sombre de Munabenn"/>
-            <circle class="zone" cx="3599" cy="1052" r="18" data-name="Kaelyth" data-url="musiyav/kaelyth.html" data-desc="Siège des Chevaliers du Lys — Viremarche"/>
-            <circle class="zone" cx="3718" cy="1050" r="18" data-name="Briseneige" data-url="musiyav/briseneige.html" data-desc="Avant-poste glaciaire de Viremarche"/>
-            <circle class="zone" cx="3737" cy="2101" r="18" data-name="Kyoeos" data-url="musiyav/terres-sauvages.html" data-desc="Cité tribale des Terres Sauvages"/>
-            <circle class="zone" cx="3873" cy="1872" r="18" data-name="Vallées des Hurlements" data-url="musiyav/terres-sauvages.html" data-desc="Gorges hantées des Terres Sauvages"/>
-            <circle class="zone" cx="3903" cy="1279" r="18" data-name="Paliers de Coralbren" data-url="musiyav/terres-sauvages.html" data-desc="Falaises côtières des Terres Sauvages"/>
-            <circle class="zone" cx="3589" cy="1177" r="18" data-name="Kandor-Zeï" data-url="musiyav/kandor-zei.html" data-desc="Cité de Caudherra, centre politique"/>
-            <circle class="zone" cx="2880" cy="1171" r="18" data-name="Arcanumbra (ville)" data-url="astoryem/arcanumbra.html" data-desc="Cité religieuse d'Astoryem"/>
+            <circle class="zone" cx="3220" cy="1657" r="18" data-name="Dorvenkar" aria-label="Dorvenkar" data-url="musiyav/dorvenkar.html" data-desc="Cité des forges naines du sud"/>
+            <circle class="zone" cx="3288" cy="1714" r="18" data-name="Khaëlbar" aria-label="Khaëlbar" data-url="musiyav/khaelbar.html" data-desc="Forteresse frontalière du sud"/>
+            <circle class="zone" cx="3269" cy="1804" r="18" data-name="Tol Vekrah" aria-label="Tol Vekrah" data-url="musiyav/tol-vekrah.html" data-desc="Archives de pierre, bibliothèque immémoriale"/>
+            <circle class="zone" cx="3235" cy="1873" r="18" data-name="Falstrein" aria-label="Falstrein" data-url="musiyav/falstrein.html" data-desc="Port du sud, commerce maritime avec les Terres Pieuses"/>
+            <circle class="zone" cx="2990" cy="1861" r="18" data-name="Krelsum" aria-label="Krelsum" data-url="musiyav/krelsum.html" data-desc="Ville murée de l'est, dernière ligne avant les terres sauvages"/>
+            <circle class="zone" cx="3330" cy="1826" r="18" data-name="Naskarrem" aria-label="Naskarrem" data-url="musiyav/naskarrem.html" data-desc="Mines à ciel ouvert, extraction de minerais rares"/>
+            <circle class="zone" cx="3451" cy="1772" r="18" data-name="Marolzhad" aria-label="Marolzhad" data-url="musiyav/marolzhad.html" data-desc="Carrefour marchand des Terres Pieuses"/>
+            <circle class="zone" cx="3707" cy="1739" r="18" data-name="Xakaril" aria-label="Xakaril" data-url="musiyav/xakaril.html" data-desc="Cité-forteresse des Terres Sauvages"/>
+            <circle class="zone" cx="3494" cy="1590" r="18" data-name="Carroval" aria-label="Carroval" data-url="musiyav/carroval.html" data-desc="Ville des monolithes — pierres levées et rituals anciens"/>
+            <circle class="zone" cx="3536" cy="1491" r="18" data-name="Saldromil" aria-label="Saldromil" data-url="musiyav/saldromil.html" data-desc="Capitale musicale — bardes, ménestrels et enchanteurs"/>
+            <circle class="zone" cx="3598" cy="1553" r="18" data-name="Bekai Keal" aria-label="Bekai Keal" data-url="musiyav/bekai-keal.html" data-desc="Capitale de Murblan — plus grande ville de Kaleysur"/>
+            <circle class="zone" cx="3455" cy="1339" r="18" data-name="Varnestal" aria-label="Varnestal" data-url="musiyav/varnestal.html" data-desc="Ville-garnison de Solgirne, défense agricole"/>
+            <circle class="zone" cx="3287" cy="1285" r="18" data-name="Aunthrevin" aria-label="Aunthrevin" data-url="musiyav/aunthrevin.html" data-desc="Cité elfique de la côte ouest, architecture en spirale"/>
+            <circle class="zone" cx="3307" cy="1158" r="18" data-name="Akalima" aria-label="Akalima" data-url="musiyav/akalima.html" data-desc="Port de Sarathiil, pirates et marchands"/>
+            <circle class="zone" cx="3211" cy="953" r="18" data-name="Yndarev" aria-label="Yndarev" data-url="musiyav/yndarev.html" data-desc="Avant-poste côtier de Sarathiil"/>
+            <circle class="zone" cx="2811" cy="1233" r="18" data-name="Feymundi" aria-label="Feymundi" data-url="astoryem/feymundi.html" data-desc="Cité des Éladrines — pieds du monde féerique sur Kaleysur"/>
+            <circle class="zone" cx="1966" cy="1537" r="18" data-name="Armalak" aria-label="Armalak" data-url="ayakan/armalak.html" data-desc="Guilde Arsenal, centre de défense"/>
+            <circle class="zone" cx="2006" cy="1446" r="18" data-name="Indelair" aria-label="Indelair" data-url="ayakan/indelair.html" data-desc="Ville mécanique, centre de construction des prototypes"/>
+            <circle class="zone" cx="2021" cy="1353" r="18" data-name="Lukd Oigrid" aria-label="Lukd Oigrid" data-url="ayakan/lukd-oigrid.html" data-desc="Guilde minière, centre de réserves des cristaux bruts"/>
+            <circle class="zone" cx="2224" cy="1380" r="18" data-name="Fios" aria-label="Fios" data-url="ayakan/fios.html" data-desc="Guilde du savoir, centres de recherches, grandes bibliothèques"/>
+            <circle class="zone" cx="2217" cy="1515" r="18" data-name="Lukd Naek" aria-label="Lukd Naek" data-url="ayakan/lukd-naek.html" data-desc="Guilde orfèvre, raffinement des cristaux"/>
+            <circle class="zone" cx="2329" cy="1417" r="18" data-name="Lukd Trenay" aria-label="Lukd Trenay" data-url="ayakan/lukd-trenay.html" data-desc="Guilde symbiose, bête-homme-machine"/>
+            <circle class="zone" cx="2314" cy="1496" r="18" data-name="Lukd Tagil" aria-label="Lukd Tagil" data-url="ayakan/lukd-tagil.html" data-desc="Guilde bâtisseuse, ponts et grandes structures"/>
+            <circle class="zone" cx="2386" cy="1417" r="18" data-name="Lukd Tuanak" aria-label="Lukd Tuanak" data-url="ayakan/lukd-tuanak.html" data-desc="Guilde nourricière, fermes et greniers collectifs"/>
+            <circle class="zone" cx="2385" cy="1500" r="18" data-name="Curcodak" aria-label="Curcodak" data-url="ayakan/curcodak.html" data-desc="Guilde nourricière, jardins et cuisines"/>
+            <circle class="zone" cx="2571" cy="1475" r="18" data-name="Creidak" aria-label="Creidak" data-url="ayakan/creidak.html" data-desc="Guilde religieuse, respect des Trinités"/>
+            <circle class="zone" cx="2833" cy="1035" r="18" data-name="Waterflow" aria-label="Waterflow" data-url="astoryem/waterflow.html" data-desc="Mégapole tentaculaire d'Astoryem"/>
+            <circle class="zone" cx="2784" cy="923" r="18" data-name="Ignivomile" aria-label="Ignivomile" data-url="astoryem/astoryem.html" data-desc="Volcan isolé, l'un des plus hauts sommets de Kaleysur"/>
+            <circle class="zone" cx="3621" cy="1622" r="18" data-name="Thylkarok" aria-label="Thylkarok" data-url="musiyav/thylkarok.html" data-desc="Cité des artisans et peintres de Murblan"/>
+            <circle class="zone" cx="3423" cy="1449" r="18" data-name="Tochion" aria-label="Tochion" data-url="musiyav/tochion.html" data-desc="Village côtier de Brastelma"/>
+            <circle class="zone" cx="3372" cy="1422" r="18" data-name="Xalatlal" aria-label="Xalatlal" data-url="musiyav/xalatlal.html" data-desc="Cité aztèque-amazonienne de Brastelma"/>
+            <circle class="zone" cx="3430" cy="1402" r="18" data-name="Yabalta" aria-label="Yabalta" data-url="musiyav/yabalta.html" data-desc="Village volcanique de Brastelma"/>
+            <circle class="zone" cx="3519" cy="1354" r="18" data-name="Eldmire" aria-label="Eldmire" data-url="musiyav/eldmire.html" data-desc="Village de pêcheurs de Solgirne"/>
+            <circle class="zone" cx="3551" cy="1395" r="18" data-name="Linvelar" aria-label="Linvelar" data-url="musiyav/linvelar.html" data-desc="Forêt-ville de Solgirne"/>
+            <circle class="zone" cx="3382" cy="1292" r="18" data-name="Gravantempe" aria-label="Gravantempe" data-url="musiyav/gravantempe.html" data-desc="Cité des tempêtes permanentes de Cairondel"/>
+            <circle class="zone" cx="3397" cy="1311" r="18" data-name="Treufloran" aria-label="Treufloran" data-url="musiyav/treufloran.html" data-desc="Village fleuri de Cairondel"/>
+            <circle class="zone" cx="3369" cy="1355" r="18" data-name="Valtendre" aria-label="Valtendre" data-url="musiyav/valtendre.html" data-desc="Ville thermale de Cairondel"/>
+            <circle class="zone" cx="3420" cy="1244" r="18" data-name="Vendrolis" aria-label="Vendrolis" data-url="musiyav/vendrolis.html" data-desc="Port théâtral de Valacorra"/>
+            <circle class="zone" cx="3358" cy="1221" r="18" data-name="Darn Merath" aria-label="Darn Merath" data-url="musiyav/darn-merath.html" data-desc="Cité-ruine de Valacorra"/>
+            <circle class="zone" cx="3280" cy="1022" r="18" data-name="Sillu" aria-label="Sillu" data-url="musiyav/sillu.html" data-desc="Village de pêcheurs de Sarathiil"/>
+            <circle class="zone" cx="3267" cy="815" r="18" data-name="Cricrosal" aria-label="Cricrosal" data-url="musiyav/cricrosal.html" data-desc="Ville minière de Munabenn"/>
+            <circle class="zone" cx="3133" cy="775" r="18" data-name="Clagrayn" aria-label="Clagrayn" data-url="musiyav/clagrayn.html" data-desc="Port de Munabenn"/>
+            <circle class="zone" cx="3162" cy="873" r="18" data-name="Stasmoc" aria-label="Stasmoc" data-url="musiyav/stasmoc.html" data-desc="Forge volcanique de Munabenn"/>
+            <circle class="zone" cx="3220" cy="789" r="18" data-name="Creastail" aria-label="Creastail" data-url="musiyav/creastail.html" data-desc="Citadelle électrique de Munabenn"/>
+            <circle class="zone" cx="3226" cy="883" r="18" data-name="Fedhidom" aria-label="Fedhidom" data-url="musiyav/fedhidom.html" data-desc="Village sombre de Munabenn"/>
+            <circle class="zone" cx="3599" cy="1052" r="18" data-name="Kaelyth" aria-label="Kaelyth" data-url="musiyav/kaelyth.html" data-desc="Siège des Chevaliers du Lys — Viremarche"/>
+            <circle class="zone" cx="3718" cy="1050" r="18" data-name="Briseneige" aria-label="Briseneige" data-url="musiyav/briseneige.html" data-desc="Avant-poste glaciaire de Viremarche"/>
+            <circle class="zone" cx="3737" cy="2101" r="18" data-name="Kyoeos" aria-label="Kyoeos" data-url="musiyav/terres-sauvages.html" data-desc="Cité tribale des Terres Sauvages"/>
+            <circle class="zone" cx="3873" cy="1872" r="18" data-name="Vallées des Hurlements" aria-label="Vallées des Hurlements" data-url="musiyav/terres-sauvages.html" data-desc="Gorges hantées des Terres Sauvages"/>
+            <circle class="zone" cx="3903" cy="1279" r="18" data-name="Paliers de Coralbren" aria-label="Paliers de Coralbren" data-url="musiyav/terres-sauvages.html" data-desc="Falaises côtières des Terres Sauvages"/>
+            <circle class="zone" cx="3589" cy="1177" r="18" data-name="Kandor-Zeï" aria-label="Kandor-Zeï" data-url="musiyav/kandor-zei.html" data-desc="Cité de Caudherra, centre politique"/>
+            <circle class="zone" cx="2880" cy="1171" r="18" data-name="Arcanumbra (ville)" aria-label="Arcanumbra (ville)" data-url="astoryem/arcanumbra.html" data-desc="Cité religieuse d'Astoryem"/>
           </svg>
 
 
@@ -661,6 +300,7 @@
 </div>
 <footer><span>⚜ Kaleysur Wiki</span><span style="color: var(--text-muted)">Wiki de campagne D&D</span></footer>
 
+<script src="js/components.js"></script>
 <script src="js/wiki.js"></script>
 <script>
 (function() {
