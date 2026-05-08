@@ -15,7 +15,7 @@
       --danger:  #c97a7a;
       --radiant: #e6d27a;
     }
-    .main-content { padding: 0; overflow-x: hidden; }
+    .main-content { padding: 0 !important; max-width: none !important; overflow-x: hidden; }
 
     /* ── Utility ── */
     .j-cap { font-family: var(--font-title); text-transform: uppercase; letter-spacing: 0.10em; }
@@ -789,10 +789,10 @@
     el('col-saves').querySelectorAll('.j-bline').forEach(row => {
       row.addEventListener('click', () => {
         const n = row.dataset.n;
-        const save = C.saves.find(s => s.n === n);
-        const skill = C.skills.find(s => s.n === n);
-        if (save) { save.p = !save.p; save(); render(); }
-        else if (skill) { skill.p = !skill.p; save(); render(); }
+        const foundSave  = C.saves.find(s => s.n === n);
+        const foundSkill = C.skills.find(s => s.n === n);
+        if (foundSave)  { foundSave.p  = !foundSave.p;  save(); render(); }
+        else if (foundSkill) { foundSkill.p = !foundSkill.p; save(); render(); }
       });
     });
 
