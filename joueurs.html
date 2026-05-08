@@ -1069,6 +1069,134 @@
       #vb-hero { grid-template-columns: 1fr; }
       .vb-char-name { font-size: 28px; }
     }
+
+/* ════ VB COHERENCE: sections match hero aesthetic ════ */
+
+/* Sheet sections → flat, transparent, no card border */
+.sheet-section {
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin-bottom: 32px !important;
+}
+/* Collapsed state */
+.sheet-section.collapsed { margin-bottom: 16px !important; }
+.sheet-section.collapsed .sheet-section-title { border-bottom-style: dashed !important; margin-bottom: 0 !important; padding-bottom: 6px !important; }
+.sheet-section.collapsed > *:not(:first-child) { display: none !important; }
+/* Hidden via layout */
+.sec-hidden { display: none !important; }
+
+/* Section titles → VB Column header style (gold rule + Cinzel) */
+.sheet-section-title {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding-bottom: 8px !important;
+  margin-bottom: 14px !important;
+  border-bottom: 1px solid var(--gold-dark) !important;
+  border-top: none !important; border-left: none !important; border-right: none !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 12px !important;
+  color: var(--gold) !important;
+  letter-spacing: .08em !important;
+  text-transform: uppercase !important;
+  font-weight: 400 !important;
+  cursor: default !important;
+  background: none !important;
+}
+.sheet-section-title::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 1px;
+  background: var(--gold-dark);
+  flex-shrink: 0;
+}
+.sheet-section-title:hover { color: var(--gold) !important; }
+.sec-chevron { display: none !important; }
+
+/* Layout: 3-column grid matching the hero above */
+.layout-wrapper {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr 1fr !important;
+  gap: 32px !important;
+  padding: 0 32px 24px !important;
+  align-items: start !important;
+}
+.layout-col-label { display: none !important; }
+
+/* Layout toolbar → very subtle drag hint */
+.layout-toolbar {
+  display: flex !important;
+  align-items: center !important;
+  padding: 4px 32px 12px !important;
+  font-size: 0.65rem !important;
+  color: #2a1e0a !important;
+  background: transparent !important;
+  border: none !important;
+  transition: color .2s !important;
+}
+.layout-toolbar:hover { color: #4a3510 !important; }
+
+/* Layout-bottom: full-width spells below 3 cols */
+.layout-bottom { padding: 0 32px 40px; }
+
+/* Field labels → Cinzel uppercase micro style matching VB */
+.field-label {
+  font-family: 'Cinzel', serif !important;
+  font-size: 0.65rem !important;
+  color: #555 !important;
+  letter-spacing: .07em !important;
+  text-transform: uppercase !important;
+}
+
+/* Inputs: very dark transparent bg, subtle border */
+.field-input, .atk-inp, .inv-inp {
+  background: rgba(10,7,3,0.7) !important;
+  border-color: #3a2810 !important;
+}
+.field-input:focus, .atk-inp:focus, .inv-inp:focus {
+  border-color: var(--gold-dark) !important;
+  background: rgba(10,7,3,0.9) !important;
+}
+
+/* Table headers match VB subheader style */
+.attack-table th, .inv-table th, .exp-table th {
+  font-family: 'Cinzel', serif !important;
+  font-size: 8px !important;
+  color: var(--gold-dark) !important;
+  letter-spacing: .07em !important;
+  text-transform: uppercase !important;
+  border-bottom-color: #3a2810 !important;
+  padding-bottom: 6px !important;
+}
+
+/* Saves / Skills rows */
+.sv-row, .sk-row { color: var(--j-text, #e2cfa0) !important; }
+
+/* Cond badges on conditions grid */
+.cond-grid { gap: 6px !important; }
+
+/* Resources cards */
+.res-card { background: rgba(10,7,3,0.6) !important; border-color: #3a2810 !important; }
+
+/* Class features */
+.cf-level-header { background: rgba(10,7,3,0.6) !important; }
+.cf-feature { background: rgba(10,7,3,0.5) !important; border-left-color: #3a2810 !important; }
+
+/* Sheet-section-full: no change needed since it's removed now */
+
+/* Spell slots */
+.spell-slot-circle { border-color: var(--gold-dark) !important; }
+.spell-slot-circle.used { background: var(--gold-dark) !important; }
+
+/* Combat compact stat row */
+.combat-compact-stats { display: flex; gap: 0.65rem; margin-bottom: 1rem; flex-wrap: wrap; align-items: flex-end; }
+
+/* hp-quick row rebalance */
+.hp-quick { justify-content: flex-start !important; gap: 8px !important; }
+
   </style>
 
   <!-- PWA -->
@@ -1289,9 +1417,9 @@
 
       <div class="layout-wrapper" id="layout-wrapper">
 
-        <!-- ── Colonne gauche ── -->
+        <!-- ── Col 0: Identity & Skills ── -->
         <div class="layout-col" data-col="0">
-          <div class="layout-col-label">Colonne gauche</div>
+          <div class="layout-col-label">Col gauche</div>
 
         <div class="sheet-section" data-sec="identite">
           <div class="sheet-section-title">Identité</div>
@@ -1378,19 +1506,10 @@
 
         </div><!-- /col-gauche -->
 
-        <!-- ── Colonne droite ── -->
+        <!-- ── Col 1: Combat & Attacks ── -->
         <div class="layout-col" data-col="1">
-          <div class="layout-col-label">Colonne droite</div>
+          <div class="layout-col-label">Col centre</div>
 
-        <div class="sheet-section" data-sec="cf" id="cf-section" style="display:none;">
-          <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
-            <span id="cf-title">Class Features</span>
-            <span style="font-size:0.7rem;color:#555;font-style:italic;">D&D 2024 PHB</span>
-          </div>
-          <div id="cf-slots-note" class="cf-slots-note" style="display:none;margin-bottom:0.65rem;"></div>
-          <div id="cf-body"></div>
-        </div>
-  
         <!-- Caractéristiques -->
 
         <div class="sheet-section" data-sec="combat">
@@ -1489,39 +1608,6 @@
           </div>
         </div>
   
-        <!-- Ressources de classe -->
-
-        <div class="sheet-section" data-sec="ressources">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.65rem;">
-            <div class="sheet-section-title" style="margin-bottom:0;">Ressources</div>
-            <button class="btn btn-sm btn-gold" id="btn-add-resource">+ Ajouter</button>
-          </div>
-          <div class="res-grid" id="resource-grid"></div>
-          <div class="rest-btns">
-            <button class="btn-rest short" id="btn-short-rest">☽ Short Rest</button>
-            <button class="btn-rest long"  id="btn-long-rest">★ Long Rest</button>
-          </div>
-        </div>
-  
-        <!-- Conditions -->
-
-        <div class="sheet-section" data-sec="conditions">
-          <div class="sheet-section-title">Conditions</div>
-          <div class="cond-grid" id="conditions-grid"></div>
-          <div class="exhaustion-row">
-            <span class="exhaustion-label">Exhaustion</span>
-            <div class="exhaustion-pips" id="exhaustion-pips">
-              <div class="exhaust-pip" data-ex="1" role="button" tabindex="0" title="Level 1 — −1 to all d20 Tests" aria-label="Épuisement 1"></div>
-              <div class="exhaust-pip" data-ex="2" role="button" tabindex="0" title="Level 2 — −2 to all d20 Tests" aria-label="Épuisement 2"></div>
-              <div class="exhaust-pip" data-ex="3" role="button" tabindex="0" title="Level 3 — −3 to all d20 Tests" aria-label="Épuisement 3"></div>
-              <div class="exhaust-pip" data-ex="4" role="button" tabindex="0" title="Level 4 — −4 to all d20 Tests" aria-label="Épuisement 4"></div>
-              <div class="exhaust-pip" data-ex="5" role="button" tabindex="0" title="Level 5 — −5 + Speed halved" aria-label="Épuisement 5"></div>
-              <div class="exhaust-pip" data-ex="6" role="button" tabindex="0" title="Level 6 — Death" aria-label="Épuisement 6"></div>
-            </div>
-            <span class="exhaustion-desc" id="exhaustion-desc"></span>
-          </div>
-        </div>
-  
         <!-- Attaques -->
 
         <div class="sheet-section" data-sec="attaques">
@@ -1542,10 +1628,58 @@
             <tbody id="attack-tbody"></tbody>
           </table>
         </div>
-  
+
+        </div><!-- /col-1: combat & attacks -->
+
+        <!-- ── Col 2: Features, Resources, Conditions, Personality ── -->
+        <div class="layout-col" data-col="2">
+          <div class="layout-col-label">Col droite</div>
+
+        <div class="sheet-section" data-sec="cf" id="cf-section" style="display:none;">
+          <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
+            <span id="cf-title">Class Features</span>
+            <span style="font-size:0.7rem;color:#555;font-style:italic;">D&D 2024 PHB</span>
+          </div>
+          <div id="cf-slots-note" class="cf-slots-note" style="display:none;margin-bottom:0.65rem;"></div>
+          <div id="cf-body"></div>
+        </div>
+
+        <!-- Ressources de classe -->
+
+        <div class="sheet-section" data-sec="ressources">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.65rem;">
+            <div class="sheet-section-title" style="margin-bottom:0;">Ressources</div>
+            <button class="btn btn-sm btn-gold" id="btn-add-resource">+ Ajouter</button>
+          </div>
+          <div class="res-grid" id="resource-grid"></div>
+          <div class="rest-btns">
+            <button class="btn-rest short" id="btn-short-rest">☽ Short Rest</button>
+            <button class="btn-rest long"  id="btn-long-rest">★ Long Rest</button>
+          </div>
+        </div>
+
+        <!-- Conditions -->
+
+        <div class="sheet-section" data-sec="conditions">
+          <div class="sheet-section-title">Conditions</div>
+          <div class="cond-grid" id="conditions-grid"></div>
+          <div class="exhaustion-row">
+            <span class="exhaustion-label">Exhaustion</span>
+            <div class="exhaustion-pips" id="exhaustion-pips">
+              <div class="exhaust-pip" data-ex="1" role="button" tabindex="0" title="Level 1 — −1 to all d20 Tests" aria-label="Épuisement 1"></div>
+              <div class="exhaust-pip" data-ex="2" role="button" tabindex="0" title="Level 2 — −2 to all d20 Tests" aria-label="Épuisement 2"></div>
+              <div class="exhaust-pip" data-ex="3" role="button" tabindex="0" title="Level 3 — −3 to all d20 Tests" aria-label="Épuisement 3"></div>
+              <div class="exhaust-pip" data-ex="4" role="button" tabindex="0" title="Level 4 — −4 to all d20 Tests" aria-label="Épuisement 4"></div>
+              <div class="exhaust-pip" data-ex="5" role="button" tabindex="0" title="Level 5 — −5 + Speed halved" aria-label="Épuisement 5"></div>
+              <div class="exhaust-pip" data-ex="6" role="button" tabindex="0" title="Level 6 — Death" aria-label="Épuisement 6"></div>
+            </div>
+            <span class="exhaustion-desc" id="exhaustion-desc"></span>
+          </div>
+        </div>
+
         <!-- Sorts: moved to bottom row -->
 
-                <!-- Traits & capacités -->
+        <!-- Traits & capacités -->
 
         <div class="sheet-section" data-sec="features">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
@@ -1562,7 +1696,7 @@
             <tbody id="feature-tbody"></tbody>
           </table>
         </div>
-  
+
         <!-- Personnalité -->
 
         <div class="sheet-section" data-sec="perso">
@@ -1594,15 +1728,14 @@
             <textarea class="field-input" data-f="historique" rows="4"></textarea>
           </div>
         </div>
-  
 
-        </div><!-- /col-droite -->
+        </div><!-- /col-2: features, resources, conditions, personality -->
 
       </div><!-- /layout-wrapper -->
 
       <!-- Zone pleine largeur (bas) -->
       <div class="layout-bottom" id="layout-bottom">
-        <div class="layout-col layout-col-full" data-col="2">
+        <div class="layout-col layout-col-full" data-col="3">
           <div class="layout-col-label">Zone pleine largeur</div>
 
 <!-- Sorts -->
@@ -6682,7 +6815,7 @@ function captureCurrentLayout() {
     Array.from(col.querySelectorAll('.sheet-section[data-sec]')).map(s => s.dataset.sec)
   );
   // Third column: bottom full-width row
-  const bottomCol = bottom?.querySelector('.layout-col[data-col="2"]');
+  const bottomCol = bottom?.querySelector('.layout-col[data-col="3"]');
   const bottomIds = bottomCol
     ? Array.from(bottomCol.querySelectorAll('.sheet-section[data-sec]')).map(s => s.dataset.sec)
     : [];
@@ -6698,7 +6831,7 @@ function applyLayout() {
   if (!wrapper) return;
 
   const bottom   = document.getElementById('layout-bottom');
-  const bottomCol = bottom?.querySelector('.layout-col[data-col="2"]');
+  const bottomCol = bottom?.querySelector('.layout-col[data-col="3"]');
   const topCols  = Array.from(wrapper.querySelectorAll(':scope > .layout-col'));
   const allCols  = bottomCol ? [...topCols, bottomCol] : topCols;
   const cols     = { length: allCols.length, forEach: fn => allCols.forEach(fn) };
