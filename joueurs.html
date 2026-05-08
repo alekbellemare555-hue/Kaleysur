@@ -216,8 +216,70 @@
     /* ── Footer ornament ── */
     .j-footer-orn { text-align: center; color: var(--gold-dark); opacity: 0.4; letter-spacing: .5rem; padding: 14px 0 24px; font-size: 12px; }
 
-    /* ── Mock panels ── */
-    .j-mock-panel { padding: 80px 40px; text-align: center; color: var(--text-muted); font-family: var(--font-title); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+    /* ── Shared panel layout ── */
+    .j-panel-wrap { padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 32px; }
+    .j-panel-section {}
+    .j-modal label { display: block; font-family: var(--font-title); font-size: 9px; color: var(--text-muted); letter-spacing:.10em; text-transform: uppercase; margin-bottom: 4px; margin-top: 12px; }
+    .j-panel-section label { display: block; font-family: var(--font-title); font-size: 9px; color: var(--text-muted); letter-spacing:.10em; text-transform: uppercase; margin-bottom: 4px; margin-top: 10px; }
+    .j-panel-section input, .j-panel-section select, .j-panel-section textarea {
+      background: #0a0703; border: 1px solid var(--border); color: var(--text-primary);
+      padding: 7px 10px; border-radius: 3px; font-size: 12px; box-sizing: border-box; width: 100%;
+    }
+    .j-panel-section input:focus, .j-panel-section select:focus, .j-panel-section textarea:focus {
+      outline: none; border-color: var(--border-light);
+    }
+
+    /* ── Inventaire ── */
+    .j-currency-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 12px; }
+    .j-currency-cell { text-align: center; }
+    .j-currency-label { font-family: var(--font-title); font-size: 9px; color: var(--gold-dark); letter-spacing:.10em; text-transform: uppercase; margin-bottom: 4px; }
+    .j-currency-input { text-align: center; font-family: var(--font-title); font-size: 18px; color: var(--gold); padding: 8px 4px !important; }
+    .j-ration-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 8px; }
+    .j-ration-count { font-family: var(--font-title); font-size: 44px; color: var(--gold-light); line-height: 1; }
+    .j-ration-label { font-size: 12px; color: var(--text-muted); }
+    .j-item-del { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 14px; padding: 0 4px; }
+    .j-item-del:hover { color: var(--danger); }
+
+    /* ── Sorts ── */
+    .j-sorts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+    .j-spell-entry { display: flex; align-items: center; gap: 8px; padding: 5px 2px; border-bottom: 1px dashed rgba(74,53,16,0.4); }
+    .j-spell-entry-lvl { font-family: var(--font-title); font-size: 8px; color: var(--gold-dark); width: 30px; letter-spacing:.08em; text-transform: uppercase; flex-shrink: 0; }
+    .j-spell-entry-name { flex: 1; font-size: 11px; color: var(--parchment); }
+    .j-spell-del { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 12px; }
+    .j-spell-del:hover { color: var(--danger); }
+
+    /* ── Notes ── */
+    .j-notes-area { width: 100%; min-height: 420px; resize: vertical; font-family: var(--font-body); font-size: 13px; line-height: 1.7; color: var(--text-primary); background: #0a0703; border: 1px solid var(--border); border-radius: 4px; padding: 16px; box-sizing: border-box; margin-top: 8px; }
+    .j-notes-area:focus { outline: none; border-color: var(--border-light); }
+
+    /* ── Aide ── */
+    .j-aide-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 28px; }
+    .j-aide-list { display: flex; flex-direction: column; gap: 0; margin-top: 8px; }
+    .j-aide-entry { padding: 8px 0; border-bottom: 1px dashed rgba(74,53,16,0.3); }
+    .j-aide-term { display: block; font-family: var(--font-title); font-size: 10px; color: var(--gold); letter-spacing:.06em; margin-bottom: 2px; }
+    .j-aide-def { font-size: 11px; color: var(--text-secondary); line-height: 1.5; }
+
+    /* ── Paramètres ── */
+    .j-params-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 16px; margin-top: 4px; }
+    .j-params-abil-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 8px; }
+    .j-params-abil-cell { border: 1px solid var(--border); border-radius: 3px; padding: 8px 4px; text-align: center; }
+    .j-params-abil-key { font-family: var(--font-title); font-size: 8px; color: var(--gold-dark); letter-spacing:.08em; text-transform: uppercase; margin-bottom: 4px; }
+    .j-params-abil-cell input { text-align: center; font-size: 14px; margin-top: 4px; }
+    .j-portrait-upload-wrap { display: flex; gap: 20px; align-items: flex-start; margin-top: 8px; }
+    .j-portrait-preview { width: 100px; height: 133px; border: 1px solid var(--border-light); border-radius: 4px; background: linear-gradient(135deg,#1f1709,#0d0905); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+    .j-portrait-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+    @media (max-width: 1200px) {
+      .j-aide-grid { grid-template-columns: 1fr 1fr; }
+      .j-sorts-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 900px) {
+      .j-panel-wrap { padding: 20px 16px 32px; }
+      .j-params-grid { grid-template-columns: 1fr 1fr; }
+      .j-params-abil-grid { grid-template-columns: repeat(3, 1fr); }
+      .j-aide-grid { grid-template-columns: 1fr; }
+      .j-currency-grid { grid-template-columns: repeat(5, 1fr); }
+    }
 
     /* ── Modals ── */
     .j-modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.72); z-index: 500; align-items: center; justify-content: center; }
@@ -340,6 +402,7 @@
           <button class="j-tab" data-tab="sorts">Sorts</button>
           <button class="j-tab" data-tab="notes">Notes</button>
           <button class="j-tab" data-tab="aide">Aide</button>
+          <button class="j-tab" data-tab="parametres">Paramètres</button>
         </div>
       </div>
 
@@ -392,18 +455,240 @@
         <div class="j-footer-orn">✦ ✦ ✦</div>
       </div><!-- /panel-personnage -->
 
-      <!-- MOCK PANELS -->
+      <!-- INVENTAIRE -->
       <div id="panel-inventaire" class="j-tab-panel">
-        <div class="j-mock-panel">Inventaire — bientôt disponible</div>
+        <div class="j-panel-wrap">
+
+          <div class="j-panel-section">
+            <div class="j-col-title-row">
+              <div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Bourse</span></div>
+              <button class="j-col-cta" id="btn-save-currency">Sauvegarder</button>
+            </div>
+            <div class="j-currency-grid">
+              <div class="j-currency-cell"><div class="j-currency-label">PP</div><input class="j-currency-input" id="c-pp" type="number" min="0"></div>
+              <div class="j-currency-cell"><div class="j-currency-label">PO</div><input class="j-currency-input" id="c-gp" type="number" min="0"></div>
+              <div class="j-currency-cell"><div class="j-currency-label">PE</div><input class="j-currency-input" id="c-ep" type="number" min="0"></div>
+              <div class="j-currency-cell"><div class="j-currency-label">PA</div><input class="j-currency-input" id="c-sp" type="number" min="0"></div>
+              <div class="j-currency-cell"><div class="j-currency-label">PC</div><input class="j-currency-input" id="c-cp" type="number" min="0"></div>
+            </div>
+          </div>
+
+          <div class="j-panel-section">
+            <div class="j-col-title-row">
+              <div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Rations</span></div>
+            </div>
+            <div class="j-ration-row">
+              <span class="j-ration-count" id="ration-count">0</span>
+              <span class="j-ration-label">jour(s) de ration</span>
+              <div class="j-dmg-row" style="margin:0 0 0 auto">
+                <button class="j-btn-dmg" id="btn-ration-use">− Consommer</button>
+                <input class="j-num-input" type="number" min="1" id="ration-input" placeholder="1">
+                <button class="j-btn-heal" id="btn-ration-add">+ Ajouter</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="j-panel-section">
+            <div class="j-col-title-row">
+              <div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Objets</span></div>
+              <button class="j-col-cta" id="btn-add-item">+ Ajouter un objet</button>
+            </div>
+            <table class="j-atk-table">
+              <thead><tr><th>Nom</th><th>Qté</th><th>Poids (kg)</th><th>Notes</th><th></th></tr></thead>
+              <tbody id="items-tbody"></tbody>
+            </table>
+            <div id="item-form" style="display:none;margin-top:12px">
+              <div class="j-modal-row">
+                <div><label>Nom</label><input type="text" id="item-name" placeholder="Torche"></div>
+                <div><label>Qté</label><input type="number" id="item-qty" min="1" value="1" style="width:70px"></div>
+                <div><label>Poids (kg)</label><input type="number" id="item-weight" min="0" step="0.1" value="0" style="width:80px"></div>
+              </div>
+              <label>Notes</label>
+              <input type="text" id="item-notes" placeholder="Description…">
+              <div class="j-modal-footer" style="margin-top:8px">
+                <button class="j-btn-cancel" id="btn-item-cancel">Annuler</button>
+                <button class="j-btn-confirm" id="btn-item-ok">Ajouter</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
+
+      <!-- SORTS -->
       <div id="panel-sorts" class="j-tab-panel">
-        <div class="j-mock-panel">Sorts — bientôt disponible</div>
+        <div class="j-panel-wrap j-sorts-grid">
+
+          <div>
+            <div class="j-panel-section">
+              <div class="j-col-title-row">
+                <div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Emplacements de sorts</span></div>
+              </div>
+              <div id="sorts-slots-panel"></div>
+              <div class="j-subh" style="margin-top:14px">Ajouter un niveau d'emplacement</div>
+              <div class="j-modal-row" style="margin-top:8px">
+                <div><label>Niveau</label>
+                  <select id="slot-lvl-input">
+                    <option>1</option><option>2</option><option>3</option><option>4</option>
+                    <option>5</option><option>6</option><option>7</option><option>8</option><option>9</option>
+                  </select>
+                </div>
+                <div><label>Emplacements</label><input type="number" id="slot-max-input" min="1" max="9" placeholder="4" style="width:70px"></div>
+                <div style="align-self:flex-end"><button class="j-btn-confirm" id="btn-add-slot">Ajouter</button></div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="j-panel-section">
+              <div class="j-col-title-row">
+                <div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Sorts connus / préparés</span></div>
+                <button class="j-col-cta" id="btn-show-spell-form">+ Ajouter</button>
+              </div>
+              <div id="spell-form" style="display:none;margin-bottom:12px">
+                <div class="j-modal-row">
+                  <div><label>Nom du sort</label><input type="text" id="spell-name-input" placeholder="Boule de feu"></div>
+                  <div><label>Niveau (T=tour)</label><input type="text" id="spell-lvl-input" placeholder="T / 1 / 2…" style="width:90px"></div>
+                </div>
+                <div class="j-modal-footer" style="margin-top:6px">
+                  <button class="j-btn-cancel" id="btn-spell-cancel">Annuler</button>
+                  <button class="j-btn-confirm" id="btn-spell-ok">Ajouter</button>
+                </div>
+              </div>
+              <div id="sorts-list-panel"></div>
+            </div>
+          </div>
+
+        </div>
       </div>
+
+      <!-- NOTES -->
       <div id="panel-notes" class="j-tab-panel">
-        <div class="j-mock-panel">Notes — bientôt disponible</div>
+        <div class="j-panel-wrap">
+          <div class="j-panel-section">
+            <div class="j-col-title-row">
+              <div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Notes du personnage</span></div>
+            </div>
+            <textarea id="notes-area" class="j-notes-area" placeholder="Notes de session, objectifs, relations, secrets…"></textarea>
+          </div>
+        </div>
       </div>
+
+      <!-- AIDE -->
       <div id="panel-aide" class="j-tab-panel">
-        <div class="j-mock-panel">Aide — bientôt disponible</div>
+        <div class="j-panel-wrap j-aide-grid">
+          <div class="j-panel-section">
+            <div class="j-col-title-row"><div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Conditions</span></div></div>
+            <div class="j-aide-list">
+              <div class="j-aide-entry"><span class="j-aide-term">Aveuglé</span><span class="j-aide-def">Échoue automatiquement les checks de vue. Désavantage aux attaques, avantage contre lui.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Charmé</span><span class="j-aide-def">Ne peut pas attaquer la source du charme. Avantage sur les checks de Charisme vs la cible.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Effrayé</span><span class="j-aide-def">Désavantage sur les checks quand la source est en vue. Ne peut pas s'approcher volontairement.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Empoisonné</span><span class="j-aide-def">Désavantage sur les jets d'attaque et de caractéristique.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Étourdi</span><span class="j-aide-def">Incapacité, échoue FOR et DEX. Avantage contre lui, attaques de mêlée à portée = coup critique.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Incapacité</span><span class="j-aide-def">Ne peut pas effectuer d'actions ni de réactions.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Invisible</span><span class="j-aide-def">Avantage aux attaques. Les attaquants ont désavantage contre lui.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Paralysé</span><span class="j-aide-def">Incapacité, échoue FOR et DEX. Attaques contre lui = avantage + critique à portée de mêlée.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Pétrifié</span><span class="j-aide-def">Transformé en pierre. Immunité à poison et maladie. Avantage contre lui.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Terrorisé</span><span class="j-aide-def">Vitesse 0. Désavantage checks et attaques. Peut tenter un JdS SAG en fin de tour.</span></div>
+            </div>
+          </div>
+          <div class="j-panel-section">
+            <div class="j-col-title-row"><div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Jet de caractéristique</span></div></div>
+            <div class="j-aide-list">
+              <div class="j-aide-entry"><span class="j-aide-term">DDs courants</span><span class="j-aide-def">Facile 10 · Moyen 15 · Difficile 20 · Très difficile 25 · Presque impossible 30</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Maîtrise</span><span class="j-aide-def">Ajouter le bonus de maîtrise si la compétence est maîtrisée.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Avantage</span><span class="j-aide-def">Lancer 2d20, garder le plus élevé.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Désavantage</span><span class="j-aide-def">Lancer 2d20, garder le plus bas.</span></div>
+            </div>
+            <div class="j-col-title-row" style="margin-top:20px"><div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Actions en combat</span></div></div>
+            <div class="j-aide-list">
+              <div class="j-aide-entry"><span class="j-aide-term">Attaquer</span><span class="j-aide-def">Une ou plusieurs attaques selon la classe.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Lancer un sort</span><span class="j-aide-def">Utilise un emplacement du niveau approprié.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Esquiver</span><span class="j-aide-def">Attaques contre vous = désavantage. Vous = avantage sur DEX.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Aider</span><span class="j-aide-def">Un allié obtient l'avantage sur son prochain jet.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Se précipiter</span><span class="j-aide-def">Double votre vitesse ce tour.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Se désengager</span><span class="j-aide-def">Votre mouvement ne provoque pas d'attaque d'opportunité.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Se cacher</span><span class="j-aide-def">Check de Discrétion contre Perception passive des ennemis.</span></div>
+            </div>
+          </div>
+          <div class="j-panel-section">
+            <div class="j-col-title-row"><div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Repos</span></div></div>
+            <div class="j-aide-list">
+              <div class="j-aide-entry"><span class="j-aide-term">Court (1h)</span><span class="j-aide-def">Dépenser des Dés de Vie pour récupérer des PV. Certaines capacités se réinitialisent.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Long (8h)</span><span class="j-aide-def">Récupérer tous les PV. Regagner la moitié des DV max. Réinitialiser la plupart des ressources.</span></div>
+            </div>
+            <div class="j-col-title-row" style="margin-top:20px"><div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">À 0 PV</span></div></div>
+            <div class="j-aide-list">
+              <div class="j-aide-entry"><span class="j-aide-term">Instable</span><span class="j-aide-def">Jet de Sauvegarde de Constitution DD 10 à chaque tour. Échec = 1 jet de mort raté. Succès = 1 jet de mort réussi.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">3 réussites</span><span class="j-aide-def">Stable (mais toujours inconscient à 0 PV).</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">3 échecs</span><span class="j-aide-def">Le personnage meurt.</span></div>
+              <div class="j-aide-entry"><span class="j-aide-term">Critique en attaque</span><span class="j-aide-def">Un coup critique à 0 PV = 2 jets de mort ratés.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PARAMÈTRES -->
+      <div id="panel-parametres" class="j-tab-panel">
+        <div class="j-panel-wrap">
+
+          <div class="j-panel-section">
+            <div class="j-col-title-row">
+              <div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Identité</span></div>
+              <button class="j-btn-confirm" id="btn-save-params" style="font-size:9px;padding:4px 12px">Sauvegarder</button>
+            </div>
+            <div class="j-params-grid">
+              <div><label>Nom du personnage</label><input type="text" id="p-name"></div>
+              <div><label>Joueur</label><input type="text" id="p-player"></div>
+              <div><label>Classe &amp; Sous-classe</label><input type="text" id="p-class"></div>
+              <div><label>Espèce</label><input type="text" id="p-species"></div>
+              <div><label>Background</label><input type="text" id="p-bg"></div>
+              <div><label>Alignement</label><input type="text" id="p-align"></div>
+              <div><label>Niveau</label><input type="number" id="p-level" min="1" max="20"></div>
+              <div><label>XP</label><input type="number" id="p-xp" min="0"></div>
+              <div><label>Bonus de maîtrise</label><input type="number" id="p-prof" min="2" max="6"></div>
+            </div>
+          </div>
+
+          <div class="j-panel-section">
+            <div class="j-col-title-row"><div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Combat</span></div></div>
+            <div class="j-params-grid">
+              <div><label>PV max</label><input type="number" id="p-hpmax" min="1"></div>
+              <div><label>CA</label><input type="number" id="p-ac"></div>
+              <div><label>Initiative</label><input type="number" id="p-init"></div>
+              <div><label>Vitesse (m)</label><input type="number" id="p-speed"></div>
+              <div><label>Dés de Vie (ex: 1d8)</label><input type="text" id="p-hd"></div>
+              <div><label>Nombre de DV max</label><input type="number" id="p-hdmax" min="1"></div>
+            </div>
+          </div>
+
+          <div class="j-panel-section">
+            <div class="j-col-title-row"><div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Caractéristiques</span></div></div>
+            <div class="j-params-abil-grid" id="p-abilities-grid"></div>
+          </div>
+
+          <div class="j-panel-section">
+            <div class="j-col-title-row"><div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Portrait</span></div></div>
+            <div class="j-portrait-upload-wrap">
+              <div class="j-portrait-preview" id="p-portrait-preview"></div>
+              <div>
+                <input type="file" id="p-portrait-file" accept="image/*" style="display:none">
+                <button class="j-col-cta" id="p-portrait-btn" style="display:block;margin-bottom:8px">Choisir une image</button>
+                <button class="j-btn-cancel" id="p-portrait-rm">Retirer le portrait</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="j-panel-section">
+            <div class="j-col-title-row"><div class="j-col-title-left"><span class="j-col-rule"></span><span class="j-col-title">Données</span></div></div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+              <button class="j-col-cta" id="btn-export-char">Exporter JSON</button>
+              <label class="j-col-cta" style="cursor:pointer">Importer JSON<input type="file" id="p-import-file" accept=".json" style="display:none"></label>
+              <button class="j-btn-cancel" id="btn-delete-char" style="border-color:var(--danger);color:var(--danger)">Supprimer ce personnage</button>
+            </div>
+          </div>
+
+        </div>
       </div>
 
     </div><!-- /#joueurs-app -->
@@ -551,6 +836,10 @@
     conditions: [],
     features:   [],
     spells:     [],
+    inventory:  [],
+    currency:   { pp: 0, gp: 0, ep: 0, sp: 0, cp: 0 },
+    rations:    0,
+    notes:      '',
   });
 
   const DEMO_CHAR = () => {
@@ -653,6 +942,10 @@
       if (!c.features)   c.features   = [];
       if (!c.spells)     c.spells     = [];
       if (!c.resources)  c.resources  = [];
+      if (!c.inventory)  c.inventory  = [];
+      if (!c.currency)   c.currency   = { pp: 0, gp: 0, ep: 0, sp: 0, cp: 0 };
+      if (c.rations == null) c.rations = 0;
+      if (c.notes == null)   c.notes   = '';
     });
   }
 
@@ -981,7 +1274,213 @@
     el('atk-name').value = el('atk-bonus').value = el('atk-dmg').value = el('atk-type').value = '';
   });
 
+  /* ── Inventaire ── */
+  function renderInventaire() {
+    const C = state.chars[state.activeId]; if (!C) return;
+    const cur = C.currency || { pp:0, gp:0, ep:0, sp:0, cp:0 };
+    el('c-pp').value = cur.pp; el('c-gp').value = cur.gp; el('c-ep').value = cur.ep;
+    el('c-sp').value = cur.sp; el('c-cp').value = cur.cp;
+    el('ration-count').textContent = C.rations || 0;
+    const tbody = el('items-tbody');
+    tbody.innerHTML = (C.inventory || []).map((it, i) => `
+      <tr>
+        <td class="j-atk-name">${esc(it.name)}</td>
+        <td style="text-align:center">${it.qty}</td>
+        <td style="text-align:center">${it.weight || 0}</td>
+        <td class="j-atk-type">${esc(it.notes || '')}</td>
+        <td><button class="j-item-del" data-i="${i}">✕</button></td>
+      </tr>`).join('');
+    tbody.querySelectorAll('.j-item-del').forEach(btn => {
+      btn.addEventListener('click', () => {
+        C.inventory.splice(+btn.dataset.i, 1); save(); renderInventaire();
+      });
+    });
+    el('btn-save-currency').onclick = () => {
+      C.currency = { pp: +el('c-pp').value||0, gp: +el('c-gp').value||0, ep: +el('c-ep').value||0, sp: +el('c-sp').value||0, cp: +el('c-cp').value||0 };
+      save();
+    };
+    el('btn-ration-use').onclick = () => {
+      const n = Math.max(0, parseInt(el('ration-input').value)||1);
+      C.rations = Math.max(0, (C.rations||0) - n); el('ration-input').value=''; save(); el('ration-count').textContent = C.rations;
+    };
+    el('btn-ration-add').onclick = () => {
+      const n = Math.max(0, parseInt(el('ration-input').value)||1);
+      C.rations = (C.rations||0) + n; el('ration-input').value=''; save(); el('ration-count').textContent = C.rations;
+    };
+    el('btn-add-item').onclick = () => { el('item-form').style.display = el('item-form').style.display==='none' ? '' : 'none'; };
+    el('btn-item-cancel').onclick = () => { el('item-form').style.display='none'; };
+    el('btn-item-ok').onclick = () => {
+      const name = el('item-name').value.trim(); if (!name) return;
+      C.inventory.push({ name, qty: parseInt(el('item-qty').value)||1, weight: parseFloat(el('item-weight').value)||0, notes: el('item-notes').value.trim() });
+      el('item-name').value=''; el('item-qty').value=1; el('item-weight').value=0; el('item-notes').value='';
+      el('item-form').style.display='none'; save(); renderInventaire();
+    };
+  }
+
+  /* ── Sorts ── */
+  function renderSorts() {
+    const C = state.chars[state.activeId]; if (!C) return;
+    // Slots
+    const slotsEl = el('sorts-slots-panel');
+    slotsEl.innerHTML = (C.spellSlots||[]).map((s, si) => {
+      const pips = Array.from({length:s.max},(_,j) =>
+        `<span class="j-slot-pip${j<s.used?' used':''}" data-si="${si}" data-j="${j}"></span>`).join('');
+      return `<div class="j-slots-row">
+        <span class="j-slot-label">Niv. ${s.lvl}</span>
+        <div class="j-slot-pips">${pips}</div>
+        <button class="j-item-del" data-rmslot="${si}" style="margin-left:auto">✕</button>
+      </div>`;
+    }).join('') || '<div style="color:var(--text-muted);font-size:11px;padding:8px 0">Aucun emplacement — ajoute un niveau ci-dessous.</div>';
+    slotsEl.querySelectorAll('.j-slot-pip').forEach(pip => {
+      pip.addEventListener('click', () => {
+        const si=+pip.dataset.si, j=+pip.dataset.j, slot=C.spellSlots[si];
+        slot.used = slot.used>j ? j : j+1; save(); renderSorts(); renderChar();
+      });
+    });
+    slotsEl.querySelectorAll('[data-rmslot]').forEach(btn => {
+      btn.addEventListener('click', () => { C.spellSlots.splice(+btn.dataset.rmslot,1); save(); renderSorts(); renderChar(); });
+    });
+    el('btn-add-slot').onclick = () => {
+      const lvl = parseInt(el('slot-lvl-input').value)||1;
+      const max = parseInt(el('slot-max-input').value)||1;
+      const existing = C.spellSlots.find(s=>s.lvl===lvl);
+      if (existing) existing.max=max; else C.spellSlots.push({lvl,max,used:0});
+      C.spellSlots.sort((a,b)=>a.lvl-b.lvl); el('slot-max-input').value=''; save(); renderSorts(); renderChar();
+    };
+    // Spell list grouped
+    const order = ['T',1,2,3,4,5,6,7,8,9];
+    const grouped = {};
+    (C.spells||[]).forEach((s,i)=>{ (grouped[s.lvl]=grouped[s.lvl]||[]).push({...s,i}); });
+    const listEl = el('sorts-list-panel');
+    listEl.innerHTML = order.filter(k=>grouped[k]).map(k=>`
+      <div class="j-spell-group" style="margin-bottom:10px">
+        <div class="j-spell-group-label">${k==='T'?'Tours de magie':'Niveau '+k}</div>
+        ${grouped[k].map(s=>`<div class="j-spell-entry">
+          <span class="j-spell-entry-lvl">${s.lvl==='T'?'Tour':s.lvl}</span>
+          <span class="j-spell-entry-name">${esc(s.n)}</span>
+          <button class="j-spell-del" data-idx="${s.i}">✕</button>
+        </div>`).join('')}
+      </div>`).join('') || '<div style="color:var(--text-muted);font-size:11px;padding:8px 0">Aucun sort — ajoute un sort ci-dessus.</div>';
+    listEl.querySelectorAll('.j-spell-del').forEach(btn => {
+      btn.addEventListener('click', () => { C.spells.splice(+btn.dataset.idx,1); save(); renderSorts(); renderChar(); });
+    });
+    el('btn-show-spell-form').onclick = () => { el('spell-form').style.display = el('spell-form').style.display==='none'?'':'none'; };
+    el('btn-spell-cancel').onclick  = () => { el('spell-form').style.display='none'; };
+    el('btn-spell-ok').onclick = () => {
+      const n = el('spell-name-input').value.trim(); if (!n) return;
+      let lvl = el('spell-lvl-input').value.trim().toUpperCase();
+      if (lvl==='T'||lvl==='TOUR'||lvl==='0') lvl='T'; else lvl=parseInt(lvl)||1;
+      C.spells.push({lvl,n}); el('spell-name-input').value=''; el('spell-lvl-input').value='';
+      el('spell-form').style.display='none'; save(); renderSorts(); renderChar();
+    };
+  }
+
+  /* ── Notes ── */
+  function renderNotes() {
+    const C = state.chars[state.activeId]; if (!C) return;
+    const area = el('notes-area');
+    area.value = C.notes || '';
+    area.oninput = () => { C.notes = area.value; save(); };
+  }
+
+  /* ── Paramètres ── */
+  function renderParametres() {
+    const C = state.chars[state.activeId]; if (!C) return;
+    el('p-name').value    = C.name;
+    el('p-player').value  = C.player || '';
+    el('p-class').value   = C.classLine;
+    el('p-species').value = C.species;
+    el('p-bg').value      = C.background;
+    el('p-align').value   = C.alignment;
+    el('p-level').value   = C.level;
+    el('p-xp').value      = C.xp;
+    el('p-prof').value    = C.prof;
+    el('p-hpmax').value   = C.hpMax;
+    el('p-ac').value      = C.ac;
+    el('p-init').value    = C.init;
+    el('p-speed').value   = C.speed;
+    el('p-hd').value      = C.hd;
+    el('p-hdmax').value   = C.hdMax;
+    // Abilities grid
+    el('p-abilities-grid').innerHTML = C.abilities.map((a,i) => `
+      <div class="j-params-abil-cell">
+        <div class="j-params-abil-key">${a.k}</div>
+        <input type="number" data-abi="${i}" value="${a.sc}" min="1" max="30">
+      </div>`).join('');
+    // Portrait preview
+    const prev = el('p-portrait-preview');
+    prev.innerHTML = C.portrait ? `<img src="${C.portrait}" alt="portrait">` : `<span style="color:var(--text-muted);font-size:10px;text-align:center;padding:4px">Aucun portrait</span>`;
+    // Save handler
+    el('btn-save-params').onclick = () => {
+      C.name       = el('p-name').value.trim() || C.name;
+      C.player     = el('p-player').value.trim();
+      C.classLine  = el('p-class').value.trim() || C.classLine;
+      C.species    = el('p-species').value.trim() || C.species;
+      C.background = el('p-bg').value.trim() || C.background;
+      C.alignment  = el('p-align').value.trim() || C.alignment;
+      C.level      = parseInt(el('p-level').value)||C.level;
+      C.xp         = parseInt(el('p-xp').value)||0;
+      C.prof       = parseInt(el('p-prof').value)||C.prof;
+      C.hpMax      = parseInt(el('p-hpmax').value)||C.hpMax;
+      C.ac         = parseInt(el('p-ac').value)||C.ac;
+      C.init       = parseInt(el('p-init').value)||0;
+      C.speed      = parseInt(el('p-speed').value)||C.speed;
+      C.hd         = el('p-hd').value.trim() || C.hd;
+      C.hdMax      = parseInt(el('p-hdmax').value)||C.hdMax;
+      el('p-abilities-grid').querySelectorAll('[data-abi]').forEach(inp => {
+        const idx = +inp.dataset.abi, sc = parseInt(inp.value)||10;
+        C.abilities[idx].sc = sc;
+        C.abilities[idx].m  = Math.floor((sc-10)/2);
+      });
+      // Recompute save/skill values based on new modifiers + prof
+      C.saves.forEach(sv => { const ab = C.abilities.find(a=>a.n===sv.n); if(ab) sv.v = ab.m + (sv.p ? C.prof : 0); });
+      C.skills.forEach(sk => { const ab = C.abilities.find(a=>a.k===sk.a); if(ab) sk.v = ab.m + (sk.p ? C.prof : 0); });
+      save(); render(); renderParametres();
+    };
+    // Portrait upload
+    el('p-portrait-btn').onclick = () => el('p-portrait-file').click();
+    el('p-portrait-file').onchange = e => {
+      const file = e.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => { C.portrait = ev.target.result; save(); renderParametres(); renderChar(); };
+      reader.readAsDataURL(file);
+    };
+    el('p-portrait-rm').onclick = () => { C.portrait = null; save(); renderParametres(); renderChar(); };
+    // Export
+    el('btn-export-char').onclick = () => {
+      const blob = new Blob([JSON.stringify(C, null, 2)], {type:'application/json'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+      a.download = (C.name.replace(/[^a-z0-9]/gi,'_')||'personnage') + '.json';
+      a.click(); URL.revokeObjectURL(a.href);
+    };
+    // Import
+    el('p-import-file').onchange = e => {
+      const file = e.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        try {
+          const imported = JSON.parse(ev.target.result);
+          if (!imported.name) return alert('Fichier JSON invalide.');
+          imported.id = imported.id || uid();
+          state.chars[imported.id] = imported;
+          state.activeId = imported.id;
+          save(); render(); renderParametres();
+        } catch { alert('Erreur de lecture du fichier JSON.'); }
+      };
+      reader.readAsText(file);
+    };
+    // Delete
+    el('btn-delete-char').onclick = () => {
+      if (Object.keys(state.chars).length <= 1) { alert('Impossible de supprimer le seul personnage.'); return; }
+      if (!confirm(`Supprimer définitivement ${C.name} ?`)) return;
+      delete state.chars[state.activeId];
+      state.activeId = Object.keys(state.chars)[0];
+      save(); render(); renderParametres();
+    };
+  }
+
   /* ── tabs ── */
+  const TAB_RENDERERS = { inventaire: renderInventaire, sorts: renderSorts, notes: renderNotes, parametres: renderParametres };
   document.querySelectorAll('.j-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.j-tab').forEach(t => t.classList.remove('active'));
@@ -989,6 +1488,8 @@
       tab.classList.add('active');
       const panel = el('panel-' + tab.dataset.tab);
       if (panel) panel.classList.add('active');
+      const fn = TAB_RENDERERS[tab.dataset.tab];
+      if (fn) fn();
     });
   });
 
