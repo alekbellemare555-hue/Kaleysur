@@ -1068,12 +1068,34 @@
     .vb-hp-inp-group { flex:1; display:flex; flex-direction:column; gap:0.2rem; }
     .vb-hp-inp-group .field-label { font-size:0.64rem; }
 
-    /* Mini-stat inputs (AC/INIT/SPD) under each display value */
-    .vb-mini-inp { margin-top:0.25rem; width:100%; padding:0.2rem 0.3rem !important; font-size:0.78rem !important; text-align:center; }
+    /* Combat stats row (AC/Init/Speed) dans vitals */
+    .vb-combat-row { display:flex; gap:0.5rem; margin-bottom:0.5rem; }
+    .vb-combat-stat { flex:1; display:flex; flex-direction:column; gap:0.2rem; }
+    .vb-combat-stat .field-label { font-size:0.64rem; }
+    .vb-combat-stat .field-input { text-align:center; }
     .vb-mini-auto { font-size:0.58rem; color:#555; text-align:center; margin-top:0.1rem; }
 
+    /* Séparateurs visuels entre blocs de la vitals box */
+    .vb-vitals-sep { border-top:1px solid var(--j-border-col,#4a3510); margin:0.7rem 0; opacity:0.5; }
+
+    /* HP quick : ⚔ [input] ✚ */
+    .vb-btn-quick { padding:0.3rem 0.6rem !important; font-size:0.95rem !important; min-width:34px; }
+    .hp-quick { margin-top:0.4rem; margin-bottom:0.3rem; }
+
+    /* Stress row */
+    .vb-stress-row { }
+
     /* Identité tab layout */
-    .vb-identite-wrap { padding: 24px 32px; }
+    .vb-identite-wrap { padding: 28px 32px; max-width: 700px; }
+
+    /* Proficiency badge dans la class-line */
+    .vb-prof-badge {
+      font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--j-text2, #a89060); background: var(--j-card, #221a0e);
+      border: 1px solid var(--j-border-col, #4a3510);
+      border-radius: 3px; padding: 1px 6px; white-space: nowrap;
+    }
+    .vb-prof-badge strong { color: var(--gold, #c9a227); }
 
     /* VB: Wider layout — override inline max-width + fix flex min-width shrink bug */
     main.main-content { max-width: none !important; min-width: 0; overflow-x: hidden; }
@@ -1465,18 +1487,14 @@
             <div class="vb-mini-stat">
               <div class="vb-mini-stat-label">AC</div>
               <div class="vb-mini-stat-val" id="vb-hero-ca">—</div>
-              <input type="number" class="field-input field-input-sm vb-mini-inp" data-f="ca" value="10" min="0">
             </div>
             <div class="vb-mini-stat">
               <div class="vb-mini-stat-label">INIT</div>
               <div class="vb-mini-stat-val" id="vb-hero-init">—</div>
-              <input type="number" class="field-input field-input-sm vb-mini-inp" data-f="initiative" value="0" id="inp-initiative">
-              <div class="vb-mini-auto" id="init-auto-label">auto DEX</div>
             </div>
             <div class="vb-mini-stat">
               <div class="vb-mini-stat-label">SPD</div>
               <div class="vb-mini-stat-val" id="vb-hero-speed">—</div>
-              <input type="number" class="field-input field-input-sm vb-mini-inp" data-f="vitesse" value="30" min="0" step="5">
             </div>
           </div>
         </div>
@@ -1485,7 +1503,10 @@
         <div id="vb-hero-lead">
           <div class="vb-folio">Adventurer's Log · Kaleysur</div>
           <div class="vb-char-name" id="vb-hero-name">—</div>
-          <div class="vb-class-line" id="vb-hero-class">—</div>
+          <div class="vb-class-line" id="vb-hero-class" style="display:flex;align-items:baseline;gap:10px;">
+            <span id="vb-hero-class-text">—</span>
+            <span class="vb-prof-badge" title="Proficiency Bonus">PB <strong id="vb-hero-prof">+2</strong></span>
+          </div>
           <div class="vb-facts" id="vb-hero-facts"><!-- filled by renderHero() --></div>
           <!-- Ability grid lives here — rendered by renderAbilities() -->
           <div class="ability-grid" id="ability-grid" style="margin-top:14px;"></div>
@@ -1494,7 +1515,26 @@
         <!-- Vitals column -->
         <div id="vb-hero-vitals">
           <div class="vb-vitals-box">
-            <!-- HP display -->
+
+            <!-- ① Combat stats: AC / Init / Speed — toujours visibles -->
+            <div class="vb-combat-row">
+              <div class="vb-combat-stat">
+                <label class="field-label">AC</label>
+                <input type="number" class="field-input field-input-sm" data-f="ca" value="10" min="0" id="inp-ca">
+              </div>
+              <div class="vb-combat-stat">
+                <label class="field-label">Init</label>
+                <input type="number" class="field-input field-input-sm" data-f="initiative" value="0" id="inp-initiative">
+                <div class="vb-mini-auto" id="init-auto-label">auto DEX</div>
+              </div>
+              <div class="vb-combat-stat">
+                <label class="field-label">Speed</label>
+                <input type="number" class="field-input field-input-sm" data-f="vitesse" value="30" min="0" step="5">
+              </div>
+            </div>
+            <div class="vb-vitals-sep"></div>
+
+            <!-- ② Hit Points -->
             <div class="vb-section-label">Hit Points</div>
             <div class="vb-hp-display">
               <span class="vb-hp-current" id="vb-hero-hp-cur">0</span>
@@ -1507,15 +1547,15 @@
             <!-- HP inputs (édition directe) -->
             <div class="vb-hp-inputs">
               <div class="vb-hp-inp-group">
-                <label class="field-label">Max HP</label>
+                <label class="field-label">Max</label>
                 <input type="number" class="field-input field-input-sm" data-f="pvMax" value="0" min="0" id="inp-pvMax">
               </div>
               <div class="vb-hp-inp-group">
-                <label class="field-label">HP actuel</label>
+                <label class="field-label">Actuel</label>
                 <input type="number" class="field-input field-input-sm" data-f="pvActuel" value="0" id="inp-pvActuel">
               </div>
               <div class="vb-hp-inp-group">
-                <label class="field-label">Temp HP</label>
+                <label class="field-label">Temp</label>
                 <input type="number" class="field-input field-input-sm" data-f="pvTemp" value="0" min="0">
               </div>
             </div>
@@ -1528,19 +1568,17 @@
               <button id="btn-apply-dmg"></button>
               <button id="btn-apply-heal"></button>
             </div>
-            <!-- HP change rapide -->
-            <div class="hp-quick" style="margin-bottom:0.5rem;">
-              <span style="font-size:0.78rem;color:#888;">HP ±</span>
+            <!-- HP change rapide : ⚔ [val] ✚ -->
+            <div class="hp-quick">
+              <button class="vb-btn-dmg vb-btn-quick" onclick="document.getElementById('btn-apply-dmg').click()" title="Appliquer dégâts">⚔</button>
               <input type="number" class="hp-quick-input" id="hp-quick-val" min="0" placeholder="0">
+              <button class="vb-btn-heal vb-btn-quick" onclick="document.getElementById('btn-apply-heal').click()" title="Appliquer soin">✚</button>
             </div>
             <div class="hp-log-toggle j-hidden" id="hp-log-toggle">▾ Historique</div>
             <div class="hp-log j-hidden" id="hp-log"></div>
-            <!-- Damage / Heal -->
-            <div class="vb-mini-btns">
-              <button class="vb-btn-dmg" onclick="document.getElementById('btn-apply-dmg').click()">⚔ Damage</button>
-              <button class="vb-btn-heal" onclick="document.getElementById('btn-apply-heal').click()">✚ Heal</button>
-            </div>
-            <!-- Hit Dice + Death Saves -->
+            <div class="vb-vitals-sep"></div>
+
+            <!-- ③ Hit Dice + Death Saves -->
             <div class="vb-hd-death">
               <div class="vb-hd">
                 <div class="vb-section-label">Hit Dice</div>
@@ -1554,16 +1592,9 @@
               </div>
               <div>
                 <div class="vb-section-label">Death Saves</div>
-                <div class="vb-death-pips" id="vb-hero-death-pips">
-                  <span class="vb-death-pip"></span>
-                  <span class="vb-death-pip"></span>
-                  <span class="vb-death-pip"></span>
-                  <span style="display:inline-block;width:6px;"></span>
-                  <span class="vb-death-pip"></span>
-                  <span class="vb-death-pip"></span>
-                  <span class="vb-death-pip"></span>
-                </div>
-                <!-- Death save dots (fonctionnels, cachés visuellement par les pips) -->
+                <!-- Pips cliquables — data-idx / data-type gérés par renderCombat -->
+                <div class="vb-death-pips" id="vb-hero-death-pips" style="cursor:pointer;" title="Cliquer pour basculer"></div>
+                <!-- Dots fonctionnels cachés (maintenus pour compat JS existant) -->
                 <div style="display:none;">
                   <div class="death-dots" id="death-success">
                     <div class="death-dot" data-idx="0" data-type="success"></div>
@@ -1578,19 +1609,24 @@
                 </div>
               </div>
             </div>
-            <!-- Stress Points -->
-            <div style="margin-top:0.85rem;">
-              <div class="field-label" style="margin-bottom:0.3rem;display:flex;align-items:center;gap:0.5rem;">
-                Stress Points
+            <div class="vb-vitals-sep"></div>
+
+            <!-- ④ Stress Points -->
+            <div class="vb-stress-row">
+              <div class="field-label" style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.3rem;">
+                Stress
                 <input type="number" class="stress-count-inp" id="stress-max-inp" min="0" max="20" value="3">
               </div>
               <div class="stress-dots" id="stress-dots"></div>
             </div>
-            <!-- Rest buttons -->
+            <div class="vb-vitals-sep"></div>
+
+            <!-- ⑤ Rest buttons -->
             <div class="vb-rest-btns">
               <button class="vb-rest-btn-short" onclick="document.getElementById('btn-short-rest').click()">☽ Short Rest</button>
               <button class="vb-rest-btn-long" onclick="document.getElementById('btn-long-rest').click()">★ Long Rest</button>
             </div>
+
           </div>
           <div class="vb-cond-box">
             <div class="vb-section-label">Active Conditions</div>
@@ -4657,12 +4693,17 @@ function renderHero() {
   const nameEl = document.getElementById('vb-hero-name');
   if (nameEl) nameEl.textContent = c.characterName || '—';
 
-  // Class line
-  const classEl = document.getElementById('vb-hero-class');
-  if (classEl) {
+  // Class line + proficiency badge
+  const classTextEl = document.getElementById('vb-hero-class-text');
+  const profBadgeEl = document.getElementById('vb-hero-prof');
+  if (classTextEl) {
     const classes = getClasses(c).filter(cl => cl.classe);
     const classStr = classes.map(cl => cl.classe + ' ' + cl.niveau).join(' / ') || '—';
-    classEl.textContent = classStr + (c.species ? '  ·  ' + c.species : '');
+    classTextEl.textContent = classStr + (c.species ? '  ·  ' + c.species : '');
+  }
+  if (profBadgeEl) {
+    const lv = getTotalLevel(c);
+    profBadgeEl.textContent = '+' + pb(lv || 1);
   }
 
   // Facts row
@@ -4724,11 +4765,12 @@ function renderHero() {
   if (pipsEl) {
     const succ = parseInt(c.mortSucces)  || 0;
     const fail = parseInt(c.mortEchecs) || 0;
-    const pip = (cls) => `<span class="vb-death-pip ${cls}"></span>`;
+    const pip = (type, i, on) =>
+      `<span class="vb-death-pip ${on}" data-type="${type}" data-idx="${i}" role="button" tabindex="0" title="${type==='success'?'Succès':'Échec'} ${i+1}"></span>`;
     pipsEl.innerHTML =
-      [0,1,2].map(i => pip(i < succ ? 'success-on' : '')).join('') +
-      '<span style="display:inline-block;width:6px;"></span>' +
-      [0,1,2].map(i => pip(i < fail ? 'fail-on' : '')).join('');
+      [0,1,2].map(i => pip('success', i, i < succ ? 'success-on' : '')).join('') +
+      '<span style="display:inline-block;width:8px;pointer-events:none;"></span>' +
+      [0,1,2].map(i => pip('fail', i, i < fail ? 'fail-on' : '')).join('');
   }
 
   // Conditions
@@ -7547,6 +7589,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Bouton Organiser visible uniquement dans l'onglet Personnage
       const organBtn = document.getElementById('btn-layout-edit');
       if (organBtn) organBtn.style.display = btn.dataset.tab === 'personnage' ? '' : 'none';
+      // Onglet Identité : scroll jusqu'au formulaire
+      if (btn.dataset.tab === 'identite') {
+        requestAnimationFrame(() => {
+          document.getElementById('tab-identite')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      }
     });
   });
 
@@ -7635,7 +7683,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderSkills(); triggerSave();
   });
 
-  // Jets de mort
+  // Jets de mort — dots cachés (compat)
   ['death-success','death-fail'].forEach(id => {
     document.getElementById(id).addEventListener('click', e => {
       const dot = e.target.closest('.death-dot');
@@ -7646,6 +7694,22 @@ document.addEventListener('DOMContentLoaded', async () => {
       C()[key]   = cur > idx ? idx : idx + 1;
       renderCombat(); triggerSave();
     });
+  });
+  // Jets de mort — pips cliquables dans le hero
+  document.getElementById('vb-hero-death-pips')?.addEventListener('click', e => {
+    const pip = e.target.closest('[data-type][data-idx]');
+    if (!pip) return;
+    const type = pip.dataset.type; const idx = parseInt(pip.dataset.idx);
+    const key  = type === 'success' ? 'mortSucces' : 'mortEchecs';
+    const cur  = C()[key] || 0;
+    C()[key]   = cur > idx ? idx : idx + 1;
+    // Mettre à jour les classes directement (pips gérés par renderHero, pas renderCombat)
+    const newCount = C()[key];
+    const onCls = type === 'success' ? 'success-on' : 'fail-on';
+    document.querySelectorAll(`#vb-hero-death-pips [data-type="${type}"]`).forEach((p, i) => {
+      p.classList.toggle(onCls, i < newCount);
+    });
+    renderCombat(); triggerSave();
   });
 
   // Stress Points
