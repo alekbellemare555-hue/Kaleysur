@@ -1021,6 +1021,11 @@
     }
     .vb-fact-val { font-family: 'Cinzel', serif; font-size: 11px; color: var(--j-text, #e2cfa0); }
     /* ability-grid lives inside #vb-hero-lead — inherits existing .ability-grid/.ability-box CSS */
+    #hero-note-wrap { margin-top: 12px; }
+    #hero-note-label { font-family:'Cinzel',serif; font-size:8px; color:#555; letter-spacing:.08em; text-transform:uppercase; margin-bottom:4px; }
+    #hero-note { width:100%; box-sizing:border-box; background:rgba(255,255,255,0.03); border:1px solid #2a1f0d; border-radius:3px; color:#ccc; font-size:0.75rem; line-height:1.5; padding:6px 8px; resize:vertical; min-height:60px; font-family:inherit; transition:border-color var(--transition); }
+    #hero-note:focus { outline:none; border-color:var(--gold-dark); background:rgba(255,255,255,0.05); }
+    #hero-note::placeholder { color:#3a3020; font-style:italic; }
     #vb-hero-vitals { display: flex; flex-direction: column; gap: 12px; }
     .vb-vitals-box {
       background: linear-gradient(180deg, #1a1308, #0e0a04);
@@ -1736,6 +1741,11 @@
           <div class="vb-facts" id="vb-hero-facts"><!-- filled by renderHero() --></div>
           <!-- Ability grid lives here — rendered by renderAbilities() -->
           <div class="ability-grid" id="ability-grid" style="margin-top:14px;"></div>
+          <!-- Quick note -->
+          <div id="hero-note-wrap">
+            <div id="hero-note-label">Notes rapides</div>
+            <textarea id="hero-note" data-f="heroNote" placeholder="Observations, objectifs, rappels…" rows="3"></textarea>
+          </div>
         </div>
 
         <!-- Vitals column -->
@@ -4154,7 +4164,8 @@ function emptyCharacter() {
     spells:[], customFeatures:[],
     resources:[], conditions:[],
     maitrises:'', langues:'',
-    traits:'', ideaux:'', liens:'', defauts:'', apparence:'', historique:''
+    traits:'', ideaux:'', liens:'', defauts:'', apparence:'', historique:'',
+    heroNote:''
   };
 }
 function emptyNotesPages() { return [{ name: 'Notes de session', content: '' }]; }
