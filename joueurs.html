@@ -13,7 +13,7 @@
       --gold-dark: #8a6e1a;
       --danger: #c97a7a;
       --success: #6aba6a;
-      --radius: 8px;
+      --radius: 2px;
       --transition: 0.2s ease;
       /* Extended palette — customizable via settings */
       --j-panel: #221a0e;
@@ -112,7 +112,7 @@
     .sheet-section.collapsed > *:not(:first-child) { display:none !important; }
     .sheet-section.collapsed .sheet-section-title { margin-bottom:0; border-bottom:none; padding-bottom:0; }
     .sheet-section.collapsed { padding-bottom:0.75rem; }
-    .sheet-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:0.75rem; }
+    .sheet-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
     .sheet-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
     .field-group { display:flex; flex-direction:column; gap:0.2rem; }
     .field-label { font-size:0.72rem; color:#888; text-transform:uppercase; letter-spacing:0.05em; }
@@ -767,6 +767,753 @@
         linear-gradient(var(--gold-dark), var(--gold-dark)) right 5px bottom 5px / 1px 11px no-repeat,
         var(--j-panel, #221a0e);
     }
+
+    /* ════════════════════════════════════════════════
+       VARIATION B — CARNET D'AVENTURIER
+       New dark palette + hero layout on top of all existing functionality
+    ════════════════════════════════════════════════ */
+
+    /* VB: Global background upgrade */
+    body { background: #0e0a04; }
+    .main-content { background: #0e0a04; }
+
+    /* VB: Sticky top bar (replaces dash-header + tabs) */
+    .dash-header.vb-topbar {
+      position: sticky;
+      top: var(--nav-h, 60px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+      height: 52px;
+      background: #0a0703;
+      border-bottom: 1px solid var(--j-border-col, #4a3510);
+      margin-bottom: 0;
+      gap: 0;
+    }
+    .vb-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      margin-right: 24px;
+    }
+    .vb-brand-sigil { color: var(--gold-dark); font-size: 14px; }
+    .vb-brand-name { font-family: 'Cinzel', serif; color: var(--gold); font-size: 14px; letter-spacing: .05em; }
+    .vb-brand-sep { color: #3a2810; margin: 0 4px; }
+    .vb-brand-sub { font-family: 'Cinzel', serif; font-size: 8px; color: var(--gold-dark); letter-spacing: .12em; text-transform: uppercase; }
+    .vb-topbar .dash-player { display: none; }
+    .vb-topbar .dash-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+    .vb-topbar .tab-btn {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: #888;
+      padding: 0 14px;
+      height: 52px;
+      font-family: 'Cinzel', serif;
+      font-size: 9.5px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color .15s, border-color .15s;
+      margin-bottom: -1px;
+      white-space: nowrap;
+    }
+    .vb-topbar .tab-btn:hover { color: var(--gold); }
+    .vb-topbar .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+    /* VB: Party ribbon (replaces char-cards) */
+    .char-cards.vb-party-ribbon {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      padding: 0 32px;
+      margin-bottom: 0;
+      padding-bottom: 0;
+      background: #0a0703;
+      border-bottom: 1px solid var(--j-border-col, #4a3510);
+      min-height: 54px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .char-cards.vb-party-ribbon::-webkit-scrollbar { display: none; }
+    .char-cards.vb-party-ribbon .char-card {
+      width: auto;
+      flex-shrink: 0;
+      text-align: left;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 18px;
+      border-radius: 0;
+      border: none;
+      border-bottom: 2px solid transparent;
+      border-right: 1px solid rgba(74,53,16,0.5);
+      background: transparent;
+      box-shadow: none;
+      position: relative;
+    }
+    .char-cards.vb-party-ribbon .char-card:hover {
+      background: rgba(201,162,39,0.04);
+      border-color: transparent;
+      border-bottom-color: transparent;
+      border-right-color: rgba(74,53,16,0.5);
+    }
+    .char-cards.vb-party-ribbon .char-card.active {
+      border-bottom-color: var(--gold);
+      background: linear-gradient(180deg, transparent, rgba(201,162,39,0.06));
+      box-shadow: none;
+    }
+    .char-cards.vb-party-ribbon .char-card-avatar {
+      font-size: 1.5rem;
+      margin-bottom: 0;
+      flex-shrink: 0;
+    }
+    .char-cards.vb-party-ribbon .char-card-avatar img {
+      width: 28px; height: 28px; border-radius: 50%;
+    }
+    .char-cards.vb-party-ribbon .char-card-name {
+      font-size: 12px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      max-width: 110px;
+      white-space: nowrap;
+    }
+    .char-cards.vb-party-ribbon .char-card-sub {
+      font-size: 9px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px;
+    }
+    .char-cards.vb-party-ribbon .char-card-species { display: none; }
+    .char-cards.vb-party-ribbon .char-card-hp-wrap { display: none; }
+    .char-cards.vb-party-ribbon .char-card-del {
+      position: static;
+      margin-left: 4px;
+      font-size: 0.6rem;
+    }
+    .char-cards.vb-party-ribbon .char-card-add {
+      flex-direction: row;
+      min-height: auto;
+      min-width: auto;
+      border-style: dashed;
+      border-radius: 99px;
+      padding: 4px 14px;
+      gap: 4px;
+      align-self: center;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+    .char-cards.vb-party-ribbon .char-card-add-icon { font-size: 0.85rem; }
+    .char-cards.vb-party-ribbon .char-card-add-label { font-size: 9.5px; margin: 0; }
+
+    /* Hide old tabs div */
+    .tabs.vb-hidden { display: none !important; }
+
+    /* VB: Hero section */
+    #vb-hero {
+      display: grid;
+      grid-template-columns: 220px 1fr 280px;
+      gap: 24px;
+      padding: 28px 32px 20px;
+      background: #0e0a04;
+    }
+    #vb-hero-portrait { display: flex; flex-direction: column; gap: 12px; }
+    .vb-portrait-frame {
+      aspect-ratio: 3/4;
+      background: linear-gradient(135deg, #1f1709 0%, #0d0905 100%);
+      border: 1px solid var(--gold-dark);
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .vb-portrait-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .vb-portrait-placeholder { font-size: 3rem; opacity: 0.25; color: var(--gold); user-select: none; }
+    .vb-corner { position: absolute; color: var(--gold-dark); opacity: 0.55; font-size: 10px; line-height: 1; pointer-events: none; }
+    .vb-corner.tl { top: 5px; left: 7px; }
+    .vb-corner.tr { top: 5px; right: 7px; }
+    .vb-corner.bl { bottom: 5px; left: 7px; }
+    .vb-corner.br { bottom: 5px; right: 7px; }
+    .vb-mini-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--j-border-col, #4a3510);
+      border: 1px solid var(--j-border-col, #4a3510);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .vb-mini-stat { background: #0e0a04; padding: 10px 4px; text-align: center; }
+    .vb-mini-stat-label {
+      font-family: 'Cinzel', serif;
+      font-size: 8px; color: #555;
+      letter-spacing: .08em; text-transform: uppercase; margin-bottom: 3px;
+    }
+    .vb-mini-stat-val {
+      font-family: 'Cinzel', serif; color: var(--gold); font-size: 18px; line-height: 1;
+    }
+    .vb-folio {
+      font-family: 'Cinzel', serif; font-size: 9px; color: var(--gold-dark);
+      letter-spacing: .12em; text-transform: uppercase; margin-bottom: 6px;
+    }
+    .vb-char-name {
+      font-family: 'Cinzel', serif;
+      font-size: 42px;
+      color: var(--gold);
+      line-height: 1.05;
+      letter-spacing: .02em;
+      margin-bottom: 6px;
+      text-shadow: 0 0 30px rgba(201,162,39,0.18);
+      word-break: break-word;
+    }
+    .vb-class-line {
+      font-family: 'Lora', serif;
+      font-style: italic;
+      color: var(--j-text, #b8a880);
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+    .vb-facts {
+      display: flex;
+      gap: 0;
+      padding: 12px 0;
+      border-top: 1px solid var(--j-border-col, #4a3510);
+      border-bottom: 1px solid var(--j-border-col, #4a3510);
+      margin-bottom: 18px;
+    }
+    .vb-fact { flex: 1; padding-left: 12px; border-left: 1px solid var(--j-border-col, #4a3510); }
+    .vb-fact:first-child { padding-left: 0; border-left: none; }
+    .vb-fact-label {
+      font-family: 'Cinzel', serif; font-size: 8px; color: #555;
+      letter-spacing: .08em; text-transform: uppercase; margin-bottom: 3px;
+    }
+    .vb-fact-val { font-family: 'Cinzel', serif; font-size: 11px; color: var(--j-text, #e2cfa0); }
+    /* ability-grid lives inside #vb-hero-lead — inherits existing .ability-grid/.ability-box CSS */
+    #vb-hero-vitals { display: flex; flex-direction: column; gap: 12px; }
+    .vb-vitals-box {
+      background: linear-gradient(180deg, #1a1308, #0e0a04);
+      border: 1px solid var(--gold-dark);
+      border-radius: 4px;
+      padding: 16px 16px 14px;
+    }
+    .vb-section-label {
+      font-family: 'Cinzel', serif; font-size: 9px; color: var(--gold-dark);
+      letter-spacing: .08em; text-transform: uppercase; margin-bottom: 8px;
+    }
+    .vb-hp-display { display: flex; align-items: baseline; gap: 6px; margin-bottom: 6px; }
+    .vb-hp-current {
+      font-family: 'Cinzel', serif; font-size: 40px; color: #e8c84a;
+      line-height: 1; text-shadow: 0 0 20px rgba(201,162,39,0.35);
+    }
+    .vb-hp-max { color: #555; font-size: 13px; }
+    .vb-hp-label { font-family: 'Cinzel', serif; font-size: 8px; color: #555; margin-left: auto; }
+    .vb-hp-bar-track {
+      height: 8px; background: #0a0703;
+      border: 1px solid var(--j-border-col, #4a3510);
+      border-radius: 4px; overflow: hidden;
+    }
+    .vb-hp-bar-fill { height: 100%; transition: width .4s ease, background .4s ease; }
+    .vb-mini-btns { display: flex; gap: 6px; margin-top: 10px; }
+    .vb-btn-dmg {
+      flex: 1; background: rgba(201,122,122,0.1); border: 1px solid rgba(201,122,122,0.3);
+      color: var(--danger); padding: 6px 4px; font-size: 10px; border-radius: 3px;
+      font-family: 'Cinzel', serif; cursor: pointer; letter-spacing: .02em;
+      transition: background .15s;
+    }
+    .vb-btn-heal {
+      flex: 1; background: rgba(106,186,106,0.1); border: 1px solid rgba(106,186,106,0.3);
+      color: var(--success); padding: 6px 4px; font-size: 10px; border-radius: 3px;
+      font-family: 'Cinzel', serif; cursor: pointer; letter-spacing: .02em;
+      transition: background .15s;
+    }
+    .vb-btn-dmg:hover { background: rgba(201,122,122,0.2); }
+    .vb-btn-heal:hover { background: rgba(106,186,106,0.2); }
+    .vb-hd-death {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+      margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--j-border-col, #4a3510);
+    }
+    .vb-hd-val { font-family: 'Cinzel', serif; color: var(--gold); font-size: 13px; margin-top: 3px; }
+    .vb-death-pips { display: flex; gap: 3px; flex-wrap: wrap; margin-top: 4px; }
+    .vb-death-pip { width: 9px; height: 9px; border-radius: 50%; border: 2px solid #3a2810; background: transparent; display: inline-block; }
+    .vb-death-pip.success-on { background: var(--success); border-color: var(--success); }
+    .vb-death-pip.fail-on { background: var(--danger); border-color: var(--danger); }
+    .vb-rest-btns { display: flex; gap: 6px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--j-border-col, #4a3510); }
+    .vb-rest-btn-short {
+      flex: 1; background: transparent; border: 1px solid #3a6060; color: #7ababa;
+      padding: 5px 4px; font-size: 9px; border-radius: 3px;
+      font-family: 'Cinzel', serif; letter-spacing: .05em; cursor: pointer;
+      transition: background .15s;
+    }
+    .vb-rest-btn-long {
+      flex: 1; background: transparent; border: 1px solid #3a4a6a; color: #8ab0e0;
+      padding: 5px 4px; font-size: 9px; border-radius: 3px;
+      font-family: 'Cinzel', serif; letter-spacing: .05em; cursor: pointer;
+      transition: background .15s;
+    }
+    .vb-rest-btn-short:hover { background: rgba(58,96,96,0.2); }
+    .vb-rest-btn-long:hover { background: rgba(58,74,106,0.2); }
+    .vb-cond-box {
+      background: var(--j-panel, #1a1308);
+      border: 1px solid var(--j-border-col, #4a3510);
+      border-radius: 4px;
+      padding: 10px 12px;
+    }
+    #vb-hero-divider { border: none; border-top: 1px solid var(--j-border-col, #4a3510); margin: 0 32px 20px; }
+
+    /* HP inputs inside vitals box */
+    .vb-hp-inputs { display:flex; gap:0.5rem; margin:0.6rem 0 0.5rem; }
+    .vb-hp-inp-group { flex:1; display:flex; flex-direction:column; gap:0.2rem; }
+    .vb-hp-inp-group .field-label { font-size:0.64rem; }
+
+    /* Combat stats row (AC/Init/Speed) dans vitals */
+    .vb-combat-row { display:flex; gap:0.5rem; margin-bottom:0.5rem; }
+    .vb-combat-stat { flex:1; display:flex; flex-direction:column; gap:0.2rem; }
+    .vb-combat-stat .field-label { font-size:0.64rem; }
+    .vb-combat-stat .field-input { text-align:center; }
+    .vb-mini-auto { font-size:0.58rem; color:#555; text-align:center; margin-top:0.1rem; }
+
+    /* Séparateurs visuels entre blocs de la vitals box */
+    .vb-vitals-sep { border-top:1px solid var(--j-border-col,#4a3510); margin:0.7rem 0; opacity:0.5; }
+
+    /* HP quick : ⚔ [input] ✚ */
+    .vb-btn-quick { padding:0.3rem 0.6rem !important; font-size:0.95rem !important; min-width:34px; }
+    .hp-quick { margin-top:0.4rem; margin-bottom:0.3rem; }
+
+    /* Stress row */
+    .vb-stress-row { }
+
+    /* Identité tab layout */
+    .vb-identite-wrap { padding: 28px 32px; max-width: 700px; }
+
+    /* Proficiency badge dans la class-line */
+    .vb-prof-badge {
+      font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--j-text2, #a89060); background: var(--j-card, #221a0e);
+      border: 1px solid var(--j-border-col, #4a3510);
+      border-radius: 3px; padding: 1px 6px; white-space: nowrap;
+    }
+    .vb-prof-badge strong { color: var(--gold, #c9a227); }
+
+    /* VB: Wider layout — override inline max-width + fix flex min-width shrink bug */
+    main.main-content { max-width: none !important; min-width: 0; overflow-x: hidden; }
+    @media (max-width: 900px) {
+      /* Portrait masqué → 2 colonnes : lead | vitals */
+      #vb-hero { grid-template-columns: 1fr 260px; }
+      #vb-hero-portrait { display: none !important; }
+      .vb-char-name { font-size: 28px; }
+    }
+
+/* ════ VB COHERENCE: sections match hero aesthetic ════ */
+
+/* Sheet sections → flat, transparent, no card border */
+.sheet-section {
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin-bottom: 32px !important;
+}
+/* Collapsed state */
+.sheet-section.collapsed { margin-bottom: 16px !important; }
+.sheet-section.collapsed .sheet-section-title { border-bottom-style: dashed !important; margin-bottom: 0 !important; padding-bottom: 6px !important; }
+.sheet-section.collapsed > *:not(:first-child) { display: none !important; }
+/* Hidden via layout */
+.sec-hidden { display: none !important; }
+
+/* Section titles → VB Column header style (gold rule + Cinzel) */
+.sheet-section-title {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding-bottom: 8px !important;
+  margin-bottom: 14px !important;
+  border-bottom: 1px solid var(--gold-dark) !important;
+  border-top: none !important; border-left: none !important; border-right: none !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 12px !important;
+  color: var(--gold) !important;
+  letter-spacing: .08em !important;
+  text-transform: uppercase !important;
+  font-weight: 400 !important;
+  cursor: default !important;
+  background: none !important;
+}
+.sheet-section-title::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 1px;
+  background: var(--gold-dark);
+  flex-shrink: 0;
+}
+.sheet-section-title:hover { color: var(--gold) !important; }
+.sec-chevron { display: none !important; }
+
+/* Layout: 3-column grid matching the hero above */
+.layout-wrapper {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr 1fr !important;
+  gap: 32px !important;
+  padding: 0 32px 24px !important;
+  align-items: start !important;
+}
+.layout-col-label { display: none !important; }
+
+/* Layout toolbar → very subtle drag hint */
+.layout-toolbar {
+  display: flex !important;
+  align-items: center !important;
+  padding: 4px 32px 12px !important;
+  font-size: 0.65rem !important;
+  color: #2a1e0a !important;
+  background: transparent !important;
+  border: none !important;
+  transition: color .2s !important;
+}
+.layout-toolbar:hover { color: #4a3510 !important; }
+
+/* Layout-bottom: full-width spells below 3 cols */
+.layout-bottom { padding: 0 32px 40px; }
+
+/* Field labels → Cinzel uppercase micro style matching VB */
+.field-label {
+  font-family: 'Cinzel', serif !important;
+  font-size: 0.65rem !important;
+  color: #555 !important;
+  letter-spacing: .07em !important;
+  text-transform: uppercase !important;
+}
+
+/* Inputs: very dark transparent bg, subtle border */
+.field-input, .atk-inp, .inv-inp {
+  background: rgba(10,7,3,0.7) !important;
+  border-color: #3a2810 !important;
+}
+.field-input:focus, .atk-inp:focus, .inv-inp:focus {
+  border-color: var(--gold-dark) !important;
+  background: rgba(10,7,3,0.9) !important;
+}
+
+/* Table headers match VB subheader style */
+.attack-table th, .inv-table th, .exp-table th {
+  font-family: 'Cinzel', serif !important;
+  font-size: 8px !important;
+  color: var(--gold-dark) !important;
+  letter-spacing: .07em !important;
+  text-transform: uppercase !important;
+  border-bottom-color: #3a2810 !important;
+  padding-bottom: 6px !important;
+}
+
+/* Saves / Skills rows */
+.sv-row, .sk-row { color: var(--j-text, #e2cfa0) !important; }
+
+/* Cond badges on conditions grid */
+.cond-grid { gap: 6px !important; }
+
+/* Resources cards */
+.res-card { background: rgba(10,7,3,0.6) !important; border-color: #3a2810 !important; }
+
+/* Class features */
+.cf-level-header { background: rgba(10,7,3,0.6) !important; }
+.cf-feature { background: rgba(10,7,3,0.5) !important; border-left-color: #3a2810 !important; }
+
+/* Sheet-section-full: no change needed since it's removed now */
+
+/* Spell slots */
+.spell-slot-circle { border-color: var(--gold-dark) !important; }
+.spell-slot-circle.used { background: var(--gold-dark) !important; }
+
+/* Combat compact stat row */
+.combat-compact-stats { display: flex; gap: 0.65rem; margin-bottom: 1rem; flex-wrap: wrap; align-items: flex-end; }
+
+/* hp-quick row rebalance */
+.hp-quick { justify-content: flex-start !important; gap: 8px !important; }
+
+/* ════ VB RESPONSIVE ════ */
+
+/* ── Topbar: scrollable tab zone ── */
+.vb-tabs {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  align-self: stretch;
+}
+.vb-tabs::-webkit-scrollbar { display: none; }
+
+/* Fix fixed height — let it breathe if needed */
+.dash-header.vb-topbar { height: auto !important; min-height: 52px; }
+
+/* ── Tablet (≤ 900px) ── */
+@media (max-width: 900px) {
+  /* Topbar */
+  .dash-header.vb-topbar { padding: 0 20px; }
+
+  /* Hero: reorder columns — lead first, vitals second, portrait as landscape banner */
+  #vb-hero { padding: 20px 24px; gap: 18px; }
+  #vb-hero-lead   { order: 1; }
+  #vb-hero-vitals { order: 2; }
+  #vb-hero-portrait { order: 3; }
+  #vb-hero-portrait .vb-portrait-frame { aspect-ratio: 21/9; max-height: 150px; }
+  #vb-hero-portrait .vb-portrait-placeholder { font-size: 2.2rem; }
+  .vb-mini-stats { grid-template-columns: repeat(4, 1fr); }
+
+  /* Layout: 2 columns */
+  .layout-wrapper {
+    grid-template-columns: 1fr 1fr !important;
+    padding: 0 24px 24px !important;
+    gap: 24px !important;
+  }
+
+  /* Party ribbon */
+  .char-cards.vb-party-ribbon { padding: 0 20px; }
+}
+
+/* ── Mobile (≤ 640px) ── */
+@media (max-width: 640px) {
+  /* Topbar: compact */
+  .dash-header.vb-topbar { padding: 0 12px; }
+  .vb-brand { margin-right: 8px; }
+  .vb-brand-sep, .vb-brand-sub { display: none; }
+  #btn-layout-edit { display: none !important; }
+  #btn-logout { font-size: 0 !important; width: 28px; padding: 0 !important;
+                display: flex; align-items: center; justify-content: center; }
+  #btn-logout::before { content: '✕'; font-size: 13px; font-family: 'Cinzel', serif; }
+
+  /* Hero: single column, no portrait */
+  #vb-hero { padding: 16px 16px 12px; gap: 12px; }
+  #vb-hero-portrait { display: none !important; }
+  .vb-folio { display: none; }
+  .vb-char-name { font-size: 22px !important; line-height: 1.1 !important; }
+
+  /* Facts: 3×2 grid instead of single cramped row */
+  .vb-facts {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 10px 8px !important;
+    border-top: 1px solid var(--j-border-col, #4a3510) !important;
+    border-bottom: 1px solid var(--j-border-col, #4a3510) !important;
+    padding: 10px 0 !important;
+    margin-bottom: 14px !important;
+  }
+  .vb-fact { padding-left: 0 !important; border-left: none !important; }
+
+  /* Layout: single column */
+  .layout-wrapper {
+    grid-template-columns: 1fr !important;
+    padding: 0 16px 16px !important;
+    gap: 20px !important;
+  }
+  .layout-bottom { padding: 0 16px 32px !important; }
+  #vb-hero-divider { margin: 0 16px !important; }
+
+  /* Party ribbon */
+  .char-cards.vb-party-ribbon { padding: 0 12px; }
+
+  /* Layout toolbar: hide on mobile */
+  .layout-toolbar { display: none !important; }
+
+  /* Ability grid: 3 cols on mobile */
+  #ability-grid { grid-template-columns: repeat(3, 1fr) !important; }
+
+  /* Form grids: single column on mobile */
+  .sheet-grid, .mait-grid, .sheet-grid-2 { grid-template-columns: 1fr !important; }
+  /* Reset span-2 inline styles — otherwise browser creates an implicit 2nd column */
+  .sheet-grid > *, .mait-grid > *, .sheet-grid-2 > * { grid-column: span 1 !important; }
+
+  /* HP vitals box: tighter */
+  .vb-vitals-box { padding: 14px 14px 12px !important; }
+  .vb-hp-display { gap: 4px !important; }
+  .vb-hp-current { font-size: 36px !important; }
+
+  /* Hero: 1 colonne sur téléphone (lead puis vitals empilés) */
+  #vb-hero { grid-template-columns: 1fr !important; }
+
+  /* Stress Points et sélecteur Hit Dice → masqués sur téléphone */
+  #vb-hero .stress-dots, #vb-hero #stress-max-inp,
+  #vb-hero .vb-hd > div:last-child { display: none !important; }
+}
+
+/* ── Small mobile (≤ 400px) ── */
+@media (max-width: 400px) {
+  .vb-brand-name { font-size: 12px; }
+  .vb-facts { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+/* ── Coins carrés (remplacement global) ── */
+:root { --radius: 2px; }
+.field-input, .ability-score-input, .atk-inp, .inv-inp,
+.notes-editor, .notes-page-title-input, .notes-del-page-btn,
+.auth-input, .auth-btn, .auth-error, .auth-box,
+.btn, .sheet-section, .settings-section, .char-card,
+.ability-box, .hp-bar-track, .hp-bar-fill, .hp-bar-temp,
+.hp-quick-input, .res-card, .res-counter-inp, .res-counter-max,
+.ddb-dropzone, .ddb-preview, .ddb-modal, .modal-box,
+.sr-modal, .sr-dice-badge, #chat-panel, .chat-input, .chat-send,
+.canvas-toolbar, .canvas-tool-btn, .canvas-scroll-wrap,
+.cheat-section, .view-section, .admin-card,
+.spell-conc-btn, .spell-prep-counter,
+.exp-desc-area, .cf-level-group, .cf-feature, .cf-profs,
+.hp-log-entry, .exhaust-pip, .spell-level-badge, .ddb-url,
+.ddb-import-items span, .ddb-error, .color-inp-hex,
+#undo-toast, #undo-toast button, .ration-btn, .ration-val,
+.notes-section-wrap, .inv-cat-tabs, .vb-vitals-box,
+.vb-prof-badge, .vb-identite-wrap { border-radius: 2px !important; }
+
+/* ── Mode Lecture ── */
+#btn-read-mode { transition: all 0.2s; }
+#btn-read-mode.active { border-color: var(--gold-dark); color: var(--gold); background: rgba(201,169,110,0.1); }
+.read-mode .layout-wrapper,
+.read-mode .sheet-section,
+.read-mode .tab-panel > *:not(#vb-hero) { pointer-events: none; }
+.read-mode #vb-hero-vitals,
+.read-mode .sheet-section { opacity: 0.88; }
+.read-mode .dash-actions > *:not(#btn-read-mode) { pointer-events: none; opacity: 0.5; }
+.read-mode-banner { display: none; position: fixed; top: 52px; left: 50%; transform: translateX(-50%); background: rgba(138,110,26,0.18); border: 1px solid var(--gold-dark); color: var(--gold); font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.25rem 1.2rem; border-radius: 2px; z-index: 1400; pointer-events: none; }
+.read-mode .read-mode-banner { display: block; }
+
+/* ── Toast sauvegarde ── */
+#save-flash { position: fixed; bottom: 1.4rem; right: 1.4rem; background: #0d2018; border: 1px solid #3a6a3a; color: #7acc7a; font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.08em; padding: 0.35rem 0.9rem; border-radius: 2px; z-index: 9998; pointer-events: none; opacity: 0; transition: opacity 0.3s; }
+
+/* ── Steppers mobile : agrandir les spinners natifs ── */
+@media (max-width: 640px) {
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button { -webkit-appearance: inner-spin-button; opacity: 1; width: 28px; cursor: pointer; }
+  input[type=number].field-input { padding-right: 0; }
+  input[type=number].ability-score-input { padding-right: 0; width: 54px; }
+}
+
+/* ── Dice roller ── */
+.roll-trigger { cursor: pointer; transition: color 0.12s; }
+.roll-trigger:hover { color: var(--gold) !important; }
+#dice-toast {
+  position: fixed; bottom: 4.5rem; left: 50%; transform: translateX(-50%);
+  background: #0e0a04; border: 1px solid var(--gold-dark); color: var(--gold);
+  font-family: 'Cinzel', serif; letter-spacing: 0.06em;
+  padding: 0.55rem 1.4rem; z-index: 9997; pointer-events: none;
+  opacity: 0; transition: opacity 0.25s; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  border-radius: 2px; box-shadow: 0 4px 20px rgba(0,0,0,0.6); min-width: 140px; text-align: center;
+}
+#dice-toast.visible { opacity: 1; }
+.dice-toast-d20 { font-size: 2rem; line-height: 1; }
+.dice-toast-d20.nat20 { color: #e8c84a; text-shadow: 0 0 12px rgba(232,200,74,0.6); }
+.dice-toast-d20.nat1  { color: var(--danger); }
+.dice-toast-label { font-size: 0.65rem; color: var(--gold-dark); text-transform: uppercase; }
+.dice-toast-total { font-size: 0.85rem; color: var(--j-text, #e2cfa0); }
+
+/* ── Dice tray ── */
+#dice-tray-btn { font-size:0.8rem; padding:0.3rem 0.65rem; }
+#dice-tray {
+  position: fixed; bottom: 1.2rem; right: 1.2rem; z-index: 9990;
+  background: #0e0a04; border: 1px solid var(--gold-dark);
+  padding: 0.6rem 0.75rem; display: none; flex-direction: column; gap: 0.4rem;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.7); border-radius: 2px; min-width: 210px;
+}
+#dice-tray.open { display: flex; }
+.dice-tray-title { font-family:'Cinzel',serif; font-size:0.65rem; color:var(--gold-dark); letter-spacing:.1em; text-transform:uppercase; margin-bottom:0.15rem; }
+.dice-tray-row { display:flex; gap:0.35rem; flex-wrap:wrap; }
+.dice-btn {
+  flex:1; min-width:36px; padding:0.4rem 0.2rem; font-family:'Cinzel',serif;
+  font-size:0.75rem; letter-spacing:.04em; cursor:pointer;
+  background:rgba(201,162,39,0.06); border:1px solid var(--gold-dark); color:var(--gold);
+  transition:background .15s; border-radius:2px; text-align:center;
+}
+.dice-btn:hover { background:rgba(201,162,39,0.18); }
+.dice-tray-modifier { display:flex; align-items:center; gap:0.35rem; margin-top:0.15rem; font-size:0.75rem; color:#888; }
+.dice-tray-modifier input { width:48px; background:#0a0703; border:1px solid #3a2810; color:var(--j-text,#e2cfa0); font-size:0.82rem; text-align:center; padding:0.2rem; border-radius:2px; }
+/* ── ADV / DIS roll mode ── */
+.dice-roll-mode { display:flex; gap:3px; margin-top:0.35rem; }
+.drm-btn { flex:1; padding:0.22rem 0.3rem; font-family:'Cinzel',serif; font-size:0.65rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; background:rgba(255,255,255,0.03); border:1px solid #3a2810; color:#555; cursor:pointer; transition:all 0.15s; border-radius:2px; }
+.drm-btn:hover { border-color:var(--gold-dark); color:var(--gold-dark); }
+.drm-btn.adv.active  { background:rgba(106,186,106,0.12); border-color:#6aba6a; color:#6aba6a; }
+.drm-btn.norm.active { background:rgba(230,210,122,0.06); border-color:var(--gold-dark); color:var(--gold); }
+.drm-btn.dis.active  { background:rgba(201,122,122,0.12); border-color:#c97a7a; color:#c97a7a; }
+
+/* ── XP progress ── */
+.vb-xp-bar-wrap { margin-top: 6px; }
+.vb-xp-bar-track { height: 3px; background: rgba(74,53,16,0.5); position: relative; overflow: hidden; }
+.vb-xp-bar-fill { height: 100%; background: var(--gold-dark); transition: width 0.5s ease; }
+.vb-xp-label { font-family: 'Cinzel', serif; font-size: 8px; color: #555; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 2px; }
+
+/* ── HP Steppers (+1/-1/+5/-5) ── */
+.hp-step-row { display:flex; gap:4px; margin-top:0.35rem; }
+.hp-step-btn {
+  flex:1; padding:4px 2px; font-size:0.72rem; font-family:'Cinzel',serif;
+  letter-spacing:0.04em; cursor:pointer; border:1px solid; transition:background 0.15s;
+  line-height:1;
+}
+.hp-step-btn.neg { background:rgba(201,122,122,0.08); border-color:rgba(201,122,122,0.3); color:var(--danger); }
+.hp-step-btn.neg:hover { background:rgba(201,122,122,0.2); }
+.hp-step-btn.pos { background:rgba(106,186,106,0.08); border-color:rgba(106,186,106,0.3); color:var(--success); }
+.hp-step-btn.pos:hover { background:rgba(106,186,106,0.2); }
+
+/* ══ COINS CARRÉS — réduction globale de tous les border-radius ══ */
+/* Cartes, sections, boîtes */
+.auth-box, .char-card, .admin-card, .modal-box, .settings-section,
+.ddb-modal, .ddb-preview, .ddb-dropzone, .ddb-error,
+.sr-modal, .new-char-modal, #chat-panel,
+.view-section, .cheat-section, .mj-player-card,
+.notes-section-wrap, .canvas-scroll-wrap,
+.cf-level-group, .res-card, .hp-log-entry,
+#undo-toast { border-radius: 2px !important; }
+
+/* Inputs & textareas */
+.field-input, .auth-input, .atk-inp, .inv-inp,
+.notes-editor, .notes-page-title-input, .exp-desc-area,
+.auth-error, .ddb-url, .stress-count-inp, .spell-slot-total-inp,
+.res-counter-inp, .res-counter-max, .ration-val,
+.color-inp-hex, input[type=color].color-inp,
+.hp-quick-input, .attunement-slot input[type=text],
+.canvas-toolbar, #canvas-text-input,
+.ability-score-input { border-radius: 2px !important; }
+
+/* Boutons */
+.btn, .auth-btn, .notes-add-page-btn, .notes-del-page-btn,
+.canvas-tool-btn, .spell-conc-btn, .spell-prep-counter,
+.btn-rest, .ration-btn, .inspiration-btn,
+.ddb-import-items span, .cf-badge, .spell-level-badge,
+.cf-slots-note, .cf-profs, .cf-feature,
+.passive-row, .exp-toggle, #undo-toast button,
+.chat-input, .chat-send, .mj-edit-btn,
+.new-char-av-btn, .av-btn, .avatar-img, .av-png-preview, .bg-preview,
+.sr-dice-badge, .vb-mini-stats { border-radius: 2px !important; }
+
+/* Ability boxes */
+.ability-box { border-radius: 2px !important; }
+
+/* HP bars (petits arrondis pour éviter les angles trop brutaux sur les barres) */
+.hp-bar-track, .hp-bar-fill, .hp-bar-temp,
+.vb-hp-bar-track, .char-card-hp-track, .char-card-hp-bar,
+.admin-card-hp, .admin-card-hp-bar,
+.mj-hp-bar, .mj-hp-fill, .view-hp-bar, .view-hp-fill,
+.cf-progress-bar, .cf-progress-fill { border-radius: 1px !important; }
+
+/* VB hero éléments */
+.vb-portrait-frame, .vb-vitals-box, .vb-cond-box,
+.vb-btn-dmg, .vb-btn-heal, .vb-rest-btn-short, .vb-rest-btn-long { border-radius: 2px !important; }
+
+/* HP stepper buttons */
+.hp-step-btn { border-radius: 2px !important; }
+
+/* ══ OPTIMISATIONS PERF ══ */
+/* Layout isolation — les changements internes ne déclenchent pas de reflow global */
+.tab-panel { contain: layout style; }
+/* Skip rendering des sections hors écran dans le panel actif */
+.sheet-section { content-visibility: auto; contain-intrinsic-block-size: 280px; }
+/* Contenir les petits composants de liste */
+.sv-row, .sk-row { contain: layout style; }
+/* Promote animated/floating elements vers un composite layer */
+#dice-toast, #dice-tray, #save-flash { will-change: transform, opacity; }
+.modal-overlay, .new-char-modal-overlay, .sr-modal-overlay, .ddb-modal-overlay { will-change: transform; }
+/* Éviter les repaints sur les boutons hover fréquents */
+.roll-trigger, .prof-dot, .cond-badge, .hp-step-btn { will-change: color, background; }
+
   </style>
 
   <!-- PWA -->
@@ -791,7 +1538,7 @@
 <!-- ▸ Contenu principal -->
 <div id="char-bg-layer"></div>
 <div class="page-wrapper">
-<main class="main-content" style="max-width:900px;">
+<main class="main-content" style="max-width:1280px;">
 
   <!-- ══ ÉCRAN AUTH ══ -->
   <div class="j-screen active" id="screen-auth">
@@ -848,114 +1595,272 @@
   <!-- ══ DASHBOARD ══ -->
   <div class="j-screen" id="screen-dashboard">
 
-    <!-- En-tête -->
-    <div class="dash-header">
-      <div class="dash-player">
+    <!-- ══ VB: Sticky top bar (brand + tabs + actions) ══ -->
+    <div class="dash-header vb-topbar">
+      <!-- Brand -->
+      <div class="vb-brand">
+        <span class="vb-brand-sigil">✦</span>
+        <span class="vb-brand-name">Kaleysur</span>
+        <span class="vb-brand-sep">·</span>
+        <span class="vb-brand-sub">Adventurer's Log</span>
+      </div>
+      <!-- Tabs wrapped in scrollable zone so they never push actions off-screen -->
+      <div class="vb-tabs">
+        <button class="tab-btn active" data-tab="personnage">Character</button>
+        <button class="tab-btn" data-tab="identite">Identité</button>
+        <button class="tab-btn" data-tab="inventaire">Inventory</button>
+        <button class="tab-btn" data-tab="notes">Notes</button>
+        <button class="tab-btn" data-tab="parametres">Settings</button>
+        <button class="tab-btn" data-tab="aide">Reference</button>
+        <button class="tab-btn" data-tab="admin" id="tab-admin-btn" style="display:none;color:var(--danger);">👁 Admin</button>
+      </div>
+      <!-- Hidden player info (kept for JS) -->
+      <div class="dash-player" style="display:none;">
         <div class="dash-avatar" id="dash-avatar">⚔</div>
         <div>
           <div class="dash-name" id="dash-name">—</div>
           <div class="dash-char-info" id="dash-info">Aucun personnage</div>
         </div>
       </div>
+      <!-- Actions -->
       <div class="dash-actions">
         <span class="conn-indicator" id="conn-indicator" title="État de la connexion au cloud">…</span>
         <span class="save-badge" id="save-badge"></span>
         <button class="inspiration-btn" id="btn-inspiration" title="Inspiration (avantage sur un jet)">✦</button>
-        <button class="btn btn-sm" id="btn-layout-edit" title="Réorganiser les sections">⠿ Organiser</button>
+        <button class="btn btn-sm" id="btn-layout-edit" title="Réorganiser les sections">⠿</button>
+        <button class="btn btn-sm" id="btn-read-mode" title="Mode Lecture — verrouille la fiche">🔒</button>
+        <button class="btn btn-sm" id="dice-tray-btn" title="Lanceur de dés">⚄</button>
         <button class="btn btn-sm btn-danger" id="btn-logout">Déconnexion</button>
       </div>
     </div>
 
-    <!-- ══ Cartes de personnages ══ -->
-    <div class="char-cards" id="char-cards"></div>
-
-    <!-- Onglets -->
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="personnage">⚔ Personnage</button>
-      <button class="tab-btn" data-tab="inventaire">🎒 Inventaire</button>
-      <button class="tab-btn" data-tab="notes">📜 Notes</button>
-      <button class="tab-btn" data-tab="parametres">⚙ Paramètres</button>
-      <button class="tab-btn" data-tab="aide">📋 Aide</button>
-      <button class="tab-btn" data-tab="admin" id="tab-admin-btn" style="display:none;color:var(--danger);">👁 Admin</button>
+    <!-- Dice tray panel -->
+    <div id="dice-tray">
+      <div class="dice-tray-title">Lanceur de dés</div>
+      <div class="dice-tray-row">
+        <button class="dice-btn" data-sides="4">d4</button>
+        <button class="dice-btn" data-sides="6">d6</button>
+        <button class="dice-btn" data-sides="8">d8</button>
+        <button class="dice-btn" data-sides="10">d10</button>
+        <button class="dice-btn" data-sides="12">d12</button>
+        <button class="dice-btn" data-sides="20">d20</button>
+        <button class="dice-btn" data-sides="100">d%</button>
+      </div>
+      <div class="dice-tray-modifier">
+        Bonus : <input type="number" id="dice-tray-mod" value="0" placeholder="0">
+      </div>
+      <div class="dice-roll-mode">
+        <button class="drm-btn adv"  id="drm-adv"  title="Avantage — 2d20 garder le plus haut">ADV</button>
+        <button class="drm-btn norm active" id="drm-norm" title="Normal">NORM</button>
+        <button class="drm-btn dis"  id="drm-dis"  title="Désavantage — 2d20 garder le plus bas">DIS</button>
+      </div>
     </div>
 
-    <!-- ── Onglet Personnage ── -->
+    <div class="read-mode-banner">Mode Lecture — cliquez 🔒 pour modifier</div>
+    <!-- ══ VB: Party ribbon (char-cards as horizontal strip) ══ -->
+    <div class="char-cards vb-party-ribbon" id="char-cards"></div>
+
+    <!-- Old tabs div hidden (all functionality now in vb-topbar) -->
+    <div class="tabs vb-hidden" aria-hidden="true"></div>
+
+    <!-- ══ VB HERO SECTION — toujours visible hors des onglets ══ -->
+      <div id="vb-hero">
+
+        <!-- Portrait column -->
+        <div id="vb-hero-portrait">
+          <div class="vb-portrait-frame" id="vb-portrait-frame" title="Change portrait">
+            <div class="vb-portrait-placeholder" id="vb-portrait-placeholder">⚔</div>
+            <img id="vb-portrait-img" src="" alt="Portrait" style="display:none;width:100%;height:100%;object-fit:cover;">
+            <span class="vb-corner tl">✦</span>
+            <span class="vb-corner tr">✦</span>
+            <span class="vb-corner bl">✦</span>
+            <span class="vb-corner br">✦</span>
+          </div>
+          <div class="vb-mini-stats">
+            <div class="vb-mini-stat">
+              <div class="vb-mini-stat-label">AC</div>
+              <div class="vb-mini-stat-val" id="vb-hero-ca">—</div>
+            </div>
+            <div class="vb-mini-stat">
+              <div class="vb-mini-stat-label">INIT</div>
+              <div class="vb-mini-stat-val" id="vb-hero-init">—</div>
+            </div>
+            <div class="vb-mini-stat">
+              <div class="vb-mini-stat-label">SPD</div>
+              <div class="vb-mini-stat-val" id="vb-hero-speed">—</div>
+            </div>
+            <div class="vb-mini-stat">
+              <div class="vb-mini-stat-label">DC</div>
+              <div class="vb-mini-stat-val" id="vb-hero-dc">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lead column: name, class, facts, abilities -->
+        <div id="vb-hero-lead">
+          <div class="vb-folio">Adventurer's Log · Kaleysur</div>
+          <div class="vb-char-name" id="vb-hero-name">—</div>
+          <div class="vb-class-line" id="vb-hero-class" style="display:flex;align-items:baseline;gap:10px;">
+            <span id="vb-hero-class-text">—</span>
+            <span class="vb-prof-badge" title="Proficiency Bonus">PB <strong id="vb-hero-prof">+2</strong></span>
+          </div>
+          <div class="vb-facts" id="vb-hero-facts"><!-- filled by renderHero() --></div>
+          <!-- Ability grid lives here — rendered by renderAbilities() -->
+          <div class="ability-grid" id="ability-grid" style="margin-top:14px;"></div>
+        </div>
+
+        <!-- Vitals column -->
+        <div id="vb-hero-vitals">
+          <div class="vb-vitals-box">
+
+            <!-- ① Combat stats: AC / Init / Speed — toujours visibles -->
+            <div class="vb-combat-row">
+              <div class="vb-combat-stat">
+                <label class="field-label">AC</label>
+                <input type="number" class="field-input field-input-sm" data-f="ca" value="10" min="0" id="inp-ca">
+              </div>
+              <div class="vb-combat-stat">
+                <label class="field-label">Init</label>
+                <input type="number" class="field-input field-input-sm" data-f="initiative" value="0" id="inp-initiative">
+                <div class="vb-mini-auto" id="init-auto-label">auto DEX</div>
+              </div>
+              <div class="vb-combat-stat">
+                <label class="field-label">Speed</label>
+                <input type="number" class="field-input field-input-sm" data-f="vitesse" value="30" min="0" step="5">
+              </div>
+            </div>
+            <div style="text-align:right;font-size:0.68rem;color:#555;margin-top:0.15rem;letter-spacing:0.03em;">PP&nbsp;<span id="vb-hero-pp" style="color:var(--gold-dark);font-family:'Cinzel',serif;font-weight:700;">—</span></div>
+            <div class="vb-vitals-sep"></div>
+
+            <!-- ② Hit Points -->
+            <div class="vb-section-label">Hit Points</div>
+            <div class="vb-hp-display">
+              <span class="vb-hp-current" id="vb-hero-hp-cur">0</span>
+              <span class="vb-hp-max" id="vb-hero-hp-max">/ 0</span>
+              <span class="vb-hp-label">HP</span>
+            </div>
+            <div class="vb-hp-bar-track">
+              <div class="vb-hp-bar-fill" id="vb-hero-hp-bar" style="width:0%;background:#6aba6a;"></div>
+            </div>
+            <!-- HP inputs (édition directe) -->
+            <div class="vb-hp-inputs">
+              <div class="vb-hp-inp-group">
+                <label class="field-label">Max</label>
+                <input type="number" class="field-input field-input-sm" data-f="pvMax" value="0" min="0" id="inp-pvMax">
+              </div>
+              <div class="vb-hp-inp-group">
+                <label class="field-label">Actuel</label>
+                <input type="number" class="field-input field-input-sm" data-f="pvActuel" value="0" id="inp-pvActuel">
+              </div>
+              <div class="vb-hp-inp-group">
+                <label class="field-label">Temp</label>
+                <input type="number" class="field-input field-input-sm" data-f="pvTemp" value="0" min="0">
+              </div>
+            </div>
+            <!-- HP bar & anchors JS (hidden) -->
+            <div style="display:none;">
+              <div class="hp-bar-fill" id="hp-bar-fill"></div>
+              <div class="hp-bar-temp" id="hp-bar-temp"></div>
+              <span id="hp-bar-label"></span>
+              <span id="hp-bar-pct"></span>
+              <button id="btn-apply-dmg"></button>
+              <button id="btn-apply-heal"></button>
+            </div>
+            <!-- HP change rapide : ⚔ [val] ✚ -->
+            <div class="hp-quick">
+              <button class="vb-btn-dmg vb-btn-quick" onclick="document.getElementById('btn-apply-dmg').click()" title="Appliquer dégâts">⚔</button>
+              <input type="number" class="hp-quick-input" id="hp-quick-val" min="0" placeholder="0">
+              <button class="vb-btn-heal vb-btn-quick" onclick="document.getElementById('btn-apply-heal').click()" title="Appliquer soin">✚</button>
+            </div>
+            <!-- Steppers rapides ±1 / ±5 -->
+            <div class="hp-step-row">
+              <button class="hp-step-btn neg" onclick="applyHpChange(-5)" title="−5 HP">−5</button>
+              <button class="hp-step-btn neg" onclick="applyHpChange(-1)" title="−1 HP">−1</button>
+              <button class="hp-step-btn pos" onclick="applyHpChange(1)"  title="+1 HP">+1</button>
+              <button class="hp-step-btn pos" onclick="applyHpChange(5)"  title="+5 HP">+5</button>
+            </div>
+            <div class="hp-log-toggle j-hidden" id="hp-log-toggle">▾ Historique</div>
+            <div class="hp-log j-hidden" id="hp-log"></div>
+            <div class="vb-vitals-sep"></div>
+
+            <!-- ③ Hit Dice + Death Saves -->
+            <div class="vb-hd-death">
+              <div class="vb-hd">
+                <div class="vb-section-label">Hit Dice</div>
+                <div class="vb-hd-val" id="vb-hero-hd">—</div>
+                <div style="display:flex;gap:0.4rem;margin-top:0.35rem;align-items:center;">
+                  <select class="field-input field-input-sm" data-f="deVie" style="flex:1;">
+                    <option>1d6</option><option selected>1d8</option><option>1d10</option><option>1d12</option>
+                  </select>
+                  <input type="number" class="field-input field-input-sm" data-f="nbDeVie" value="1" min="0" style="width:44px;">
+                </div>
+              </div>
+              <div>
+                <div style="display:flex;align-items:center;gap:0.4rem;">
+                  <div class="vb-section-label">Death Saves</div>
+                  <button id="death-save-roll-btn" title="Lancer un jet de mort (d20)" style="background:transparent;border:none;color:var(--gold-dark);cursor:pointer;font-size:0.85rem;padding:0;line-height:1;opacity:0.65;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.65'">🎲</button>
+                </div>
+                <!-- Pips cliquables — data-idx / data-type gérés par renderCombat -->
+                <div class="vb-death-pips" id="vb-hero-death-pips" style="cursor:pointer;" title="Cliquer pour basculer"></div>
+                <!-- Dots fonctionnels cachés (maintenus pour compat JS existant) -->
+                <div style="display:none;">
+                  <div class="death-dots" id="death-success">
+                    <div class="death-dot" data-idx="0" data-type="success"></div>
+                    <div class="death-dot" data-idx="1" data-type="success"></div>
+                    <div class="death-dot" data-idx="2" data-type="success"></div>
+                  </div>
+                  <div class="death-dots" id="death-fail">
+                    <div class="death-dot" data-idx="0" data-type="fail"></div>
+                    <div class="death-dot" data-idx="1" data-type="fail"></div>
+                    <div class="death-dot" data-idx="2" data-type="fail"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="vb-vitals-sep"></div>
+
+            <!-- ④ Stress Points -->
+            <div class="vb-stress-row">
+              <div class="field-label" style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.3rem;">
+                Stress
+                <input type="number" class="stress-count-inp" id="stress-max-inp" min="0" max="20" value="3">
+              </div>
+              <div class="stress-dots" id="stress-dots"></div>
+            </div>
+            <div class="vb-vitals-sep"></div>
+
+            <!-- ⑤ Rest buttons -->
+            <div class="vb-rest-btns">
+              <button class="vb-rest-btn-short" onclick="document.getElementById('btn-short-rest').click()">☽ Short Rest</button>
+              <button class="vb-rest-btn-long" onclick="document.getElementById('btn-long-rest').click()">★ Long Rest</button>
+            </div>
+
+          </div>
+          <div class="vb-cond-box">
+            <div class="vb-section-label">Active Conditions</div>
+            <div class="cond-grid" id="vb-hero-conditions">
+              <span style="font-size:0.75rem;color:#555;font-style:italic;">No conditions</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /#vb-hero -->
+      <hr id="vb-hero-divider">
+
+    <!-- ── Onglets : début du contenu commuté ── -->
     <div class="tab-panel active" id="tab-personnage">
+
       <div id="layout-toolbar" class="layout-toolbar">
         <span>✦ Glisse les titres pour réorganiser · ↔ pour changer de colonne/zone</span>
         <button class="btn btn-sm" id="btn-reset-layout" style="margin-left:auto;">↺ Défaut</button>
       </div>
 
-      <!-- Caractéristiques : pleine largeur au-dessus des colonnes -->
-      <div class="sheet-section sheet-section-full" data-sec="caracteristiques">
-        <div class="sheet-section-title">Ability Scores</div>
-        <div class="ability-grid" id="ability-grid"></div>
-      </div>
-
       <div class="layout-wrapper" id="layout-wrapper">
 
-        <!-- ── Colonne gauche ── -->
+        <!-- ── Col 0: Skills ── -->
         <div class="layout-col" data-col="0">
-          <div class="layout-col-label">Colonne gauche</div>
+          <div class="layout-col-label">Col gauche</div>
 
-        <div class="sheet-section" data-sec="identite">
-          <div class="sheet-section-title">Identité</div>
-          <div class="sheet-grid">
-            <div class="field-group" style="grid-column:span 2;">
-              <label class="field-label">Nom du personnage</label>
-              <input type="text" class="field-input" data-f="characterName" placeholder="Nom du héros">
-            </div>
-            <div class="field-group">
-              <label class="field-label">Espèce (Species)</label>
-              <input type="text" class="field-input" data-f="species" placeholder="ex. Humain, Elfe…">
-            </div>
-            <div class="field-group" style="grid-column:span 2;">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem;">
-                <label class="field-label">Classes &amp; Levels</label>
-                <button class="btn btn-sm btn-gold" id="btn-add-mc-class" type="button">+ Add Class</button>
-              </div>
-              <div id="mc-classes-container"></div>
-              <div style="margin-top:0.45rem;font-size:0.82rem;color:#888;">
-                Total level: <strong id="mc-total-level" style="color:var(--gold);">—</strong>
-              </div>
-            </div>
-            <div class="field-group">
-              <label class="field-label">Background</label>
-              <input type="text" class="field-input" data-f="background" placeholder="ex. Acolyte…">
-            </div>
-            <div class="field-group">
-              <label class="field-label">Alignement</label>
-              <select class="field-input" data-f="alignement">
-                <option value="">—</option>
-                <option>Loyal Bon</option><option>Neutre Bon</option><option>Chaotique Bon</option>
-                <option>Loyal Neutre</option><option>Neutre</option><option>Chaotique Neutre</option>
-                <option>Loyal Mauvais</option><option>Neutre Mauvais</option><option>Chaotique Mauvais</option>
-              </select>
-            </div>
-            <div class="field-group">
-              <label class="field-label">Points d'XP</label>
-              <input type="number" class="field-input" data-f="xp" min="0" value="0">
-            </div>
-          </div>
-          <div class="mait-grid" style="margin-top:0.75rem;">
-            <div class="field-group">
-              <label class="field-label">Proficiencies (armor, weapons, tools)</label>
-              <textarea class="field-input" data-f="maitrises" rows="2" placeholder="ex. Armures légères, épées, outils de forgeron…"></textarea>
-            </div>
-            <div class="field-group">
-              <label class="field-label">Langues</label>
-              <textarea class="field-input" data-f="langues" rows="2" placeholder="ex. Commun, Elfique, Draconique…"></textarea>
-            </div>
-          </div>
-          <div style="margin-top:0.75rem;display:flex;align-items:center;gap:0.5rem;">
-            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.85rem;color:#bbb;">
-              <input type="checkbox" data-f="inspiration" style="accent-color:var(--gold-dark);width:15px;height:15px;">
-              Inspiration
-            </label>
-            <span style="margin-left:1rem;font-size:0.82rem;color:#888;">Bonus de maîtrise : <strong id="prof-bonus" style="color:var(--gold);">+2</strong></span>
-          </div>
-        </div>
-  
         <!-- Class Features (auto-populated) -->
 
         <!-- Sauvegardes & Compétences -->
@@ -968,6 +1873,8 @@
             <input type="checkbox" id="jat-check">
             Jack of All Trades
           </label>
+          <input type="search" id="skill-filter" placeholder="Filtrer…" autocomplete="off"
+            style="width:100%;background:rgba(10,7,3,0.7);border:1px solid #3a2810;color:#e2cfa0;font-size:0.75rem;padding:0.25rem 0.5rem;margin:0.3rem 0 0.4rem;box-sizing:border-box;border-radius:2px;outline:none;">
             <div id="skills-col"></div>
           </div>
         </div>
@@ -979,161 +1886,12 @@
           <div id="passive-skills"></div>
         </div>
   
-        <!-- Combat -->
-
         </div><!-- /col-gauche -->
 
-        <!-- ── Colonne droite ── -->
+        <!-- ── Col 1: Attacks & Features ── -->
         <div class="layout-col" data-col="1">
-          <div class="layout-col-label">Colonne droite</div>
+          <div class="layout-col-label">Col centre</div>
 
-        <div class="sheet-section" data-sec="cf" id="cf-section" style="display:none;">
-          <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
-            <span id="cf-title">Class Features</span>
-            <span style="font-size:0.7rem;color:#555;font-style:italic;">D&D 2024 PHB</span>
-          </div>
-          <div id="cf-slots-note" class="cf-slots-note" style="display:none;margin-bottom:0.65rem;"></div>
-          <div id="cf-body"></div>
-        </div>
-  
-        <!-- Caractéristiques -->
-
-        <div class="sheet-section" data-sec="combat">
-          <div class="sheet-section-title">Combat</div>
-          <!-- Bulles CA / Initiative / Vitesse -->
-          <div class="combat-stats-bubbles">
-            <div class="stat-bubble" title="Classe d'Armure">
-              <div class="stat-bubble-label">CA</div>
-              <input type="number" data-f="ca" value="10" min="0">
-              <div class="stat-bubble-sub">Armure</div>
-            </div>
-            <div class="stat-bubble" title="Initiative (auto DEX mod)">
-              <div class="stat-bubble-label">Initiative</div>
-              <input type="number" data-f="initiative" value="0" id="inp-initiative">
-              <div class="stat-bubble-sub" id="init-auto-label">auto DEX</div>
-            </div>
-            <div class="stat-bubble" title="Vitesse en pieds">
-              <div class="stat-bubble-label">Speed</div>
-              <input type="number" data-f="vitesse" value="30" min="0" step="5">
-              <div class="stat-bubble-sub">pieds</div>
-            </div>
-          </div>
-
-          <!-- PV + Dés de vie -->
-          <div class="combat-pv-row">
-            <div class="combat-field">
-              <label class="field-label">Max HP</label>
-              <input type="number" class="field-input field-input-sm" data-f="pvMax" value="0" min="0" id="inp-pvMax">
-            </div>
-            <div class="combat-field">
-              <label class="field-label">Current HP</label>
-              <input type="number" class="field-input field-input-sm" data-f="pvActuel" value="0" id="inp-pvActuel">
-            </div>
-            <div class="combat-field">
-              <label class="field-label">Temp HP</label>
-              <input type="number" class="field-input field-input-sm" data-f="pvTemp" value="0" min="0">
-            </div>
-          </div>
-
-          <!-- Barre de PV -->
-          <div class="hp-bar-wrap">
-            <div class="hp-bar-row">
-              <span id="hp-bar-label">PV : 0 / 0</span>
-              <span id="hp-bar-pct">0%</span>
-            </div>
-            <div class="hp-bar-track">
-              <div class="hp-bar-fill" id="hp-bar-fill" style="width:0%;"></div>
-              <div class="hp-bar-temp" id="hp-bar-temp"></div>
-            </div>
-          </div>
-
-          <!-- ± PV rapide -->
-          <div class="hp-quick">
-            <button class="btn btn-sm btn-dmg" id="btn-apply-dmg">⚔ Blesser</button>
-            <input type="number" class="hp-quick-input" id="hp-quick-val" min="0" placeholder="0">
-            <button class="btn btn-sm btn-heal" id="btn-apply-heal">✚ Soigner</button>
-          </div>
-          <!-- Historique PV -->
-          <div class="hp-log-toggle j-hidden" id="hp-log-toggle">▾ Historique</div>
-          <div class="hp-log j-hidden" id="hp-log"></div>
-
-          <!-- Dés de vie -->
-          <div class="combat-dv-row" style="margin-top:0.85rem;">
-            <div class="combat-field">
-              <label class="field-label">Dé de Vie</label>
-              <select class="field-input field-input-md" data-f="deVie">
-                <option>1d6</option><option selected>1d8</option><option>1d10</option><option>1d12</option>
-              </select>
-            </div>
-            <div class="combat-field">
-              <label class="field-label">Nb Dés de Vie</label>
-              <input type="number" class="field-input field-input-sm" data-f="nbDeVie" value="1" min="0">
-            </div>
-          </div>
-  
-          <!-- Jets de mort -->
-          <div style="display:flex;gap:2rem;margin-top:0.85rem;flex-wrap:wrap;">
-            <div>
-              <div class="field-label" style="margin-bottom:0.3rem;">Death Saves — Successes</div>
-              <div class="death-dots" id="death-success">
-                <div class="death-dot" data-idx="0" data-type="success" role="button" tabindex="0" aria-label="Succès 1"></div>
-                <div class="death-dot" data-idx="1" data-type="success" role="button" tabindex="0" aria-label="Succès 2"></div>
-                <div class="death-dot" data-idx="2" data-type="success" role="button" tabindex="0" aria-label="Succès 3"></div>
-              </div>
-            </div>
-            <div>
-              <div class="field-label" style="margin-bottom:0.3rem;">Death Saves — Failures</div>
-              <div class="death-dots" id="death-fail">
-                <div class="death-dot" data-idx="0" data-type="fail" role="button" tabindex="0" aria-label="Échec 1"></div>
-                <div class="death-dot" data-idx="1" data-type="fail" role="button" tabindex="0" aria-label="Échec 2"></div>
-                <div class="death-dot" data-idx="2" data-type="fail" role="button" tabindex="0" aria-label="Échec 3"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Stress Points -->
-          <div style="margin-top:0.85rem;">
-            <div class="field-label" style="margin-bottom:0.3rem;">
-              Stress Points
-              <input type="number" class="stress-count-inp" id="stress-max-inp" min="0" max="20" value="3" title="Nombre de stress points">
-            </div>
-            <div class="stress-dots" id="stress-dots"></div>
-          </div>
-        </div>
-  
-        <!-- Ressources de classe -->
-
-        <div class="sheet-section" data-sec="ressources">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.65rem;">
-            <div class="sheet-section-title" style="margin-bottom:0;">Ressources</div>
-            <button class="btn btn-sm btn-gold" id="btn-add-resource">+ Ajouter</button>
-          </div>
-          <div class="res-grid" id="resource-grid"></div>
-          <div class="rest-btns">
-            <button class="btn-rest short" id="btn-short-rest">☽ Short Rest</button>
-            <button class="btn-rest long"  id="btn-long-rest">★ Long Rest</button>
-          </div>
-        </div>
-  
-        <!-- Conditions -->
-
-        <div class="sheet-section" data-sec="conditions">
-          <div class="sheet-section-title">Conditions</div>
-          <div class="cond-grid" id="conditions-grid"></div>
-          <div class="exhaustion-row">
-            <span class="exhaustion-label">Exhaustion</span>
-            <div class="exhaustion-pips" id="exhaustion-pips">
-              <div class="exhaust-pip" data-ex="1" role="button" tabindex="0" title="Level 1 — −1 to all d20 Tests" aria-label="Épuisement 1"></div>
-              <div class="exhaust-pip" data-ex="2" role="button" tabindex="0" title="Level 2 — −2 to all d20 Tests" aria-label="Épuisement 2"></div>
-              <div class="exhaust-pip" data-ex="3" role="button" tabindex="0" title="Level 3 — −3 to all d20 Tests" aria-label="Épuisement 3"></div>
-              <div class="exhaust-pip" data-ex="4" role="button" tabindex="0" title="Level 4 — −4 to all d20 Tests" aria-label="Épuisement 4"></div>
-              <div class="exhaust-pip" data-ex="5" role="button" tabindex="0" title="Level 5 — −5 + Speed halved" aria-label="Épuisement 5"></div>
-              <div class="exhaust-pip" data-ex="6" role="button" tabindex="0" title="Level 6 — Death" aria-label="Épuisement 6"></div>
-            </div>
-            <span class="exhaustion-desc" id="exhaustion-desc"></span>
-          </div>
-        </div>
-  
         <!-- Attaques -->
 
         <div class="sheet-section" data-sec="attaques">
@@ -1154,14 +1912,62 @@
             <tbody id="attack-tbody"></tbody>
           </table>
         </div>
-  
+
+        </div><!-- /col-1: combat & attacks -->
+
+        <!-- ── Col 2: Features, Resources, Conditions, Personality ── -->
+        <div class="layout-col" data-col="2">
+          <div class="layout-col-label">Col droite</div>
+
+        <div class="sheet-section" data-sec="cf" id="cf-section" style="display:none;">
+          <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
+            <span id="cf-title">Class Features</span>
+            <span style="font-size:0.7rem;color:#555;font-style:italic;">D&D 2024 PHB</span>
+          </div>
+          <div id="cf-slots-note" class="cf-slots-note" style="display:none;margin-bottom:0.65rem;"></div>
+          <div id="cf-body"></div>
+        </div>
+
+        <!-- Ressources de classe -->
+
+        <div class="sheet-section" data-sec="ressources">
+          <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
+            <span>Ressources</span>
+            <button class="btn btn-sm btn-gold" id="btn-add-resource">+ Ajouter</button>
+          </div>
+          <div class="res-grid" id="resource-grid"></div>
+          <div class="rest-btns">
+            <button class="btn-rest short" id="btn-short-rest">☽ Short Rest</button>
+            <button class="btn-rest long"  id="btn-long-rest">★ Long Rest</button>
+          </div>
+        </div>
+
+        <!-- Conditions -->
+
+        <div class="sheet-section" data-sec="conditions">
+          <div class="sheet-section-title">Conditions</div>
+          <div class="cond-grid" id="conditions-grid"></div>
+          <div class="exhaustion-row">
+            <span class="exhaustion-label">Exhaustion</span>
+            <div class="exhaustion-pips" id="exhaustion-pips">
+              <div class="exhaust-pip" data-ex="1" role="button" tabindex="0" title="Level 1 — −1 to all d20 Tests" aria-label="Épuisement 1"></div>
+              <div class="exhaust-pip" data-ex="2" role="button" tabindex="0" title="Level 2 — −2 to all d20 Tests" aria-label="Épuisement 2"></div>
+              <div class="exhaust-pip" data-ex="3" role="button" tabindex="0" title="Level 3 — −3 to all d20 Tests" aria-label="Épuisement 3"></div>
+              <div class="exhaust-pip" data-ex="4" role="button" tabindex="0" title="Level 4 — −4 to all d20 Tests" aria-label="Épuisement 4"></div>
+              <div class="exhaust-pip" data-ex="5" role="button" tabindex="0" title="Level 5 — −5 + Speed halved" aria-label="Épuisement 5"></div>
+              <div class="exhaust-pip" data-ex="6" role="button" tabindex="0" title="Level 6 — Death" aria-label="Épuisement 6"></div>
+            </div>
+            <span class="exhaustion-desc" id="exhaustion-desc"></span>
+          </div>
+        </div>
+
         <!-- Sorts: moved to bottom row -->
 
-                <!-- Traits & capacités -->
+        <!-- Traits & capacités -->
 
         <div class="sheet-section" data-sec="features">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
-            <div class="sheet-section-title" style="margin-bottom:0;">Traits &amp; Capacités</div>
+          <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
+            <span>Traits &amp; Capacités</span>
             <button class="btn btn-sm btn-gold" id="btn-add-feature">+ Ajouter</button>
           </div>
           <table class="exp-table">
@@ -1174,7 +1980,7 @@
             <tbody id="feature-tbody"></tbody>
           </table>
         </div>
-  
+
         <!-- Personnalité -->
 
         <div class="sheet-section" data-sec="perso">
@@ -1206,15 +2012,14 @@
             <textarea class="field-input" data-f="historique" rows="4"></textarea>
           </div>
         </div>
-  
 
-        </div><!-- /col-droite -->
+        </div><!-- /col-2: features, resources, conditions, personality -->
 
       </div><!-- /layout-wrapper -->
 
       <!-- Zone pleine largeur (bas) -->
       <div class="layout-bottom" id="layout-bottom">
-        <div class="layout-col layout-col-full" data-col="2">
+        <div class="layout-col layout-col-full" data-col="3">
           <div class="layout-col-label">Zone pleine largeur</div>
 
 <!-- Sorts -->
@@ -1256,6 +2061,7 @@
               </div>
               <button class="btn btn-sm btn-gold" id="btn-add-spell">+ Ajouter</button>
             </div>
+            <input type="search" id="spell-filter" class="field-input" placeholder="Filtrer sorts…" style="width:100%;margin-bottom:0.4rem;padding:0.3rem 0.5rem;font-size:0.78rem;">
             <table class="exp-table">
               <thead><tr>
                 <th style="width:44px;">Niv.</th>
@@ -1277,6 +2083,69 @@
       </div><!-- /layout-bottom -->
 
     </div><!-- /tab-personnage -->
+
+    <!-- ── Onglet Identité ── -->
+    <div class="tab-panel" id="tab-identite">
+      <div class="vb-identite-wrap">
+        <div class="sheet-section" data-sec="identite" style="max-width:640px;">
+          <div class="sheet-section-title">Identité</div>
+          <div class="sheet-grid">
+            <div class="field-group" style="grid-column:span 2;">
+              <label class="field-label">Nom du personnage</label>
+              <input type="text" class="field-input" data-f="characterName" placeholder="Nom du héros">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Espèce (Species)</label>
+              <input type="text" class="field-input" data-f="species" placeholder="ex. Humain, Elfe…">
+            </div>
+            <div class="field-group" style="grid-column:span 2;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem;">
+                <label class="field-label">Classes &amp; Levels</label>
+                <button class="btn btn-sm btn-gold" id="btn-add-mc-class" type="button">+ Add Class</button>
+              </div>
+              <div id="mc-classes-container"></div>
+              <div style="margin-top:0.45rem;font-size:0.82rem;color:#888;">
+                Total level: <strong id="mc-total-level" style="color:var(--gold);">—</strong>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Background</label>
+              <input type="text" class="field-input" data-f="background" placeholder="ex. Acolyte…">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Alignement</label>
+              <select class="field-input" data-f="alignement">
+                <option value="">—</option>
+                <option>Loyal Bon</option><option>Neutre Bon</option><option>Chaotique Bon</option>
+                <option>Loyal Neutre</option><option>Neutre</option><option>Chaotique Neutre</option>
+                <option>Loyal Mauvais</option><option>Neutre Mauvais</option><option>Chaotique Mauvais</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Points d'XP</label>
+              <input type="number" class="field-input" data-f="xp" min="0" value="0">
+            </div>
+          </div>
+          <div class="mait-grid" style="margin-top:0.75rem;">
+            <div class="field-group">
+              <label class="field-label">Proficiencies (armor, weapons, tools)</label>
+              <textarea class="field-input" data-f="maitrises" rows="3" placeholder="ex. Armures légères, épées, outils de forgeron…"></textarea>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Langues</label>
+              <textarea class="field-input" data-f="langues" rows="3" placeholder="ex. Commun, Elfique, Draconique…"></textarea>
+            </div>
+          </div>
+          <div style="margin-top:0.75rem;display:flex;align-items:center;gap:0.5rem;">
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.85rem;color:#bbb;">
+              <input type="checkbox" data-f="inspiration" style="accent-color:var(--gold-dark);width:15px;height:15px;">
+              Inspiration
+            </label>
+            <span style="margin-left:1rem;font-size:0.82rem;color:#888;">Bonus de maîtrise : <strong id="prof-bonus" style="color:var(--gold);">+2</strong></span>
+          </div>
+        </div>
+      </div>
+    </div><!-- /tab-identite -->
 
     <!-- ── Onglet Inventaire ── -->
     <div class="tab-panel" id="tab-inventaire">
@@ -3639,8 +4508,8 @@ function updateHpBar() {
   const inpCur = document.getElementById('inp-pvActuel');
   if (inpCur && document.activeElement !== inpCur) inpCur.value = pvCur;
   // Pulsation danger si PV < 25%
-  const combatSec = document.querySelector('.sheet-section[data-sec="combat"]');
-  if (combatSec) combatSec.classList.toggle('hp-danger', pct > 0 && pct < 25);
+  const heroVitals = document.getElementById('vb-hero-vitals');
+  if (heroVitals) heroVitals.classList.toggle('hp-danger', pct > 0 && pct < 25);
 }
 
 function applyHpChange(delta) {
@@ -3981,34 +4850,191 @@ function updateMcTotalLevel() {
 }
 
 /* ── Rendu complet ── */
+/* ── Lazy tab rendering ──
+   Only render the active tab immediately; mark others dirty.
+   Each tab's content is (re)built on first visit or when dirty. */
+const _tabDirty = {};
+const _TAB_RENDERERS = {
+  personnage: () => {
+    renderMulticlasses(); renderAbilities(); renderSaves(); renderSkills();
+    renderCombat(); renderSpellSlots(); renderClassFeatures(); renderPassiveSkills();
+    renderResources(); renderConditions(); renderAttacks(); renderCustomFeatures(); renderSpells();
+  },
+  identite:   () => { fillFields(); },
+  inventaire: () => { renderInventory(); renderRationTracker(); renderAttunement(); fillCurrency(); },
+  notes:      () => { renderNotesPages(); loadCurrentNoteInEditor(); },
+  parametres: () => { renderSectionVisibility(); },
+  aide:       null,
+  admin:      () => { renderAdminPanel(); }
+};
+
+function _markAllDirty() {
+  Object.keys(_TAB_RENDERERS).forEach(k => { _tabDirty[k] = true; });
+}
+
+function _renderTab(tabId) {
+  if (!_tabDirty[tabId]) return;
+  _tabDirty[tabId] = false;
+  const fn = _TAB_RENDERERS[tabId];
+  if (fn) fn();
+}
+
 function renderAll() {
   migrateToMulticlass(C());
   fillFields();
-  renderMulticlasses();
-  renderAbilities();
-  renderSaves();
-  renderSkills();
-  renderCombat();
-  renderSpellSlots();
-  renderClassFeatures();
-  renderPassiveSkills();
-  renderResources();
-  renderConditions();
-  renderAttacks();
-  renderCustomFeatures();
-  renderSpells();
-  renderInventory();
-  renderRationTracker();
-  renderAttunement();
-  fillCurrency();
-  renderNotesPages();
-  loadCurrentNoteInEditor();
   updateCharSummary();
   updateProfBonus();
   updateHpBar();
   renderHpLog();
   applyCharTheme();
   applyCharBg(C());
+  renderHero();
+  _markAllDirty();
+  const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab || 'personnage';
+  _renderTab(activeTab);
+}
+
+/* ════════════════════════════════════════════════
+   VB HERO — bridge from old data model to new hero UI
+   ════════════════════════════════════════════════ */
+function renderHero() {
+  const c = C();
+  if (!c) return;
+
+  // Portrait
+  const img = document.getElementById('vb-portrait-img');
+  const ph  = document.getElementById('vb-portrait-placeholder');
+  if (img && ph) {
+    if (c.avatarPng) {
+      img.src = c.avatarPng; img.style.display = ''; ph.style.display = 'none';
+    } else {
+      img.style.display = 'none'; ph.style.display = '';
+      ph.textContent = c.avatar || '⚔';
+    }
+  }
+
+  // Name
+  const nameEl = document.getElementById('vb-hero-name');
+  if (nameEl) nameEl.textContent = c.characterName || '—';
+
+  // Class line + proficiency badge
+  const classTextEl = document.getElementById('vb-hero-class-text');
+  const profBadgeEl = document.getElementById('vb-hero-prof');
+  if (classTextEl) {
+    const classes = getClasses(c).filter(cl => cl.classe);
+    const classStr = classes.map(cl => cl.classe + ' ' + cl.niveau).join(' / ') || '—';
+    classTextEl.textContent = classStr + (c.species ? '  ·  ' + c.species : '');
+  }
+  if (profBadgeEl) {
+    const lv = getTotalLevel(c);
+    profBadgeEl.textContent = '+' + pb(lv || 1);
+  }
+
+  // Facts row
+  const factsEl = document.getElementById('vb-hero-facts');
+  if (factsEl) {
+    const lv = getTotalLevel(c);
+    const xpCur = parseInt(c.xp) || 0;
+    const XP_TABLE = [0,300,900,2700,6500,14000,23000,34000,48000,64000,85000,100000,120000,140000,165000,195000,225000,265000,305000,355000];
+    const xpPrev = XP_TABLE[Math.min(19, Math.max(0, (lv||1) - 1))];
+    const xpNext = XP_TABLE[Math.min(19, lv || 1)];
+    const xpPct  = lv >= 20 ? 100 : xpNext > xpPrev ? Math.min(100, Math.round((xpCur - xpPrev) / (xpNext - xpPrev) * 100)) : 0;
+    const facts = [
+      ['Species',     c.species     || '—'],
+      ['Background',  c.background  || '—'],
+      ['Alignment',   c.alignement  || '—'],
+      ['Level',       lv            || '—'],
+      ['Proficiency', '+' + pb(lv || 1)]
+    ];
+    factsEl.innerHTML = facts.map(([k, v]) =>
+      `<div class="vb-fact"><div class="vb-fact-label">${k}</div><div class="vb-fact-val">${v}</div></div>`
+    ).join('') + `<div class="vb-fact" style="flex:2;">
+      <div class="vb-xp-bar-wrap" title="${xpCur.toLocaleString()} / ${xpNext.toLocaleString()} XP (${xpPct}% vers niv. ${Math.min(20,(lv||1)+1)})">
+        <div class="vb-xp-label">XP ${xpCur.toLocaleString()}</div>
+        <div class="vb-xp-bar-track"><div class="vb-xp-bar-fill" style="width:${xpPct}%"></div></div>
+      </div>
+    </div>`;
+  }
+
+  // Abilities are rendered directly by renderAbilities() into #ability-grid inside the hero.
+
+  // HP
+  const pvMax = parseInt(c.pvMax)    || 0;
+  const pvCur = parseInt(c.pvActuel) || 0;
+  const pct   = pvMax > 0 ? Math.min(100, Math.round(pvCur / pvMax * 100)) : 0;
+  const hpCurEl = document.getElementById('vb-hero-hp-cur');
+  const hpMaxEl = document.getElementById('vb-hero-hp-max');
+  const hpBarEl = document.getElementById('vb-hero-hp-bar');
+  const hpColor = pct > 50 ? '#6aba6a' : pct > 25 ? '#e6d27a' : '#c97a7a';
+  if (hpCurEl) { hpCurEl.textContent = pvCur; hpCurEl.style.color = pvMax > 0 ? hpColor : ''; }
+  if (hpMaxEl) hpMaxEl.textContent = '/ ' + pvMax;
+  if (hpBarEl) {
+    hpBarEl.style.width = pct + '%';
+    hpBarEl.style.background = hpColor;
+  }
+
+  // Mini stats (AC, Initiative, Speed)
+  const caEl   = document.getElementById('vb-hero-ca');
+  const initEl = document.getElementById('vb-hero-init');
+  const spdEl  = document.getElementById('vb-hero-speed');
+  if (caEl)   caEl.textContent  = c.ca    || '10';
+  if (spdEl)  spdEl.textContent = c.vitesse || '30';
+  if (initEl) {
+    const dexMod = Math.floor((abilScore('dex') - 10) / 2);
+    const bonus  = parseInt(c.initiative) || 0;
+    const total  = dexMod + bonus;
+    initEl.textContent = (total >= 0 ? '+' : '') + total;
+    initEl.className = 'vb-mini-stat-val roll-trigger';
+    initEl.dataset.rollLabel = 'Initiative';
+    initEl.dataset.rollBonus = total;
+    initEl.title = 'Lancer Initiative (d20 ' + (total >= 0 ? '+' : '') + total + ')';
+  }
+
+  // Hit Dice
+  const hdEl = document.getElementById('vb-hero-hd');
+  if (hdEl) {
+    const ndv = parseInt(c.nbDeVie) || 1;
+    const dv  = c.deVie || '1d8';
+    hdEl.innerHTML = `<span style="font-size:15px;">${ndv}</span><span style="color:#555;font-size:11px;">/${ndv} ${dv}</span>`;
+  }
+
+  // Death save pips
+  const pipsEl = document.getElementById('vb-hero-death-pips');
+  if (pipsEl) {
+    const succ = parseInt(c.mortSucces)  || 0;
+    const fail = parseInt(c.mortEchecs) || 0;
+    const pip = (type, i, on) =>
+      `<span class="vb-death-pip ${on}" data-type="${type}" data-idx="${i}" role="button" tabindex="0" title="${type==='success'?'Succès':'Échec'} ${i+1}"></span>`;
+    pipsEl.innerHTML =
+      [0,1,2].map(i => pip('success', i, i < succ ? 'success-on' : '')).join('') +
+      '<span style="display:inline-block;width:8px;pointer-events:none;"></span>' +
+      [0,1,2].map(i => pip('fail', i, i < fail ? 'fail-on' : '')).join('');
+  }
+
+  // Conditions
+  const condEl = document.getElementById('vb-hero-conditions');
+  if (condEl) {
+    const active = c.conditions || [];
+    condEl.innerHTML = active.length
+      ? active.map(cond => `<span class="cond-badge active" style="font-size:0.65rem;">${cond}</span>`).join('')
+      : '<span style="font-size:0.75rem;color:#555;font-style:italic;">No conditions</span>';
+  }
+
+  // Portrait frame click → open avatar picker (scroll to Settings > Avatar)
+  const frame = document.getElementById('vb-portrait-frame');
+  if (frame && !frame._vbClick) {
+    frame._vbClick = true;
+    frame.addEventListener('click', () => {
+      // switch to settings tab
+      const settingsBtn = document.querySelector('.tab-btn[data-tab="parametres"]');
+      if (settingsBtn) settingsBtn.click();
+      // scroll to avatar section
+      setTimeout(() => {
+        const avSection = document.querySelector('[data-sec="avatar"]') || document.getElementById('avatar-section');
+        if (avSection) avSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 150);
+    });
+  }
 }
 
 /* ── Remplissage champs data-f ── */
@@ -4042,7 +5068,7 @@ function renderAbilities() {
     box.className = 'ability-box';
     box.innerHTML = `
       <div class="ability-name">${ab.label}</div>
-      <div class="ability-mod" id="mod-${ab.key}">${modStr(score)}</div>
+      <div class="ability-mod roll-trigger" id="mod-${ab.key}" data-roll-label="${ab.label} Check" data-roll-bonus="${mod(score)}" title="Lancer d20 + ${modStr(score)}">${modStr(score)}</div>
       <input type="number" class="ability-score-input" data-f="${ab.key}" value="${score}" min="1" max="30" title="Score brut">
     `;
     grid.appendChild(box);
@@ -4050,7 +5076,7 @@ function renderAbilities() {
 }
 function updateModifier(key) {
   const el = document.getElementById('mod-' + key);
-  if (el) el.textContent = modStr(abilScore(key));
+  if (el) { const m = mod(abilScore(key)); el.textContent = modStr(abilScore(key)); el.dataset.rollBonus = m; }
   // Initiative auto-DEX
   if (key === 'dex') {
     const c = C();
@@ -4076,20 +5102,22 @@ const SAVES = [
 ];
 function renderSaves() {
   const col = document.getElementById('saves-col');
-  col.innerHTML = '<div style="font-size:0.7rem;text-transform:uppercase;color:#666;letter-spacing:0.05em;margin-bottom:0.35rem;">Saving Throws</div>';
   const c = C(); const bonus = pb(getTotalLevel(c));
+  const frag = document.createDocumentFragment();
+  const hdr = document.createElement('div');
+  hdr.style.cssText = 'font-size:0.7rem;text-transform:uppercase;color:#666;letter-spacing:0.05em;margin-bottom:0.35rem;';
+  hdr.textContent = 'Saving Throws';
+  frag.appendChild(hdr);
   SAVES.forEach(sv => {
     const prof = !!c[sv.key];
     const val  = mod(abilScore(sv.attr)) + (prof ? bonus : 0);
     const row  = document.createElement('div');
     row.className = 'sv-row';
-    row.innerHTML = `
-      <div class="prof-dot ${prof ? 'on' : ''}" data-sv="${sv.key}" role="button" tabindex="0" title="Proficiency" aria-label="Maîtrise ${sv.label}"></div>
-      <span class="sv-val">${val >= 0 ? '+' : ''}${val}</span>
-      <span>${sv.label}</span>
-    `;
-    col.appendChild(row);
+    row.innerHTML = `<div class="prof-dot ${prof ? 'on' : ''}" data-sv="${sv.key}" role="button" tabindex="0" title="Proficiency" aria-label="Maîtrise ${sv.label}"></div><span class="sv-val roll-trigger" data-roll-label="${sv.label} Save" data-roll-bonus="${val}" title="Lancer d20 + ${val}">${val >= 0 ? '+' : ''}${val}</span><span>${sv.label}</span>`;
+    frag.appendChild(row);
   });
+  col.innerHTML = '';
+  col.appendChild(frag);
 }
 
 /* ── Compétences ── */
@@ -4115,30 +5143,33 @@ const SKILLS = [
 ];
 function renderSkills() {
   const col = document.getElementById('skills-col');
-  col.innerHTML = '<div style="font-size:0.7rem;text-transform:uppercase;color:#666;letter-spacing:0.05em;margin-bottom:0.35rem;">Compétences <span style="font-size:0.6rem;color:#444;font-style:italic;">(clic=maîtrise, 2×=expertise)</span></div>';
   const c = C(); const bonus = pb(getTotalLevel(c));
   const jat = !!c.jackOfAllTrades;
   const halfBonus = Math.floor(bonus / 2);
-  // Sync JAT checkbox
+  const filterQ = (document.getElementById('skill-filter')?.value || '').toLowerCase().trim();
   const jatCheck = document.getElementById('jat-check');
   const jatLabel = document.getElementById('jat-label');
-  if (jatCheck) { jatCheck.checked = jat; }
+  if (jatCheck) jatCheck.checked = jat;
   if (jatLabel) jatLabel.classList.toggle('active', jat);
+  const frag = document.createDocumentFragment();
+  const hdr = document.createElement('div');
+  hdr.style.cssText = 'font-size:0.7rem;text-transform:uppercase;color:#666;letter-spacing:0.05em;margin-bottom:0.35rem;';
+  hdr.innerHTML = 'Compétences <span style="font-size:0.6rem;color:#444;font-style:italic;">(clic=maîtrise, 2×=expertise)</span>';
+  frag.appendChild(hdr);
   [...SKILLS].sort((a,b) => a.label.localeCompare(b.label)).forEach(sk => {
+    if (filterQ && !sk.label.toLowerCase().includes(filterQ) && !sk.attr.includes(filterQ)) return;
     const profLevel = Math.min(2, Math.max(0, parseInt(c[sk.key]) || (c[sk.key] === true ? 1 : 0)));
     const jatBonus = (jat && profLevel === 0) ? halfBonus : 0;
     const val = mod(abilScore(sk.attr)) + (profLevel >= 1 ? bonus : 0) + (profLevel >= 2 ? bonus : 0) + jatBonus;
     const dotClass = profLevel === 2 ? 'on expert' : profLevel === 1 ? 'on' : '';
     const title = profLevel === 2 ? 'Expertise (double proficiency)' : profLevel === 1 ? 'Proficiency' : 'Not proficient';
-    const row  = document.createElement('div');
+    const row = document.createElement('div');
     row.className = 'sk-row';
-    row.innerHTML = `
-      <div class="prof-dot ${dotClass}" data-sk="${sk.key}" role="button" tabindex="0" title="${title}" aria-label="Maîtrise ${sk.label}"></div>
-      <span class="sk-val">${val >= 0 ? '+' : ''}${val}</span>
-      <span>${sk.label} <span style="color:#555;font-size:0.72rem;">(${sk.attr.toUpperCase()})</span></span>
-    `;
-    col.appendChild(row);
+    row.innerHTML = `<div class="prof-dot ${dotClass}" data-sk="${sk.key}" role="button" tabindex="0" title="${title}" aria-label="Maîtrise ${sk.label}"></div><span class="sk-val roll-trigger" data-roll-label="${sk.label}" data-roll-bonus="${val}" title="Lancer d20 + ${val}">${val >= 0 ? '+' : ''}${val}</span><span>${sk.label} <span style="color:#555;font-size:0.72rem;">(${sk.attr.toUpperCase()})</span></span>`;
+    frag.appendChild(row);
   });
+  col.innerHTML = '';
+  col.appendChild(frag);
 }
 
 /* ── Combat ── */
@@ -4208,6 +5239,8 @@ function updateSpellCalcs() {
   if (!c.caractSort || !getTotalLevel(c)) {
     document.getElementById('sort-dd').textContent = '—';
     document.getElementById('sort-atk').textContent = '—';
+    const dcEl2 = document.getElementById('vb-hero-dc');
+    if (dcEl2) dcEl2.textContent = '—';
     if (prepEl) { prepEl.textContent = '—'; prepEl.className = 'spell-prep-counter'; }
     return;
   }
@@ -4219,6 +5252,8 @@ function updateSpellCalcs() {
   const m = mod(abilScore(attr));
   document.getElementById('sort-dd').textContent  = 8 + bonus + m;
   document.getElementById('sort-atk').textContent = (bonus + m >= 0 ? '+' : '') + (bonus + m);
+  const dcEl = document.getElementById('vb-hero-dc');
+  if (dcEl) dcEl.textContent = 8 + bonus + m;
   // Spell prep counter (leveled spells only, not cantrips)
   if (prepEl) {
     const spells = c.spells || [];
@@ -4263,7 +5298,7 @@ function renderAttacks() {
       <td><input class="atk-inp" data-atk="${i}" data-ak="typeDegat" value="${esc(atk.typeDegat||'')}" placeholder="tranchant" style="font-size:0.75rem;"></td>
       <td><select class="atk-inp" data-atk="${i}" data-ak="atkType" style="padding:0.18rem 0.2rem;font-size:0.74rem;">${statSelOpts}</select></td>
       <td style="text-align:center;"><input type="checkbox" data-atk="${i}" data-ak="prof" ${atk.prof ? 'checked' : ''} style="accent-color:var(--gold-dark);width:14px;height:14px;cursor:pointer;" title="Proficiency"></td>
-      <td class="atk-bonus-cell">${atkBonus}</td>
+      <td class="atk-bonus-cell roll-trigger" data-roll-label="${esc(atk.name||'Attaque')}" data-roll-bonus="${parseInt(atkBonus)||0}" title="Lancer d20 + ${atkBonus}">${atkBonus}</td>
       <td><button class="atk-del" data-del="${i}" title="Supprimer">✕</button></td>
     `;
     tbody.appendChild(tr);
@@ -4569,6 +5604,12 @@ function renderPassiveSkills() {
     const val  = 10 + mod(abilScore(p.attr)) + (prof ? bonus : 0);
     return `<div class="passive-row"><span>${p.label}${prof ? ' ✦' : ''}</span><span class="passive-val">${val}</span></div>`;
   }).join('');
+  // Sync PP badge in hero
+  const ppEl = document.getElementById('vb-hero-pp');
+  if (ppEl) {
+    const percProf = !!c.perception;
+    ppEl.textContent = 10 + mod(abilScore('sag')) + (percProf ? bonus : 0);
+  }
 }
 
 /* ── Ressources ── */
@@ -4598,6 +5639,21 @@ function renderResources() {
 }
 
 /* ── Conditions ── */
+const CONDITION_DESC = {
+  Blinded:       'Ne peut pas voir. Échoue les jets nécessitant la vue. Attaques contre lui avec avantage, ses attaques avec désavantage.',
+  Charmed:       'Ne peut pas attaquer la source du charme. La source a avantage sur les jets de Charisme avec lui.',
+  Deafened:      'Ne peut pas entendre. Échoue automatiquement les jets nécessitant l\'ouïe.',
+  Frightened:    'Désavantage aux jets d\'attaque et de caractéristique quand la source est en vue. Ne peut pas s\'approcher.',
+  Grappled:      'Vitesse réduite à 0. Se termine si la créature qui agrippe est neutralisée ou s\'éloigne.',
+  Incapacitated: 'Ne peut pas entreprendre d\'actions ni de réactions.',
+  Invisible:     'Impossible à voir sans magie. Considéré fortement obscurci. Attaques avec avantage, attaqué avec désavantage.',
+  Poisoned:      'Désavantage aux jets d\'attaque et aux jets de caractéristique.',
+  Prone:         'Seul mouvement possible : se relever (coûte la moitié de la vitesse). Attaques avec désavantage ; attaqué avec avantage à ≤1,5m, désavantage au-delà.',
+  Restrained:    'Vitesse 0. Désavantage aux jets d\'attaque et aux jets de DEX. Attaqué avec avantage.',
+  Stunned:       'Neutralisé, ne peut pas bouger, parle seulement lentement. Échoue jets FOR et DEX. Attaqué avec avantage.',
+  Unconscious:   'Neutralisé, ne peut pas bouger ni parler. Inconscient des alentours. Tombe à terre. Échoue jets FOR et DEX. Attaqué avec avantage. Les coups à ≤1,5m sont des coups critiques.',
+  Concentrating: 'Maintient un sort de concentration. Tout dégât exige un jet de constitution (DD 10 ou ½ dégâts).',
+};
 function renderConditions() {
   const grid = document.getElementById('conditions-grid');
   if (!grid) return;
@@ -4605,7 +5661,8 @@ function renderConditions() {
   grid.innerHTML = ALL_CONDITIONS.map(cond => {
     const isActive = active.includes(cond);
     const isConc = cond === 'Concentrating';
-    return `<div class="cond-badge${isActive ? ' active' : ''}${isConc && isActive ? ' conc' : ''}" data-cond="${cond}" role="button" tabindex="0" aria-pressed="${isActive}">${cond}</div>`;
+    const desc = CONDITION_DESC[cond] || '';
+    return `<div class="cond-badge${isActive ? ' active' : ''}${isConc && isActive ? ' conc' : ''}" data-cond="${cond}" role="button" tabindex="0" aria-pressed="${isActive}" title="${desc}">${cond}</div>`;
   }).join('');
   // Exhaustion pips
   renderExhaustion();
@@ -5202,8 +6259,9 @@ function renderCustomFeatures() {
 function renderSpells() {
   const tbody = document.getElementById('spell-tbody');
   if (!tbody) return;
-  tbody.innerHTML = '';
+  const frag = document.createDocumentFragment();
   const spells = C().spells || [];
+  const filterQ = (document.getElementById('spell-filter')?.value || '').toLowerCase().trim();
   // Group by level
   const groups = {};
   spells.forEach((s, i) => {
@@ -5215,38 +6273,38 @@ function renderSpells() {
   // Also add any levels that exist but aren't in ORDER
   Object.keys(groups).forEach(k => { if (!ORDER.includes(k)) ORDER.push(k); });
   ORDER.forEach(lvl => {
-    const entries = groups[lvl];
-    if (!entries || !entries.length) return;
+    const allEntries = groups[lvl];
+    if (!allEntries || !allEntries.length) return;
+    const entries = filterQ
+      ? allEntries.filter(({ s }) =>
+          (s.name || '').toLowerCase().includes(filterQ) ||
+          (s.typeDegat || '').toLowerCase().includes(filterQ) ||
+          (s.action || '').toLowerCase().includes(filterQ) ||
+          (s.desc || '').toLowerCase().includes(filterQ))
+      : allEntries;
+    if (!entries.length) return;
     // Level header row
     const hdr = document.createElement('tr');
     hdr.className = 'spell-lvl-header';
     const lvlLabel = lvl === 'cantrip' ? '✧ Cantrips' : `✦ Niveau ${lvl}`;
     hdr.innerHTML = `<td colspan="8">${lvlLabel}<span class="spell-lvl-count">${entries.length} sort${entries.length > 1 ? 's' : ''}</span></td>`;
-    tbody.appendChild(hdr);
+    frag.appendChild(hdr);
     entries.forEach(({ s, i }) => {
       const isConc = !!s.conc;
       const tr = document.createElement('tr');
       tr.className = 'exp-row';
-      tr.innerHTML = `
-        <td style="text-align:center;"><input class="atk-inp" data-spell="${i}" data-sk="level" value="${esc(s.level||'0')}" placeholder="0" style="width:38px;text-align:center;font-size:0.78rem;"></td>
-        <td><input class="atk-inp" data-spell="${i}" data-sk="name"   value="${esc(s.name||'')}"   placeholder="Nom du sort"></td>
-        <td><input class="atk-inp" data-spell="${i}" data-sk="degat"  value="${esc(s.degat||'')}"  placeholder="2d6" style="font-size:0.75rem;"></td>
-        <td><input class="atk-inp" data-spell="${i}" data-sk="typeDegat" value="${esc(s.typeDegat||'')}" placeholder="feu…" style="font-size:0.75rem;"></td>
-        <td><input class="atk-inp" data-spell="${i}" data-sk="portee" value="${esc(s.portee||'')}" placeholder="18m" style="font-size:0.75rem;"></td>
-        <td><input class="atk-inp" data-spell="${i}" data-sk="action" value="${esc(s.action||'')}" placeholder="Action" style="font-size:0.75rem;"></td>
-        <td style="text-align:center;"><button class="spell-conc-btn${isConc?' active':''}" data-conc-spell="${i}" title="Concentrer sur ce sort">◉</button></td>
-        <td style="text-align:center;"><button class="exp-toggle${s._open?' open':''}" data-spell-toggle="${i}" title="Description">▾</button></td>
-        <td><button class="atk-del" data-del-spell="${i}" title="Supprimer">✕</button></td>
-      `;
-      tbody.appendChild(tr);
+      tr.innerHTML = `<td style="text-align:center;"><input class="atk-inp" data-spell="${i}" data-sk="level" value="${esc(s.level||'0')}" placeholder="0" style="width:38px;text-align:center;font-size:0.78rem;"></td><td><input class="atk-inp" data-spell="${i}" data-sk="name" value="${esc(s.name||'')}" placeholder="Nom du sort"></td><td><input class="atk-inp" data-spell="${i}" data-sk="degat" value="${esc(s.degat||'')}" placeholder="2d6" style="font-size:0.75rem;"></td><td><input class="atk-inp" data-spell="${i}" data-sk="typeDegat" value="${esc(s.typeDegat||'')}" placeholder="feu…" style="font-size:0.75rem;"></td><td><input class="atk-inp" data-spell="${i}" data-sk="portee" value="${esc(s.portee||'')}" placeholder="18m" style="font-size:0.75rem;"></td><td><input class="atk-inp" data-spell="${i}" data-sk="action" value="${esc(s.action||'')}" placeholder="Action" style="font-size:0.75rem;"></td><td style="text-align:center;"><button class="spell-conc-btn${isConc?' active':''}" data-conc-spell="${i}" title="Concentrer sur ce sort">◉</button></td><td style="text-align:center;"><button class="exp-toggle${s._open?' open':''}" data-spell-toggle="${i}" title="Description">▾</button></td><td><button class="atk-del" data-del-spell="${i}" title="Supprimer">✕</button></td>`;
+      frag.appendChild(tr);
       if (s._open) {
         const dr = document.createElement('tr');
         dr.className = 'exp-desc-row';
         dr.innerHTML = `<td colspan="9"><textarea class="exp-desc-area" data-spell="${i}" data-sk="desc" placeholder="Description, composantes, concentration…">${esc(s.desc||'')}</textarea></td>`;
-        tbody.appendChild(dr);
+        frag.appendChild(dr);
       }
     });
   });
+  tbody.innerHTML = '';
+  tbody.appendChild(frag);
 }
 
 /* ── Ration Tracker ── */
@@ -6121,15 +7179,15 @@ const SECTION_KEYS = {
   'Sorts':'sorts','Traits':'features','Personnalité':'perso'
 };
 const SECTION_LABELS = {
-  identite:'Identité', cf:'Class Features', caracteristiques:'Caractéristiques',
-  saves:'Sauvegardes', passives:'Comp. passives', combat:'Combat',
+  cf:'Class Features', caracteristiques:'Caractéristiques',
+  saves:'Sauvegardes', passives:'Comp. passives',
   ressources:'Ressources', conditions:'Conditions', attaques:'Attaques',
   sorts:'Sorts', features:'Traits & Capacités', perso:'Personnalité'
 };
 const DEFAULT_LAYOUT = {
   columns:[
-    ['identite','saves','passives'],
-    ['cf','combat','ressources','conditions','attaques','features','perso'],
+    ['saves','passives'],
+    ['cf','ressources','conditions','attaques','features','perso'],
     ['sorts']
   ],
   hidden:[]
@@ -6170,7 +7228,7 @@ function captureCurrentLayout() {
     Array.from(col.querySelectorAll('.sheet-section[data-sec]')).map(s => s.dataset.sec)
   );
   // Third column: bottom full-width row
-  const bottomCol = bottom?.querySelector('.layout-col[data-col="2"]');
+  const bottomCol = bottom?.querySelector('.layout-col[data-col="3"]');
   const bottomIds = bottomCol
     ? Array.from(bottomCol.querySelectorAll('.sheet-section[data-sec]')).map(s => s.dataset.sec)
     : [];
@@ -6186,7 +7244,7 @@ function applyLayout() {
   if (!wrapper) return;
 
   const bottom   = document.getElementById('layout-bottom');
-  const bottomCol = bottom?.querySelector('.layout-col[data-col="2"]');
+  const bottomCol = bottom?.querySelector('.layout-col[data-col="3"]');
   const topCols  = Array.from(wrapper.querySelectorAll(':scope > .layout-col'));
   const allCols  = bottomCol ? [...topCols, bottomCol] : topCols;
   const cols     = { length: allCols.length, forEach: fn => allCols.forEach(fn) };
@@ -6786,9 +7844,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + btn.dataset.tab));
-      if (btn.dataset.tab === 'admin') renderAdminPanel();
-      if (btn.dataset.tab === 'parametres') {
-        renderSectionVisibility();
+      const tabId = btn.dataset.tab;
+      // Render tab content on first visit or when dirty
+      _renderTab(tabId);
+      // Parametres: sync live UI controls each visit (not just first)
+      if (tabId === 'parametres') {
         const ci = document.getElementById('custom-color-inp');
         const ch = document.getElementById('custom-color-hex');
         const gold = getComputedStyle(document.documentElement).getPropertyValue('--gold').trim();
@@ -6800,7 +7860,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       // Bouton Organiser visible uniquement dans l'onglet Personnage
       const organBtn = document.getElementById('btn-layout-edit');
-      if (organBtn) organBtn.style.display = btn.dataset.tab === 'personnage' ? '' : 'none';
+      if (organBtn) organBtn.style.display = tabId === 'personnage' ? '' : 'none';
+      // Onglet Identité : scroll jusqu'au formulaire
+      if (tabId === 'identite') {
+        requestAnimationFrame(() => {
+          document.getElementById('tab-identite')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      }
     });
   });
 
@@ -6839,7 +7905,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (el.dataset.f === 'characterName') { activeSlot().name = el.value || 'Sans nom'; renderCharCards(); }
       if (el.dataset.f === 'niveau') { syncClassesToLegacy(C()); updateProfBonus(); renderSaves(); renderSkills(); renderPassiveSkills(); renderClassFeatures(); renderMulticlasses(); }
       if (el.dataset.f === 'classe') { autoFillClass(el.value); updateCharSummary(); renderCharCards(); }
-      if (['for','dex','con','int','sag','cha'].includes(el.dataset.f)) { updateModifier(el.dataset.f); renderSaves(); renderSkills(); renderPassiveSkills(); updateSpellCalcs(); }
+      if (['for','dex','con','int','sag','cha'].includes(el.dataset.f)) { updateModifier(el.dataset.f); debouncedStats(() => { renderSaves(); renderSkills(); renderPassiveSkills(); updateSpellCalcs(); }); }
       if (el.dataset.f === 'caractSort' || el.dataset.f === 'niveau') updateSpellCalcs();
       if (el.dataset.f === 'pvMax' || el.dataset.f === 'pvActuel') { updateHpBar(); renderCharCards(); }
       updateCharSummary();
@@ -6889,7 +7955,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderSkills(); triggerSave();
   });
 
-  // Jets de mort
+  // Jets de mort — dots cachés (compat)
   ['death-success','death-fail'].forEach(id => {
     document.getElementById(id).addEventListener('click', e => {
       const dot = e.target.closest('.death-dot');
@@ -6900,6 +7966,22 @@ document.addEventListener('DOMContentLoaded', async () => {
       C()[key]   = cur > idx ? idx : idx + 1;
       renderCombat(); triggerSave();
     });
+  });
+  // Jets de mort — pips cliquables dans le hero
+  document.getElementById('vb-hero-death-pips')?.addEventListener('click', e => {
+    const pip = e.target.closest('[data-type][data-idx]');
+    if (!pip) return;
+    const type = pip.dataset.type; const idx = parseInt(pip.dataset.idx);
+    const key  = type === 'success' ? 'mortSucces' : 'mortEchecs';
+    const cur  = C()[key] || 0;
+    C()[key]   = cur > idx ? idx : idx + 1;
+    // Mettre à jour les classes directement (pips gérés par renderHero, pas renderCombat)
+    const newCount = C()[key];
+    const onCls = type === 'success' ? 'success-on' : 'fail-on';
+    document.querySelectorAll(`#vb-hero-death-pips [data-type="${type}"]`).forEach((p, i) => {
+      p.classList.toggle(onCls, i < newCount);
+    });
+    renderCombat(); triggerSave();
   });
 
   // Stress Points
@@ -7689,6 +8771,370 @@ document.addEventListener('keydown', e => {
     el.click();
   }
 });
+
+/* ════════════════════════════════════════════════
+   OPTIMISATIONS UX — lot 2
+   ════════════════════════════════════════════════ */
+
+/* ── 1. Debounce : render lourd sur les stats ── */
+let _heavyRenderTimer;
+function debouncedStats(fn, delay = 180) {
+  clearTimeout(_heavyRenderTimer);
+  _heavyRenderTimer = setTimeout(fn, delay);
+}
+
+/* ── 2. Toast flash sauvegarde ── */
+(function () {
+  const el = document.createElement('div');
+  el.id = 'save-flash';
+  el.textContent = '✓ Sauvegardé';
+  document.body.appendChild(el);
+})();
+function showSaveFlash() {
+  const t = document.getElementById('save-flash');
+  if (!t) return;
+  t.style.opacity = '1';
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => { t.style.opacity = '0'; }, 1600);
+}
+/* Patch triggerSave pour appeler showSaveFlash */
+(function () {
+  const _orig = triggerSave;
+  triggerSave = function () {
+    _orig.apply(this, arguments);
+    /* On décore la promesse interne via le badge save OK — simple et sans re-écrire tout */
+  };
+  /* Observer le badge pour détecter le succès */
+  const badge = document.getElementById('save-badge');
+  if (badge) {
+    const obs = new MutationObserver(() => {
+      if (badge.classList.contains('ok')) showSaveFlash();
+    });
+    obs.observe(badge, { attributes: true, attributeFilter: ['class'] });
+  }
+})();
+
+/* ── 3. Fix : délégation input pour #tab-identite ── */
+document.getElementById('tab-identite')?.addEventListener('input', e => {
+  if (!playerData) return;
+  const el = e.target;
+  if (el.dataset.f && el.dataset.f in C()) {
+    if (el.type === 'checkbox') C()[el.dataset.f] = el.checked;
+    else if (el.type === 'number') C()[el.dataset.f] = parseFloat(el.value) || 0;
+    else C()[el.dataset.f] = el.value;
+    if (el.dataset.f === 'characterName') { activeSlot().name = el.value || 'Sans nom'; renderCharCards(); renderHero(); }
+    if (el.dataset.f === 'species' || el.dataset.f === 'xp') renderHero();
+    updateCharSummary();
+    triggerSave();
+  }
+});
+
+/* ── 4. Fix : délégation input pour #vb-hero (outside tabs) ── */
+document.getElementById('vb-hero')?.addEventListener('input', e => {
+  if (!playerData) return;
+  const el = e.target;
+  if (!el.dataset.f || !(el.dataset.f in C())) return;
+  if (el.type === 'number') C()[el.dataset.f] = parseFloat(el.value) || 0;
+  else C()[el.dataset.f] = el.value;
+  if (el.dataset.f === 'pvMax' || el.dataset.f === 'pvActuel') { updateHpBar(); renderCharCards(); }
+  if (el.dataset.f === 'ca' || el.dataset.f === 'vitesse') renderHero();
+  triggerSave();
+});
+
+/* ── 5. HP Undo (Ctrl+Z) ── */
+let _hpUndo = null;
+(function () {
+  const _orig = applyHpChange;
+  applyHpChange = function (delta) {
+    if (playerData) _hpUndo = { pvActuel: C().pvActuel, pvTemp: C().pvTemp || 0 };
+    _orig.apply(this, arguments);
+  };
+})();
+
+/* ── 6. Raccourcis clavier ── */
+document.addEventListener('keydown', e => {
+  const tag = document.activeElement?.tagName;
+  const typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+
+  /* Ctrl+Z → undo HP si pas en train d'écrire */
+  if (e.ctrlKey && e.key === 'z' && !e.shiftKey && !typing && _hpUndo && playerData) {
+    e.preventDefault();
+    Object.assign(C(), _hpUndo);
+    _hpUndo = null;
+    fillFields(); updateHpBar(); renderHero(); renderCharCards(); triggerSave();
+    showSaveFlash();
+    return;
+  }
+
+  /* Alt+1..9 → changer d'onglet */
+  if (e.altKey && !e.ctrlKey && !e.shiftKey && !typing) {
+    const n = parseInt(e.key);
+    if (n >= 1 && n <= 9) {
+      const btns = [...document.querySelectorAll('.tab-btn')];
+      if (btns[n - 1]) { e.preventDefault(); btns[n - 1].click(); }
+    }
+  }
+
+  /* Escape → fermer les modals ouverts */
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.open, .ddb-modal-overlay.open, .sr-modal-overlay.open').forEach(m => {
+      m.classList.remove('open');
+    });
+  }
+});
+
+/* ── 7. Swipe entre onglets (mobile) ── */
+(function () {
+  let startX = 0, startY = 0;
+  const area = document.getElementById('screen-dashboard');
+  if (!area) return;
+  area.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+  area.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = e.changedTouches[0].clientY - startY;
+    if (Math.abs(dy) > Math.abs(dx) || Math.abs(dx) < 55) return;
+    const btns = [...document.querySelectorAll('.tab-btn')];
+    const cur = btns.findIndex(b => b.classList.contains('active'));
+    const next = dx < 0 ? cur + 1 : cur - 1;
+    if (btns[next]) btns[next].click();
+  }, { passive: true });
+})();
+
+/* ── 8. Mode Lecture ── */
+document.getElementById('btn-read-mode')?.addEventListener('click', () => {
+  const dash = document.getElementById('screen-dashboard');
+  const btn = document.getElementById('btn-read-mode');
+  const active = dash.classList.toggle('read-mode');
+  btn.textContent = active ? '🔓' : '🔒';
+  btn.classList.toggle('active', active);
+  btn.title = active ? 'Désactiver le Mode Lecture' : 'Mode Lecture — verrouille la fiche';
+});
+
+/* ── 9. Debounce stats heavy render (already wired via debouncedStats in main handler) ── */
+
+/* ── 10. Lanceur de dés — clic sur modificateurs/compétences/jets ── */
+(function () {
+  // Inject toast DOM
+  const t = document.createElement('div');
+  t.id = 'dice-toast';
+  t.innerHTML = '<div class="dice-toast-d20" id="dice-d20">—</div><div class="dice-toast-label" id="dice-label"></div><div class="dice-toast-total" id="dice-total"></div>';
+  document.body.appendChild(t);
+
+  let _diceTimer;
+  window.showDiceRoll = function(label, bonus) {
+    const roll = Math.floor(Math.random() * 20) + 1;
+    const total = roll + (parseInt(bonus) || 0);
+    const d20El = document.getElementById('dice-d20');
+    const lblEl = document.getElementById('dice-label');
+    const totEl = document.getElementById('dice-total');
+    d20El.textContent = roll;
+    d20El.className = 'dice-toast-d20' + (roll === 20 ? ' nat20' : roll === 1 ? ' nat1' : '');
+    lblEl.textContent = label;
+    totEl.textContent = bonus !== 0 ? `${roll} ${bonus >= 0 ? '+' : ''}${bonus} = ${total}` : '';
+    t.classList.add('visible');
+    clearTimeout(_diceTimer);
+    _diceTimer = setTimeout(() => t.classList.remove('visible'), 2800);
+  };
+
+  // Délégation sur tout le document
+  document.addEventListener('click', e => {
+    const el = e.target.closest('.roll-trigger');
+    if (!el) return;
+    const label = el.dataset.rollLabel || el.title || '?';
+    const bonus = parseInt(el.dataset.rollBonus) || 0;
+    showDiceRoll(label, bonus);
+  });
+})();
+
+/* ── 11. Dice tray ── */
+document.getElementById('dice-tray-btn')?.addEventListener('click', e => {
+  e.stopPropagation();
+  document.getElementById('dice-tray').classList.toggle('open');
+});
+document.addEventListener('click', e => {
+  const tray = document.getElementById('dice-tray');
+  if (tray && !tray.contains(e.target) && e.target.id !== 'dice-tray-btn') {
+    tray.classList.remove('open');
+  }
+});
+document.getElementById('dice-tray')?.addEventListener('click', e => {
+  const btn = e.target.closest('.dice-btn');
+  if (!btn) return;
+  const sides = parseInt(btn.dataset.sides);
+  const mod = parseInt(document.getElementById('dice-tray-mod')?.value) || 0;
+  const roll = Math.floor(Math.random() * sides) + 1;
+  showDiceRoll('d' + sides, mod);
+  // Override d20 display with actual die value
+  document.getElementById('dice-d20').textContent = roll;
+  document.getElementById('dice-d20').className = 'dice-toast-d20' + (sides === 20 && roll === 20 ? ' nat20' : sides === 20 && roll === 1 ? ' nat1' : '');
+  document.getElementById('dice-total').textContent = mod !== 0 ? `${roll} ${mod >= 0 ? '+' : ''}${mod} = ${roll + mod}` : '';
+});
+
+/* ── 12. Skill search filter ── */
+document.getElementById('skill-filter')?.addEventListener('input', () => { if (playerData) renderSkills(); });
+
+/* ── 13b. Spell search filter ── */
+document.getElementById('spell-filter')?.addEventListener('input', () => { if (playerData) renderSpells(); });
+
+/* ── 13. Scroll haut au changement d'onglet (sauf identité qui a son propre scroll) ── */
+(function () {
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.tab !== 'identite') {
+        requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
+      }
+    });
+  });
+})();
+
+/* ── 14. Lanceur de dégâts — double-clic sur champ degats/degat ── */
+window.rollDiceExpr = function(expr) {
+  let total = 0;
+  const str = expr.replace(/\s/g, '').toLowerCase();
+  const tokens = str.split(/(?=[+-])/);
+  const parts = [];
+  for (const token of tokens) {
+    const m = token.match(/^([+-]?)(\d*)d(\d+)$/);
+    if (m) {
+      const sign = m[1] === '-' ? -1 : 1;
+      const count = parseInt(m[2] || '1');
+      const sides = parseInt(m[3]);
+      let sub = 0;
+      for (let j = 0; j < count; j++) sub += Math.floor(Math.random() * sides) + 1;
+      total += sign * sub;
+      parts.push((sign < 0 ? '-' : parts.length ? '+' : '') + sub);
+    } else {
+      const n = parseInt(token);
+      if (!isNaN(n)) { total += n; if (n !== 0) parts.push((n >= 0 && parts.length ? '+' : '') + n); }
+    }
+  }
+  return { total, detail: parts.length > 1 ? parts.join(' ') + ' = ' + total : String(total) };
+};
+
+document.addEventListener('dblclick', e => {
+  const el = e.target;
+  if (!el.classList.contains('atk-inp')) return;
+  if (el.dataset.ak !== 'degats' && el.dataset.sk !== 'degat') return;
+  const expr = el.value.trim();
+  if (!expr || !/\d/.test(expr)) return;
+  e.preventDefault();
+  const res = rollDiceExpr(expr);
+  const nameEl = el.closest('tr')?.querySelector('[data-ak="name"],[data-sk="name"]');
+  const name = nameEl?.value || 'Dégâts';
+  showDiceRoll(name + ' · ' + expr, 0);
+  document.getElementById('dice-d20').textContent = res.total;
+  document.getElementById('dice-d20').className = 'dice-toast-d20';
+  document.getElementById('dice-total').textContent = res.detail !== String(res.total) ? res.detail : '';
+});
+
+/* ── 15. ADV / DIS roll mode + inspiration auto-advantage ── */
+window._rollMode = 'normal';
+
+(function () {
+  const _orig = window.showDiceRoll;
+  window.showDiceRoll = function (label, bonus, modeOverride) {
+    let mode = modeOverride || window._rollMode || 'normal';
+
+    // Inspiration → gratuitous advantage (consumes it)
+    if (mode === 'normal' && playerData?.inspiration) {
+      playerData.inspiration = false;
+      renderInspiration();
+      triggerSave();
+      mode = 'adv';
+      label = '✦ ' + label;
+    }
+
+    // Reset mode UI
+    window._rollMode = 'normal';
+    document.querySelectorAll('.drm-btn').forEach(b =>
+      b.classList.toggle('active', b.id === 'drm-norm'));
+
+    if (mode === 'adv' || mode === 'dis') {
+      const r1 = Math.floor(Math.random() * 20) + 1;
+      const r2 = Math.floor(Math.random() * 20) + 1;
+      const roll = mode === 'adv' ? Math.max(r1, r2) : Math.min(r1, r2);
+      const bonusNum = parseInt(bonus) || 0;
+      const total = roll + bonusNum;
+      const d20El = document.getElementById('dice-d20');
+      const lblEl = document.getElementById('dice-label');
+      const totEl = document.getElementById('dice-total');
+      const t     = document.getElementById('dice-toast');
+      d20El.textContent = roll;
+      d20El.className = 'dice-toast-d20' + (roll === 20 ? ' nat20' : roll === 1 ? ' nat1' : '');
+      lblEl.textContent = (mode === 'adv' ? '⬆ ' : '⬇ ') + label;
+      totEl.textContent = `(${r1}, ${r2})` + (bonusNum !== 0 ? ` ${bonusNum >= 0 ? '+' : ''}${bonusNum} = ${total}` : '');
+      t.classList.add('visible');
+      clearTimeout(window._diceTimerAdv);
+      window._diceTimerAdv = setTimeout(() => t.classList.remove('visible'), 3200);
+    } else {
+      _orig(label, bonus);
+    }
+  };
+})();
+
+// ADV/DIS/NORM button handlers
+['adv', 'norm', 'dis'].forEach(mode => {
+  document.getElementById('drm-' + mode)?.addEventListener('click', () => {
+    window._rollMode = mode === 'norm' ? 'normal' : mode;
+    document.querySelectorAll('.drm-btn').forEach(b =>
+      b.classList.toggle('active', b.id === 'drm-' + mode));
+  });
+});
+
+/* ── 16. Jets de mort — bouton auto-roll ── */
+document.getElementById('death-save-roll-btn')?.addEventListener('click', e => {
+  e.stopPropagation();
+  if (!playerData) return;
+  const roll = Math.floor(Math.random() * 20) + 1;
+  const c = C();
+  let succ = parseInt(c.mortSucces) || 0;
+  let fail = parseInt(c.mortEchecs) || 0;
+  if      (roll === 20) { succ = Math.min(3, succ + 2); }
+  else if (roll === 1)  { fail = Math.min(3, fail + 2); }
+  else if (roll >= 10)  { succ = Math.min(3, succ + 1); }
+  else                  { fail = Math.min(3, fail + 1); }
+  c.mortSucces = succ; c.mortEchecs = fail;
+  ['success', 'fail'].forEach(type => {
+    const count = type === 'success' ? succ : fail;
+    document.querySelectorAll(`.death-dot[data-type="${type}"]`).forEach((dot, i) => {
+      dot.classList.toggle('success-on', type === 'success' && i < count);
+      dot.classList.toggle('fail-on',    type === 'fail'    && i < count);
+    });
+  });
+  renderHero(); triggerSave();
+  const msg = roll === 20 ? '✦ Critique! +2 succès'
+            : roll === 1  ? '✕ Catastrophe! +2 échecs'
+            : roll >= 10  ? '✓ Succès' : '✗ Échec';
+  showDiceRoll('Jet de Mort', 0, 'normal');
+  document.getElementById('dice-total').textContent = msg;
+});
+
+/* ── 17. Jet de concentration auto — dégâts sur perso concentré ── */
+(function () {
+  const _orig = applyHpChange;
+  applyHpChange = function (delta) {
+    _orig.apply(this, arguments);
+    if (delta < 0 && playerData) {
+      const c = C();
+      const conditions = c.conditions || [];
+      if (conditions.includes('Concentrating')) {
+        const dmg = Math.abs(delta);
+        const dc = Math.max(10, Math.ceil(dmg / 2));
+        const conMod = mod(abilScore('con'));
+        const profBonus = c.saveCon ? pb(getTotalLevel(c)) : 0;
+        const saveBonus = conMod + profBonus;
+        showDiceRoll(`Conc. Save — DD ${dc}`, saveBonus, 'normal');
+        const roll = parseInt(document.getElementById('dice-d20')?.textContent) || 0;
+        const succeeded = (roll + saveBonus) >= dc;
+        document.getElementById('dice-total').textContent =
+          succeeded ? `✓ Concentration maintenue (DD ${dc})` : `✗ Concentration brisée (DD ${dc})`;
+      }
+    }
+  };
+})();
 </script>
 
 
