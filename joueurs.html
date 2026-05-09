@@ -1089,12 +1089,14 @@
     }
     .vb-rest-btn-short:hover { background: rgba(58,96,96,0.2); }
     .vb-rest-btn-long:hover { background: rgba(58,74,106,0.2); }
-    .vb-cond-box {
+    .vb-cond-box, .vb-portrait-box {
       background: var(--j-panel, #1a1308);
       border: 1px solid var(--j-border-col, #4a3510);
       border-radius: 4px;
       padding: 10px 12px;
     }
+    #vb-portrait-passives .passive-row { font-size: 0.72rem; padding: 0.2rem 0.3rem; }
+    #vb-portrait-passives .passive-val { font-size: 0.82rem; min-width: 22px; }
     #vb-hero-divider { border: none; border-top: 1px solid var(--j-border-col, #4a3510); margin: 0 32px 20px; }
 
     /* HP inputs inside vitals box */
@@ -1728,6 +1730,18 @@
               <div class="vb-mini-stat-val" id="vb-hero-dc">—</div>
             </div>
           </div>
+          <!-- Passive Checks — portrait column -->
+          <div class="vb-portrait-box">
+            <div class="vb-section-label">Passive Checks</div>
+            <div id="vb-portrait-passives"></div>
+          </div>
+          <!-- Active Conditions — portrait column -->
+          <div class="vb-cond-box">
+            <div class="vb-section-label">Active Conditions</div>
+            <div class="cond-grid" id="vb-hero-conditions">
+              <span style="font-size:0.75rem;color:#555;font-style:italic;">No conditions</span>
+            </div>
+          </div>
         </div>
 
         <!-- Lead column: name, class, facts, abilities -->
@@ -1875,12 +1889,7 @@
             </div>
 
           </div>
-          <div class="vb-cond-box">
-            <div class="vb-section-label">Active Conditions</div>
-            <div class="cond-grid" id="vb-hero-conditions">
-              <span style="font-size:0.75rem;color:#555;font-style:italic;">No conditions</span>
-            </div>
-          </div>
+
         </div>
 
       </div><!-- /#vb-hero -->
@@ -5644,11 +5653,14 @@ function renderPassiveSkills() {
     { label:'Investigation passive',   key:'investigation',attr:'int' },
     { label:'Perspicacité passive',    key:'perspicacite', attr:'sag' },
   ];
-  el.innerHTML = passives.map(p => {
+  const html = passives.map(p => {
     const prof = !!c[p.key];
     const val  = 10 + mod(abilScore(p.attr)) + (prof ? bonus : 0);
     return `<div class="passive-row"><span>${p.label}${prof ? ' ✦' : ''}</span><span class="passive-val">${val}</span></div>`;
   }).join('');
+  el.innerHTML = html;
+  const portraitEl = document.getElementById('vb-portrait-passives');
+  if (portraitEl) portraitEl.innerHTML = html;
   // Sync PP badge in hero
   const ppEl = document.getElementById('vb-hero-pp');
   if (ppEl) {
