@@ -203,6 +203,11 @@
     .atk-inp { background:var(--j-input,#0d0d14); border:1px solid var(--j-border-col,#2a2a3a); border-radius:4px; color:var(--j-text,#e8e0d0); font-size:0.82rem; padding:0.25rem 0.4rem; width:100%; }
     .atk-inp:focus { outline:none; border-color:var(--gold-dark); }
     .atk-del { background:none; border:none; color:var(--danger); cursor:pointer; font-size:1rem; padding:0; line-height:1; }
+    .atk-card { display:flex; flex-direction:column; gap:8px; padding:10px 12px; border:1px solid var(--j-border-col,#2a1f0d); border-radius:4px; background:var(--j-panel,#1a1308); }
+    .atk-card-lbl { font-size:0.6rem; color:var(--gold-dark); font-family:'Cinzel',serif; letter-spacing:.06em; text-transform:uppercase; display:block; margin-bottom:2px; }
+    .atk-card-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; align-items:end; }
+    .atk-card-bottom { display:flex; align-items:center; gap:10px; }
+    .atk-card .atk-bonus-cell { font-size:1.15rem; padding:0 4px; min-width:unset; }
 
     /* ── Inventaire ── */
     .inv-controls { display:flex; gap:0.5rem; margin-bottom:0.75rem; flex-wrap:wrap; }
@@ -1374,6 +1379,25 @@
   /* Stress Points et sélecteur Hit Dice → masqués sur téléphone */
   #vb-hero .stress-dots, #vb-hero #stress-max-inp,
   #vb-hero .vb-hd > div:last-child { display: none !important; }
+
+  /* ── Attacks → mobile cards via JS ── */
+  .attack-table { display:block; }
+  .attack-table thead { display:none; }
+  .attack-table tbody { display:flex; flex-direction:column; gap:8px; }
+  .attack-table tr, .attack-table td { display:block; width:100%; padding:0; border:none; }
+  /* ── Spells → compact on mobile ── */
+  .spell-table { display:block; }
+  .spell-table thead { display:none; }
+  #spell-tbody { display:flex; flex-direction:column; gap:2px; }
+  #spell-tbody .spell-lvl-header td { display:block; padding:4px 0 2px; }
+  #spell-tbody .exp-row { display:flex !important; align-items:center; gap:6px; padding:7px 10px; border:1px solid var(--j-border-col,#2a1f0d); border-radius:4px; background:var(--j-panel,#1a1308); }
+  #spell-tbody .exp-row td { padding:0; display:flex; align-items:center; }
+  #spell-tbody .exp-row td:nth-child(1) { flex:0 0 32px; }
+  #spell-tbody .exp-row td:nth-child(2) { flex:1; min-width:0; }
+  /* Masquer dégâts, type, portée, action — accessibles via expand ▾ */
+  #spell-tbody .exp-row td:nth-child(3),#spell-tbody .exp-row td:nth-child(4),
+  #spell-tbody .exp-row td:nth-child(5),#spell-tbody .exp-row td:nth-child(6) { display:none !important; }
+  #spell-tbody .exp-desc-row td { display:block; }
 }
 
 /* ── Small mobile (≤ 400px) ── */
@@ -2105,7 +2129,7 @@
               <button class="btn btn-sm btn-gold" id="btn-add-spell">+ Ajouter</button>
             </div>
             <input type="search" id="spell-filter" class="field-input" placeholder="Filtrer sorts…" style="width:100%;margin-bottom:0.4rem;padding:0.3rem 0.5rem;font-size:0.78rem;">
-            <table class="exp-table">
+            <table class="exp-table spell-table">
               <thead><tr>
                 <th style="width:44px;">Niv.</th>
                 <th>Nom du sort</th>
@@ -5335,21 +5359,42 @@ function renderAttacks() {
   tbody.innerHTML = '';
   const c = C();
   const attacks = c.attaques || [];
+  const isMobile = window.innerWidth <= 640;
   attacks.forEach((atk, i) => {
     const atkBonus = calcAtkBonus(atk);
     const statSelOpts = [['','—'],['for','FOR'],['dex','DEX'],['int','INT'],['sag','SAG'],['cha','CHA'],['sort','Sort']].map(([val, lbl]) =>
       `<option value="${val}"${(atk.atkType||'') === val ? ' selected' : ''}>${lbl}</option>`
     ).join('');
     const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td><input class="atk-inp" data-atk="${i}" data-ak="name" value="${esc(atk.name||'')}" placeholder="Nom de l'arme"></td>
-      <td><input class="atk-inp" data-atk="${i}" data-ak="degats" value="${esc(atk.degats||'')}" placeholder="1d8+3" style="font-size:0.75rem;"></td>
-      <td><input class="atk-inp" data-atk="${i}" data-ak="typeDegat" value="${esc(atk.typeDegat||'')}" placeholder="tranchant" style="font-size:0.75rem;"></td>
-      <td><select class="atk-inp" data-atk="${i}" data-ak="atkType" style="padding:0.18rem 0.2rem;font-size:0.74rem;">${statSelOpts}</select></td>
-      <td style="text-align:center;"><input type="checkbox" data-atk="${i}" data-ak="prof" ${atk.prof ? 'checked' : ''} style="accent-color:var(--gold-dark);width:14px;height:14px;cursor:pointer;" title="Proficiency"></td>
-      <td class="atk-bonus-cell roll-trigger" data-roll-label="${esc(atk.name||'Attaque')}" data-roll-bonus="${parseInt(atkBonus)||0}" title="Lancer d20 + ${atkBonus}">${atkBonus}</td>
-      <td><button class="atk-del" data-del="${i}" title="Supprimer">✕</button></td>
-    `;
+    if (isMobile) {
+      tr.innerHTML = `<td colspan="7" style="padding:0;border:none;">
+        <div class="atk-card">
+          <div><span class="atk-card-lbl">Nom</span><input class="atk-inp" data-atk="${i}" data-ak="name" value="${esc(atk.name||'')}" placeholder="Nom de l'arme"></div>
+          <div class="atk-card-row">
+            <div><span class="atk-card-lbl">Dégâts</span><input class="atk-inp" data-atk="${i}" data-ak="degats" value="${esc(atk.degats||'')}" placeholder="1d8+3"></div>
+            <div><span class="atk-card-lbl">Type</span><input class="atk-inp" data-atk="${i}" data-ak="typeDegat" value="${esc(atk.typeDegat||'')}" placeholder="tranchant"></div>
+          </div>
+          <div class="atk-card-bottom">
+            <div><span class="atk-card-lbl">Stat</span><select class="atk-inp" data-atk="${i}" data-ak="atkType">${statSelOpts}</select></div>
+            <label style="display:flex;align-items:center;gap:5px;font-size:0.78rem;color:#aaa;margin-top:10px;cursor:pointer;">
+              <input type="checkbox" data-atk="${i}" data-ak="prof" ${atk.prof ? 'checked' : ''} style="accent-color:var(--gold-dark);width:16px;height:16px;">Maît.
+            </label>
+            <div class="atk-bonus-cell roll-trigger" data-roll-label="${esc(atk.name||'Attaque')}" data-roll-bonus="${parseInt(atkBonus)||0}" title="Lancer d20 + ${atkBonus}" style="margin-top:10px;margin-left:auto;">${atkBonus}</div>
+            <button class="atk-del" data-del="${i}" title="Supprimer" style="margin-top:10px;">✕</button>
+          </div>
+        </div>
+      </td>`;
+    } else {
+      tr.innerHTML = `
+        <td><input class="atk-inp" data-atk="${i}" data-ak="name" value="${esc(atk.name||'')}" placeholder="Nom de l'arme"></td>
+        <td><input class="atk-inp" data-atk="${i}" data-ak="degats" value="${esc(atk.degats||'')}" placeholder="1d8+3" style="font-size:0.75rem;"></td>
+        <td><input class="atk-inp" data-atk="${i}" data-ak="typeDegat" value="${esc(atk.typeDegat||'')}" placeholder="tranchant" style="font-size:0.75rem;"></td>
+        <td><select class="atk-inp" data-atk="${i}" data-ak="atkType" style="padding:0.18rem 0.2rem;font-size:0.74rem;">${statSelOpts}</select></td>
+        <td style="text-align:center;"><input type="checkbox" data-atk="${i}" data-ak="prof" ${atk.prof ? 'checked' : ''} style="accent-color:var(--gold-dark);width:14px;height:14px;cursor:pointer;" title="Proficiency"></td>
+        <td class="atk-bonus-cell roll-trigger" data-roll-label="${esc(atk.name||'Attaque')}" data-roll-bonus="${parseInt(atkBonus)||0}" title="Lancer d20 + ${atkBonus}">${atkBonus}</td>
+        <td><button class="atk-del" data-del="${i}" title="Supprimer">✕</button></td>
+      `;
+    }
     tbody.appendChild(tr);
   });
 }
@@ -8162,7 +8207,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (atk) {
         if (el.type === 'checkbox') atk[el.dataset.ak] = el.checked;
         else atk[el.dataset.ak] = el.value;
-        renderAttacks(); triggerSave();
+        // Mise à jour in-place de la cellule bonus (évite re-render qui ferme le clavier mobile)
+        const tr = el.closest('tr');
+        const bonusCell = tr?.querySelector('.atk-bonus-cell');
+        if (bonusCell) {
+          const nb = calcAtkBonus(atk);
+          bonusCell.textContent = nb;
+          bonusCell.dataset.rollBonus = parseInt(nb) || 0;
+          bonusCell.dataset.rollLabel = esc(atk.name || 'Attaque');
+          bonusCell.title = `Lancer d20 + ${nb}`;
+        }
+        triggerSave();
       }
     }
     // Custom features
@@ -8261,7 +8316,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (atk) {
         if (el.type === 'checkbox') atk[el.dataset.ak] = el.checked;
         else atk[el.dataset.ak] = el.value;
-        renderAttacks(); triggerSave();
+        // Re-render seulement si le bonus change (select atkType, checkbox prof)
+        if (el.tagName === 'SELECT' || el.type === 'checkbox') renderAttacks();
+        triggerSave();
       }
     }
   });
