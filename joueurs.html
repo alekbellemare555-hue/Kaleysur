@@ -8117,8 +8117,10 @@ function renderBgPreviewUI() {
   if (bg) img.src = bg;
 }
 function applyFontSizeValue(pct) {
+  // Set on <html> so rem-based units scale correctly; clear any stale main override
+  document.documentElement.style.fontSize = pct + '%';
   const main = document.querySelector('main.main-content');
-  if (main) main.style.fontSize = pct + '%';
+  if (main) main.style.fontSize = '';
   const lbl = document.getElementById('font-size-label');
   if (lbl) lbl.textContent = pct + '%';
 }
@@ -8844,6 +8846,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   /* ── Thèmes ── */
   buildThemeSwatches();
   initPaletteUI();
+  // Restaurer le thème depuis localStorage dès le chargement (avant login)
+  try {
+    const savedTheme = localStorage.getItem('kaleysur_theme');
+    if (savedTheme) {
+      const t = JSON.parse(savedTheme);
+      if (t && t.gold) applyTheme({ custom: true, gold: t.gold, dark: t.dark || t.gold });
+    }
+  } catch(e) {}
 
   /* ── Historique PV toggle ── */
   document.getElementById('hp-log-toggle')?.addEventListener('click', () => {
