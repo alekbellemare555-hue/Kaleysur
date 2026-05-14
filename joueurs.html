@@ -419,6 +419,11 @@
     .res-counter-inp { width:40px; text-align:center; background:var(--j-panel,#1a1a24); border:1px solid var(--j-border-col,#2a2a3a); border-radius:4px; color:var(--gold); font-family:'Cinzel',serif; font-size:1rem; padding:0.15rem 0; }
     .res-counter-sep { color:#444; font-size:0.8rem; }
     .res-counter-max { width:36px; text-align:center; background:transparent; border:1px solid var(--j-border-col,#2a2a3a); border-radius:4px; color:#888; font-size:0.8rem; padding:0.1rem 0; }
+    .res-pips { display:flex; flex-wrap:wrap; gap:0.3rem; margin-top:0.3rem; }
+    .res-pip { width:14px; height:14px; border-radius:50%; border:1px solid var(--gold-dark); background:transparent; cursor:pointer; transition:background var(--transition); flex-shrink:0; }
+    .res-pip.used { background:var(--gold-dark); }
+    .res-max-row { display:flex; align-items:center; gap:0.4rem; margin-top:0.15rem; }
+    .res-max-label { font-size:0.62rem; color:#555; text-transform:uppercase; letter-spacing:.04em; }
     .res-reset-badge { font-size:0.6rem; color:#555; text-transform:uppercase; letter-spacing:0.04em; }
     .res-card-name-inp { background:transparent; border:none; border-bottom:1px solid transparent; color:#aaa; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.04em; padding:0 0 0.1rem; width:calc(100% - 1.2rem); box-sizing:border-box; transition:border-color var(--transition), color var(--transition); line-height:1.3; margin-bottom:0.2rem; }
     .res-card-name-inp:hover { border-bottom-color:#3a2810; }
@@ -2050,37 +2055,7 @@
 
         <!-- Personnalité -->
 
-        <div class="sheet-section" data-sec="perso">
-          <div class="sheet-section-title">Personnalité</div>
-          <div class="sheet-grid-2">
-            <div class="field-group">
-              <label class="field-label">Traits de personnalité</label>
-              <textarea class="field-input" data-f="traits" rows="3"></textarea>
-            </div>
-            <div class="field-group">
-              <label class="field-label">Idéaux</label>
-              <textarea class="field-input" data-f="ideaux" rows="3"></textarea>
-            </div>
-            <div class="field-group">
-              <label class="field-label">Liens</label>
-              <textarea class="field-input" data-f="liens" rows="3"></textarea>
-            </div>
-            <div class="field-group">
-              <label class="field-label">Défauts</label>
-              <textarea class="field-input" data-f="defauts" rows="3"></textarea>
-            </div>
-          </div>
-          <div class="field-group" style="margin-top:0.75rem;">
-            <label class="field-label">Apparence physique</label>
-            <textarea class="field-input" data-f="apparence" rows="2"></textarea>
-          </div>
-          <div class="field-group" style="margin-top:0.75rem;">
-            <label class="field-label">Histoire &amp; Contexte</label>
-            <textarea class="field-input" data-f="historique" rows="4"></textarea>
-          </div>
-        </div>
-
-        </div><!-- /col-2: features, resources, conditions, personality -->
+        </div><!-- /col-2: features, resources, conditions -->
 
       </div><!-- /layout-wrapper -->
 
@@ -2210,6 +2185,37 @@
             </label>
             <span style="margin-left:1rem;font-size:0.82rem;color:#888;">Bonus de maîtrise : <strong id="prof-bonus" style="color:var(--gold);">+2</strong></span>
           </div>
+        </div>
+      </div>
+
+      <!-- Personnalité déplacée ici depuis l'onglet Personnage -->
+      <div class="sheet-section" data-sec="perso" style="max-width:640px;margin-top:1rem;">
+        <div class="sheet-section-title">Personnalité</div>
+        <div class="sheet-grid-2">
+          <div class="field-group">
+            <label class="field-label">Traits de personnalité</label>
+            <textarea class="field-input" data-f="traits" rows="3"></textarea>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Idéaux</label>
+            <textarea class="field-input" data-f="ideaux" rows="3"></textarea>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Liens</label>
+            <textarea class="field-input" data-f="liens" rows="3"></textarea>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Défauts</label>
+            <textarea class="field-input" data-f="defauts" rows="3"></textarea>
+          </div>
+        </div>
+        <div class="field-group" style="margin-top:0.75rem;">
+          <label class="field-label">Apparence physique</label>
+          <textarea class="field-input" data-f="apparence" rows="2"></textarea>
+        </div>
+        <div class="field-group" style="margin-top:0.75rem;">
+          <label class="field-label">Histoire &amp; Contexte</label>
+          <textarea class="field-input" data-f="historique" rows="4"></textarea>
         </div>
       </div>
     </div><!-- /tab-identite -->
@@ -4580,6 +4586,14 @@ function updateHpBar() {
   // Sync champs PV
   const inpCur = document.getElementById('inp-pvActuel');
   if (inpCur && document.activeElement !== inpCur) inpCur.value = pvCur;
+  // Sync hero panel (vb-hero) HP display
+  const hpColor2 = pct > 50 ? '#6aba6a' : pct > 25 ? '#e6d27a' : '#c97a7a';
+  const hpCurEl  = document.getElementById('vb-hero-hp-cur');
+  const hpMaxEl  = document.getElementById('vb-hero-hp-max');
+  const hpBarEl  = document.getElementById('vb-hero-hp-bar');
+  if (hpCurEl) { hpCurEl.textContent = pvCur; hpCurEl.style.color = pvMax > 0 ? hpColor2 : ''; }
+  if (hpMaxEl) hpMaxEl.textContent = '/ ' + pvMax;
+  if (hpBarEl) { hpBarEl.style.width = pct + '%'; hpBarEl.style.background = hpColor2; }
   // Pulsation danger si PV < 25%
   const heroVitals = document.getElementById('vb-hero-vitals');
   if (heroVitals) heroVitals.classList.toggle('hp-danger', pct > 0 && pct < 25);
@@ -4590,7 +4604,19 @@ function applyHpChange(delta) {
   const c = C();
   const max = parseInt(c.pvMax) || 0;
   const before = parseInt(c.pvActuel) || 0;
-  c.pvActuel = Math.max(0, Math.min(max, before + delta));
+  // Les dégâts consomment d'abord les PV temporaires
+  if (delta < 0) {
+    const temp = parseInt(c.pvTemp) || 0;
+    const absorbed = Math.min(temp, -delta);
+    c.pvTemp = temp - absorbed;
+    const remaining = delta + absorbed; // remaining ≤ 0
+    c.pvActuel = Math.max(0, Math.min(max, before + remaining));
+    // Sync champ pvTemp
+    const inpTemp = document.querySelector('[data-f="pvTemp"]');
+    if (inpTemp && document.activeElement !== inpTemp) inpTemp.value = c.pvTemp;
+  } else {
+    c.pvActuel = Math.max(0, Math.min(max, before + delta));
+  }
   pushHpLog(delta, c.pvActuel, max);
   updateHpBar();
   renderHpLog();
@@ -4683,6 +4709,12 @@ async function openDashboard() {
   initLayoutDrag();
   if (playerData?.fontSize) applyFontSizeValue(playerData.fontSize);
   document.getElementById('tab-admin-btn').style.display = currentUser === ADMIN_USER ? '' : 'none';
+  // Migration : ajouter heroNote si absent
+  Object.values(playerData?.characters || {}).forEach(slot => {
+    if (slot?.character && !('heroNote' in slot.character)) slot.character.heroNote = '';
+  });
+  // Charger le canvas pour le bon utilisateur/personnage
+  setTimeout(() => { loadCanvasPages(); renderCanvasPagesSidebar(); }, 100);
 }
 
 function renderDashboard() {
@@ -5362,6 +5394,7 @@ function renderAttacks() {
   const isMobile = window.innerWidth <= 640;
   attacks.forEach((atk, i) => {
     const atkBonus = calcAtkBonus(atk);
+    const dmgLine = [atk.degats, atk.typeDegat].filter(Boolean).join(' ') || '—';
     const statSelOpts = [['','—'],['for','FOR'],['dex','DEX'],['int','INT'],['sag','SAG'],['cha','CHA'],['sort','Sort']].map(([val, lbl]) =>
       `<option value="${val}"${(atk.atkType||'') === val ? ' selected' : ''}>${lbl}</option>`
     ).join('');
@@ -5369,7 +5402,10 @@ function renderAttacks() {
     if (isMobile) {
       tr.innerHTML = `<td colspan="7" style="padding:0;border:none;">
         <div class="atk-card">
-          <div><span class="atk-card-lbl">Nom</span><input class="atk-inp" data-atk="${i}" data-ak="name" value="${esc(atk.name||'')}" placeholder="Nom de l'arme"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+            <div style="flex:1;"><span class="atk-card-lbl">Nom</span><input class="atk-inp" data-atk="${i}" data-ak="name" value="${esc(atk.name||'')}" placeholder="Nom de l'arme"></div>
+            ${(atk.name||atk.degats) ? `<div style="text-align:right;font-size:0.72rem;color:#aaa;line-height:1.3;margin-top:10px;"><span style="color:var(--gold);font-family:'Cinzel',serif;">${atkBonus}</span> toucher<br><span style="color:#ccc;">${dmgLine}</span></div>` : ''}
+          </div>
           <div class="atk-card-row">
             <div><span class="atk-card-lbl">Dégâts</span><input class="atk-inp" data-atk="${i}" data-ak="degats" value="${esc(atk.degats||'')}" placeholder="1d8+3"></div>
             <div><span class="atk-card-lbl">Type</span><input class="atk-inp" data-atk="${i}" data-ak="typeDegat" value="${esc(atk.typeDegat||'')}" placeholder="tranchant"></div>
@@ -5719,16 +5755,21 @@ function renderResources() {
     const card = document.createElement('div');
     card.className = 'res-card';
     const resetLabel = r.reset === 'short' ? 'Short Rest' : r.reset === 'long' ? 'Long Rest' : '';
-    const maxDisplay = r.max !== null && r.max !== undefined ? r.max : '—';
+    const maxVal = parseInt(r.max) || 0;
+    const usedVal = Math.min(parseInt(r.used) || 0, maxVal);
+    const pips = maxVal > 0
+      ? Array.from({length: maxVal}, (_, j) =>
+          `<div class="res-pip${j < usedVal ? ' used' : ''}" data-ri="${i}" data-pidx="${j}" title="Case ${j+1}/${maxVal}"></div>`
+        ).join('')
+      : '';
     card.innerHTML = `
       <input class="res-card-name-inp" type="text" data-ri="${i}" data-rk="name" value="${esc(r.name||'Ressource')}" placeholder="Nom…" title="Renommer">
-      ${r.note ? `<div style="color:#555;font-size:0.62rem;margin-bottom:0.15rem;">${esc(r.note)}</div>` : ''}
-      <div class="res-card-counter">
-        <input class="res-counter-inp" type="number" min="0" data-ri="${i}" data-rk="used" value="${r.used||0}">
-        <span class="res-counter-sep">/</span>
-        <input class="res-counter-max" type="number" min="0" data-ri="${i}" data-rk="max" value="${maxDisplay === '—' ? '' : maxDisplay}" placeholder="—">
+      <div class="res-max-row">
+        <span class="res-max-label">Max</span>
+        <input class="res-counter-max" type="number" min="0" max="20" data-ri="${i}" data-rk="max" value="${maxVal||''}" placeholder="—">
+        ${resetLabel ? `<span class="res-reset-badge">${resetLabel}</span>` : ''}
       </div>
-      <div class="res-reset-badge">${resetLabel}</div>
+      ${maxVal > 0 ? `<div class="res-pips" data-ri="${i}">${pips}</div>` : ''}
       <button class="res-del" data-del-res="${i}" title="Supprimer">✕</button>
     `;
     grid.appendChild(card);
@@ -8336,9 +8377,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (ri === undefined || !rk) return;
     const val = rk === 'name' ? e.target.value : (parseFloat(e.target.value) || 0);
     C().resources[parseInt(ri)][rk] = val;
+    if (rk === 'max') renderResources(); // re-render pips si max change
     triggerSave();
   });
   document.getElementById('resource-grid').addEventListener('click', e => {
+    // Pip clic
+    const pip = e.target.closest('[data-pidx]');
+    if (pip) {
+      const ri = parseInt(pip.dataset.ri);
+      const idx = parseInt(pip.dataset.pidx);
+      const r = C().resources?.[ri];
+      if (!r) return;
+      const used = parseInt(r.used) || 0;
+      // Clic sur une case déjà utilisée → vider jusqu'à cette case ; sinon → remplir jusqu'à cette case
+      r.used = (idx < used) ? idx : idx + 1;
+      renderResources(); triggerSave();
+      return;
+    }
     const btn = e.target.closest('[data-del-res]');
     if (!btn) return;
     C().resources.splice(parseInt(btn.dataset.delRes), 1);
@@ -8451,7 +8506,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const idx = C().conditions.indexOf(cond);
     if (idx === -1) C().conditions.push(cond);
     else C().conditions.splice(idx, 1);
-    renderConditions(); triggerSave();
+    renderConditions(); renderHero(); triggerSave();
   });
 
   // Bouton ajouter feature
@@ -8769,9 +8824,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (btn.dataset.tab === 'notes') {
         setTimeout(() => {
           const cv = document.getElementById('handnote-canvas');
-          if (cv && !cv.width) {
-            loadCanvasPages();
+          // Toujours recharger les pages canvas (clé dépend de l'utilisateur connecté)
+          loadCanvasPages();
+          if (cv && !cv._canvasInit) {
+            cv._canvasInit = true;
             initCanvas();
+          } else if (cv) {
+            // Recharger la page courante sans réinitialiser le canvas
+            loadCurrentCanvasPage();
           }
           renderCanvasPagesSidebar();
           renderNotesPages();
