@@ -1601,6 +1601,13 @@
 /* HP stepper buttons */
 .hp-step-btn { border-radius: 2px !important; }
 
+/* ══ FOND DE PAGE ══ */
+#page-bg-wrap { position:fixed; inset:0; z-index:-2; pointer-events:none; background-size:cover; background-position:center; background-repeat:no-repeat; opacity:0; transition:opacity 0.4s ease; }
+#page-bg-wrap.visible { opacity:1; }
+#page-bg-wrap::after { content:''; position:absolute; inset:0; background:rgba(0,0,0,var(--page-bg-dim,0.65)); }
+.page-bg-opacity-row { display:flex; align-items:center; gap:0.6rem; margin-top:0.5rem; font-size:0.78rem; color:#aaa; }
+.page-bg-opacity-row input[type=range] { flex:1; max-width:160px; accent-color:var(--gold,#c9a227); }
+
 /* ══ OPTIMISATIONS PERF ══ */
 /* Layout isolation — les changements internes ne déclenchent pas de reflow global */
 .tab-panel { contain: layout style; }
@@ -1634,6 +1641,9 @@
 
 <!-- ▸ Barre latérale -->
 <aside class="sidebar" id="sidebar"></aside>
+
+<!-- ▸ Fond de page global (derrière tout) -->
+<div id="page-bg-wrap"></div>
 
 <!-- ▸ Contenu principal -->
 <div id="char-bg-layer"></div>
@@ -2491,6 +2501,26 @@
             </label>
             <img id="bg-preview" class="bg-preview" alt="fond">
             <button id="bg-clear-btn" class="bg-clear-btn">✕ Retirer</button>
+          </div>
+        </div>
+      </div>
+      <div class="settings-section">
+        <h3>Fond de page<div style="font-size:0.72rem;font-weight:400;color:#888;font-family:sans-serif;margin-top:0.15rem;">Commun à tous les personnages</div></h3>
+        <div class="settings-row">
+          <div class="settings-label">Image de fond global<div class="settings-desc">Remplace le fond uni de toute la page</div></div>
+          <div class="bg-upload-row">
+            <label class="btn btn-sm" style="cursor:pointer;">🌄 Choisir une image
+              <input type="file" id="page-bg-input" accept="image/*" style="display:none;">
+            </label>
+            <img id="page-bg-preview" class="bg-preview" alt="fond page">
+            <button id="page-bg-clear-btn" class="bg-clear-btn">✕ Retirer</button>
+          </div>
+        </div>
+        <div class="settings-row" id="page-bg-opacity-row" style="display:none;">
+          <div class="settings-label">Opacité du voile<div class="settings-desc">Plus élevé = image plus visible</div></div>
+          <div class="page-bg-opacity-row">
+            <input type="range" id="page-bg-opacity" min="10" max="90" value="55" step="5">
+            <span id="page-bg-opacity-lbl">55%</span>
           </div>
         </div>
       </div>
@@ -4122,6 +4152,19 @@ function applyTheme(id) {
   }
   document.documentElement.style.setProperty('--gold', gold);
   document.documentElement.style.setProperty('--gold-dark', dark);
+  // Dériver les couleurs de fond depuis la teinte du thème
+  try {
+    const [h, s] = hexToHsl(gold);
+    const sat = Math.min(s * 0.4, 22);
+    document.documentElement.style.setProperty('--bg-primary',   hslToHex(h, sat,        3.2));
+    document.documentElement.style.setProperty('--bg-secondary', hslToHex(h, sat,        5.5));
+    document.documentElement.style.setProperty('--bg-card',      hslToHex(h, sat + 2,    7  ));
+    document.documentElement.style.setProperty('--bg-nav',       hslToHex(h, sat * 0.6,  2.2));
+    document.documentElement.style.setProperty('--border',       hslToHex(h, Math.min(s * 0.55, 38), 18));
+    document.documentElement.style.setProperty('--j-panel',      hslToHex(h, sat + 2,    7  ));
+    document.documentElement.style.setProperty('--j-input',      hslToHex(h, sat * 0.75, 4.5));
+    document.documentElement.style.setProperty('--j-border-col', hslToHex(h, Math.min(s * 0.55, 38), 18));
+  } catch(_e) {}
   try { localStorage.setItem('kaleysur_theme', JSON.stringify({ gold, dark })); } catch(e) {}
   document.querySelectorAll('.theme-swatch').forEach(s => s.classList.toggle('active', s.dataset.theme === activeId));
   const lbl = document.getElementById('theme-label');
@@ -4738,6 +4781,7 @@ async function openDashboard() {
   buildThemeSwatches();
   applyCharTheme(); // appliquer le thème du personnage actif
   applyPalette(loadPalette()); // palette étendue
+  applyPageBg(playerData); // fond de page global
   showScreen('screen-dashboard');
   renderDashboard();
   applyLayout();
@@ -8146,6 +8190,37 @@ function applyCharBg(c) {
     setTimeout(() => { layer.style.backgroundImage = ''; }, 400);
   }
 }
+function applyPageBg(data) {
+  // data = playerData (fond global, partagé entre tous les personnages)
+  const wrap = document.getElementById('page-bg-wrap');
+  if (!wrap) return;
+  const src = data && data.bgPageImage;
+  const opacity = data && data.bgPageOpacity != null ? data.bgPageOpacity : 0.55;
+  if (src) {
+    wrap.style.backgroundImage = `url(${src})`;
+    wrap.style.setProperty('--page-bg-overlay', `rgba(0,0,0,${1 - opacity})`);
+    wrap.classList.add('visible');
+  } else {
+    wrap.classList.remove('visible');
+    setTimeout(() => { wrap.style.backgroundImage = ''; }, 400);
+  }
+  // Sync overlay opacity via ::after — on l'encode dans une variable CSS
+  wrap.style.setProperty('--page-bg-dim', String(1 - opacity));
+}
+function renderPageBgUI() {
+  const img = document.getElementById('page-bg-preview');
+  const btn = document.getElementById('page-bg-clear-btn');
+  const slider = document.getElementById('page-bg-opacity');
+  const opLbl  = document.getElementById('page-bg-opacity-lbl');
+  if (!img || !btn) return;
+  const src     = playerData && playerData.bgPageImage;
+  const opacity = playerData && playerData.bgPageOpacity != null ? playerData.bgPageOpacity : 0.55;
+  img.style.display = src ? 'block' : 'none';
+  btn.style.display  = src ? 'inline-block' : 'none';
+  if (src) img.src = src;
+  if (slider) slider.value = Math.round(opacity * 100);
+  if (opLbl)  opLbl.textContent = Math.round(opacity * 100) + '%';
+}
 function renderBgPreviewUI() {
   const c   = C();
   const img = document.getElementById('bg-preview');
@@ -8226,6 +8301,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         const slider = document.getElementById('font-size-slider');
         if (slider && playerData?.fontSize) { slider.value = playerData.fontSize; document.getElementById('font-size-label').textContent = playerData.fontSize + '%'; }
         syncPaletteUI(loadPalette());
+        renderBgPreviewUI();
+        renderPageBgUI();
+        const opRow = document.getElementById('page-bg-opacity-row');
+        if (opRow) opRow.style.display = (playerData?.bgPageImage) ? 'flex' : 'none';
       }
       // Bouton Organiser visible uniquement dans l'onglet Personnage
       const organBtn = document.getElementById('btn-layout-edit');
@@ -8993,6 +9072,55 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('bg-clear-btn')?.addEventListener('click', () => {
     const c = C();
     if (c) { delete c.bgImage; applyCharBg(c); renderBgPreviewUI(); triggerSave(); }
+  });
+
+  /* ── Fond de page global ── */
+  document.getElementById('page-bg-input')?.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        const MAX_BG = 1920;
+        const scale = Math.min(1, MAX_BG / Math.max(img.width, img.height));
+        const w = Math.round(img.width * scale);
+        const h = Math.round(img.height * scale);
+        const cv = document.createElement('canvas');
+        cv.width = w; cv.height = h;
+        cv.getContext('2d').drawImage(img, 0, 0, w, h);
+        const dataUrl = cv.toDataURL('image/jpeg', 0.80);
+        if (!playerData) return;
+        playerData.bgPageImage = dataUrl;
+        if (playerData.bgPageOpacity == null) playerData.bgPageOpacity = 0.55;
+        applyPageBg(playerData);
+        renderPageBgUI();
+        const row = document.getElementById('page-bg-opacity-row');
+        if (row) row.style.display = 'flex';
+        triggerSave();
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  });
+  document.getElementById('page-bg-clear-btn')?.addEventListener('click', () => {
+    if (!playerData) return;
+    delete playerData.bgPageImage;
+    applyPageBg(playerData);
+    renderPageBgUI();
+    const row = document.getElementById('page-bg-opacity-row');
+    if (row) row.style.display = 'none';
+    triggerSave();
+  });
+  document.getElementById('page-bg-opacity')?.addEventListener('input', e => {
+    const val = parseInt(e.target.value) / 100;
+    if (!playerData) return;
+    playerData.bgPageOpacity = val;
+    applyPageBg(playerData);
+    const lbl = document.getElementById('page-bg-opacity-lbl');
+    if (lbl) lbl.textContent = e.target.value + '%';
+    triggerSave();
   });
 
   /* ── Taille du texte ── */
