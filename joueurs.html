@@ -420,8 +420,13 @@
     .res-counter-sep { color:#444; font-size:0.8rem; }
     .res-counter-max { width:36px; text-align:center; background:transparent; border:1px solid var(--j-border-col,#2a2a3a); border-radius:4px; color:#888; font-size:0.8rem; padding:0.1rem 0; }
     .res-pips { display:flex; flex-wrap:wrap; gap:0.3rem; margin-top:0.3rem; }
-    .res-pip { width:14px; height:14px; border-radius:50%; border:1px solid var(--gold-dark); background:transparent; cursor:pointer; transition:background var(--transition); flex-shrink:0; }
+    .res-pip { width:14px; height:14px; border-radius:50%; border:1px solid var(--gold-dark); background:transparent; cursor:pointer; transition:background var(--transition), border-color var(--transition); flex-shrink:0; /* zone tactile élargie sur mobile */ position:relative; }
+    .res-pip::after { content:''; position:absolute; inset:-6px; }
     .res-pip.used { background:var(--gold-dark); }
+    /* Ressource entièrement épuisée */
+    .res-card.depleted .res-card-name-inp { color:var(--danger); opacity:0.85; }
+    .res-card.depleted .res-pips { opacity:0.65; }
+    .res-card.depleted .res-max-row::after { content:' — Épuisé'; font-size:0.6rem; color:var(--danger); margin-left:0.3rem; text-transform:uppercase; letter-spacing:0.04em; }
     .res-max-row { display:flex; align-items:center; gap:0.4rem; margin-top:0.15rem; }
     .res-max-label { font-size:0.62rem; color:#555; text-transform:uppercase; letter-spacing:.04em; }
     .res-reset-badge { font-size:0.6rem; color:#555; text-transform:uppercase; letter-spacing:0.04em; }
@@ -1452,6 +1457,36 @@
   input[type=number]::-webkit-outer-spin-button { -webkit-appearance: inner-spin-button; opacity: 1; width: 28px; cursor: pointer; }
   input[type=number].field-input { padding-right: 0; }
   input[type=number].ability-score-input { padding-right: 0; width: 54px; }
+}
+
+/* ══════════════════════════════════════════
+   IMPRESSION / PRINT
+   ══════════════════════════════════════════ */
+@media print {
+  /* Masquer tout ce qui n'est pas la fiche */
+  .top-nav, .sidebar, .sidebar-overlay, #char-bg-layer,
+  #dice-toast, #rest-toast, .chat-panel, .vb-topbar .btn,
+  .tab-bar, #btn-layout-edit, #save-badge, .conn-indicator,
+  .undo-toast, #sw-update-banner,
+  .btn-gold, #btn-logout, #hp-log-toggle, #hp-log,
+  .vb-rest-btns, #layout-toolbar, .sec-col-btn,
+  .death-save-roll-btn, #death-save-roll-btn,
+  .tab-btn:not(.active), .drm-btn-group { display: none !important; }
+
+  body { background: #fff !important; color: #111 !important; font-size: 10pt; }
+  .page-wrapper { margin-top: 0 !important; }
+  .main-content { margin-left: 0 !important; max-width: 100% !important; padding: 0.5cm !important; }
+  .sheet-section { border: 1px solid #ccc !important; background: #fff !important; break-inside: avoid; margin-bottom: 0.3cm; }
+  .sheet-section-title { color: #333 !important; border-bottom: 1px solid #aaa !important; }
+  input, textarea, select { border: 1px solid #bbb !important; background: #fff !important; color: #111 !important; }
+  .tab-panel { display: block !important; }
+  .tab-panel:not(.active) { display: none !important; }
+  .layout-wrapper { flex-direction: column !important; }
+  .layout-col { width: 100% !important; min-width: 0 !important; }
+  /* Forcer fond blanc sur cartes */
+  .sheet-section, .res-card, .atk-card { background: #fff !important; }
+  a { color: #111 !important; text-decoration: none; }
+  @page { margin: 1.5cm; }
 }
 
 /* ── Dice roller ── */
@@ -4611,9 +4646,9 @@ function applyHpChange(delta) {
     c.pvTemp = temp - absorbed;
     const remaining = delta + absorbed; // remaining ≤ 0
     c.pvActuel = Math.max(0, Math.min(max, before + remaining));
-    // Sync champ pvTemp
+    // Sync champ pvTemp (même si focusé — la valeur change depuis l'extérieur)
     const inpTemp = document.querySelector('[data-f="pvTemp"]');
-    if (inpTemp && document.activeElement !== inpTemp) inpTemp.value = c.pvTemp;
+    if (inpTemp) inpTemp.value = c.pvTemp;
   } else {
     c.pvActuel = Math.max(0, Math.min(max, before + delta));
   }
@@ -5458,7 +5493,9 @@ function loadCanvasPages() {
   currentCanvasPageId = 0;
 }
 function saveCanvasPages() {
-  try { localStorage.setItem(canvasPageStorageKey(), JSON.stringify(canvasPages)); } catch(e) {}
+  try { localStorage.setItem(canvasPageStorageKey(), JSON.stringify(canvasPages)); } catch(e) {
+    showToast('⚠ Espace de stockage plein — dessin non sauvegardé. Supprime des pages ou efface le cache.');
+  }
 }
 function renderCanvasPagesSidebar() {
   const list = document.getElementById('canvas-pages-list');
@@ -5753,10 +5790,11 @@ function renderResources() {
   const resources = C().resources || [];
   resources.forEach((r, i) => {
     const card = document.createElement('div');
-    card.className = 'res-card';
-    const resetLabel = r.reset === 'short' ? 'Short Rest' : r.reset === 'long' ? 'Long Rest' : '';
     const maxVal = parseInt(r.max) || 0;
     const usedVal = Math.min(parseInt(r.used) || 0, maxVal);
+    const isDepleted = maxVal > 0 && usedVal >= maxVal;
+    card.className = 'res-card' + (isDepleted ? ' depleted' : '');
+    const resetLabel = r.reset === 'short' ? 'Short Rest' : r.reset === 'long' ? 'Long Rest' : '';
     const pips = maxVal > 0
       ? Array.from({length: maxVal}, (_, j) =>
           `<div class="res-pip${j < usedVal ? ' used' : ''}" data-ri="${i}" data-pidx="${j}" title="Case ${j+1}/${maxVal}"></div>`
@@ -6355,6 +6393,8 @@ function doLongRest() {
   // Conditions off + clear concentration
   c.conditions = [];
   (c.spells || []).forEach(s => { s.conc = false; });
+  // Death saves remis à zéro
+  c.mortSucces = 0; c.mortEchecs = 0;
   // Exhaustion -1 level
   if (c.exhaustion > 0) c.exhaustion = c.exhaustion - 1;
   renderAll(); triggerSave();
@@ -8377,9 +8417,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const ri = e.target.dataset.ri;
     const rk = e.target.dataset.rk;
     if (ri === undefined || !rk) return;
-    const val = rk === 'name' ? e.target.value : (parseFloat(e.target.value) || 0);
-    C().resources[parseInt(ri)][rk] = val;
-    if (rk === 'max') renderResources(); // re-render pips si max change
+    const val = rk === 'name' ? e.target.value : (parseInt(e.target.value) || 0);
+    const res = C().resources[parseInt(ri)];
+    res[rk] = val;
+    if (rk === 'max') {
+      // Cap used à max pour éviter used > max
+      res.used = Math.min(parseInt(res.used) || 0, val);
+      renderResources();
+    }
     triggerSave();
   });
   document.getElementById('resource-grid').addEventListener('click', e => {
@@ -8926,8 +8971,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = ev => {
-      const c = C();
-      if (c) { c.bgImage = ev.target.result; applyCharBg(c); renderBgPreviewUI(); triggerSave(); }
+      // Compresser l'image de fond avant stockage (max 1280px, JPEG 0.75)
+      const img = new Image();
+      img.onload = () => {
+        const MAX_BG = 1280;
+        const scale = Math.min(1, MAX_BG / Math.max(img.width, img.height));
+        const w = Math.round(img.width * scale);
+        const h = Math.round(img.height * scale);
+        const cv = document.createElement('canvas');
+        cv.width = w; cv.height = h;
+        cv.getContext('2d').drawImage(img, 0, 0, w, h);
+        const dataUrl = cv.toDataURL('image/jpeg', 0.75);
+        const c = C();
+        if (c) { c.bgImage = dataUrl; applyCharBg(c); renderBgPreviewUI(); triggerSave(); }
+      };
+      img.src = ev.target.result;
     };
     reader.readAsDataURL(file);
     e.target.value = '';
@@ -9029,7 +9087,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const lvl = parseInt(inp.dataset.slot);
     const c = C();
     if (!c.emplacementsSort) c.emplacementsSort = {};
-    c.emplacementsSort[lvl] = parseInt(inp.value) || 0;
+    const newTotal = parseInt(inp.value) || 0;
+    c.emplacementsSort[lvl] = newTotal;
+    // Cap used à max pour éviter used > total
+    if (!c.emplacementsUtilises) c.emplacementsUtilises = {};
+    c.emplacementsUtilises[lvl] = Math.min(c.emplacementsUtilises[lvl] || 0, newTotal);
     renderSpellSlots();
     triggerSave();
   });
@@ -9483,6 +9545,47 @@ document.getElementById('death-save-roll-btn')?.addEventListener('click', e => {
   document.getElementById('dice-total').textContent = msg;
 });
 
+/* ── 17b. Raccourcis clavier globaux ── */
+document.addEventListener('keydown', e => {
+  // Ignorer si focus dans un champ de saisie
+  const tag = document.activeElement?.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+  switch (e.key.toLowerCase()) {
+    case 'd': {
+      // D → ouvrir le lanceur de dés (focus sur le premier .roll-trigger visible)
+      const rt = document.querySelector('.tab-panel.active .roll-trigger');
+      if (rt) { e.preventDefault(); rt.click(); }
+      break;
+    }
+    case 's': {
+      // S → forcer sauvegarde manuelle
+      if (playerData) { e.preventDefault(); triggerSave(); showToast('💾 Sauvegarde forcée…'); }
+      break;
+    }
+    case 'r': {
+      // R → repos court
+      if (playerData && !document.getElementById('sr-modal-overlay')?.classList.contains('open')) {
+        e.preventDefault(); doShortRest();
+      }
+      break;
+    }
+    case 'l': {
+      // L → repos long (avec confirmation)
+      if (playerData) { e.preventDefault(); if (confirm('Effectuer un repos long ?')) doLongRest(); }
+      break;
+    }
+    case '?':
+    case '/': {
+      // ? ou / → aller à l'onglet Aide
+      const aideBtn = document.querySelector('.tab-btn[data-tab="aide"]');
+      if (aideBtn) { e.preventDefault(); aideBtn.click(); }
+      break;
+    }
+  }
+});
+
 /* ── 17. Jet de concentration auto — dégâts sur perso concentré ── */
 (function () {
   const _orig = applyHpChange;
@@ -9561,5 +9664,35 @@ document.getElementById('death-save-roll-btn')?.addEventListener('click', e => {
         </div>
       </div>
     </div>
+
+<!-- ── Bannière mise à jour PWA ── -->
+<div id="sw-update-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#1a1408;border-top:1px solid var(--gold-dark);padding:0.55rem 1rem;display:none;align-items:center;justify-content:center;gap:0.8rem;font-size:0.82rem;color:#c9a96a;">
+  🔄 Une mise à jour est disponible.
+  <button onclick="document.getElementById('sw-update-banner').style.display='none';window._swReg&&window._swReg.waiting&&window._swReg.waiting.postMessage('skipWaiting');" style="background:var(--gold-dark);color:#fff;border:none;border-radius:4px;padding:0.25rem 0.7rem;font-size:0.78rem;cursor:pointer;font-family:'Cinzel',serif;">Actualiser</button>
+  <button onclick="document.getElementById('sw-update-banner').style.display='none';" style="background:none;border:none;color:#666;cursor:pointer;font-size:0.9rem;">✕</button>
+</div>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js').then(reg => {
+    window._swReg = reg;
+    function checkWaiting(r) {
+      if (r.waiting) {
+        document.getElementById('sw-update-banner').style.display = 'flex';
+      }
+    }
+    checkWaiting(reg);
+    reg.addEventListener('updatefound', () => {
+      const nw = reg.installing;
+      nw?.addEventListener('statechange', () => {
+        if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+          document.getElementById('sw-update-banner').style.display = 'flex';
+        }
+      });
+    });
+    navigator.serviceWorker.addEventListener('controllerchange', () => location.reload());
+  }).catch(() => {});
+}
+</script>
 </body>
 </html>
