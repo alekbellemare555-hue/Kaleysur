@@ -9589,6 +9589,7 @@ document.getElementById('vb-hero')?.addEventListener('input', e => {
   else C()[el.dataset.f] = el.value;
   if (el.dataset.f === 'pvMax' || el.dataset.f === 'pvActuel') { updateHpBar(); renderCharCards(); }
   if (el.dataset.f === 'ca' || el.dataset.f === 'vitesse') renderHero();
+  if (['for','dex','con','int','sag','cha'].includes(el.dataset.f)) { updateModifier(el.dataset.f); debouncedStats(() => { renderSaves(); renderSkills(); renderPassiveSkills(); updateSpellCalcs(); renderAttacks(); }); }
   triggerSave();
 });
 
