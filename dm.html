@@ -1262,7 +1262,7 @@ function renderMonsterPanel(panel, key) {
   });
 
   // HP Max edit
-  const maxInp = panel.querySelector('#maxhp-' + key);
+  const maxInp = document.getElementById('maxhp-' + key);
   if (maxInp) {
     maxInp.addEventListener('change', () => {
       const v = Math.max(1, parseInt(maxInp.value) || 1);
