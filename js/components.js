@@ -43,6 +43,7 @@
     <a href="${R}carte.html" class="sidebar-link"><span class="icon">🗺️</span> Carte du Monde</a>
     <a href="${R}calendrier.html" class="sidebar-link"><span class="icon">📅</span> Calendrier</a>
     <a href="${R}joueurs.html" class="sidebar-link"><span class="icon">🎲</span> Joueurs</a>
+    <a href="${R}dm.html" class="sidebar-link"><span class="icon">👁</span> Table du DM</a>
   </div>
   <hr class="sidebar-divider">
   <div class="sidebar-section">
