@@ -868,17 +868,20 @@
     .vb-topbar .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
 
     /* VB: Party ribbon (replaces char-cards) */
+    .char-ribbon-wrap { display: flex; align-items: stretch; background: var(--bg-nav, #0a0703); border-bottom: 1px solid var(--border, #4a3510); }
+    .char-ribbon-label { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #555; writing-mode: vertical-rl; padding: 0 6px; border-right: 1px solid var(--border, rgba(74,53,16,0.4)); align-self: stretch; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .char-cards.vb-party-ribbon {
       display: flex;
       align-items: stretch;
       gap: 0;
-      padding: 0 32px;
+      padding: 0 16px;
       margin-bottom: 0;
       padding-bottom: 0;
-      background: var(--bg-nav, #0a0703);
-      border-bottom: 1px solid var(--j-border-col, #4a3510);
+      background: transparent;
+      border-bottom: none;
       min-height: 54px;
       overflow-x: auto;
+      flex: 1;
       scrollbar-width: none;
     }
     .char-cards.vb-party-ribbon::-webkit-scrollbar { display: none; }
@@ -894,20 +897,23 @@
       border-radius: 0;
       border: none;
       border-bottom: 2px solid transparent;
-      border-right: 1px solid rgba(74,53,16,0.5);
-      background: transparent;
+      border-right: 1px solid var(--border, rgba(74,53,16,0.4));
+      background: rgba(255,255,255,0.03);
       box-shadow: none;
       position: relative;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      color: var(--text-secondary, #aaa);
     }
     .char-cards.vb-party-ribbon .char-card:hover {
-      background: rgba(201,162,39,0.04);
-      border-color: transparent;
-      border-bottom-color: transparent;
-      border-right-color: rgba(74,53,16,0.5);
+      background: rgba(201,162,39,0.08);
+      color: #e8d9b5;
+      border-bottom-color: var(--gold-dark, #8a6e1a);
     }
     .char-cards.vb-party-ribbon .char-card.active {
       border-bottom-color: var(--gold);
-      background: linear-gradient(180deg, transparent, rgba(201,162,39,0.06));
+      background: rgba(201,162,39,0.1);
+      color: var(--gold, #c9a227);
       box-shadow: none;
     }
     .char-cards.vb-party-ribbon .char-card-avatar {
@@ -920,13 +926,14 @@
     }
     .char-cards.vb-party-ribbon .char-card-name {
       font-size: 12px;
+      font-weight: 600;
       text-overflow: ellipsis;
       overflow: hidden;
-      max-width: 110px;
+      max-width: 130px;
       white-space: nowrap;
     }
     .char-cards.vb-party-ribbon .char-card-sub {
-      font-size: 9px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px;
+      font-size: 9px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; opacity: 0.75;
     }
     .char-cards.vb-party-ribbon .char-card-species { display: none; }
     .char-cards.vb-party-ribbon .char-card-hp-wrap { display: none; }
@@ -1791,7 +1798,10 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
 
     <div class="read-mode-banner">Mode Lecture — cliquez 🔒 pour modifier</div>
     <!-- ══ VB: Party ribbon (char-cards as horizontal strip) ══ -->
-    <div class="char-cards vb-party-ribbon" id="char-cards"></div>
+    <div class="char-ribbon-wrap">
+      <span class="char-ribbon-label">Personnages</span>
+      <div class="char-cards vb-party-ribbon" id="char-cards"></div>
+    </div>
 
     <!-- Old tabs div hidden (all functionality now in vb-topbar) -->
     <div class="tabs vb-hidden" aria-hidden="true"></div>
