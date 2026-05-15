@@ -867,9 +867,59 @@
     .vb-topbar .tab-btn:hover { color: var(--gold); }
     .vb-topbar .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
 
+    /* ── Sélecteur de personnage dans le topbar ── */
+    .char-selector { position: relative; flex-shrink: 0; }
+    .char-selector-btn {
+      display: flex; align-items: center; gap: 7px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border, #4a3510);
+      border-radius: 6px;
+      padding: 4px 10px 4px 8px;
+      cursor: pointer; color: inherit;
+      font-size: 0.82rem; font-family: inherit;
+      transition: background 0.15s, border-color 0.15s;
+      max-width: 180px;
+    }
+    .char-selector-btn:hover { background: rgba(201,162,39,0.1); border-color: var(--gold-dark, #8a6e1a); }
+    .char-selector-btn.open { background: rgba(201,162,39,0.12); border-color: var(--gold, #c9a227); }
+    .char-selector-avatar { font-size: 1.1rem; flex-shrink: 0; line-height: 1; }
+    .char-selector-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }
+    .char-selector-arrow { font-size: 0.65rem; color: #888; margin-left: 2px; transition: transform 0.2s; }
+    .char-selector-btn.open .char-selector-arrow { transform: rotate(180deg); }
+    .char-selector-dropdown {
+      display: none; position: absolute; top: calc(100% + 6px); left: 0;
+      min-width: 210px; z-index: 500;
+      background: var(--bg-card, #1c1409);
+      border: 1px solid var(--border, #4a3510);
+      border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      overflow: hidden;
+    }
+    .char-selector-dropdown.open { display: block; }
+    .char-sel-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 14px; cursor: pointer;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      transition: background 0.12s;
+      font-size: 0.82rem;
+    }
+    .char-sel-item:last-child { border-bottom: none; }
+    .char-sel-item:hover { background: rgba(201,162,39,0.08); }
+    .char-sel-item.active { background: rgba(201,162,39,0.1); color: var(--gold, #c9a227); }
+    .char-sel-item-avatar { font-size: 1.3rem; flex-shrink: 0; line-height: 1; }
+    .char-sel-item-info { flex: 1; overflow: hidden; }
+    .char-sel-item-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .char-sel-item-sub { font-size: 0.7rem; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .char-sel-add {
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 14px; cursor: pointer;
+      color: var(--gold, #c9a227);
+      border-top: 1px solid var(--border, #4a3510);
+      font-size: 0.82rem; font-weight: 600;
+      transition: background 0.12s;
+    }
+    .char-sel-add:hover { background: rgba(201,162,39,0.1); }
+
     /* VB: Party ribbon (replaces char-cards) */
-    .char-ribbon-wrap { display: flex; align-items: stretch; background: var(--bg-nav, #0a0703); border-bottom: 1px solid var(--border, #4a3510); }
-    .char-ribbon-label { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #555; writing-mode: vertical-rl; padding: 0 6px; border-right: 1px solid var(--border, rgba(74,53,16,0.4)); align-self: stretch; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .char-cards.vb-party-ribbon {
       display: flex;
       align-items: stretch;
@@ -1740,8 +1790,15 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
       <div class="vb-brand">
         <span class="vb-brand-sigil">✦</span>
         <span class="vb-brand-name">Kaleysur</span>
-        <span class="vb-brand-sep">·</span>
-        <span class="vb-brand-sub">Adventurer's Log</span>
+      </div>
+      <!-- Sélecteur de personnage -->
+      <div class="char-selector" id="char-selector">
+        <button class="char-selector-btn" id="char-selector-btn" title="Changer de personnage">
+          <span class="char-selector-avatar" id="char-selector-avatar">⚔</span>
+          <span class="char-selector-name" id="char-selector-name">Personnage</span>
+          <span class="char-selector-arrow">▾</span>
+        </button>
+        <div class="char-selector-dropdown" id="char-selector-dropdown"></div>
       </div>
       <!-- Tabs wrapped in scrollable zone so they never push actions off-screen -->
       <div class="vb-tabs">
@@ -1797,11 +1854,8 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
     </div>
 
     <div class="read-mode-banner">Mode Lecture — cliquez 🔒 pour modifier</div>
-    <!-- ══ VB: Party ribbon (char-cards as horizontal strip) ══ -->
-    <div class="char-ribbon-wrap">
-      <span class="char-ribbon-label">Personnages</span>
-      <div class="char-cards vb-party-ribbon" id="char-cards"></div>
-    </div>
+    <!-- char-cards gardé caché (rendu mais non affiché, sert au JS existant) -->
+    <div id="char-cards" style="display:none;"></div>
 
     <!-- Old tabs div hidden (all functionality now in vb-topbar) -->
     <div class="tabs vb-hidden" aria-hidden="true"></div>
@@ -4815,6 +4869,7 @@ async function openDashboard() {
   applyCharTheme(); // appliquer le thème du personnage actif
   applyPalette(loadPalette()); // palette étendue
   applyPageBg(playerData); // fond de page global
+  renderCharSelector(); // sélecteur de personnage dans le topbar
   showScreen('screen-dashboard');
   renderDashboard();
   applyLayout();
@@ -4851,6 +4906,63 @@ function renderInspiration() {
 /* ════════════════════════════════════════════════════════════
    CARTES DE PERSONNAGES
    ════════════════════════════════════════════════════════════ */
+function renderCharSelector() {
+  if (!playerData) return;
+  const chars = playerData.characters || {};
+  const active = chars[playerData.activeCharId];
+  const ac = active?.character || {};
+
+  // Mettre à jour le bouton
+  const avatar = document.getElementById('char-selector-avatar');
+  const name   = document.getElementById('char-selector-name');
+  if (avatar) avatar.textContent = ac.avatarPng ? '' : (ac.avatar || playerData.avatar || '⚔');
+  if (avatar && ac.avatarPng) { avatar.innerHTML = `<img src="${ac.avatarPng}" style="width:20px;height:20px;border-radius:50%;object-fit:cover;">`; }
+  if (name) name.textContent = ac.characterName || 'Personnage';
+
+  // Construire le dropdown
+  const dd = document.getElementById('char-selector-dropdown');
+  if (!dd) return;
+  dd.innerHTML = '';
+  Object.entries(chars).forEach(([id, slot]) => {
+    const c = slot.character || {};
+    const isActive = id === playerData.activeCharId;
+    const item = document.createElement('div');
+    item.className = 'char-sel-item' + (isActive ? ' active' : '');
+    const classStr = getClasses(c).filter(cl=>cl.classe).map(cl=>cl.classe+' '+cl.niveau).join(' / ') || '—';
+    item.innerHTML = `
+      <div class="char-sel-item-avatar">${c.avatarPng ? `<img src="${c.avatarPng}" style="width:22px;height:22px;border-radius:50%;object-fit:cover;">` : (c.avatar || '⚔')}</div>
+      <div class="char-sel-item-info">
+        <div class="char-sel-item-name">${c.characterName || 'Sans nom'}</div>
+        <div class="char-sel-item-sub">${classStr}</div>
+      </div>
+      ${isActive ? '<span style="color:var(--gold);font-size:0.7rem;">✦</span>' : ''}
+    `;
+    item.addEventListener('click', () => {
+      playerData.activeCharId = id;
+      closeCharSelector();
+      renderCharCards();
+      renderCharSelector();
+      renderAll();
+      applyCharTheme(); applyCharBg(C());
+      setTimeout(() => { loadCanvasPages(); initCanvas(); renderCanvasPagesSidebar(); }, 50);
+      triggerSave();
+    });
+    dd.appendChild(item);
+  });
+
+  // Bouton Nouveau
+  const addItem = document.createElement('div');
+  addItem.className = 'char-sel-add';
+  addItem.innerHTML = '<span style="font-size:1rem;font-weight:700;">+</span> Nouveau personnage';
+  addItem.addEventListener('click', () => { closeCharSelector(); openNewCharModal(); });
+  dd.appendChild(addItem);
+}
+
+function closeCharSelector() {
+  document.getElementById('char-selector-btn')?.classList.remove('open');
+  document.getElementById('char-selector-dropdown')?.classList.remove('open');
+}
+
 function renderCharCards() {
   const grid = document.getElementById('char-cards');
   grid.innerHTML = '';
@@ -4925,10 +5037,12 @@ function renderCharCards() {
       delete playerData.characters[id];
       if (playerData.activeCharId === id) playerData.activeCharId = Object.keys(playerData.characters)[0];
       renderCharCards();
+      renderCharSelector();
       renderAll();
       triggerSave();
     });
   });
+  renderCharSelector();
 }
 
 function updateCharSummary() {
@@ -8319,6 +8433,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     showScreen('screen-auth');
   });
 
+  /* ── Sélecteur de personnage ── */
+  document.getElementById('char-selector-btn')?.addEventListener('click', e => {
+    e.stopPropagation();
+    const btn = document.getElementById('char-selector-btn');
+    const dd  = document.getElementById('char-selector-dropdown');
+    const isOpen = dd.classList.contains('open');
+    if (!isOpen) renderCharSelector();
+    btn.classList.toggle('open', !isOpen);
+    dd.classList.toggle('open', !isOpen);
+  });
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#char-selector')) closeCharSelector();
+  });
+
   /* ── Onglets ── */
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -9337,6 +9465,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       playerData.characters[id].character.avatar = newCharSelectedAvatar;
       closeModal();
       renderCharCards();
+      renderCharSelector();
       renderAll();
       triggerSave();
     });
