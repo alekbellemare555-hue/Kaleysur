@@ -821,10 +821,12 @@
     body { background: var(--bg-primary, #0e0a04); }
     .main-content { background: var(--bg-primary, #0e0a04); }
 
-    /* VB: Sticky top bar (replaces dash-header + tabs) */
+    /* VB: Fixed top bar (replaces dash-header + tabs) */
     .dash-header.vb-topbar {
-      position: sticky;
+      position: fixed;
       top: var(--nav-h, 60px);
+      left: var(--sidebar-w, 260px);
+      right: 0;
       z-index: 200;
       display: flex;
       align-items: center;
@@ -835,6 +837,7 @@
       margin-bottom: 0;
       gap: 0;
     }
+    #screen-dashboard { padding-top: 52px; }
     .vb-brand {
       display: flex;
       align-items: center;
@@ -1362,8 +1365,7 @@
 }
 .vb-tabs::-webkit-scrollbar { display: none; }
 
-/* Fix fixed height — let it breathe if needed */
-.dash-header.vb-topbar { height: auto !important; min-height: 52px; }
+.dash-header.vb-topbar { height: 52px !important; flex-wrap: nowrap !important; overflow: visible; }
 
 /* ── Tablet (≤ 900px) ── */
 @media (max-width: 900px) {
