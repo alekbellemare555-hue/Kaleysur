@@ -376,6 +376,106 @@ input,select{font-family:inherit;color-scheme:dark;}
 }
 .ds-add-item-btn:hover{background:var(--gold-glow);border-color:var(--gold);color:var(--gold);}
 
+/* ── Inspiration ── */
+.pact.insp-on{color:#f0d060;border-color:#c0a030;background:rgba(240,208,96,0.15);}
+.pact.insp-on:hover{color:#f0d060;border-color:#f0d060;background:rgba(240,208,96,0.25);}
+
+/* ── Concentration badge ── */
+.conc-badge{
+  display:inline-flex;align-items:center;gap:0.25rem;
+  font-size:0.66rem;color:#a080e0;background:rgba(160,128,224,0.12);
+  border:1px solid rgba(160,128,224,0.3);border-radius:3px;
+  padding:0.05rem 0.38rem;margin-left:auto;
+}
+
+/* ── Ressources de classe ── */
+.panel-res{padding:0.45rem 0.9rem;border-bottom:1px solid var(--border);}
+.res-row{display:flex;align-items:center;gap:0.5rem;font-size:0.78rem;margin-bottom:0.22rem;}
+.res-row:last-child{margin-bottom:0;}
+.res-name{flex:1;color:var(--text-mid);}
+.res-pips{display:flex;gap:3px;}
+.res-pip{
+  width:11px;height:11px;border-radius:50%;border:1px solid var(--border-bright);
+  cursor:pointer;transition:all 0.1s;flex-shrink:0;
+}
+.res-pip.used{background:var(--gold-dark);border-color:var(--gold-dim);}
+.res-pip:hover{border-color:var(--gold);}
+
+/* ── Notes DM (locales, non-sync) ── */
+.panel-dm-notes{padding:0.45rem 0.9rem;border-top:1px solid var(--border);}
+.dm-notes-label{font-size:0.58rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:0.22rem;}
+.dm-notes-inp{
+  width:100%;background:rgba(0,0,0,0.2);border:1px solid transparent;
+  border-radius:4px;color:var(--text-dim);font-size:0.78rem;font-family:'Crimson Text',serif;
+  padding:0.25rem 0.4rem;resize:none;min-height:38px;transition:border-color 0.12s;
+}
+.dm-notes-inp:focus{outline:none;border-color:var(--border-bright);color:var(--text);}
+
+/* ── Delay chip ── */
+.init-chip.delayed{opacity:0.5;border-style:dashed;}
+.init-chip.delayed::after{content:'⏸';position:absolute;top:2px;right:4px;font-size:0.5rem;color:var(--text-dim);}
+.chip-delay-btn{
+  background:none;border:none;color:var(--text-dim);font-size:0.55rem;
+  cursor:pointer;padding:0;line-height:1;transition:color 0.1s;
+}
+.chip-delay-btn:hover{color:var(--gold);}
+
+/* ── Mode focus (sidebar masquée) ── */
+body.focus-mode #dm-sidebar{display:none;}
+body.focus-mode #dm-main{width:100%;}
+
+/* ── Dice roller ── */
+.dice-popup{
+  position:absolute;top:calc(100% + 8px);left:0;z-index:500;
+  background:var(--bg-card);border:1px solid var(--border-gold);
+  border-radius:8px;padding:0.75rem;box-shadow:var(--shadow-lg);
+  display:none;min-width:220px;
+}
+.dice-popup.open{display:block;}
+.dice-grid{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.55rem;}
+.dice-btn{
+  background:var(--bg-input);border:1px solid var(--border-bright);
+  color:var(--gold);border-radius:5px;padding:0.35rem 0.6rem;
+  font-family:'Cinzel',serif;font-size:0.82rem;letter-spacing:0.04em;
+  cursor:pointer;transition:all 0.12s;
+}
+.dice-btn:hover{background:var(--gold-glow);border-color:var(--border-gold);}
+.dice-result{
+  font-family:'Cinzel',serif;font-size:1.1rem;color:var(--gold);
+  text-align:center;min-height:1.6rem;letter-spacing:0.05em;
+  border-top:1px solid var(--border);padding-top:0.45rem;
+}
+.dice-result.crit{color:#60e060;text-shadow:0 0 10px rgba(96,224,96,0.4);}
+.dice-result.fail{color:var(--danger);}
+#nav-dice-wrap{position:relative;}
+
+/* ── Chat sidebar section ── */
+#chat-section{
+  border-top:1px solid var(--border-bright);
+  display:flex;flex-direction:column;max-height:220px;flex-shrink:0;
+}
+#chat-section-header{
+  padding:0.5rem 1rem;display:flex;align-items:center;justify-content:space-between;
+  font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.1em;
+  text-transform:uppercase;color:var(--text-dim);flex-shrink:0;cursor:pointer;
+  border-bottom:1px solid var(--border);
+}
+#chat-section-header:hover{color:var(--gold);}
+#chat-section-header .chat-unread{
+  background:var(--danger);color:#fff;border-radius:10px;
+  font-size:0.6rem;padding:0.05rem 0.4rem;display:none;
+}
+#chat-section-header .chat-unread.visible{display:inline;}
+#chat-msgs-list{flex:1;overflow-y:auto;padding:0.35rem 0.75rem;display:flex;flex-direction:column;gap:0.3rem;}
+#chat-msgs-list::-webkit-scrollbar{width:2px;}
+#chat-msgs-list::-webkit-scrollbar-thumb{background:var(--border-bright);}
+.dm-chat-msg{font-size:0.78rem;line-height:1.4;color:var(--text-mid);}
+.dm-chat-msg .chat-author{color:var(--gold-dark);font-family:'Cinzel',serif;font-size:0.65rem;margin-right:0.35rem;}
+.dm-chat-msg .chat-text{color:var(--text);}
+#chat-section.collapsed #chat-msgs-list{display:none;}
+#chat-section-chevron{transition:transform 0.2s;font-size:0.5rem;}
+#chat-section.collapsed #chat-section-chevron{transform:rotate(-90deg);}
+
 /* ── Initiative Tracker ── */
 #init-bar{
   background:rgba(10,10,16,0.95);
@@ -660,6 +760,22 @@ body.compact .panel-char-sub{display:none;}
     <span class="brand">DM Screen<span class="brand-sep"></span><span class="brand-sub">Kaleysur</span></span>
     <button id="btn-init-open" class="nav-btn">⚔ Initiative</button>
     <button id="btn-compact" class="nav-btn" title="Vue compacte">⊞ Compact</button>
+    <button id="btn-focus" class="nav-btn" title="Mode focus (masquer sidebar)">⛶ Focus</button>
+    <div id="nav-dice-wrap">
+      <button id="btn-dice" class="nav-btn">🎲 Dés</button>
+      <div class="dice-popup" id="dice-popup">
+        <div class="dice-grid">
+          <button class="dice-btn" data-sides="4">d4</button>
+          <button class="dice-btn" data-sides="6">d6</button>
+          <button class="dice-btn" data-sides="8">d8</button>
+          <button class="dice-btn" data-sides="10">d10</button>
+          <button class="dice-btn" data-sides="12">d12</button>
+          <button class="dice-btn" data-sides="20">d20</button>
+          <button class="dice-btn" data-sides="100">d%</button>
+        </div>
+        <div class="dice-result" id="dice-result">—</div>
+      </div>
+    </div>
     <button id="btn-open-drawer" class="nav-btn">📋 Fiches</button>
     <div class="nav-right">
       <span id="poll-indicator">—</span>
@@ -676,6 +792,16 @@ body.compact .panel-char-sub{display:none;}
         <input type="text" id="player-search" placeholder="Rechercher…">
       </div>
       <div id="player-list"><div class="loading">Chargement…</div></div>
+
+      <!-- Chat -->
+      <div id="chat-section">
+        <div id="chat-section-header">
+          <span>💬 Chat joueurs</span>
+          <span class="chat-unread" id="chat-unread-badge">0</span>
+          <span id="chat-section-chevron">▼</span>
+        </div>
+        <div id="chat-msgs-list"><div class="loading">Chargement…</div></div>
+      </div>
 
       <!-- Monsters -->
       <div id="monster-section">
@@ -916,6 +1042,8 @@ async function enterDM() {
   await refreshAllPlayers();
   restoreDmState();
   startRealtime();
+  loadDmChat();
+  startDmChatRealtime();
   // Polling de secours toutes les 60s si Realtime déconnecté
   pollTimer = setInterval(pollPlayers, 60000);
 }
@@ -945,9 +1073,9 @@ function startRealtime() {
         const idx = allPlayers.findIndex(p => p.username === row.username);
         if (idx !== -1) allPlayers[idx].data = row.data;
         else allPlayers.push({ username: row.username, data: row.data });
-        // Rafraîchir l'interface
+        // Ne re-render que les panels du joueur modifié
         renderSidebar();
-        refreshOpenPanels();
+        Object.keys(openPanels).filter(k => k.startsWith('p::' + row.username + '::')).forEach(k => updatePanel(k));
         renderInitChips();
         document.getElementById('poll-indicator').textContent =
           '⚡ ' + new Date().toLocaleTimeString('fr', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
@@ -1085,6 +1213,16 @@ function createMonster() {
 
   renderMonsterSidebar();
   openPanel('m::' + id);
+  // Auto-ajout à l'initiative
+  const initVal = Math.floor(Math.random() * 20) + 1 + (parseInt(init) || 0);
+  initState.combatants.push({ id: 'm::' + id, label: name, avatar, type: 'monster', initVal, hp, hpMax: hp, delayed: false });
+  initState.combatants.sort((a, b) => b.initVal - a.initVal);
+  if (!initState.open) {
+    initState.open = true;
+    document.getElementById('init-bar').className = 'open';
+    document.getElementById('btn-init-open').classList.add('active');
+  }
+  renderInitChips();
   saveDmState();
 }
 
@@ -1206,6 +1344,7 @@ function renderPlayerPanel(panel, key) {
         ${sub ? `<div class="panel-char-sub">${esc(sub)}</div>` : ''}
       </div>
       <div class="panel-acts">
+        <button class="pact${c.inspiration?' insp-on':''}" data-insp="${esc(key)}" title="Inspiration">⭐</button>
         <button class="pact rest-long" data-key="${esc(key)}" title="Repos long">☀ Long</button>
         <button class="pact danger" data-close="${esc(key)}" title="Fermer">✕</button>
       </div>
@@ -1245,7 +1384,21 @@ function renderPlayerPanel(panel, key) {
       <div class="stat-cell"><div class="stat-val">${c.ca ?? '—'}</div><div class="stat-lbl">CA</div></div>
       <div class="stat-cell"><div class="stat-val">${fmtInit(c.initiative)}</div><div class="stat-lbl">Init.</div></div>
       <div class="stat-cell"><div class="stat-val">${c.vitesse ?? '—'}m</div><div class="stat-lbl">Vitesse</div></div>
+      ${c.inspiration ? `<div class="stat-cell"><div class="stat-val" style="color:#f0d060;">⭐</div><div class="stat-lbl">Inspi.</div></div>` : ''}
+      ${c.concentration ? `<div class="stat-cell"><div class="stat-val" style="font-size:0.7rem;">🎯</div><div class="stat-lbl" style="color:#a080e0;">${esc(String(c.concentration).slice(0,8))}</div></div>` : ''}
     </div>
+
+    ${(Array.isArray(c.ressources) && c.ressources.length) ? `<div class="panel-res">
+      ${c.ressources.map((r,ri) => {
+        const max = parseInt(r.max)||0;
+        const act = parseInt(r.actuel)||0;
+        return `<div class="res-row">
+          <span class="res-name">${esc(r.name||r.nom||'Ressource')}</span>
+          <span class="res-pips">${Array.from({length:max},(_,pi)=>`<span class="res-pip${pi<act?' used':''}" data-res-key="${esc(key)}" data-res-i="${ri}" data-res-pip="${pi}"></span>`).join('')}</span>
+          <span style="font-size:0.72rem;color:var(--text-dim);margin-left:0.3rem;">${act}/${max}</span>
+        </div>`;
+      }).join('')}
+    </div>` : ''}
 
     ${hasSlots ? `<div class="panel-slots">
       <button class="slots-toggle" id="slotbtn-${esc(key)}"><span class="arrow">▶</span> Sorts</button>
@@ -1277,13 +1430,53 @@ function renderPlayerPanel(panel, key) {
           </div>
         </div>
       </div>
+    </div>
+    <div class="panel-dm-notes">
+      <div class="dm-notes-label">🗒 Notes DM (local)</div>
+      <textarea class="dm-notes-inp" data-dm-notes="${esc(key)}" rows="2" placeholder="Notes privées…">${esc(_panelNotes[key]||'')}</textarea>
     </div>`;
 
   attachPlayerPanelEvents(panel, key, username, charId);
 }
 
+const _panelNotes = {};
+
 function attachPlayerPanelEvents(panel, key, username, charId) {
   panel.querySelector('[data-close]')?.addEventListener('click', () => closePanel(key));
+
+  // Inspiration toggle
+  panel.querySelector('[data-insp]')?.addEventListener('click', () => {
+    const data = getPlayerData(username);
+    if (!data) return;
+    const c = data.characters?.[charId]?.character;
+    if (!c) return;
+    c.inspiration = !c.inspiration;
+    updatePanel(key);
+    schedulePlayerSave(username, data);
+  });
+
+  // Ressources pips
+  panel.querySelectorAll('.res-pip').forEach(pip => {
+    pip.addEventListener('click', () => {
+      const data = getPlayerData(username);
+      if (!data) return;
+      const c = data.characters?.[charId]?.character;
+      if (!c || !Array.isArray(c.ressources)) return;
+      const ri  = parseInt(pip.dataset.resI);
+      const pi  = parseInt(pip.dataset.resPip);
+      const res = c.ressources[ri];
+      if (!res) return;
+      const cur = parseInt(res.actuel) || 0;
+      res.actuel = (pi < cur) ? pi : pi + 1;
+      updatePanel(key);
+      schedulePlayerSave(username, data);
+    });
+  });
+
+  // Notes DM locales
+  panel.querySelector('[data-dm-notes]')?.addEventListener('input', e => {
+    _panelNotes[key] = e.target.value;
+  });
 
   panel.querySelector('[data-key].rest-long')?.addEventListener('click', () => longRest(username, charId, key));
 
@@ -1373,6 +1566,7 @@ function renderMonsterPanel(panel, key) {
         <div class="panel-char-sub" style="color:rgba(192,57,43,0.7);">PNJ / Monstre</div>
       </div>
       <div class="panel-acts">
+        <button class="pact" data-clone="${esc(key)}" title="Dupliquer">⎘</button>
         <button class="pact danger" data-close="${esc(key)}" title="Supprimer">🗑</button>
       </div>
     </div>
@@ -1419,6 +1613,18 @@ function renderMonsterPanel(panel, key) {
     </div>`;
 
   // Events
+  panel.querySelector('[data-clone]')?.addEventListener('click', () => {
+    const newId = 'monster-' + (++monsterCounter);
+    localMonsters[newId] = { ...m, id: newId, hp: m.hpMax };
+    renderMonsterSidebar();
+    openPanel('m::' + newId);
+    const initVal = Math.floor(Math.random() * 20) + 1 + (parseInt(m.initiative)||0);
+    initState.combatants.push({ id: 'm::' + newId, label: m.name, avatar: m.avatar, type: 'monster', initVal, hp: m.hpMax, hpMax: m.hpMax, delayed: false });
+    initState.combatants.sort((a, b) => b.initVal - a.initVal);
+    renderInitChips();
+    saveDmState();
+  });
+
   panel.querySelector('[data-close]')?.addEventListener('click', () => {
     delete localMonsters[id];
     closePanel(key);
@@ -1566,8 +1772,13 @@ document.getElementById('init-toggle').addEventListener('click', () => {
 });
 document.getElementById('init-next').addEventListener('click', () => {
   if (!initState.combatants.length) return;
-  initState.currentIdx = (initState.currentIdx + 1) % initState.combatants.length;
-  if (initState.currentIdx === 0) initState.round++;
+  let next = (initState.currentIdx + 1) % initState.combatants.length;
+  let guard = 0;
+  while (initState.combatants[next]?.delayed && guard++ < initState.combatants.length) {
+    next = (next + 1) % initState.combatants.length;
+  }
+  if (next <= initState.currentIdx && next !== initState.currentIdx) initState.round++;
+  initState.currentIdx = next;
   document.getElementById('init-round-label').textContent = 'Tour ' + initState.round;
   renderInitChips();
   saveDmState();
@@ -1659,15 +1870,16 @@ function renderInitChips() {
     const active = idx === initState.currentIdx;
 
     const chip = document.createElement('div');
-    chip.className = 'init-chip' + (active ? ' active-turn' : '') + (dead ? ' dead' : '');
+    chip.className = 'init-chip' + (active ? ' active-turn' : '') + (dead ? ' dead' : '') + (ct.delayed ? ' delayed' : '');
     chip.innerHTML = `
       <span class="chip-avatar">${ct.avatar}</span>
       <input class="init-chip-inp" type="number" value="${ct.initVal}" title="Modifier initiative">
       <span class="chip-name">${esc(ct.label)}</span>
-      <div class="chip-hp-bar"><div class="chip-hp-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>`;
+      <div class="chip-hp-bar"><div class="chip-hp-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>
+      <button class="chip-delay-btn" title="${ct.delayed ? 'Reprendre' : 'Passer (delay)'}">⏸</button>`;
 
     chip.addEventListener('click', e => {
-      if (e.target.classList.contains('init-chip-inp')) return;
+      if (e.target.classList.contains('init-chip-inp') || e.target.classList.contains('chip-delay-btn')) return;
       initState.currentIdx = idx;
       renderInitChips();
     });
@@ -1675,6 +1887,12 @@ function renderInitChips() {
       ct.initVal = parseInt(e.target.value) || 0;
       initState.combatants.sort((a,b) => b.initVal - a.initVal);
       initState.currentIdx = initState.combatants.findIndex(x => x.id === ct.id);
+      renderInitChips();
+      saveDmState();
+    });
+    chip.querySelector('.chip-delay-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      ct.delayed = !ct.delayed;
       renderInitChips();
       saveDmState();
     });
@@ -1693,8 +1911,115 @@ function removeInitCombatant(key) {
 ══════════════════════════════════════════ */
 function closeAllMenus() {
   document.querySelectorAll('.cond-menu.open').forEach(m => m.classList.remove('open'));
+  document.getElementById('dice-popup')?.classList.remove('open');
 }
 document.addEventListener('click', closeAllMenus);
+
+/* ══════════════════════════════════════════
+   Keyboard shortcuts
+══════════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  const tag = e.target.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+  if (e.key === ' ') {
+    e.preventDefault();
+    document.getElementById('init-next').click();
+  } else if (e.key === '/') {
+    e.preventDefault();
+    document.getElementById('player-search')?.focus();
+  } else if (e.key === 'Escape') {
+    closeDrawer();
+  }
+});
+
+/* ══════════════════════════════════════════
+   Mode Focus
+══════════════════════════════════════════ */
+document.getElementById('btn-focus').addEventListener('click', () => {
+  document.body.classList.toggle('focus-mode');
+  document.getElementById('btn-focus').classList.toggle('active', document.body.classList.contains('focus-mode'));
+});
+
+/* ══════════════════════════════════════════
+   Dice Roller
+══════════════════════════════════════════ */
+document.getElementById('btn-dice').addEventListener('click', e => {
+  e.stopPropagation();
+  document.getElementById('dice-popup').classList.toggle('open');
+});
+document.querySelectorAll('.dice-btn').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    const sides = parseInt(btn.dataset.sides);
+    const roll  = Math.floor(Math.random() * sides) + 1;
+    const res   = document.getElementById('dice-result');
+    res.textContent = `d${sides} → ${roll}`;
+    res.className = 'dice-result' + (roll === sides ? ' crit' : roll === 1 ? ' fail' : '');
+  });
+});
+
+/* ══════════════════════════════════════════
+   Chat DM (lecture)
+══════════════════════════════════════════ */
+const DM_CHAT_TABLE = '/rest/v1/chat_messages';
+let _chatLastId = 0;
+let _chatUnread = 0;
+
+document.getElementById('chat-section-header').addEventListener('click', () => {
+  document.getElementById('chat-section').classList.toggle('collapsed');
+  if (!document.getElementById('chat-section').classList.contains('collapsed')) {
+    _chatUnread = 0;
+    const badge = document.getElementById('chat-unread-badge');
+    badge.textContent = '0';
+    badge.classList.remove('visible');
+  }
+});
+
+async function loadDmChat() {
+  try {
+    const r = await sbFetch(`${DM_CHAT_TABLE}?room=eq.general&order=id.desc&limit=20`);
+    if (!r.ok) return;
+    const msgs = (await r.json()).reverse();
+    if (msgs.length) _chatLastId = msgs[msgs.length - 1].id;
+    renderDmChat(msgs);
+  } catch(e) {}
+}
+
+function renderDmChat(msgs) {
+  const list = document.getElementById('chat-msgs-list');
+  if (!msgs.length) { list.innerHTML = '<div style="color:var(--text-dim);font-size:0.78rem;font-style:italic;padding:0.3rem 0;">Aucun message.</div>'; return; }
+  list.innerHTML = msgs.map(m => `
+    <div class="dm-chat-msg">
+      <span class="chat-author">${esc(m.username||'?')}</span>
+      <span class="chat-text">${esc(m.content||'')}</span>
+    </div>`).join('');
+  list.scrollTop = list.scrollHeight;
+}
+
+function startDmChatRealtime() {
+  if (!window.supabase) return;
+  try {
+    const client = window.supabase.createClient(SB_URL, SB_KEY);
+    client.channel('dm-chat-watch')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages', filter: 'room=eq.general' }, payload => {
+        const m = payload.new;
+        const list = document.getElementById('chat-msgs-list');
+        const div = document.createElement('div');
+        div.className = 'dm-chat-msg';
+        div.innerHTML = `<span class="chat-author">${esc(m.username||'?')}</span><span class="chat-text">${esc(m.content||'')}</span>`;
+        list.appendChild(div);
+        list.scrollTop = list.scrollHeight;
+        // Badge si section réduite
+        if (document.getElementById('chat-section').classList.contains('collapsed')) {
+          _chatUnread++;
+          const badge = document.getElementById('chat-unread-badge');
+          badge.textContent = _chatUnread;
+          badge.classList.add('visible');
+        }
+      })
+      .subscribe();
+  } catch(e) {}
+}
 
 /* ══════════════════════════════════════════
    Utils
