@@ -151,6 +151,11 @@
     .jat-toggle { display:flex; align-items:center; gap:0.35rem; margin-top:0.3rem; font-size:0.68rem; color:#555; cursor:pointer; user-select:none; }
     .jat-toggle input { accent-color:var(--gold-dark); width:12px; height:12px; cursor:pointer; }
     .jat-toggle.active { color:var(--gold-dark); }
+    .skill-filter-wrap { display:flex; align-items:center; gap:0.3rem; background:rgba(10,7,3,0.5); border:1px solid #3a2810; border-radius:4px; padding:0.18rem 0.5rem; margin:0.3rem 0 0.25rem; }
+    .skill-filter-icon { font-size:0.62rem; opacity:0.5; flex-shrink:0; }
+    #skill-filter { flex:1; background:none; border:none; color:var(--j-text,#e2cfa0); font-size:0.7rem; padding:0; outline:none; min-width:0; }
+    #skill-filter::placeholder { color:#555; }
+    #skill-filter::-webkit-search-cancel-button { opacity:0.4; cursor:pointer; }
     /* ── Spell level group header ── */
     .spell-lvl-header td { padding:0.45rem 0.4rem 0.2rem; font-family:'Cinzel',serif; font-size:0.62rem; color:var(--gold-dark); letter-spacing:0.08em; text-transform:uppercase; border-bottom:1px solid #2a1e0a; }
     .spell-lvl-count { font-size:0.58rem; color:#555; font-style:normal; margin-left:0.35rem; }
@@ -2125,13 +2130,17 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
           <div class="sheet-section-title">Saving Throws &amp; Skills</div>
           <div class="save-skill-grid">
             <div id="saves-col"></div>
-          <label class="jat-toggle" id="jat-label" title="Barde niv.2+ : ajoute la moitié du bonus de maîtrise aux compétences sans maîtrise">
-            <input type="checkbox" id="jat-check">
-            Jack of All Trades
-          </label>
-          <input type="search" id="skill-filter" placeholder="Filtrer…" autocomplete="off"
-            style="width:100%;background:rgba(10,7,3,0.7);border:1px solid #3a2810;color:#e2cfa0;font-size:0.75rem;padding:0.25rem 0.5rem;margin:0.3rem 0 0.4rem;box-sizing:border-box;border-radius:2px;outline:none;">
-            <div id="skills-col"></div>
+            <div>
+              <label class="jat-toggle" id="jat-label" title="Barde niv.2+ : ajoute la moitié du bonus de maîtrise aux compétences sans maîtrise">
+                <input type="checkbox" id="jat-check">
+                Jack of All Trades
+              </label>
+              <div class="skill-filter-wrap">
+                <span class="skill-filter-icon">🔍</span>
+                <input type="search" id="skill-filter" placeholder="Filtrer…" autocomplete="off">
+              </div>
+              <div id="skills-col"></div>
+            </div>
           </div>
         </div>
   
