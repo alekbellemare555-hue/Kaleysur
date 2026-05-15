@@ -326,7 +326,7 @@ async function doLogin() {
 
 async function enterDM() {
   document.getElementById('screen-auth').style.display = 'none';
-  document.getElementById('screen-dm').style.display   = '';
+  document.getElementById('screen-dm').style.display   = 'block';
   await refreshAllPlayers();
   pollTimer = setInterval(pollPlayers, POLL_MS);
 }
