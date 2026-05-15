@@ -755,86 +755,113 @@ body.compact .panel-char-sub{display:none;}
 .btn-danger:hover{background:linear-gradient(135deg,#d04040 0%,#a03030 100%);}
 
 /* ══ Responsive / Tablette ══ */
-#btn-sidebar-toggle{display:none;align-items:center;justify-content:center;font-size:1.15rem;padding:0 0.65rem;min-width:40px;min-height:40px;}
+#btn-sidebar-toggle{display:none;align-items:center;justify-content:center;font-size:1.2rem;padding:0 0.65rem;min-width:44px;min-height:44px;}
 #sidebar-backdrop{
   display:none;position:fixed;inset:0;z-index:349;
-  background:rgba(0,0,0,0.5);backdrop-filter:blur(2px);
+  background:rgba(0,0,0,0.55);backdrop-filter:blur(2px);
 }
 body.sidebar-open #sidebar-backdrop{display:block;}
 
-@media(max-width:1024px){
-  /* ── Sidebar overlay ── */
+/* ─── Tablette large + petite (≤1366px) ─── */
+@media(max-width:1366px){
+  /* Sidebar devient overlay */
   #btn-sidebar-toggle{display:flex;}
-  #btn-compact,#btn-focus{display:none;}
+  #btn-focus{display:none;}
   #dm-sidebar{
     position:fixed;top:var(--nav-h);left:0;bottom:0;
-    width:min(var(--sidebar-w),88vw);z-index:350;
+    width:min(var(--sidebar-w),85vw);z-index:350;
     transform:translateX(-100%);
     transition:transform 0.28s cubic-bezier(0.4,0,0.2,1);
-    box-shadow:8px 0 48px rgba(0,0,0,0.8);
+    box-shadow:8px 0 48px rgba(0,0,0,0.85);
     overflow-y:auto;
   }
   body.sidebar-open #dm-sidebar{transform:translateX(0);}
 
-  /* ── Nav ── */
-  #dm-nav{padding:0 0.75rem;gap:0.5rem;}
+  /* Nav */
+  #dm-nav{padding:0 0.75rem;gap:0.4rem;}
   .brand-sub{display:none;}
-  .nav-btn{padding:0.4rem 0.65rem;font-size:0.75rem;min-height:40px;}
-  #btn-logout{padding:0.4rem 0.65rem;min-height:40px;}
+  .brand{font-size:0.9rem;}
+  .nav-btn{padding:0.4rem 0.6rem;font-size:0.73rem;min-height:44px;}
+  #btn-logout{padding:0.4rem 0.6rem;min-height:44px;font-size:0.73rem;}
 
-  /* ── Touch targets ── */
-  .pact{width:36px;height:36px;font-size:0.8rem;}
-  .pact.rest-long{width:auto;padding:0 0.55rem;height:36px;}
-  .init-ctrl{width:36px;height:36px;font-size:0.9rem;}
-  .hp-qbtn{min-height:38px;padding:0 0.85rem;font-size:0.85rem;}
-  .hp-inp{height:38px;font-size:1rem;padding:0.2rem 0.4rem;}
-  #btn-create-monster{padding:0.55rem;font-size:0.85rem;}
-  .m-inp{font-size:1rem;padding:0.4rem 0.6rem;}
-  .m-inp-sm{width:58px;}
-  .player-item{padding:0.65rem 1rem;}
+  /* Touch targets globaux */
+  .pact{width:38px;height:38px;font-size:0.82rem;}
+  .pact.rest-long{width:auto;padding:0 0.6rem;height:38px;}
+  .init-ctrl{width:38px;height:38px;font-size:0.9rem;}
+  .hp-qbtn{min-height:40px;padding:0 0.9rem;font-size:0.85rem;}
+  .hp-inp{height:40px;font-size:1rem;padding:0.2rem 0.4rem;text-align:center;}
+  .player-item{padding:0.7rem 1rem;}
   .player-avatar{font-size:1.3rem;width:28px;}
-  .char-entry{padding:0.38rem 0.5rem;font-size:0.85rem;}
+  .char-entry{padding:0.42rem 0.5rem;font-size:0.88rem;}
+  .m-inp{font-size:1rem;padding:0.42rem 0.65rem;}
+  .m-inp-sm{width:60px;}
+  #btn-create-monster{padding:0.6rem;font-size:0.88rem;}
 
-  /* ── Init bar ── */
-  .init-chip{min-width:86px;padding:0.65rem 0.9rem;}
-  .chip-avatar{font-size:1.4rem;}
+  /* Init bar */
+  #init-header{height:56px;}
+  .init-chip{min-width:84px;padding:0.6rem 0.8rem;}
+  .chip-avatar{font-size:1.35rem;}
   .init-chip-inp{width:46px;font-size:0.85rem;}
-  #init-bar.open{max-height:230px;}
+  #init-bar.open{max-height:240px;}
 
-  /* ── Panels ── */
-  #panels-area{padding:1rem;}
-  #player-panels-grid,#monster-panels-grid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;}
+  /* Panneaux — taille réduite, compact possible */
+  #panels-area{padding:0.85rem;}
+  #player-panels-grid,#monster-panels-grid{
+    grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:0.85rem;
+  }
+  body.compact #player-panels-grid,body.compact #monster-panels-grid{
+    grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.6rem;
+  }
+
+  /* Réduire le contenu interne des panneaux */
+  .panel-header{padding:0.55rem 0.75rem;}
+  .panel-char-name{font-size:0.78rem;}
+  .panel-hp{padding:0.6rem 0.75rem;}
+  .hp-bar-wrap{height:8px;margin-bottom:0.45rem;}
+  .hp-num{font-size:0.95rem;}
+  .panel-stats{flex-wrap:wrap;}
+  .stat-cell{padding:0.45rem 0.2rem;}
+  .stat-val{font-size:0.88rem;}
+  .stat-lbl{font-size:0.56rem;}
+  body.compact .panel-char-sub{display:none;}
+  body.compact .stat-lbl{display:none;}
+  body.compact .panel-hp{padding:0.45rem 0.65rem;}
+  body.compact .hp-num{font-size:0.85rem;}
+  body.compact .stat-val{font-size:0.8rem;}
+  body.compact .stat-cell{padding:0.35rem 0.15rem;}
+  body.compact .panel-header{padding:0.4rem 0.6rem;}
 }
 
+/* ─── Petite tablette / phablet (≤768px) ─── */
 @media(max-width:768px){
-  /* ── Nav compacte ── */
-  #dm-nav{gap:0.35rem;}
-  #btn-open-drawer::before{content:'📋';margin-right:0.25rem;}
+  /* Nav encore plus compacte */
+  #dm-nav{gap:0.3rem;padding:0 0.5rem;}
   #poll-indicator{display:none;}
-  #btn-refresh{min-width:36px;padding:0 0.45rem;}
+  #btn-refresh{min-width:40px;padding:0 0.4rem;}
 
-  /* ── Init bar ── */
-  #init-header{flex-wrap:wrap;height:auto;padding:0.6rem 1rem;gap:0.45rem;}
-  #init-bar.open{max-height:260px;}
-  .init-chip{min-width:80px;}
+  /* Init bar */
+  #init-header{flex-wrap:wrap;height:auto;padding:0.55rem 0.85rem;gap:0.4rem;}
+  #init-bar.open{max-height:270px;}
+  .init-chip{min-width:78px;}
 
-  /* ── Panneau unique colonne ── */
-  #player-panels-grid,#monster-panels-grid{grid-template-columns:1fr;}
-  #panels-area{padding:0.75rem;}
+  /* Panneaux : 2 colonnes ou 1 selon espace */
+  #player-panels-grid,#monster-panels-grid{
+    grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.65rem;
+  }
+  body.compact #player-panels-grid,body.compact #monster-panels-grid{
+    grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:0.5rem;
+  }
+  #panels-area{padding:0.6rem;}
 
-  /* ── Drawer plein écran ── */
+  /* Drawer plein écran */
   #player-drawer{width:100%;max-width:100%;}
 
-  /* ── Stat cells plus grandes ── */
-  .stat-cell{padding:0.55rem 0.5rem;}
-  .stat-val{font-size:1.1rem;}
+  /* Boutons HP encore plus grands */
+  .hp-qbtn{min-height:44px;font-size:0.92rem;}
+  .hp-inp{height:44px;font-size:1.05rem;}
 
-  /* ── Boutons HP plus grands ── */
-  .hp-qbtn{min-height:42px;font-size:0.9rem;}
-  .hp-inp{height:42px;font-size:1.05rem;}
-
-  /* ── Condition / resource pills ── */
-  .cond-badge{padding:0.3rem 0.65rem;font-size:0.72rem;}
+  /* Condition / resource pills */
+  .cond-badge{padding:0.28rem 0.6rem;font-size:0.7rem;}
   .resource-pip{width:18px;height:18px;}
 }
 </style>
