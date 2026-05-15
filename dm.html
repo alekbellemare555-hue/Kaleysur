@@ -264,9 +264,26 @@ input,select{font-family:inherit;color-scheme:dark;}
 }
 #dm-main::-webkit-scrollbar{width:5px;}
 #dm-main::-webkit-scrollbar-thumb{background:var(--border-bright);border-radius:3px;}
-#panels-area{flex:1;padding:1.25rem;}
-#panels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:1.1rem;}
-body.compact #panels-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:0.7rem;}
+#panels-area{flex:1;padding:1.25rem;display:flex;flex-direction:column;gap:1.5rem;}
+.panels-section-header{
+  display:flex;align-items:center;gap:0.6rem;
+  margin-bottom:0.85rem;padding-bottom:0.55rem;
+  border-bottom:1px solid var(--border-bright);
+}
+.panels-section-icon{font-size:0.95rem;opacity:0.8;}
+.panels-section-label{
+  font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:0.12em;
+  text-transform:uppercase;color:var(--gold);
+}
+.monster-section-header .panels-section-label{color:var(--danger);}
+.panels-section-count{
+  margin-left:auto;font-size:0.65rem;color:var(--text-dim);
+  background:var(--border-bright);border-radius:10px;
+  padding:0.1rem 0.5rem;font-family:'Cinzel',serif;letter-spacing:0.05em;
+}
+#player-panels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:1.1rem;}
+#monster-panels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:1.1rem;}
+body.compact #player-panels-grid,body.compact #monster-panels-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:0.7rem;}
 
 /* Empty state */
 #empty-state{
@@ -525,7 +542,22 @@ body.compact .panel-char-sub{display:none;}
           <div class="empty-icon">⚔</div>
           <p>Sélectionne un personnage dans la barre latérale<br>pour ouvrir un panneau de combat.</p>
         </div>
-        <div id="panels-grid" style="display:none;"></div>
+        <div id="player-panels-section" style="display:none;">
+          <div class="panels-section-header">
+            <span class="panels-section-icon">🧙</span>
+            <span class="panels-section-label">Joueurs</span>
+            <span class="panels-section-count" id="player-panels-count"></span>
+          </div>
+          <div id="player-panels-grid"></div>
+        </div>
+        <div id="monster-panels-section" style="display:none;">
+          <div class="panels-section-header monster-section-header">
+            <span class="panels-section-icon">💀</span>
+            <span class="panels-section-label">PNJ &amp; Monstres</span>
+            <span class="panels-section-count" id="monster-panels-count"></span>
+          </div>
+          <div id="monster-panels-grid"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -609,15 +641,15 @@ function restoreDmState() {
     }
     // Re-ouvrir les panels
     if (s.openPanels) {
-      const grid = document.getElementById('panels-grid');
       for (const key of Object.keys(s.openPanels)) {
         openPanels[key] = s.openPanels[key];
         const type = key.startsWith('m::') ? 'monster' : 'player';
         if (document.getElementById('panel-' + key)) continue;
+        const gridId = type === 'monster' ? 'monster-panels-grid' : 'player-panels-grid';
         const el = document.createElement('div');
         el.className = 'combat-panel' + (type === 'monster' ? ' monster-panel' : '');
         el.id = 'panel-' + key;
-        grid.appendChild(el);
+        document.getElementById(gridId).appendChild(el);
         updatePanel(key);
       }
       updateEmptyState();
@@ -894,7 +926,8 @@ function togglePanel(key) {
 function openPanel(key) {
   const type = key.startsWith('m::') ? 'monster' : 'player';
   openPanels[key] = { type, key };
-  const grid = document.getElementById('panels-grid');
+  const gridId = type === 'monster' ? 'monster-panels-grid' : 'player-panels-grid';
+  const grid = document.getElementById(gridId);
   const el   = document.createElement('div');
   el.className = 'combat-panel' + (type === 'monster' ? ' monster-panel' : '');
   el.id = 'panel-' + key;
@@ -916,9 +949,14 @@ function closePanel(key) {
 }
 
 function updateEmptyState() {
-  const empty = !Object.keys(openPanels).length;
-  document.getElementById('empty-state').style.display = empty ? '' : 'none';
-  document.getElementById('panels-grid').style.display = empty ? 'none' : '';
+  const keys = Object.keys(openPanels);
+  const playerKeys  = keys.filter(k => !k.startsWith('m::'));
+  const monsterKeys = keys.filter(k =>  k.startsWith('m::'));
+  document.getElementById('empty-state').style.display = keys.length ? 'none' : '';
+  document.getElementById('player-panels-section').style.display  = playerKeys.length  ? '' : 'none';
+  document.getElementById('monster-panels-section').style.display = monsterKeys.length ? '' : 'none';
+  document.getElementById('player-panels-count').textContent  = playerKeys.length  || '';
+  document.getElementById('monster-panels-count').textContent = monsterKeys.length || '';
 }
 
 function refreshOpenPanels() {
