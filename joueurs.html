@@ -1637,6 +1637,15 @@
 
   /* Undo toast — remonter au-dessus de la barre basse */
   #undo-toast { bottom: calc(68px + env(safe-area-inset-bottom, 0px)) !important; }
+
+  /* Topbar — empêcher les boutons de déborder hors des 48px */
+  .dash-header.vb-topbar { overflow: hidden !important; }
+
+  /* Masquer les éléments non essentiels pour libérer de la place */
+  #conn-indicator { display: none !important; }
+  .save-badge { display: none !important; }
+  #btn-new-char { display: none !important; }
+  #btn-logout { display: none !important; }
 }
 
 /* ── Barre d'onglets de sections (mobile/tablette ≤ 1024px) ── */
