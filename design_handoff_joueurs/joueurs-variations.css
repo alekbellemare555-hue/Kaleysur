@@ -1,0 +1,44 @@
+/* Shared tokens — Kaleysur palette extracted from style.css */
+:root {
+  --k-bg:        #110d07;
+  --k-bg2:       #1c1409;
+  --k-card:      #221a0e;
+  --k-cardh:     #2d2211;
+  --k-nav:       #0f0b05;
+  --k-border:    #4a3510;
+  --k-borderL:   #6b4f1e;
+  --k-gold:      #c9a227;
+  --k-goldL:     #e8c84a;
+  --k-goldD:     #8a6e1a;
+  --k-parchment: #e8d5b0;
+  --k-parchD:    #b8a880;
+  --k-red:       #9b2d3d;
+  --k-redD:      #7a1e2e;
+  --k-text:      #e2cfa0;
+  --k-text2:     #a89060;
+  --k-mute:      #6e5530;
+  --k-success:   #6aba6a;
+  --k-danger:    #c97a7a;
+  --k-arc:       #8a76d4;
+  --k-fire:      #d97a3a;
+  --k-radiant:   #e6d27a;
+  --k-ft:        'Cinzel', 'Palatino Linotype', serif;
+  --k-fb:        'Lora', 'Georgia', serif;
+}
+
+/* Reset within artboards */
+.j-art *, .j-art *::before, .j-art *::after { box-sizing: border-box; }
+.j-art { font-family: var(--k-fb); color: var(--k-text); background: var(--k-bg); }
+
+/* Common helpers */
+.k-mono-cap { font-family: var(--k-ft); letter-spacing: 0.12em; text-transform: uppercase; }
+.k-corner { position: absolute; color: var(--k-goldD); opacity: 0.55; line-height: 1; font-size: 0.75rem; }
+.k-corner.tl { top: 6px; left: 8px; }
+.k-corner.tr { top: 6px; right: 8px; }
+.k-corner.bl { bottom: 6px; left: 8px; }
+.k-corner.br { bottom: 6px; right: 8px; }
+
+/* Scrollbars */
+.j-art ::-webkit-scrollbar { width: 8px; height: 8px; }
+.j-art ::-webkit-scrollbar-track { background: transparent; }
+.j-art ::-webkit-scrollbar-thumb { background: var(--k-border); border-radius: 4px; }
