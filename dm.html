@@ -390,6 +390,64 @@ let initState = {
 };
 
 /* ══════════════════════════════════════════
+   Persistance localStorage
+══════════════════════════════════════════ */
+const DM_STATE_KEY = 'kaleysur-dm-v1';
+
+function saveDmState() {
+  try {
+    localStorage.setItem(DM_STATE_KEY, JSON.stringify({
+      localMonsters,
+      monsterCounter,
+      openPanels,
+      expandedPlayers: [...expandedPlayers],
+      compactMode,
+      initState
+    }));
+  } catch(e) {}
+}
+
+function restoreDmState() {
+  try {
+    const raw = localStorage.getItem(DM_STATE_KEY);
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    if (s.localMonsters)   localMonsters   = s.localMonsters;
+    if (s.monsterCounter != null) monsterCounter = s.monsterCounter;
+    if (s.expandedPlayers) expandedPlayers = new Set(s.expandedPlayers);
+    if (typeof s.compactMode === 'boolean') {
+      compactMode = s.compactMode;
+      document.body.classList.toggle('compact', compactMode);
+      document.getElementById('btn-compact')?.classList.toggle('active', compactMode);
+    }
+    if (s.initState) {
+      Object.assign(initState, s.initState);
+      document.getElementById('init-bar').className = initState.open ? 'open' : 'collapsed';
+      document.getElementById('btn-init-open')?.classList.toggle('active', initState.open);
+      document.getElementById('init-round-label').textContent = 'Tour ' + (initState.round || 1);
+    }
+    // Re-ouvrir les panels
+    if (s.openPanels) {
+      const grid = document.getElementById('panels-grid');
+      for (const key of Object.keys(s.openPanels)) {
+        openPanels[key] = s.openPanels[key];
+        const type = key.startsWith('m::') ? 'monster' : 'player';
+        if (document.getElementById('panel-' + key)) continue;
+        const el = document.createElement('div');
+        el.className = 'combat-panel' + (type === 'monster' ? ' monster-panel' : '');
+        el.id = 'panel-' + key;
+        grid.appendChild(el);
+        updatePanel(key);
+      }
+      updateEmptyState();
+    }
+    renderSidebar();
+    renderMonsterSidebar();
+    renderInitChips();
+  } catch(e) {}
+}
+
+/* ══════════════════════════════════════════
    Supabase
 ══════════════════════════════════════════ */
 async function sbFetch(path, opts={}) {
@@ -452,6 +510,7 @@ async function enterDM() {
   document.getElementById('screen-auth').style.display = 'none';
   document.getElementById('screen-dm').style.display   = 'block';
   await refreshAllPlayers();
+  restoreDmState();
   startRealtime();
   // Polling de secours toutes les 60s si Realtime déconnecté
   pollTimer = setInterval(pollPlayers, 60000);
@@ -523,6 +582,7 @@ document.getElementById('btn-compact').addEventListener('click', () => {
   compactMode = !compactMode;
   document.body.classList.toggle('compact', compactMode);
   document.getElementById('btn-compact').classList.toggle('active', compactMode);
+  saveDmState();
 });
 
 /* ══════════════════════════════════════════
@@ -581,6 +641,7 @@ function renderSidebar() {
       if (expandedPlayers.has(player.username)) expandedPlayers.delete(player.username);
       else expandedPlayers.add(player.username);
       renderSidebar();
+      saveDmState();
     });
     item.querySelectorAll('.char-entry').forEach(el => {
       el.addEventListener('click', e => {
@@ -620,6 +681,7 @@ function createMonster() {
 
   renderMonsterSidebar();
   openPanel('m::' + id);
+  saveDmState();
 }
 
 function renderMonsterSidebar() {
@@ -660,6 +722,7 @@ function openPanel(key) {
   renderSidebar();
   renderMonsterSidebar();
   updateEmptyState();
+  saveDmState();
 }
 
 function closePanel(key) {
@@ -668,6 +731,7 @@ function closePanel(key) {
   renderSidebar();
   renderMonsterSidebar();
   updateEmptyState();
+  saveDmState();
 }
 
 function updateEmptyState() {
@@ -950,6 +1014,7 @@ function renderMonsterPanel(panel, key) {
     closePanel(key);
     renderMonsterSidebar();
     removeInitCombatant(key);
+    saveDmState();
   });
 
   panel.querySelectorAll('.hp-qbtn').forEach(btn => {
@@ -958,6 +1023,7 @@ function renderMonsterPanel(panel, key) {
       updatePanel(key);
       renderMonsterSidebar();
       renderInitChips();
+      saveDmState();
     });
   });
   panel.querySelector('[data-apply]')?.addEventListener('click', () => {
@@ -969,6 +1035,7 @@ function renderMonsterPanel(panel, key) {
       updatePanel(key);
       renderMonsterSidebar();
       renderInitChips();
+      saveDmState();
     }
   });
   panel.querySelector('.hp-inp')?.addEventListener('keydown', e => {
@@ -983,6 +1050,7 @@ function renderMonsterPanel(panel, key) {
       m.hpMax = v;
       m.hp = Math.min(m.hp, v);
       updatePanel(key);
+      saveDmState();
     });
   }
 
@@ -990,6 +1058,7 @@ function renderMonsterPanel(panel, key) {
     el.addEventListener('click', () => {
       m.conditions = m.conditions.filter(x => x !== el.dataset.removeCond);
       updatePanel(key);
+      saveDmState();
     });
   });
   panel.querySelectorAll('.cond-add-btn').forEach(btn => {
@@ -1005,6 +1074,7 @@ function renderMonsterPanel(panel, key) {
       document.getElementById('cmenu-' + key)?.classList.remove('open');
       if (!m.conditions.includes(el.dataset.addCond)) m.conditions.push(el.dataset.addCond);
       updatePanel(key);
+      saveDmState();
     });
   });
 }
@@ -1075,12 +1145,14 @@ document.getElementById('btn-init-open').addEventListener('click', () => {
   document.getElementById('init-bar').className = initState.open ? 'open' : 'collapsed';
   document.getElementById('btn-init-open').classList.toggle('active', initState.open);
   if (initState.open && !initState.combatants.length) buildInitCombatants();
+  saveDmState();
 });
 document.getElementById('init-toggle').addEventListener('click', () => {
   initState.open = !initState.open;
   document.getElementById('init-bar').className = initState.open ? 'open' : 'collapsed';
   document.getElementById('btn-init-open').classList.toggle('active', initState.open);
   document.getElementById('init-toggle').querySelector('.arrow').style.transform = initState.open ? 'rotate(90deg)' : '';
+  saveDmState();
 });
 document.getElementById('init-next').addEventListener('click', () => {
   if (!initState.combatants.length) return;
@@ -1088,6 +1160,7 @@ document.getElementById('init-next').addEventListener('click', () => {
   if (initState.currentIdx === 0) initState.round++;
   document.getElementById('init-round-label').textContent = 'Tour ' + initState.round;
   renderInitChips();
+  saveDmState();
 });
 document.getElementById('init-prev').addEventListener('click', () => {
   if (!initState.combatants.length) return;
@@ -1095,6 +1168,7 @@ document.getElementById('init-prev').addEventListener('click', () => {
   initState.currentIdx = (initState.currentIdx - 1 + initState.combatants.length) % initState.combatants.length;
   document.getElementById('init-round-label').textContent = 'Tour ' + initState.round;
   renderInitChips();
+  saveDmState();
 });
 document.getElementById('init-roll-all').addEventListener('click', () => {
   buildInitCombatants(true);
@@ -1103,6 +1177,7 @@ document.getElementById('init-roll-all').addEventListener('click', () => {
     document.getElementById('init-bar').className = 'open';
     document.getElementById('btn-init-open').classList.add('active');
   }
+  saveDmState();
 });
 document.getElementById('init-clear').addEventListener('click', () => {
   initState.combatants = [];
@@ -1110,6 +1185,7 @@ document.getElementById('init-clear').addEventListener('click', () => {
   initState.round = 1;
   document.getElementById('init-round-label').textContent = 'Tour 1';
   renderInitChips();
+  saveDmState();
 });
 
 function buildInitCombatants(roll = false) {
@@ -1190,6 +1266,7 @@ function renderInitChips() {
       initState.combatants.sort((a,b) => b.initVal - a.initVal);
       initState.currentIdx = initState.combatants.findIndex(x => x.id === ct.id);
       renderInitChips();
+      saveDmState();
     });
     chips.appendChild(chip);
   });
