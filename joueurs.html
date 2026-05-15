@@ -830,7 +830,7 @@
       align-items: center;
       padding: 0 32px;
       height: 52px;
-      background: #0a0703;
+      background: var(--bg-nav, #0a0703);
       border-bottom: 1px solid var(--j-border-col, #4a3510);
       margin-bottom: 0;
       gap: 0;
@@ -875,7 +875,7 @@
       padding: 0 32px;
       margin-bottom: 0;
       padding-bottom: 0;
-      background: #0a0703;
+      background: var(--bg-nav, #0a0703);
       border-bottom: 1px solid var(--j-border-col, #4a3510);
       min-height: 54px;
       overflow-x: auto;
@@ -939,16 +939,23 @@
       flex-direction: row;
       min-height: auto;
       min-width: auto;
-      border-style: dashed;
+      border: 1px solid var(--gold-dark, #8a6e1a);
       border-radius: 99px;
-      padding: 4px 14px;
-      gap: 4px;
+      padding: 5px 16px;
+      gap: 5px;
       align-self: center;
       margin-left: auto;
       flex-shrink: 0;
+      color: var(--gold, #c9a227);
+      background: rgba(201,162,39,0.08);
+      transition: background 0.15s, color 0.15s;
     }
-    .char-cards.vb-party-ribbon .char-card-add-icon { font-size: 0.85rem; }
-    .char-cards.vb-party-ribbon .char-card-add-label { font-size: 9.5px; margin: 0; }
+    .char-cards.vb-party-ribbon .char-card-add:hover {
+      background: rgba(201,162,39,0.18);
+      color: var(--gold);
+    }
+    .char-cards.vb-party-ribbon .char-card-add-icon { font-size: 1rem; font-weight: 600; }
+    .char-cards.vb-party-ribbon .char-card-add-label { font-size: 10px; margin: 0; font-weight: 500; letter-spacing: 0.03em; }
 
     /* Hide old tabs div */
     .tabs.vb-hidden { display: none !important; }
@@ -1752,6 +1759,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
         <span class="conn-indicator" id="conn-indicator" title="État de la connexion au cloud">…</span>
         <span class="save-badge" id="save-badge"></span>
         <button class="inspiration-btn" id="btn-inspiration" title="Inspiration (avantage sur un jet)">✦</button>
+        <button class="btn btn-sm btn-gold" id="btn-new-char" title="Nouveau personnage" onclick="openNewCharModal()" style="font-size:1rem;padding:0 0.55rem;line-height:1;">+</button>
         <button class="btn btn-sm" id="btn-layout-edit" title="Réorganiser les sections">⠿</button>
         <button class="btn btn-sm" id="btn-read-mode" title="Mode Lecture — verrouille la fiche">🔒</button>
         <button class="btn btn-sm" id="dice-tray-btn" title="Lanceur de dés">⚄</button>
