@@ -1,8 +1,9 @@
-const CACHE_NAME = 'kaleysur-v56';
+const CACHE_NAME = 'kaleysur-v57';
 
 const ASSETS = [
   'index.html',
   'joueurs.html',
+  'dm.html',
   'carte.html',
   'chronologie.html',
   'calendrier.html',

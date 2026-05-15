@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kaleysur — Table du DM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0a0703;--bg-nav:#0d0a05;--bg-card:#141009;--bg-input:#0d0d14;
+  --gold:#c9a84c;--gold-dark:#a07830;--border:#2a2218;--text:#d4c5a0;--text-dim:#888;
+  --danger:#c0392b;--heal:#27ae60;--radius:6px;--sidebar-w:280px;--nav-h:52px;
+  --shadow:0 2px 12px rgba(0,0,0,0.5);
+}
+body{background:var(--bg);color:var(--text);font-family:'Crimson Text',serif;font-size:1rem;min-height:100vh;}
+button{cursor:pointer;font-family:inherit;}
+input,select{font-family:inherit;}
+
+/* ── Nav ── */
+#dm-nav{
+  position:fixed;top:0;left:0;right:0;height:var(--nav-h);z-index:300;
+  background:var(--bg-nav);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 1.25rem;gap:1rem;
+}
+#dm-nav .brand{font-family:'Cinzel',serif;color:var(--gold);font-size:1rem;letter-spacing:0.06em;}
+#dm-nav .brand span{color:var(--text-dim);font-size:0.78rem;margin-left:0.5rem;font-family:'Crimson Text',serif;}
+#dm-nav .nav-right{margin-left:auto;display:flex;align-items:center;gap:0.75rem;}
+#poll-indicator{font-size:0.72rem;color:var(--text-dim);}
+#btn-logout{background:none;border:1px solid var(--border);color:var(--text-dim);padding:0.2rem 0.65rem;border-radius:var(--radius);font-size:0.78rem;transition:color 0.15s,border-color 0.15s;}
+#btn-logout:hover{color:var(--gold);border-color:var(--gold-dark);}
+
+/* ── Auth ── */
+#screen-auth{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem;}
+.auth-box{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:2.5rem 2rem;width:100%;max-width:340px;box-shadow:var(--shadow);}
+.auth-title{font-family:'Cinzel',serif;color:var(--gold);font-size:1.1rem;text-align:center;margin-bottom:0.25rem;}
+.auth-sub{font-size:0.8rem;color:var(--text-dim);text-align:center;margin-bottom:1.5rem;}
+.auth-label{display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-dim);margin-bottom:0.3rem;}
+.auth-input{width:100%;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);padding:0.5rem 0.75rem;margin-bottom:1rem;font-size:0.95rem;transition:border-color 0.15s;}
+.auth-input:focus{outline:none;border-color:var(--gold-dark);}
+.auth-btn{width:100%;background:var(--gold-dark);color:#fff;border:none;border-radius:var(--radius);padding:0.6rem;font-family:'Cinzel',serif;font-size:0.9rem;letter-spacing:0.04em;transition:background 0.15s;}
+.auth-btn:hover{background:var(--gold);}
+.auth-error{color:var(--danger);font-size:0.8rem;text-align:center;margin-top:0.75rem;min-height:1.1em;}
+
+/* ── DM screen ── */
+#screen-dm{display:none;padding-top:var(--nav-h);}
+#dm-layout{display:flex;height:calc(100vh - var(--nav-h));}
+
+/* ── Sidebar ── */
+#dm-sidebar{
+  width:var(--sidebar-w);flex-shrink:0;
+  background:var(--bg-nav);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+#sidebar-header{padding:0.75rem 1rem 0.5rem;border-bottom:1px solid var(--border);}
+#sidebar-header h2{font-family:'Cinzel',serif;color:var(--gold);font-size:0.85rem;letter-spacing:0.06em;margin-bottom:0.5rem;}
+#player-search{
+  width:100%;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);
+  color:var(--text);padding:0.35rem 0.6rem;font-size:0.82rem;
+}
+#player-search:focus{outline:none;border-color:var(--gold-dark);}
+#player-list{flex:1;overflow-y:auto;padding:0.5rem 0;}
+#player-list::-webkit-scrollbar{width:4px;}
+#player-list::-webkit-scrollbar-track{background:transparent;}
+#player-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+
+/* ── Player item ── */
+.player-item{padding:0.45rem 1rem;cursor:pointer;border-bottom:1px solid transparent;transition:background 0.1s;}
+.player-item:hover{background:rgba(201,168,76,0.06);}
+.player-item.expanded{background:rgba(201,168,76,0.06);border-bottom:1px solid var(--border);}
+.player-head{display:flex;align-items:center;gap:0.6rem;}
+.player-avatar{font-size:1.1rem;line-height:1;flex-shrink:0;}
+.player-info{flex:1;min-width:0;}
+.player-name{font-family:'Cinzel',serif;font-size:0.78rem;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.player-hp-mini{height:3px;background:var(--border);border-radius:2px;margin-top:3px;overflow:hidden;}
+.player-hp-mini-bar{height:100%;border-radius:2px;background:var(--heal);transition:width 0.3s;}
+.player-expand-icon{font-size:0.65rem;color:var(--text-dim);transition:transform 0.15s;flex-shrink:0;}
+.player-item.expanded .player-expand-icon{transform:rotate(90deg);}
+
+/* ── Char sub-list ── */
+.char-list{display:none;padding:0.25rem 0 0.25rem 2.4rem;}
+.player-item.expanded .char-list{display:block;}
+.char-entry{
+  padding:0.3rem 0.5rem;border-radius:var(--radius);cursor:pointer;
+  font-size:0.8rem;color:var(--text-dim);transition:background 0.1s,color 0.1s;
+  display:flex;align-items:center;gap:0.4rem;
+}
+.char-entry:hover{background:rgba(201,168,76,0.1);color:var(--text);}
+.char-entry.open{color:var(--gold);font-weight:600;}
+.char-entry-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0;}
+.char-entry.open .char-entry-dot{background:var(--gold);}
+
+/* ── Main area ── */
+#dm-main{flex:1;overflow-y:auto;padding:1.25rem;background:var(--bg);}
+#dm-main::-webkit-scrollbar{width:6px;}
+#dm-main::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+#panels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:1rem;}
+#empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:calc(100vh - var(--nav-h) - 2.5rem);color:var(--text-dim);text-align:center;gap:0.5rem;}
+#empty-state .empty-icon{font-size:3rem;opacity:0.3;}
+#empty-state p{font-size:0.9rem;}
+
+/* ── Combat panel ── */
+.combat-panel{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;box-shadow:var(--shadow);transition:border-color 0.2s;
+}
+.combat-panel:hover{border-color:var(--gold-dark);}
+.panel-header{
+  display:flex;align-items:center;gap:0.6rem;padding:0.65rem 0.85rem;
+  background:var(--bg-nav);border-bottom:1px solid var(--border);
+}
+.panel-avatar{font-size:1.2rem;}
+.panel-title{flex:1;min-width:0;}
+.panel-char-name{font-family:'Cinzel',serif;color:var(--gold);font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.panel-char-sub{font-size:0.72rem;color:var(--text-dim);}
+.panel-actions{display:flex;gap:0.35rem;flex-shrink:0;}
+.panel-btn{
+  background:none;border:1px solid var(--border);color:var(--text-dim);
+  width:24px;height:24px;border-radius:4px;font-size:0.7rem;
+  display:flex;align-items:center;justify-content:center;transition:color 0.15s,border-color 0.15s;
+}
+.panel-btn:hover{color:var(--gold);border-color:var(--gold-dark);}
+.panel-btn.danger:hover{color:var(--danger);border-color:var(--danger);}
+
+/* HP section */
+.panel-hp{padding:0.75rem 0.85rem;border-bottom:1px solid var(--border);}
+.hp-bar-wrap{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:0.5rem;}
+.hp-bar-fill{height:100%;border-radius:4px;transition:width 0.35s,background 0.35s;}
+.hp-numbers{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem;}
+.hp-text{font-family:'Cinzel',serif;font-size:0.9rem;}
+.hp-temp{font-size:0.75rem;color:var(--gold);margin-left:0.4rem;}
+.hp-controls{display:flex;gap:0.4rem;align-items:center;}
+.hp-quick-btn{
+  background:var(--bg-input);border:1px solid var(--border);color:var(--text);
+  padding:0.25rem 0.5rem;border-radius:var(--radius);font-size:0.8rem;
+  transition:background 0.1s,border-color 0.1s;
+}
+.hp-quick-btn.minus:hover{background:rgba(192,57,43,0.15);border-color:var(--danger);color:var(--danger);}
+.hp-quick-btn.plus:hover{background:rgba(39,174,96,0.15);border-color:var(--heal);color:var(--heal);}
+.hp-inp{
+  flex:1;background:var(--bg-input);border:1px solid var(--border);color:var(--text);
+  padding:0.25rem 0.4rem;border-radius:var(--radius);font-size:0.82rem;text-align:center;
+  min-width:0;
+}
+.hp-inp:focus{outline:none;border-color:var(--gold-dark);}
+.hp-apply{
+  background:var(--gold-dark);border:none;color:#fff;
+  padding:0.25rem 0.6rem;border-radius:var(--radius);font-size:0.78rem;
+  transition:background 0.15s;
+}
+.hp-apply:hover{background:var(--gold);}
+.hp-death{
+  display:flex;gap:0.25rem;align-items:center;flex-wrap:wrap;margin-top:0.4rem;font-size:0.72rem;color:var(--text-dim);
+}
+.hp-death-dot{width:10px;height:10px;border-radius:50%;border:1px solid var(--border);}
+.hp-death-dot.success{background:var(--heal);border-color:var(--heal);}
+.hp-death-dot.fail{background:var(--danger);border-color:var(--danger);}
+
+/* Stats row */
+.panel-stats{display:flex;border-bottom:1px solid var(--border);}
+.stat-cell{flex:1;text-align:center;padding:0.55rem 0.3rem;border-right:1px solid var(--border);}
+.stat-cell:last-child{border-right:none;}
+.stat-val{font-family:'Cinzel',serif;color:var(--gold);font-size:1rem;}
+.stat-lbl{font-size:0.62rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-dim);}
+
+/* Conditions */
+.panel-cond{padding:0.65rem 0.85rem;}
+.cond-label{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-dim);margin-bottom:0.45rem;}
+.cond-badges{display:flex;flex-wrap:wrap;gap:0.35rem;}
+.cond-badge{
+  background:rgba(192,57,43,0.15);border:1px solid rgba(192,57,43,0.4);color:#e07060;
+  font-size:0.72rem;padding:0.15rem 0.45rem;border-radius:3px;cursor:pointer;
+  transition:background 0.1s;display:flex;align-items:center;gap:0.25rem;
+}
+.cond-badge:hover{background:rgba(192,57,43,0.3);}
+.cond-badge .cond-x{opacity:0.7;font-size:0.65rem;}
+.cond-add-btn{
+  background:none;border:1px dashed var(--border);color:var(--text-dim);
+  font-size:0.72rem;padding:0.15rem 0.5rem;border-radius:3px;cursor:pointer;
+  transition:border-color 0.1s,color 0.1s;
+}
+.cond-add-btn:hover{border-color:var(--gold-dark);color:var(--gold);}
+
+/* Condition picker dropdown */
+.cond-picker{
+  position:relative;display:inline-block;
+}
+.cond-picker-menu{
+  position:absolute;bottom:calc(100% + 4px);left:0;z-index:200;
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
+  box-shadow:var(--shadow);display:none;min-width:160px;
+}
+.cond-picker-menu.open{display:block;}
+.cond-picker-opt{
+  padding:0.35rem 0.75rem;font-size:0.8rem;cursor:pointer;
+  transition:background 0.1s;white-space:nowrap;
+}
+.cond-picker-opt:hover{background:rgba(201,168,76,0.1);color:var(--gold);}
+
+/* ── Misc ── */
+.loading{color:var(--text-dim);font-size:0.85rem;font-style:italic;padding:1rem;}
+</style>
+</head>
+<body>
+
+<!-- ══ Auth ══ -->
+<div id="screen-auth">
+  <div class="auth-box">
+    <div class="auth-title">Table du Maître de Jeu</div>
+    <div class="auth-sub">Kaleysur · Espace DM</div>
+    <label class="auth-label" for="auth-user">Identifiant</label>
+    <input type="text" class="auth-input" id="auth-user" placeholder="dm" autocorrect="off" autocapitalize="none">
+    <label class="auth-label" for="auth-pass">Mot de passe</label>
+    <input type="password" class="auth-input" id="auth-pass" placeholder="••••••••">
+    <button class="auth-btn" id="btn-login">Entrer</button>
+    <div class="auth-error" id="auth-error"></div>
+  </div>
+</div>
+
+<!-- ══ DM screen ══ -->
+<div id="screen-dm">
+  <nav id="dm-nav">
+    <span class="brand">Kaleysur <span>· Table du DM</span></span>
+    <div class="nav-right">
+      <span id="poll-indicator">—</span>
+      <button id="btn-refresh" class="panel-btn" title="Actualiser maintenant" style="width:auto;padding:0 0.5rem;height:26px;">↺ Actualiser</button>
+      <button id="btn-logout">Déconnexion</button>
+    </div>
+  </nav>
+
+  <div id="dm-layout">
+    <!-- Sidebar joueurs -->
+    <div id="dm-sidebar">
+      <div id="sidebar-header">
+        <h2>Joueurs</h2>
+        <input type="text" id="player-search" placeholder="Rechercher…">
+      </div>
+      <div id="player-list"><div class="loading">Chargement…</div></div>
+    </div>
+
+    <!-- Panneaux combat -->
+    <div id="dm-main">
+      <div id="empty-state">
+        <div class="empty-icon">⚔</div>
+        <p>Sélectionne un personnage dans la barre latérale<br>pour ouvrir un panneau de combat.</p>
+      </div>
+      <div id="panels-grid"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══ Config ══ */
+const SB_URL  = 'https://hevwgdsvgepiieuvhclg.supabase.co';
+const SB_KEY  = 'sb_publishable_TDTCogCSFP-Lvus2x3rAAg_60l036tq';
+const SB_HDR  = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' };
+const ADMIN_USER = 'dm';
+const POLL_MS = 10000;
+const ALL_CONDITIONS = ['Blinded','Charmed','Deafened','Frightened','Grappled',
+  'Incapacitated','Invisible','Poisoned','Prone','Restrained','Stunned','Unconscious','Concentrating'];
+
+/* ══ État ══ */
+let currentUser = null;
+let allPlayers  = [];   // [{username, data}]
+let openPanels  = {};   // { "username::charId": {username, charId} }
+let expandedPlayers = new Set();
+let pollTimer   = null;
+let saveTimers  = {};
+
+/* ══ Supabase helpers ══ */
+async function sbFetch(path, opts={}) {
+  return fetch(SB_URL + path, { ...opts, headers: { ...SB_HDR, ...(opts.headers||{}) } });
+}
+async function hashPwd(pwd) {
+  const d = new TextEncoder().encode(pwd + ':kaleysur_v3');
+  const h = await crypto.subtle.digest('SHA-256', d);
+  return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function sbGetPlayer(username) {
+  const r = await sbFetch(`/rest/v1/players?username=eq.${encodeURIComponent(username)}&select=*`);
+  return (await r.json())[0] || null;
+}
+async function sbGetAllPlayers() {
+  const r = await sbFetch('/rest/v1/players?select=username,data&order=username.asc');
+  if (!r.ok) return [];
+  return r.json();
+}
+async function sbUpdateData(username, data) {
+  return sbFetch(`/rest/v1/players?username=eq.${encodeURIComponent(username)}`, {
+    method:'PATCH', headers:{'Prefer':'return=minimal'}, body: JSON.stringify({data})
+  });
+}
+
+/* ══ Session ══ */
+function saveSession(u) { localStorage.setItem('kaleysur_dm_user', u); }
+function loadSession()  { return localStorage.getItem('kaleysur_dm_user'); }
+function clearSession() { localStorage.removeItem('kaleysur_dm_user'); }
+
+/* ══ Auth ══ */
+document.getElementById('btn-login').addEventListener('click', doLogin);
+document.getElementById('auth-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+async function doLogin() {
+  const btn  = document.getElementById('btn-login');
+  const user = document.getElementById('auth-user').value.trim().toLowerCase();
+  const pass = document.getElementById('auth-pass').value;
+  const err  = document.getElementById('auth-error');
+  err.textContent = '';
+  if (!user || !pass) { err.textContent = 'Identifiant et mot de passe requis.'; return; }
+  btn.textContent = '…'; btn.disabled = true;
+  try {
+    const row = await sbGetPlayer(user);
+    if (!row) throw new Error('Utilisateur inconnu.');
+    const h = await hashPwd(pass);
+    if (h !== row.password_hash) throw new Error('Mot de passe incorrect.');
+    currentUser = user;
+    saveSession(user);
+    enterDM();
+  } catch(e) {
+    err.textContent = e.message;
+  } finally {
+    btn.textContent = 'Entrer'; btn.disabled = false;
+  }
+}
+
+async function enterDM() {
+  document.getElementById('screen-auth').style.display = 'none';
+  document.getElementById('screen-dm').style.display   = '';
+  await refreshAllPlayers();
+  pollTimer = setInterval(pollPlayers, POLL_MS);
+}
+
+document.getElementById('btn-logout').addEventListener('click', () => {
+  clearInterval(pollTimer);
+  clearSession();
+  location.reload();
+});
+
+/* ══ Polling ══ */
+async function refreshAllPlayers() {
+  updatePollIndicator('↻');
+  allPlayers = await sbGetAllPlayers();
+  renderSidebar();
+  refreshOpenPanels();
+  updatePollIndicator('✓ ' + new Date().toLocaleTimeString('fr',{hour:'2-digit',minute:'2-digit',second:'2-digit'}));
+}
+
+async function pollPlayers() { await refreshAllPlayers(); }
+
+document.getElementById('btn-refresh').addEventListener('click', refreshAllPlayers);
+
+function updatePollIndicator(msg) {
+  document.getElementById('poll-indicator').textContent = msg;
+}
+
+/* ══ Sidebar ══ */
+document.getElementById('player-search').addEventListener('input', renderSidebar);
+
+function renderSidebar() {
+  const q    = document.getElementById('player-search').value.trim().toLowerCase();
+  const list = document.getElementById('player-list');
+  const filtered = allPlayers.filter(p => p.username !== ADMIN_USER && p.username.includes(q));
+
+  if (!filtered.length) {
+    list.innerHTML = '<div class="loading">Aucun joueur trouvé.</div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  filtered.forEach(player => {
+    const data  = player.data || {};
+    const chars = Object.entries(data.characters || {});
+    const avatar= data.avatar || '⚔';
+    const expanded = expandedPlayers.has(player.username);
+
+    // Mini HP : premier personnage actif
+    const activeId  = data.activeCharId;
+    const activeChar = activeId ? data.characters?.[activeId]?.character : null;
+    const hpPct = activeChar ? Math.max(0, Math.min(100, (activeChar.pvActuel||0) / Math.max(1, activeChar.pvMax||1) * 100)) : 0;
+
+    const item = document.createElement('div');
+    item.className = 'player-item' + (expanded ? ' expanded' : '');
+    item.dataset.username = player.username;
+
+    item.innerHTML = `
+      <div class="player-head">
+        <span class="player-avatar">${avatar}</span>
+        <div class="player-info">
+          <div class="player-name">${esc(player.username)}</div>
+          <div class="player-hp-mini"><div class="player-hp-mini-bar" style="width:${hpPct}%;background:${hpColor(hpPct)};"></div></div>
+        </div>
+        <span class="player-expand-icon">▶</span>
+      </div>
+      <div class="char-list">
+        ${chars.map(([cid, slot]) => {
+          const key = player.username + '::' + cid;
+          const isOpen = !!openPanels[key];
+          const c = slot.character || {};
+          const sub = [c.classe, c.niveau ? 'niv.'+c.niveau : ''].filter(Boolean).join(' ');
+          return `<div class="char-entry${isOpen?' open':''}" data-key="${esc(key)}">
+            <span class="char-entry-dot"></span>
+            <span>${esc(slot.name||'Personnage')}</span>
+            ${sub ? `<span style="font-size:0.7rem;color:var(--text-dim);margin-left:auto;">${esc(sub)}</span>` : ''}
+          </div>`;
+        }).join('')}
+        ${chars.length===0 ? '<div style="font-size:0.75rem;color:var(--text-dim);padding:0.2rem 0;">Aucun personnage</div>' : ''}
+      </div>`;
+
+    item.querySelector('.player-head').addEventListener('click', () => {
+      if (expandedPlayers.has(player.username)) expandedPlayers.delete(player.username);
+      else expandedPlayers.add(player.username);
+      renderSidebar();
+    });
+
+    item.querySelectorAll('.char-entry').forEach(el => {
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        const key = el.dataset.key;
+        const [uname, cid] = key.split('::');
+        togglePanel(uname, cid);
+      });
+    });
+
+    list.appendChild(item);
+  });
+}
+
+/* ══ Panels ══ */
+function togglePanel(username, charId) {
+  const key = username + '::' + charId;
+  if (openPanels[key]) {
+    closePanel(key);
+  } else {
+    openPanel(username, charId);
+  }
+}
+
+function openPanel(username, charId) {
+  const key = username + '::' + charId;
+  openPanels[key] = { username, charId };
+  const player = allPlayers.find(p => p.username === username);
+  addPanelDOM(key, player?.data || {}, charId);
+  renderSidebar();
+  updateEmptyState();
+}
+
+function closePanel(key) {
+  delete openPanels[key];
+  document.getElementById('panel-' + key)?.remove();
+  renderSidebar();
+  updateEmptyState();
+}
+
+function updateEmptyState() {
+  const empty = Object.keys(openPanels).length === 0;
+  document.getElementById('empty-state').style.display = empty ? '' : 'none';
+  document.getElementById('panels-grid').style.display = empty ? 'none' : '';
+}
+
+function refreshOpenPanels() {
+  for (const [key, {username, charId}] of Object.entries(openPanels)) {
+    const player = allPlayers.find(p => p.username === username);
+    if (player) updatePanelDOM(key, player.data || {}, charId);
+  }
+}
+
+/* ══ Panel DOM ══ */
+function addPanelDOM(key, playerData, charId) {
+  const grid = document.getElementById('panels-grid');
+  const el = document.createElement('div');
+  el.className = 'combat-panel';
+  el.id = 'panel-' + key;
+  grid.appendChild(el);
+  updatePanelDOM(key, playerData, charId);
+}
+
+function updatePanelDOM(key, playerData, charId) {
+  const panel = document.getElementById('panel-' + key);
+  if (!panel) return;
+
+  const slot = playerData?.characters?.[charId];
+  const c    = slot?.character || {};
+  const charName = slot?.name || 'Inconnu';
+  const avatar   = playerData?.avatar || '⚔';
+  const sub      = [c.classe, c.niveau ? 'Niv. '+c.niveau : '', c.species].filter(Boolean).join(' · ');
+
+  const pvMax   = parseInt(c.pvMax)    || 0;
+  const pvAct   = parseInt(c.pvActuel) || 0;
+  const pvTemp  = parseInt(c.pvTemp)   || 0;
+  const pct     = pvMax > 0 ? Math.max(0, Math.min(100, pvAct / pvMax * 100)) : 0;
+  const dead    = pvAct <= 0 && pvMax > 0;
+
+  const succès  = parseInt(c.mortSucces)  || 0;
+  const échecs  = parseInt(c.mortEchecs)  || 0;
+
+  const ca       = c.ca       ?? '—';
+  const init     = c.initiative !== undefined ? (c.initiative >= 0 ? '+'+c.initiative : c.initiative) : '—';
+  const vitesse  = c.vitesse  ?? '—';
+
+  const conditions = Array.isArray(c.conditions) ? c.conditions : [];
+
+  panel.innerHTML = `
+    <!-- Header -->
+    <div class="panel-header">
+      <span class="panel-avatar">${avatar}</span>
+      <div class="panel-title">
+        <div class="panel-char-name">${esc(charName)}</div>
+        ${sub ? `<div class="panel-char-sub">${esc(sub)}</div>` : ''}
+      </div>
+      <div class="panel-actions">
+        <button class="panel-btn" title="Fermer" data-close="${esc(key)}">✕</button>
+      </div>
+    </div>
+
+    <!-- HP -->
+    <div class="panel-hp">
+      <div class="hp-bar-wrap">
+        <div class="hp-bar-fill" style="width:${pct}%;background:${hpColor(pct)};"></div>
+      </div>
+      <div class="hp-numbers">
+        <span class="hp-text" style="color:${dead?'var(--danger)':'var(--text)'};">
+          ${pvAct} <span style="color:var(--text-dim);">/ ${pvMax} HP</span>
+          ${pvTemp > 0 ? `<span class="hp-temp">(+${pvTemp} temp)</span>` : ''}
+        </span>
+        ${dead ? `<span style="color:var(--danger);font-size:0.75rem;">💀 Mort / 0 HP</span>` : ''}
+      </div>
+      <div class="hp-controls">
+        <button class="hp-quick-btn minus" data-delta="-5">−5</button>
+        <button class="hp-quick-btn minus" data-delta="-1">−1</button>
+        <input type="number" class="hp-inp" placeholder="±HP" id="hp-inp-${esc(key)}">
+        <button class="hp-quick-btn plus"  data-delta="+1">+1</button>
+        <button class="hp-quick-btn plus"  data-delta="+5">+5</button>
+        <button class="hp-apply" data-apply="${esc(key)}">✓</button>
+      </div>
+      ${dead ? `<div class="hp-death">
+        Jets de mort :
+        ${[1,2,3].map(i=>`<span class="hp-death-dot${i<=succès?' success':''}" title="Succès ${i}"></span>`).join('')}
+        <span style="margin:0 3px;">|</span>
+        ${[1,2,3].map(i=>`<span class="hp-death-dot${i<=échecs?' fail':''}" title="Échec ${i}"></span>`).join('')}
+      </div>` : ''}
+    </div>
+
+    <!-- Stats -->
+    <div class="panel-stats">
+      <div class="stat-cell"><div class="stat-val">${ca}</div><div class="stat-lbl">CA</div></div>
+      <div class="stat-cell"><div class="stat-val">${init}</div><div class="stat-lbl">Init.</div></div>
+      <div class="stat-cell"><div class="stat-val">${vitesse}m</div><div class="stat-lbl">Vitesse</div></div>
+    </div>
+
+    <!-- Conditions -->
+    <div class="panel-cond">
+      <div class="cond-label">Conditions</div>
+      <div class="cond-badges">
+        ${conditions.map(cond => `
+          <span class="cond-badge" data-remove-cond="${esc(cond)}" data-panel-key="${esc(key)}" title="Retirer">
+            ${esc(cond)} <span class="cond-x">✕</span>
+          </span>`).join('')}
+        <div class="cond-picker">
+          <button class="cond-add-btn" data-panel-key="${esc(key)}">+ Condition</button>
+          <div class="cond-picker-menu" id="cond-menu-${esc(key)}">
+            ${ALL_CONDITIONS.filter(c => !conditions.includes(c)).map(c =>
+              `<div class="cond-picker-opt" data-add-cond="${esc(c)}" data-panel-key="${esc(key)}">${esc(c)}</div>`
+            ).join('')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  attachPanelEvents(panel, key);
+}
+
+function attachPanelEvents(panel, key) {
+  const [username, charId] = key.split('::');
+
+  /* Fermer */
+  panel.querySelector('[data-close]')?.addEventListener('click', () => closePanel(key));
+
+  /* HP quick buttons */
+  panel.querySelectorAll('.hp-quick-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const delta = parseInt(btn.dataset.delta);
+      applyHpDelta(username, charId, key, delta);
+    });
+  });
+
+  /* HP apply */
+  panel.querySelector('[data-apply]')?.addEventListener('click', () => {
+    const inp = document.getElementById('hp-inp-' + key);
+    const v = parseInt(inp?.value);
+    if (!isNaN(v) && v !== 0) {
+      applyHpDelta(username, charId, key, v);
+      if (inp) inp.value = '';
+    }
+  });
+  panel.querySelector('.hp-inp')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') panel.querySelector('[data-apply]')?.click();
+  });
+
+  /* Retirer condition */
+  panel.querySelectorAll('[data-remove-cond]').forEach(el => {
+    el.addEventListener('click', () => {
+      const cond = el.dataset.removeCond;
+      modifyCondition(username, charId, key, cond, false);
+    });
+  });
+
+  /* Ouvrir picker */
+  panel.querySelectorAll('.cond-add-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const menuId = 'cond-menu-' + key;
+      document.querySelectorAll('.cond-picker-menu.open').forEach(m => { if (m.id !== menuId) m.classList.remove('open'); });
+      document.getElementById(menuId)?.classList.toggle('open');
+    });
+  });
+
+  /* Ajouter condition depuis picker */
+  panel.querySelectorAll('[data-add-cond]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      const cond = el.dataset.addCond;
+      document.getElementById('cond-menu-' + key)?.classList.remove('open');
+      modifyCondition(username, charId, key, cond, true);
+    });
+  });
+}
+
+/* Fermer tous les menus si clic extérieur */
+document.addEventListener('click', () => {
+  document.querySelectorAll('.cond-picker-menu.open').forEach(m => m.classList.remove('open'));
+});
+
+/* ══ HP mutations ══ */
+function getPlayerData(username) {
+  return allPlayers.find(p => p.username === username)?.data || null;
+}
+
+function applyHpDelta(username, charId, key, delta) {
+  const data = getPlayerData(username);
+  if (!data) return;
+  const c = data.characters?.[charId]?.character;
+  if (!c) return;
+  const max = parseInt(c.pvMax) || 0;
+  c.pvActuel = Math.max(0, Math.min(max, (parseInt(c.pvActuel)||0) + delta));
+  updatePanelDOM(key, data, charId);
+  schedulePlayerSave(username, data);
+}
+
+function modifyCondition(username, charId, key, cond, add) {
+  const data = getPlayerData(username);
+  if (!data) return;
+  const c = data.characters?.[charId]?.character;
+  if (!c) return;
+  c.conditions = Array.isArray(c.conditions) ? c.conditions : [];
+  if (add && !c.conditions.includes(cond)) c.conditions.push(cond);
+  if (!add) c.conditions = c.conditions.filter(x => x !== cond);
+  updatePanelDOM(key, data, charId);
+  schedulePlayerSave(username, data);
+}
+
+function schedulePlayerSave(username, data) {
+  clearTimeout(saveTimers[username]);
+  saveTimers[username] = setTimeout(() => sbUpdateData(username, data), 800);
+}
+
+/* ══ Utils ══ */
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function hpColor(pct) {
+  if (pct > 60) return '#27ae60';
+  if (pct > 30) return '#e67e22';
+  if (pct > 0)  return '#c0392b';
+  return '#4a0000';
+}
+
+/* ══ Init ══ */
+(function init() {
+  const saved = loadSession();
+  if (saved) {
+    currentUser = saved;
+    // Verify session is still valid
+    sbGetPlayer(saved).then(row => {
+      if (row) enterDM();
+      else { clearSession(); }
+    }).catch(() => {});
+  }
+  updateEmptyState();
+})();
+</script>
+</body>
+</html>
