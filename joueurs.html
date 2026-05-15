@@ -818,8 +818,8 @@
     ════════════════════════════════════════════════ */
 
     /* VB: Global background upgrade */
-    body { background: #0e0a04; }
-    .main-content { background: #0e0a04; }
+    body { background: var(--bg-primary, #0e0a04); }
+    .main-content { background: var(--bg-primary, #0e0a04); }
 
     /* VB: Sticky top bar (replaces dash-header + tabs) */
     .dash-header.vb-topbar {
@@ -4155,15 +4155,15 @@ function applyTheme(id) {
   // Dériver les couleurs de fond depuis la teinte du thème
   try {
     const [h, s] = hexToHsl(gold);
-    const sat = Math.min(s * 0.4, 22);
-    document.documentElement.style.setProperty('--bg-primary',   hslToHex(h, sat,        3.2));
-    document.documentElement.style.setProperty('--bg-secondary', hslToHex(h, sat,        5.5));
-    document.documentElement.style.setProperty('--bg-card',      hslToHex(h, sat + 2,    7  ));
-    document.documentElement.style.setProperty('--bg-nav',       hslToHex(h, sat * 0.6,  2.2));
-    document.documentElement.style.setProperty('--border',       hslToHex(h, Math.min(s * 0.55, 38), 18));
-    document.documentElement.style.setProperty('--j-panel',      hslToHex(h, sat + 2,    7  ));
-    document.documentElement.style.setProperty('--j-input',      hslToHex(h, sat * 0.75, 4.5));
-    document.documentElement.style.setProperty('--j-border-col', hslToHex(h, Math.min(s * 0.55, 38), 18));
+    const sat = Math.min(s * 0.65, 40);
+    document.documentElement.style.setProperty('--bg-primary',   hslToHex(h, sat,        3.5));
+    document.documentElement.style.setProperty('--bg-secondary', hslToHex(h, sat,        6  ));
+    document.documentElement.style.setProperty('--bg-card',      hslToHex(h, sat + 4,    8.5));
+    document.documentElement.style.setProperty('--bg-nav',       hslToHex(h, sat * 0.7,  2.5));
+    document.documentElement.style.setProperty('--border',       hslToHex(h, Math.min(s * 0.7, 52), 20));
+    document.documentElement.style.setProperty('--j-panel',      hslToHex(h, sat + 4,    8.5));
+    document.documentElement.style.setProperty('--j-input',      hslToHex(h, sat * 0.8,  5  ));
+    document.documentElement.style.setProperty('--j-border-col', hslToHex(h, Math.min(s * 0.7, 52), 20));
   } catch(_e) {}
   try { localStorage.setItem('kaleysur_theme', JSON.stringify({ gold, dark })); } catch(e) {}
   document.querySelectorAll('.theme-swatch').forEach(s => s.classList.toggle('active', s.dataset.theme === activeId));
@@ -8198,11 +8198,16 @@ function applyPageBg(data) {
   const opacity = data && data.bgPageOpacity != null ? data.bgPageOpacity : 0.55;
   if (src) {
     wrap.style.backgroundImage = `url(${src})`;
-    wrap.style.setProperty('--page-bg-overlay', `rgba(0,0,0,${1 - opacity})`);
     wrap.classList.add('visible');
+    // Rendre le body transparent pour que l'image de fond soit visible
+    document.body.style.backgroundColor = 'transparent';
+    document.documentElement.style.backgroundColor = 'transparent';
   } else {
     wrap.classList.remove('visible');
     setTimeout(() => { wrap.style.backgroundImage = ''; }, 400);
+    // Restaurer le fond de body
+    document.body.style.backgroundColor = '';
+    document.documentElement.style.backgroundColor = '';
   }
   // Sync overlay opacity via ::after — on l'encode dans une variable CSS
   wrap.style.setProperty('--page-bg-dim', String(1 - opacity));
