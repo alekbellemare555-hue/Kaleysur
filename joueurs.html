@@ -959,7 +959,7 @@
       grid-template-columns: 220px 1fr 280px;
       gap: 24px;
       padding: 28px 32px 20px;
-      background: #0e0a04;
+      background: var(--bg-primary, #0e0a04);
     }
     #vb-hero-portrait { display: flex; flex-direction: column; gap: 12px; }
     .vb-portrait-frame {
@@ -990,7 +990,7 @@
       border-radius: 4px;
       overflow: hidden;
     }
-    .vb-mini-stat { background: #0e0a04; padding: 10px 4px; text-align: center; }
+    .vb-mini-stat { background: var(--bg-primary, #0e0a04); padding: 10px 4px; text-align: center; }
     .vb-mini-stat-label {
       font-family: 'Cinzel', serif;
       font-size: 8px; color: #555;
@@ -1607,6 +1607,15 @@
 #page-bg-wrap::after { content:''; position:absolute; inset:0; background:rgba(0,0,0,var(--page-bg-dim,0.65)); }
 .page-bg-opacity-row { display:flex; align-items:center; gap:0.6rem; margin-top:0.5rem; font-size:0.78rem; color:#aaa; }
 .page-bg-opacity-row input[type=range] { flex:1; max-width:160px; accent-color:var(--gold,#c9a227); }
+
+/* Quand un fond de page est actif : conteneurs principaux transparents */
+html.has-page-bg body,
+html.has-page-bg main.main-content,
+html.has-page-bg .page-wrapper { background: transparent !important; }
+html.has-page-bg .top-nav   { background: rgba(0,0,0,0.6) !important; }
+html.has-page-bg .sidebar   { background: rgba(0,0,0,0.6) !important; }
+html.has-page-bg #vb-hero   { background: rgba(0,0,0,0.35) !important; }
+html.has-page-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
 
 /* ══ OPTIMISATIONS PERF ══ */
 /* Layout isolation — les changements internes ne déclenchent pas de reflow global */
@@ -8199,15 +8208,11 @@ function applyPageBg(data) {
   if (src) {
     wrap.style.backgroundImage = `url(${src})`;
     wrap.classList.add('visible');
-    // Rendre le body transparent pour que l'image de fond soit visible
-    document.body.style.backgroundColor = 'transparent';
-    document.documentElement.style.backgroundColor = 'transparent';
+    document.documentElement.classList.add('has-page-bg');
   } else {
     wrap.classList.remove('visible');
+    document.documentElement.classList.remove('has-page-bg');
     setTimeout(() => { wrap.style.backgroundImage = ''; }, 400);
-    // Restaurer le fond de body
-    document.body.style.backgroundColor = '';
-    document.documentElement.style.backgroundColor = '';
   }
   // Sync overlay opacity via ::after — on l'encode dans une variable CSS
   wrap.style.setProperty('--page-bg-dim', String(1 - opacity));
