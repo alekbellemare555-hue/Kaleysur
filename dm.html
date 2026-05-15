@@ -313,7 +313,7 @@ input,select{font-family:inherit;color-scheme:dark;}
 .save-dot.saving{background:var(--warn);}
 .save-dot.saved{background:var(--heal);}
 
-/* Attacks / inventory list in drawer */
+/* Attacks / spells list in drawer */
 .ds-list{display:flex;flex-direction:column;gap:0.3rem;}
 .ds-list-item{
   background:var(--bg-card);border:1px solid var(--border);
@@ -325,6 +325,56 @@ input,select{font-family:inherit;color-scheme:dark;}
   font-size:0.7rem;color:var(--text-dim);background:var(--border-bright);
   border-radius:3px;padding:0.08rem 0.35rem;white-space:nowrap;
 }
+
+/* Drawer inner tabs (Personnage / Inventaire) */
+.drawer-inner-tabs{display:flex;gap:0;border-bottom:1px solid var(--border-bright);margin-bottom:1rem;flex-shrink:0;}
+.drawer-inner-tab{
+  padding:0.45rem 1rem;font-size:0.75rem;font-family:'Cinzel',serif;letter-spacing:0.05em;
+  color:var(--text-dim);background:none;border:none;border-bottom:2px solid transparent;
+  cursor:pointer;transition:all 0.15s;
+}
+.drawer-inner-tab:hover{color:var(--gold);}
+.drawer-inner-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+
+/* Currency row */
+.ds-currency{display:flex;gap:0.4rem;margin-bottom:1rem;}
+.ds-currency-cell{flex:1;text-align:center;}
+.ds-currency-cell .ds-label{margin-bottom:0.2rem;}
+.ds-currency-cell .ds-input{text-align:center;font-family:'Cinzel',serif;font-size:0.95rem;}
+
+/* Inventory table */
+.ds-inv-table{width:100%;border-collapse:collapse;font-size:0.82rem;}
+.ds-inv-table th{
+  font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--gold-dark);padding:0.3rem 0.4rem;border-bottom:1px solid var(--border-bright);
+  text-align:left;
+}
+.ds-inv-table td{padding:0.22rem 0.3rem;border-bottom:1px solid var(--border);}
+.ds-inv-table tr:last-child td{border-bottom:none;}
+.ds-inv-inp{
+  background:rgba(0,0,0,0.25);border:1px solid transparent;border-radius:4px;
+  color:var(--text);padding:0.2rem 0.35rem;font-family:'Crimson Text',serif;font-size:0.82rem;
+  width:100%;transition:border-color 0.12s;
+}
+.ds-inv-inp:focus{outline:none;border-color:var(--gold-dim);background:rgba(0,0,0,0.4);}
+.ds-inv-inp.center{text-align:center;}
+.ds-inv-select{
+  background:rgba(0,0,0,0.25);border:1px solid transparent;border-radius:4px;
+  color:var(--text-dim);padding:0.2rem 0.25rem;font-size:0.76rem;width:100%;transition:border-color 0.12s;
+}
+.ds-inv-select:focus{outline:none;border-color:var(--gold-dim);}
+.ds-inv-del{
+  background:none;border:none;color:var(--text-dim);font-size:0.8rem;
+  cursor:pointer;padding:0.15rem 0.3rem;border-radius:3px;transition:all 0.1s;line-height:1;
+}
+.ds-inv-del:hover{color:var(--danger);background:var(--danger-dim);}
+.ds-add-item-btn{
+  margin-top:0.65rem;width:100%;background:rgba(232,201,106,0.05);
+  border:1px dashed var(--border-gold);color:var(--gold-dark);border-radius:5px;
+  padding:0.38rem;font-size:0.78rem;font-family:'Cinzel',serif;letter-spacing:0.04em;
+  cursor:pointer;transition:all 0.15s;
+}
+.ds-add-item-btn:hover{background:var(--gold-glow);border-color:var(--gold);color:var(--gold);}
 
 /* ── Initiative Tracker ── */
 #init-bar{
@@ -1682,8 +1732,9 @@ function fmtInit(v) {
 /* ══════════════════════════════════════════
    Player Drawer
 ══════════════════════════════════════════ */
-let _drawerPlayer = null;  // username actif dans le drawer
-let _drawerChar   = null;  // charId actif dans le drawer
+let _drawerPlayer  = null;
+let _drawerChar    = null;
+let _drawerSection = 'perso'; // 'perso' | 'inventaire'
 let _drawerSaveTimer = null;
 
 document.getElementById('btn-open-drawer').addEventListener('click', openDrawer);
@@ -1731,26 +1782,37 @@ function renderDrawerBody() {
   const player = allPlayers.find(p => p.username === _drawerPlayer);
   if (!player) { body.innerHTML = '<div class="loading">Joueur introuvable.</div>'; return; }
 
-  const pdata = player.data || {};
-  const chars = pdata.characters || {};
+  const pdata  = player.data || {};
+  const chars  = pdata.characters || {};
   const charIds = Object.keys(chars);
   if (!_drawerChar || !chars[_drawerChar]) _drawerChar = pdata.activeCharId || charIds[0] || null;
   const slot = _drawerChar ? chars[_drawerChar] : null;
-  const c = slot?.character || {};
+  const c    = slot?.character || {};
+  const inv  = slot?.inventory || { items: [], currency: {} };
+  const items = inv.items || [];
+  const cur   = inv.currency || {};
 
   const modStr = v => { const m = Math.floor(((parseInt(v)||10)-10)/2); return (m>=0?'+':'')+m; };
   const fv = (f, def='') => c[f] ?? def;
-
-  const avatar = pdata.avatar || '🧙';
+  const avatar   = pdata.avatar || '🧙';
   const charName = slot?.name || 'Personnage';
-  const charSub = [c.classe, c.niveau ? 'Niv. '+c.niveau : '', c.race].filter(Boolean).join(' · ');
+  const charSub  = [c.classe, c.niveau ? 'Niv. '+c.niveau : '', c.race].filter(Boolean).join(' · ');
+
+  const CAT_OPTIONS = [
+    {value:'',label:'—'},
+    {value:'arme',label:'⚔ Arme'},
+    {value:'armure',label:'🛡 Armure'},
+    {value:'consommable',label:'⚗ Consommable'},
+    {value:'magique',label:'✦ Magique'},
+    {value:'equipement',label:'🎒 Équipement'},
+  ];
 
   body.innerHTML = `
     <div class="ds-player-header">
       <span class="ds-avatar">${esc(avatar)}</span>
       <div>
         <div class="ds-player-name">${esc(charName)}</div>
-        <div class="ds-player-sub">${esc(pdata.email || _drawerPlayer)}${charSub ? ' · ' + esc(charSub) : ''}</div>
+        <div class="ds-player-sub">${esc(pdata.email || _drawerPlayer)}${charSub ? ' · '+esc(charSub) : ''}</div>
       </div>
     </div>
 
@@ -1758,9 +1820,15 @@ function renderDrawerBody() {
       `<button class="ds-char-tab${cid===_drawerChar?' active':''}" data-cid="${esc(cid)}">${esc(chars[cid]?.name||cid)}</button>`
     ).join('')}</div>` : ''}
 
-    <!-- Infos de base -->
+    <div class="drawer-inner-tabs">
+      <button class="drawer-inner-tab${_drawerSection==='perso'?' active':''}" data-sec="perso">🗡 Personnage</button>
+      <button class="drawer-inner-tab${_drawerSection==='inventaire'?' active':''}" data-sec="inventaire">🎒 Inventaire</button>
+    </div>
+
+    ${_drawerSection === 'perso' ? `
+    <!-- ══ ONGLET PERSONNAGE ══ -->
     <div class="ds-section">
-      <div class="ds-section-title">🗡 Personnage</div>
+      <div class="ds-section-title">Infos</div>
       <div class="ds-grid ds-grid-3" style="margin-bottom:0.55rem;">
         <div class="ds-field"><label class="ds-label">Nom</label><input class="ds-input" data-field="name_slot" value="${esc(slot?.name||'')}"></div>
         <div class="ds-field"><label class="ds-label">Classe</label><input class="ds-input" data-field="classe" value="${esc(fv('classe'))}"></div>
@@ -1771,8 +1839,6 @@ function renderDrawerBody() {
         <div class="ds-field"><label class="ds-label">Background</label><input class="ds-input" data-field="background" value="${esc(fv('background'))}"></div>
       </div>
     </div>
-
-    <!-- HP -->
     <div class="ds-section">
       <div class="ds-section-title">❤ Points de vie</div>
       <div class="ds-grid ds-grid-3">
@@ -1781,8 +1847,6 @@ function renderDrawerBody() {
         <div class="ds-field"><label class="ds-label">PV Temp</label><input class="ds-input center" type="number" data-field="pvTemp" value="${esc(fv('pvTemp','0'))}"></div>
       </div>
     </div>
-
-    <!-- Caractéristiques -->
     <div class="ds-section">
       <div class="ds-section-title">⚡ Caractéristiques</div>
       <div class="ds-grid ds-grid-6">
@@ -1794,92 +1858,136 @@ function renderDrawerBody() {
           </div>`).join('')}
       </div>
     </div>
-
-    <!-- Combat -->
     <div class="ds-section">
       <div class="ds-section-title">🛡 Combat</div>
       <div class="ds-grid ds-grid-3">
-        <div class="ds-field"><label class="ds-label">Classe d'armure</label><input class="ds-input center" type="number" data-field="ca" value="${esc(fv('ca', fv('ac','10')))}"></div>
-        <div class="ds-field"><label class="ds-label">Vitesse</label><input class="ds-input center" data-field="vitesse" value="${esc(fv('vitesse','30'))}"></div>
-        <div class="ds-field"><label class="ds-label">Or (po)</label><input class="ds-input center" type="number" data-field="gold" value="${esc(fv('gold','0'))}"></div>
+        <div class="ds-field"><label class="ds-label">Classe d'armure</label><input class="ds-input center" type="number" data-field="ca" value="${esc(fv('ca',fv('ac','10')))}"></div>
+        <div class="ds-field"><label class="ds-label">Vitesse (m)</label><input class="ds-input center" data-field="vitesse" value="${esc(fv('vitesse','30'))}"></div>
+        <div class="ds-field"><label class="ds-label">Or legacy</label><input class="ds-input center" type="number" data-field="gold" value="${esc(fv('gold','0'))}"></div>
       </div>
     </div>
-
-    <!-- Attaques -->
     ${(c.attaques||[]).length ? `
     <div class="ds-section">
       <div class="ds-section-title">⚔ Attaques</div>
       <div class="ds-list">
-        ${(c.attaques||[]).map(a => `
-          <div class="ds-list-item">
-            <span class="ds-list-name">${esc(a.name||'—')}</span>
-            <span class="ds-list-badge">${esc(a.degats||'—')}</span>
-            <span class="ds-list-badge">${esc(a.typeDegat||'')}</span>
-          </div>`).join('')}
+        ${(c.attaques||[]).map(a => `<div class="ds-list-item">
+          <span class="ds-list-name">${esc(a.name||'—')}</span>
+          <span class="ds-list-badge">${esc(a.degats||'—')}</span>
+          <span class="ds-list-badge">${esc(a.typeDegat||'')}</span>
+        </div>`).join('')}
       </div>
     </div>` : ''}
-
-    <!-- Sorts -->
     ${(c.sorts||[]).length ? `
     <div class="ds-section">
       <div class="ds-section-title">✨ Sorts</div>
       <div class="ds-list">
-        ${(c.sorts||[]).map(s => `
-          <div class="ds-list-item">
-            <span class="ds-list-name">${esc(s.name||'—')}</span>
-            ${s.niveau!==undefined ? `<span class="ds-list-badge">Niv.${s.niveau}</span>` : ''}
-            ${s.ecole ? `<span class="ds-list-badge">${esc(s.ecole)}</span>` : ''}
-          </div>`).join('')}
+        ${(c.sorts||[]).map(s => `<div class="ds-list-item">
+          <span class="ds-list-name">${esc(s.name||'—')}</span>
+          ${s.niveau!==undefined?`<span class="ds-list-badge">Niv.${s.niveau}</span>`:''}
+          ${s.ecole?`<span class="ds-list-badge">${esc(s.ecole)}</span>`:''}
+        </div>`).join('')}
       </div>
     </div>` : ''}
-
-    <!-- Inventaire -->
-    ${(c.inventory||[]).length ? `
     <div class="ds-section">
-      <div class="ds-section-title">🎒 Inventaire</div>
-      <div class="ds-list">
-        ${(c.inventory||[]).map(it => `
-          <div class="ds-list-item">
-            <span class="ds-list-name">${esc(it.name||it||'—')}</span>
-            ${it.qty ? `<span class="ds-list-badge">×${it.qty}</span>` : ''}
-          </div>`).join('')}
-      </div>
-    </div>` : ''}
-
-    <!-- Notes -->
-    <div class="ds-section">
-      <div class="ds-section-title">📝 Notes / Backstory</div>
-      <textarea class="ds-textarea" data-field="backstory" rows="4">${esc(fv('backstory',''))}</textarea>
+      <div class="ds-section-title">📝 Notes</div>
+      <textarea class="ds-textarea" data-field="backstory" rows="4" placeholder="Backstory…">${esc(fv('backstory',''))}</textarea>
       <textarea class="ds-textarea" data-field="personnalite" rows="2" placeholder="Personnalité…" style="margin-top:0.4rem;">${esc(fv('personnalite',''))}</textarea>
     </div>
+    ` : `
+    <!-- ══ ONGLET INVENTAIRE ══ -->
+    <div class="ds-section">
+      <div class="ds-section-title">💰 Monnaie</div>
+      <div class="ds-currency">
+        ${[['pp','Platine'],['gp','Or'],['ep','Electrum'],['sp','Argent'],['cp','Cuivre']].map(([k,lbl]) => `
+          <div class="ds-currency-cell">
+            <div class="ds-label">${lbl}</div>
+            <input class="ds-input center" type="number" min="0" data-inv-currency="${k}" value="${cur[k]||0}">
+          </div>`).join('')}
+      </div>
+    </div>
+    <div class="ds-section">
+      <div class="ds-section-title" style="justify-content:space-between;">
+        <span>🎒 Objets <span style="color:var(--text-dim);font-size:0.8em;">(${items.length})</span></span>
+      </div>
+      ${items.length ? `
+      <table class="ds-inv-table">
+        <thead><tr>
+          <th style="width:45px;">Qté</th>
+          <th>Nom</th>
+          <th>Description</th>
+          <th style="width:100px;">Catégorie</th>
+          <th style="width:28px;"></th>
+        </tr></thead>
+        <tbody id="ds-inv-tbody">
+          ${items.map((it,i) => `<tr data-inv-row="${i}">
+            <td><input class="ds-inv-inp center" type="number" min="0" data-inv-i="${i}" data-inv-k="qty" value="${it.qty||1}"></td>
+            <td><input class="ds-inv-inp" data-inv-i="${i}" data-inv-k="name" value="${esc(it.name||'')}" placeholder="Nom"></td>
+            <td><input class="ds-inv-inp" data-inv-i="${i}" data-inv-k="notes" value="${esc(it.notes||'')}" placeholder="Description"></td>
+            <td><select class="ds-inv-select" data-inv-i="${i}" data-inv-k="cat">
+              ${CAT_OPTIONS.map(o=>`<option value="${o.value}"${it.cat===o.value?' selected':''}>${o.label}</option>`).join('')}
+            </select></td>
+            <td><button class="ds-inv-del" data-del-inv="${i}">✕</button></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>` : `<div style="color:var(--text-dim);font-size:0.82rem;font-style:italic;padding:0.5rem 0;">Aucun objet.</div>`}
+      <button class="ds-add-item-btn" id="ds-btn-add-item">+ Ajouter un objet</button>
+    </div>
+    `}
   `;
 
-  // Char tab click
+  // Char tab switch
   body.querySelectorAll('.ds-char-tab').forEach(btn => {
-    btn.addEventListener('click', () => {
-      _drawerChar = btn.dataset.cid;
+    btn.addEventListener('click', () => { _drawerChar = btn.dataset.cid; renderDrawerBody(); });
+  });
+  // Inner section switch
+  body.querySelectorAll('.drawer-inner-tab').forEach(btn => {
+    btn.addEventListener('click', () => { _drawerSection = btn.dataset.sec; renderDrawerBody(); });
+  });
+
+  if (_drawerSection === 'perso') {
+    // Score mod live
+    body.querySelectorAll('[data-field="for"],[data-field="dex"],[data-field="con"],[data-field="int"],[data-field="sag"],[data-field="cha"]').forEach(inp => {
+      inp.addEventListener('input', () => {
+        inp.closest('.ds-score-cell')?.querySelector('.ds-score-mod')?.textContent && (inp.closest('.ds-score-cell').querySelector('.ds-score-mod').textContent = modStr(inp.value));
+      });
+    });
+    body.querySelectorAll('[data-field]').forEach(el => {
+      el.addEventListener('input',  () => scheduleDrawerSave());
+      el.addEventListener('change', () => scheduleDrawerSave());
+    });
+  } else {
+    // Currency inputs
+    body.querySelectorAll('[data-inv-currency]').forEach(el => {
+      el.addEventListener('input', () => scheduleDrawerSave());
+    });
+    // Item inputs
+    body.querySelectorAll('[data-inv-i]').forEach(el => {
+      el.addEventListener('input',  () => scheduleDrawerSave());
+      el.addEventListener('change', () => scheduleDrawerSave());
+    });
+    // Delete item
+    body.querySelectorAll('[data-del-inv]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const i = parseInt(btn.dataset.delInv);
+        inv.items.splice(i, 1);
+        if (!slot.inventory) slot.inventory = inv;
+        scheduleDrawerSave();
+        renderDrawerBody();
+      });
+    });
+    // Add item
+    document.getElementById('ds-btn-add-item')?.addEventListener('click', () => {
+      if (!slot.inventory) slot.inventory = { items: [], currency: {} };
+      slot.inventory.items.push({ name: '', qty: 1, notes: '', cat: '' });
+      scheduleDrawerSave();
       renderDrawerBody();
     });
-  });
-
-  // Score mod live update
-  body.querySelectorAll('[data-field="for"],[data-field="dex"],[data-field="con"],[data-field="int"],[data-field="sag"],[data-field="cha"]').forEach(inp => {
-    inp.addEventListener('input', () => {
-      const cell = inp.closest('.ds-score-cell');
-      if (cell) cell.querySelector('.ds-score-mod').textContent = modStr(inp.value);
-    });
-  });
-
-  // Auto-save on any input/textarea change
-  body.querySelectorAll('[data-field]').forEach(el => {
-    el.addEventListener('input', () => scheduleDrawerSave());
-    el.addEventListener('change', () => scheduleDrawerSave());
-  });
+  }
 }
 
 function scheduleDrawerSave() {
-  const dot  = document.getElementById('drawer-dot');
-  const txt  = document.getElementById('drawer-save-text');
+  const dot = document.getElementById('drawer-dot');
+  const txt = document.getElementById('drawer-save-text');
   dot.className = 'save-dot saving';
   txt.textContent = 'Modification…';
   clearTimeout(_drawerSaveTimer);
@@ -1895,19 +2003,36 @@ async function commitDrawerSave() {
   const chars = pdata.characters || {};
   const slot  = chars[_drawerChar];
   if (!slot) return;
-  if (!slot.character) slot.character = {};
-  const c = slot.character;
+  if (!slot.character)  slot.character  = {};
+  if (!slot.inventory)  slot.inventory  = { items: [], currency: {} };
+  const c   = slot.character;
+  const inv = slot.inventory;
 
   const body = document.getElementById('drawer-body');
-  body.querySelectorAll('[data-field]').forEach(el => {
-    const f = el.dataset.field;
-    const v = el.value;
-    if (f === 'name_slot') {
-      slot.name = v;
-    } else {
-      c[f] = el.type === 'number' ? (parseFloat(v) || 0) : v;
-    }
-  });
+
+  if (_drawerSection === 'perso') {
+    body.querySelectorAll('[data-field]').forEach(el => {
+      const f = el.dataset.field;
+      const v = el.value;
+      if (f === 'name_slot') slot.name = v;
+      else c[f] = el.type === 'number' ? (parseFloat(v) || 0) : v;
+    });
+  } else {
+    // Currency
+    body.querySelectorAll('[data-inv-currency]').forEach(el => {
+      inv.currency[el.dataset.invCurrency] = parseInt(el.value) || 0;
+    });
+    // Items
+    const rows = body.querySelectorAll('[data-inv-row]');
+    rows.forEach(row => {
+      const i = parseInt(row.dataset.invRow);
+      if (!inv.items[i]) return;
+      row.querySelectorAll('[data-inv-k]').forEach(el => {
+        const k = el.dataset.invK;
+        inv.items[i][k] = k === 'qty' ? (parseInt(el.value) || 0) : el.value;
+      });
+    });
+  }
 
   const dot = document.getElementById('drawer-dot');
   const txt = document.getElementById('drawer-save-text');
