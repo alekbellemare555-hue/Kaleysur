@@ -197,6 +197,135 @@ input,select{font-family:inherit;color-scheme:dark;}
 .sep-label{font-size:0.6rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);padding:0.45rem 1rem 0.15rem;}
 .loading{color:var(--text-dim);font-size:0.82rem;font-style:italic;padding:1rem 1rem;}
 
+/* ── Player Drawer ── */
+#player-drawer{
+  position:fixed;top:var(--nav-h);right:0;bottom:0;width:540px;max-width:96vw;
+  background:var(--bg-nav);border-left:1px solid var(--border-gold);
+  z-index:400;display:flex;flex-direction:column;
+  transform:translateX(100%);transition:transform 0.28s cubic-bezier(0.4,0,0.2,1);
+  box-shadow:-8px 0 48px rgba(0,0,0,0.7);
+}
+#player-drawer.open{transform:translateX(0);}
+#drawer-backdrop{
+  position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:399;
+  display:none;backdrop-filter:blur(1px);
+}
+#drawer-backdrop.open{display:block;}
+
+/* Drawer header */
+#drawer-header{
+  display:flex;align-items:center;gap:0;
+  border-bottom:1px solid var(--border-gold);
+  background:var(--bg-card);flex-shrink:0;
+}
+#drawer-tabs{display:flex;flex:1;overflow-x:auto;gap:0;}
+#drawer-tabs::-webkit-scrollbar{height:2px;}
+#drawer-tabs::-webkit-scrollbar-thumb{background:var(--border-bright);}
+.drawer-tab{
+  padding:0.6rem 1rem;font-family:'Cinzel',serif;font-size:0.72rem;
+  letter-spacing:0.06em;color:var(--text-dim);background:none;border:none;
+  border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.15s;
+  cursor:pointer;flex-shrink:0;
+}
+.drawer-tab:hover{color:var(--gold);}
+.drawer-tab.active{color:var(--gold);border-bottom-color:var(--gold);background:rgba(232,201,106,0.04);}
+#btn-close-drawer{
+  background:none;border:none;color:var(--text-dim);font-size:1.1rem;
+  padding:0.5rem 0.85rem;transition:color 0.15s;flex-shrink:0;
+  border-left:1px solid var(--border);
+}
+#btn-close-drawer:hover{color:var(--danger);}
+
+/* Drawer body */
+#drawer-body{flex:1;overflow-y:auto;padding:1.1rem;}
+#drawer-body::-webkit-scrollbar{width:4px;}
+#drawer-body::-webkit-scrollbar-thumb{background:var(--border-bright);border-radius:2px;}
+
+/* Drawer sections */
+.ds-section{margin-bottom:1.25rem;}
+.ds-section-title{
+  font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.12em;
+  text-transform:uppercase;color:var(--gold-dark);margin-bottom:0.65rem;
+  padding-bottom:0.35rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:0.4rem;
+}
+.ds-player-header{
+  display:flex;align-items:center;gap:0.9rem;
+  background:var(--bg-card);border:1px solid var(--border-bright);
+  border-radius:8px;padding:0.85rem 1rem;margin-bottom:1rem;
+}
+.ds-avatar{font-size:2rem;}
+.ds-player-name{font-family:'Cinzel',serif;color:var(--gold);font-size:1rem;letter-spacing:0.05em;}
+.ds-player-sub{font-size:0.75rem;color:var(--text-dim);margin-top:2px;font-style:italic;}
+
+/* Char selector within drawer */
+.ds-char-tabs{display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:1rem;}
+.ds-char-tab{
+  background:var(--bg-card);border:1px solid var(--border-bright);
+  color:var(--text-dim);border-radius:5px;padding:0.28rem 0.7rem;
+  font-size:0.76rem;cursor:pointer;transition:all 0.12s;
+}
+.ds-char-tab:hover{border-color:var(--border-gold);color:var(--gold);}
+.ds-char-tab.active{border-color:var(--gold);color:var(--gold);background:var(--gold-glow);}
+
+/* Fields grid */
+.ds-grid{display:grid;gap:0.55rem;}
+.ds-grid-2{grid-template-columns:1fr 1fr;}
+.ds-grid-3{grid-template-columns:1fr 1fr 1fr;}
+.ds-grid-6{grid-template-columns:repeat(6,1fr);}
+.ds-field{display:flex;flex-direction:column;gap:0.22rem;}
+.ds-label{font-size:0.62rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);}
+.ds-input{
+  background:rgba(0,0,0,0.3);border:1px solid var(--border-bright);
+  border-radius:5px;color:var(--text);padding:0.38rem 0.55rem;
+  font-size:0.9rem;font-family:'Crimson Text',serif;transition:border-color 0.15s,box-shadow 0.15s;
+  width:100%;
+}
+.ds-input:focus{outline:none;border-color:var(--gold-dim);box-shadow:0 0 0 2px rgba(232,201,106,0.08);}
+.ds-input.center{text-align:center;font-family:'Cinzel',serif;}
+.ds-input.big{font-size:1.1rem;font-family:'Cinzel',serif;color:var(--gold);}
+.ds-input.danger{color:var(--danger);}
+.ds-input.heal{color:var(--heal);}
+.ds-textarea{
+  background:rgba(0,0,0,0.3);border:1px solid var(--border-bright);
+  border-radius:5px;color:var(--text);padding:0.5rem 0.65rem;
+  font-size:0.88rem;font-family:'Crimson Text',serif;
+  resize:vertical;min-height:70px;width:100%;transition:border-color 0.15s;
+}
+.ds-textarea:focus{outline:none;border-color:var(--gold-dim);}
+
+/* Score cell special */
+.ds-score-cell{
+  background:var(--bg-card);border:1px solid var(--border-bright);
+  border-radius:7px;padding:0.5rem 0.3rem;text-align:center;
+}
+.ds-score-cell .ds-input{background:none;border:none;text-align:center;font-family:'Cinzel',serif;font-size:1.05rem;color:var(--gold);padding:0.1rem 0;}
+.ds-score-cell .ds-input:focus{box-shadow:none;}
+.ds-score-mod{font-size:0.75rem;color:var(--text-dim);margin-top:1px;}
+
+/* Save indicator */
+#drawer-save-status{
+  padding:0.45rem 1.1rem;font-size:0.72rem;color:var(--text-dim);
+  border-top:1px solid var(--border);background:var(--bg-card);
+  flex-shrink:0;display:flex;align-items:center;gap:0.5rem;
+}
+.save-dot{width:6px;height:6px;border-radius:50%;background:var(--text-dim);flex-shrink:0;transition:background 0.2s;}
+.save-dot.saving{background:var(--warn);}
+.save-dot.saved{background:var(--heal);}
+
+/* Attacks / inventory list in drawer */
+.ds-list{display:flex;flex-direction:column;gap:0.3rem;}
+.ds-list-item{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:5px;padding:0.45rem 0.7rem;font-size:0.82rem;
+  display:flex;align-items:center;gap:0.5rem;color:var(--text-mid);
+}
+.ds-list-name{flex:1;color:var(--text);}
+.ds-list-badge{
+  font-size:0.7rem;color:var(--text-dim);background:var(--border-bright);
+  border-radius:3px;padding:0.08rem 0.35rem;white-space:nowrap;
+}
+
 /* ── Initiative Tracker ── */
 #init-bar{
   background:rgba(10,10,16,0.95);
@@ -481,6 +610,7 @@ body.compact .panel-char-sub{display:none;}
     <span class="brand">DM Screen<span class="brand-sep"></span><span class="brand-sub">Kaleysur</span></span>
     <button id="btn-init-open" class="nav-btn">⚔ Initiative</button>
     <button id="btn-compact" class="nav-btn" title="Vue compacte">⊞ Compact</button>
+    <button id="btn-open-drawer" class="nav-btn">📋 Fiches</button>
     <div class="nav-right">
       <span id="poll-indicator">—</span>
       <button id="btn-refresh" class="nav-btn">↺</button>
@@ -561,6 +691,17 @@ body.compact .panel-char-sub{display:none;}
       </div>
     </div>
   </div>
+</div>
+
+<!-- ══ Player Drawer ══ -->
+<div id="drawer-backdrop"></div>
+<div id="player-drawer">
+  <div id="drawer-header">
+    <div id="drawer-tabs"></div>
+    <button id="btn-close-drawer">✕</button>
+  </div>
+  <div id="drawer-body"><div class="loading">Chargement…</div></div>
+  <div id="drawer-save-status"><span class="save-dot" id="drawer-dot"></span><span id="drawer-save-text">—</span></div>
 </div>
 
 <!-- Monster modal (unused, using inline form) -->
@@ -1537,6 +1678,252 @@ function fmtInit(v) {
   }
   updateEmptyState();
 })();
+
+/* ══════════════════════════════════════════
+   Player Drawer
+══════════════════════════════════════════ */
+let _drawerPlayer = null;  // username actif dans le drawer
+let _drawerChar   = null;  // charId actif dans le drawer
+let _drawerSaveTimer = null;
+
+document.getElementById('btn-open-drawer').addEventListener('click', openDrawer);
+document.getElementById('btn-close-drawer').addEventListener('click', closeDrawer);
+document.getElementById('drawer-backdrop').addEventListener('click', closeDrawer);
+
+function openDrawer() {
+  document.getElementById('player-drawer').classList.add('open');
+  document.getElementById('drawer-backdrop').classList.add('open');
+  document.getElementById('btn-open-drawer').classList.add('active');
+  renderDrawerTabs();
+}
+
+function closeDrawer() {
+  document.getElementById('player-drawer').classList.remove('open');
+  document.getElementById('drawer-backdrop').classList.remove('open');
+  document.getElementById('btn-open-drawer').classList.remove('active');
+}
+
+function renderDrawerTabs() {
+  const players = allPlayers.filter(p => p.username !== ADMIN_USER);
+  const tabs = document.getElementById('drawer-tabs');
+  tabs.innerHTML = players.map(p => {
+    const name = p.data?.characters?.[p.data?.activeCharId]?.name || p.username;
+    return `<button class="drawer-tab${_drawerPlayer === p.username ? ' active' : ''}" data-du="${esc(p.username)}">${esc(name)}</button>`;
+  }).join('');
+  tabs.querySelectorAll('.drawer-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      _drawerPlayer = btn.dataset.du;
+      _drawerChar = null;
+      renderDrawerTabs();
+      renderDrawerBody();
+    });
+  });
+  if (!_drawerPlayer && players.length) {
+    _drawerPlayer = players[0].username;
+    tabs.querySelector('.drawer-tab')?.classList.add('active');
+  }
+  renderDrawerBody();
+}
+
+function renderDrawerBody() {
+  const body = document.getElementById('drawer-body');
+  if (!_drawerPlayer) { body.innerHTML = '<div class="loading">Aucun joueur.</div>'; return; }
+  const player = allPlayers.find(p => p.username === _drawerPlayer);
+  if (!player) { body.innerHTML = '<div class="loading">Joueur introuvable.</div>'; return; }
+
+  const pdata = player.data || {};
+  const chars = pdata.characters || {};
+  const charIds = Object.keys(chars);
+  if (!_drawerChar || !chars[_drawerChar]) _drawerChar = pdata.activeCharId || charIds[0] || null;
+  const slot = _drawerChar ? chars[_drawerChar] : null;
+  const c = slot?.character || {};
+
+  const modStr = v => { const m = Math.floor(((parseInt(v)||10)-10)/2); return (m>=0?'+':'')+m; };
+  const fv = (f, def='') => c[f] ?? def;
+
+  const avatar = pdata.avatar || '🧙';
+  const charName = slot?.name || 'Personnage';
+  const charSub = [c.classe, c.niveau ? 'Niv. '+c.niveau : '', c.race].filter(Boolean).join(' · ');
+
+  body.innerHTML = `
+    <div class="ds-player-header">
+      <span class="ds-avatar">${esc(avatar)}</span>
+      <div>
+        <div class="ds-player-name">${esc(charName)}</div>
+        <div class="ds-player-sub">${esc(pdata.email || _drawerPlayer)}${charSub ? ' · ' + esc(charSub) : ''}</div>
+      </div>
+    </div>
+
+    ${charIds.length > 1 ? `<div class="ds-char-tabs">${charIds.map(cid =>
+      `<button class="ds-char-tab${cid===_drawerChar?' active':''}" data-cid="${esc(cid)}">${esc(chars[cid]?.name||cid)}</button>`
+    ).join('')}</div>` : ''}
+
+    <!-- Infos de base -->
+    <div class="ds-section">
+      <div class="ds-section-title">🗡 Personnage</div>
+      <div class="ds-grid ds-grid-3" style="margin-bottom:0.55rem;">
+        <div class="ds-field"><label class="ds-label">Nom</label><input class="ds-input" data-field="name_slot" value="${esc(slot?.name||'')}"></div>
+        <div class="ds-field"><label class="ds-label">Classe</label><input class="ds-input" data-field="classe" value="${esc(fv('classe'))}"></div>
+        <div class="ds-field"><label class="ds-label">Niveau</label><input class="ds-input center" type="number" min="1" max="20" data-field="niveau" value="${esc(fv('niveau','1'))}"></div>
+      </div>
+      <div class="ds-grid ds-grid-2">
+        <div class="ds-field"><label class="ds-label">Race</label><input class="ds-input" data-field="race" value="${esc(fv('race'))}"></div>
+        <div class="ds-field"><label class="ds-label">Background</label><input class="ds-input" data-field="background" value="${esc(fv('background'))}"></div>
+      </div>
+    </div>
+
+    <!-- HP -->
+    <div class="ds-section">
+      <div class="ds-section-title">❤ Points de vie</div>
+      <div class="ds-grid ds-grid-3">
+        <div class="ds-field"><label class="ds-label">PV Actuels</label><input class="ds-input big center heal" type="number" data-field="pvActuel" value="${esc(fv('pvActuel','0'))}"></div>
+        <div class="ds-field"><label class="ds-label">PV Max</label><input class="ds-input big center" type="number" data-field="pvMax" value="${esc(fv('pvMax','0'))}"></div>
+        <div class="ds-field"><label class="ds-label">PV Temp</label><input class="ds-input center" type="number" data-field="pvTemp" value="${esc(fv('pvTemp','0'))}"></div>
+      </div>
+    </div>
+
+    <!-- Caractéristiques -->
+    <div class="ds-section">
+      <div class="ds-section-title">⚡ Caractéristiques</div>
+      <div class="ds-grid ds-grid-6">
+        ${['for','dex','con','int','sag','cha'].map(stat => `
+          <div class="ds-score-cell">
+            <div class="ds-label">${stat.toUpperCase()}</div>
+            <input class="ds-input" type="number" min="1" max="30" data-field="${stat}" value="${esc(fv(stat,'10'))}">
+            <div class="ds-score-mod">${modStr(fv(stat,'10'))}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- Combat -->
+    <div class="ds-section">
+      <div class="ds-section-title">🛡 Combat</div>
+      <div class="ds-grid ds-grid-3">
+        <div class="ds-field"><label class="ds-label">Classe d'armure</label><input class="ds-input center" type="number" data-field="ca" value="${esc(fv('ca', fv('ac','10')))}"></div>
+        <div class="ds-field"><label class="ds-label">Vitesse</label><input class="ds-input center" data-field="vitesse" value="${esc(fv('vitesse','30'))}"></div>
+        <div class="ds-field"><label class="ds-label">Or (po)</label><input class="ds-input center" type="number" data-field="gold" value="${esc(fv('gold','0'))}"></div>
+      </div>
+    </div>
+
+    <!-- Attaques -->
+    ${(c.attaques||[]).length ? `
+    <div class="ds-section">
+      <div class="ds-section-title">⚔ Attaques</div>
+      <div class="ds-list">
+        ${(c.attaques||[]).map(a => `
+          <div class="ds-list-item">
+            <span class="ds-list-name">${esc(a.name||'—')}</span>
+            <span class="ds-list-badge">${esc(a.degats||'—')}</span>
+            <span class="ds-list-badge">${esc(a.typeDegat||'')}</span>
+          </div>`).join('')}
+      </div>
+    </div>` : ''}
+
+    <!-- Sorts -->
+    ${(c.sorts||[]).length ? `
+    <div class="ds-section">
+      <div class="ds-section-title">✨ Sorts</div>
+      <div class="ds-list">
+        ${(c.sorts||[]).map(s => `
+          <div class="ds-list-item">
+            <span class="ds-list-name">${esc(s.name||'—')}</span>
+            ${s.niveau!==undefined ? `<span class="ds-list-badge">Niv.${s.niveau}</span>` : ''}
+            ${s.ecole ? `<span class="ds-list-badge">${esc(s.ecole)}</span>` : ''}
+          </div>`).join('')}
+      </div>
+    </div>` : ''}
+
+    <!-- Inventaire -->
+    ${(c.inventory||[]).length ? `
+    <div class="ds-section">
+      <div class="ds-section-title">🎒 Inventaire</div>
+      <div class="ds-list">
+        ${(c.inventory||[]).map(it => `
+          <div class="ds-list-item">
+            <span class="ds-list-name">${esc(it.name||it||'—')}</span>
+            ${it.qty ? `<span class="ds-list-badge">×${it.qty}</span>` : ''}
+          </div>`).join('')}
+      </div>
+    </div>` : ''}
+
+    <!-- Notes -->
+    <div class="ds-section">
+      <div class="ds-section-title">📝 Notes / Backstory</div>
+      <textarea class="ds-textarea" data-field="backstory" rows="4">${esc(fv('backstory',''))}</textarea>
+      <textarea class="ds-textarea" data-field="personnalite" rows="2" placeholder="Personnalité…" style="margin-top:0.4rem;">${esc(fv('personnalite',''))}</textarea>
+    </div>
+  `;
+
+  // Char tab click
+  body.querySelectorAll('.ds-char-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      _drawerChar = btn.dataset.cid;
+      renderDrawerBody();
+    });
+  });
+
+  // Score mod live update
+  body.querySelectorAll('[data-field="for"],[data-field="dex"],[data-field="con"],[data-field="int"],[data-field="sag"],[data-field="cha"]').forEach(inp => {
+    inp.addEventListener('input', () => {
+      const cell = inp.closest('.ds-score-cell');
+      if (cell) cell.querySelector('.ds-score-mod').textContent = modStr(inp.value);
+    });
+  });
+
+  // Auto-save on any input/textarea change
+  body.querySelectorAll('[data-field]').forEach(el => {
+    el.addEventListener('input', () => scheduleDrawerSave());
+    el.addEventListener('change', () => scheduleDrawerSave());
+  });
+}
+
+function scheduleDrawerSave() {
+  const dot  = document.getElementById('drawer-dot');
+  const txt  = document.getElementById('drawer-save-text');
+  dot.className = 'save-dot saving';
+  txt.textContent = 'Modification…';
+  clearTimeout(_drawerSaveTimer);
+  _drawerSaveTimer = setTimeout(commitDrawerSave, 900);
+}
+
+async function commitDrawerSave() {
+  if (!_drawerPlayer || !_drawerChar) return;
+  const player = allPlayers.find(p => p.username === _drawerPlayer);
+  if (!player) return;
+
+  const pdata = player.data || {};
+  const chars = pdata.characters || {};
+  const slot  = chars[_drawerChar];
+  if (!slot) return;
+  if (!slot.character) slot.character = {};
+  const c = slot.character;
+
+  const body = document.getElementById('drawer-body');
+  body.querySelectorAll('[data-field]').forEach(el => {
+    const f = el.dataset.field;
+    const v = el.value;
+    if (f === 'name_slot') {
+      slot.name = v;
+    } else {
+      c[f] = el.type === 'number' ? (parseFloat(v) || 0) : v;
+    }
+  });
+
+  const dot = document.getElementById('drawer-dot');
+  const txt = document.getElementById('drawer-save-text');
+  try {
+    await sbUpdateData(_drawerPlayer, pdata);
+    const idx = allPlayers.findIndex(p => p.username === _drawerPlayer);
+    if (idx !== -1) allPlayers[idx].data = pdata;
+    refreshOpenPanels();
+    dot.className = 'save-dot saved';
+    txt.textContent = 'Sauvegardé ✓';
+    setTimeout(() => { dot.className = 'save-dot'; txt.textContent = '—'; }, 2500);
+  } catch(e) {
+    dot.className = 'save-dot';
+    txt.textContent = 'Erreur de sauvegarde';
+  }
+}
 </script>
 </body>
 </html>
