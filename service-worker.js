@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kaleysur-v52';
+const CACHE_NAME = 'kaleysur-v53';
 
 const ASSETS = [
   'index.html',
@@ -188,23 +188,35 @@ self.addEventListener('fetch', event => {
   // Ressources externes autres → ignorer (pas de cache)
   if (!url.hostname.includes(self.location.hostname)) return;
 
+  const isHTML = event.request.destination === 'document'
+    || url.pathname.endsWith('.html')
+    || url.pathname === '/'
+    || url.pathname === '';
+
+  if (isHTML) {
+    // Pages HTML : network-first — toujours fraîches, cache en fallback hors-ligne
+    event.respondWith(
+      fetch(event.request).then(response => {
+        if (response && response.status === 200 && response.type === 'basic') {
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, response.clone()));
+        }
+        return response;
+      }).catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Assets (CSS, JS, images…) : cache-first
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
-      // Pas en cache → réseau, puis on l'ajoute au cache
       return fetch(event.request).then(response => {
         if (response && response.status === 200 && response.type === 'basic') {
           const clone = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         }
         return response;
-      }).catch(() => {
-        // Hors ligne et pas en cache → page de fallback
-        if (event.request.destination === 'document') {
-          const indexUrl = new URL('index.html', self.registration.scope).href;
-          return caches.match(indexUrl);
-        }
-      });
+      }).catch(() => null);
     })
   );
 });
