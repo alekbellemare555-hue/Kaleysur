@@ -483,6 +483,8 @@ body.focus-mode #dm-main{width:100%;}
   border-bottom:2px solid var(--border-gold);
   overflow:hidden;transition:max-height 0.3s ease;
   box-shadow:0 6px 32px rgba(0,0,0,0.6),inset 0 1px 0 rgba(232,201,106,0.08);
+  position:sticky;top:0;z-index:200;
+  flex-shrink:0;
 }
 #init-bar.collapsed{max-height:52px;}
 #init-bar.open{max-height:220px;}
