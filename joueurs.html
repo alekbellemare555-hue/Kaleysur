@@ -1717,6 +1717,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
   <meta name="apple-mobile-web-app-title" content="Kaleysur">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel="icon" type="image/png" href="favicon.png">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
 
@@ -4300,6 +4301,7 @@ const ALL_CONDITIONS = [
 let currentUser = null;
 let playerData  = null;
 let saveTimer   = null;
+let _lastSaveAt = 0;  // timestamp de la dernière sauvegarde (pour ignorer l'écho Realtime)
 
 /* ── État admin ── */
 let adminEditUser   = null;
@@ -4483,6 +4485,7 @@ function triggerSave() {
     }
     try {
       await sbUpdateData(currentUser, playerData);
+      _lastSaveAt = Date.now();
       badge.textContent = 'Sauvegardé ✓'; badge.className = 'save-badge ok';
       updateConnIndicator('online');
       setTimeout(() => { badge.textContent = ''; badge.className = 'save-badge'; }, 2500);
@@ -4878,6 +4881,7 @@ async function openDashboard() {
   renderCharSelector(); // sélecteur de personnage dans le topbar
   showScreen('screen-dashboard');
   renderDashboard();
+  startRealtime(currentUser);
   applyLayout();
   initLayoutDrag();
   if (playerData?.fontSize) applyFontSizeValue(playerData.fontSize);
@@ -9993,6 +9997,40 @@ document.addEventListener('keydown', e => {
   <button onclick="document.getElementById('sw-update-banner').style.display='none';window._swReg&&window._swReg.waiting&&window._swReg.waiting.postMessage('skipWaiting');" style="background:var(--gold-dark);color:#fff;border:none;border-radius:4px;padding:0.25rem 0.7rem;font-size:0.78rem;cursor:pointer;font-family:'Cinzel',serif;">Actualiser</button>
   <button onclick="document.getElementById('sw-update-banner').style.display='none';" style="background:none;border:none;color:#666;cursor:pointer;font-size:0.9rem;">✕</button>
 </div>
+
+<script>
+/* ── Supabase Realtime — sync DM ↔ Joueur ── */
+function startRealtime(username) {
+  if (!window.supabase) return;
+  try {
+    const client = window.supabase.createClient(
+      'https://hevwgdsvgepiieuvhclg.supabase.co',
+      'sb_publishable_TDTCogCSFP-Lvus2x3rAAg_60l036tq'
+    );
+    client.channel('joueur-sync-' + username)
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'players',
+        filter: 'username=eq.' + username
+      }, payload => {
+        // Ignorer l'écho de notre propre sauvegarde (fenêtre de 3s)
+        if (Date.now() - _lastSaveAt < 3000) return;
+        const newData = payload.new?.data;
+        if (!newData || !playerData) return;
+        // Ne pas écraser si l'utilisateur est en train de saisir
+        const tag = document.activeElement?.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+        // Appliquer les changements externes (ex: HP modifié par le DM)
+        Object.assign(playerData, newData);
+        renderAll();
+        updateHpBar();
+        renderHero();
+      })
+      .subscribe();
+  } catch(e) {}
+}
+</script>
 
 <script>
 if ('serviceWorker' in navigator) {

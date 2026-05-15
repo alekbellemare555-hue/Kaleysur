@@ -6,6 +6,7 @@
 <title>Kaleysur — Table du DM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -451,7 +452,9 @@ async function enterDM() {
   document.getElementById('screen-auth').style.display = 'none';
   document.getElementById('screen-dm').style.display   = 'block';
   await refreshAllPlayers();
-  pollTimer = setInterval(pollPlayers, POLL_MS);
+  startRealtime();
+  // Polling de secours toutes les 60s si Realtime déconnecté
+  pollTimer = setInterval(pollPlayers, 60000);
 }
 
 document.getElementById('btn-logout').addEventListener('click', () => {
@@ -461,7 +464,45 @@ document.getElementById('btn-logout').addEventListener('click', () => {
 });
 
 /* ══════════════════════════════════════════
-   Polling
+   Realtime
+══════════════════════════════════════════ */
+function startRealtime() {
+  if (!window.supabase) return;
+  try {
+    const client = window.supabase.createClient(SB_URL, SB_KEY);
+    client.channel('dm-players-sync')
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'players'
+      }, payload => {
+        const row = payload.new;
+        if (!row?.username || !row?.data) return;
+        // Mettre à jour allPlayers en mémoire
+        const idx = allPlayers.findIndex(p => p.username === row.username);
+        if (idx !== -1) allPlayers[idx].data = row.data;
+        else allPlayers.push({ username: row.username, data: row.data });
+        // Rafraîchir l'interface
+        renderSidebar();
+        refreshOpenPanels();
+        renderInitChips();
+        document.getElementById('poll-indicator').textContent =
+          '⚡ ' + new Date().toLocaleTimeString('fr', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      })
+      .subscribe(status => {
+        if (status === 'SUBSCRIBED') {
+          document.getElementById('poll-indicator').textContent = '⚡ Realtime';
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          document.getElementById('poll-indicator').textContent = '⚠ Polling';
+        }
+      });
+  } catch(e) {
+    console.warn('Realtime non disponible, polling actif', e);
+  }
+}
+
+/* ══════════════════════════════════════════
+   Polling (fallback)
 ══════════════════════════════════════════ */
 async function refreshAllPlayers() {
   document.getElementById('poll-indicator').textContent = '↻';
