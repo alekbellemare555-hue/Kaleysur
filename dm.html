@@ -11,195 +11,253 @@
 :root{
   --bg:#0a0703;--bg-nav:#0d0a05;--bg-card:#141009;--bg-input:#0d0d14;
   --gold:#c9a84c;--gold-dark:#a07830;--border:#2a2218;--text:#d4c5a0;--text-dim:#888;
-  --danger:#c0392b;--heal:#27ae60;--radius:6px;--sidebar-w:280px;--nav-h:52px;
+  --danger:#c0392b;--heal:#27ae60;--warn:#e67e22;--radius:6px;--sidebar-w:280px;--nav-h:52px;
   --shadow:0 2px 12px rgba(0,0,0,0.5);
 }
 body{background:var(--bg);color:var(--text);font-family:'Crimson Text',serif;font-size:1rem;min-height:100vh;}
 button{cursor:pointer;font-family:inherit;}
-input,select{font-family:inherit;}
+input,select{font-family:inherit;color-scheme:dark;}
 
 /* ── Nav ── */
-#dm-nav{
-  position:fixed;top:0;left:0;right:0;height:var(--nav-h);z-index:300;
-  background:var(--bg-nav);border-bottom:1px solid var(--border);
-  display:flex;align-items:center;padding:0 1.25rem;gap:1rem;
-}
-#dm-nav .brand{font-family:'Cinzel',serif;color:var(--gold);font-size:1rem;letter-spacing:0.06em;}
-#dm-nav .brand span{color:var(--text-dim);font-size:0.78rem;margin-left:0.5rem;font-family:'Crimson Text',serif;}
-#dm-nav .nav-right{margin-left:auto;display:flex;align-items:center;gap:0.75rem;}
-#poll-indicator{font-size:0.72rem;color:var(--text-dim);}
-#btn-logout{background:none;border:1px solid var(--border);color:var(--text-dim);padding:0.2rem 0.65rem;border-radius:var(--radius);font-size:0.78rem;transition:color 0.15s,border-color 0.15s;}
-#btn-logout:hover{color:var(--gold);border-color:var(--gold-dark);}
+#dm-nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);z-index:300;background:var(--bg-nav);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1rem;gap:0.75rem;}
+.brand{font-family:'Cinzel',serif;color:var(--gold);font-size:0.95rem;letter-spacing:0.06em;white-space:nowrap;}
+.brand span{color:var(--text-dim);font-size:0.75rem;margin-left:0.4rem;font-family:'Crimson Text',serif;}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:0.5rem;}
+#poll-indicator{font-size:0.7rem;color:var(--text-dim);white-space:nowrap;}
+.nav-btn{background:none;border:1px solid var(--border);color:var(--text-dim);padding:0.2rem 0.55rem;border-radius:var(--radius);font-size:0.75rem;transition:color 0.15s,border-color 0.15s,background 0.15s;white-space:nowrap;}
+.nav-btn:hover{color:var(--gold);border-color:var(--gold-dark);}
+.nav-btn.active{background:rgba(201,168,76,0.12);color:var(--gold);border-color:var(--gold-dark);}
+#btn-logout{background:none;border:1px solid var(--border);color:var(--text-dim);padding:0.2rem 0.55rem;border-radius:var(--radius);font-size:0.75rem;transition:color 0.15s,border-color 0.15s;}
+#btn-logout:hover{color:var(--danger);border-color:var(--danger);}
 
 /* ── Auth ── */
 #screen-auth{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem;}
 .auth-box{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:2.5rem 2rem;width:100%;max-width:340px;box-shadow:var(--shadow);}
 .auth-title{font-family:'Cinzel',serif;color:var(--gold);font-size:1.1rem;text-align:center;margin-bottom:0.25rem;}
 .auth-sub{font-size:0.8rem;color:var(--text-dim);text-align:center;margin-bottom:1.5rem;}
-.auth-label{display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-dim);margin-bottom:0.3rem;}
+.auth-label{display:block;font-size:0.73rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-dim);margin-bottom:0.3rem;}
 .auth-input{width:100%;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);padding:0.5rem 0.75rem;margin-bottom:1rem;font-size:0.95rem;transition:border-color 0.15s;}
 .auth-input:focus{outline:none;border-color:var(--gold-dark);}
 .auth-btn{width:100%;background:var(--gold-dark);color:#fff;border:none;border-radius:var(--radius);padding:0.6rem;font-family:'Cinzel',serif;font-size:0.9rem;letter-spacing:0.04em;transition:background 0.15s;}
 .auth-btn:hover{background:var(--gold);}
 .auth-error{color:var(--danger);font-size:0.8rem;text-align:center;margin-top:0.75rem;min-height:1.1em;}
 
-/* ── DM screen ── */
+/* ── DM Screen ── */
 #screen-dm{display:none;padding-top:var(--nav-h);}
 #dm-layout{display:flex;height:calc(100vh - var(--nav-h));}
 
 /* ── Sidebar ── */
-#dm-sidebar{
-  width:var(--sidebar-w);flex-shrink:0;
-  background:var(--bg-nav);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;overflow:hidden;
-}
-#sidebar-header{padding:0.75rem 1rem 0.5rem;border-bottom:1px solid var(--border);}
-#sidebar-header h2{font-family:'Cinzel',serif;color:var(--gold);font-size:0.85rem;letter-spacing:0.06em;margin-bottom:0.5rem;}
-#player-search{
-  width:100%;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);
-  color:var(--text);padding:0.35rem 0.6rem;font-size:0.82rem;
-}
+#dm-sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--bg-nav);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+#sidebar-top{padding:0.65rem 1rem 0.5rem;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:0.4rem;}
+#sidebar-top h2{font-family:'Cinzel',serif;color:var(--gold);font-size:0.82rem;letter-spacing:0.06em;}
+#player-search{width:100%;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);padding:0.3rem 0.6rem;font-size:0.8rem;}
 #player-search:focus{outline:none;border-color:var(--gold-dark);}
-#player-list{flex:1;overflow-y:auto;padding:0.5rem 0;}
+#player-list{flex:1;overflow-y:auto;padding:0.4rem 0;}
 #player-list::-webkit-scrollbar{width:4px;}
-#player-list::-webkit-scrollbar-track{background:transparent;}
 #player-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
 
-/* ── Player item ── */
-.player-item{padding:0.45rem 1rem;cursor:pointer;border-bottom:1px solid transparent;transition:background 0.1s;}
-.player-item:hover{background:rgba(201,168,76,0.06);}
-.player-item.expanded{background:rgba(201,168,76,0.06);border-bottom:1px solid var(--border);}
-.player-head{display:flex;align-items:center;gap:0.6rem;}
-.player-avatar{font-size:1.1rem;line-height:1;flex-shrink:0;}
+/* Monster section in sidebar */
+#monster-section{border-top:1px solid var(--border);padding:0.6rem 1rem;}
+#monster-section-title{font-family:'Cinzel',serif;color:var(--gold);font-size:0.75rem;letter-spacing:0.06em;display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;}
+#btn-add-monster{background:none;border:1px dashed var(--border);color:var(--text-dim);font-size:0.7rem;padding:0.15rem 0.4rem;border-radius:3px;transition:color 0.1s,border-color 0.1s;}
+#btn-add-monster:hover{color:var(--gold);border-color:var(--gold-dark);}
+#monster-list{display:flex;flex-direction:column;gap:0.2rem;margin-bottom:0.4rem;}
+.monster-sidebar-entry{display:flex;align-items:center;gap:0.4rem;font-size:0.78rem;color:var(--text-dim);cursor:pointer;padding:0.2rem 0.3rem;border-radius:3px;transition:background 0.1s,color 0.1s;}
+.monster-sidebar-entry:hover,.monster-sidebar-entry.open{background:rgba(192,57,43,0.08);color:var(--text);}
+.monster-sidebar-entry.open{color:var(--danger);}
+.monster-sidebar-entry .m-dot{width:5px;height:5px;border-radius:50%;background:var(--danger);opacity:0.6;flex-shrink:0;}
+.monster-sidebar-entry.open .m-dot{opacity:1;}
+
+/* Monster form */
+#monster-form{display:none;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:0.6rem;margin-top:0.35rem;}
+#monster-form.open{display:block;}
+.m-form-row{display:flex;gap:0.4rem;margin-bottom:0.35rem;}
+.m-inp{flex:1;background:var(--bg-card);border:1px solid var(--border);color:var(--text);border-radius:3px;padding:0.2rem 0.4rem;font-size:0.78rem;min-width:0;}
+.m-inp:focus{outline:none;border-color:var(--gold-dark);}
+.m-inp-sm{width:52px;flex:none;}
+#btn-create-monster{width:100%;background:var(--danger);color:#fff;border:none;border-radius:3px;padding:0.3rem;font-size:0.75rem;transition:opacity 0.1s;}
+#btn-create-monster:hover{opacity:0.85;}
+
+/* Player items */
+.player-item{padding:0.4rem 1rem;cursor:pointer;transition:background 0.1s;}
+.player-item:hover{background:rgba(201,168,76,0.05);}
+.player-item.expanded{background:rgba(201,168,76,0.05);}
+.player-head{display:flex;align-items:center;gap:0.55rem;}
+.player-avatar{font-size:1rem;line-height:1;flex-shrink:0;}
 .player-info{flex:1;min-width:0;}
-.player-name{font-family:'Cinzel',serif;font-size:0.78rem;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.player-name{font-family:'Cinzel',serif;font-size:0.76rem;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .player-hp-mini{height:3px;background:var(--border);border-radius:2px;margin-top:3px;overflow:hidden;}
-.player-hp-mini-bar{height:100%;border-radius:2px;background:var(--heal);transition:width 0.3s;}
-.player-expand-icon{font-size:0.65rem;color:var(--text-dim);transition:transform 0.15s;flex-shrink:0;}
+.player-hp-mini-bar{height:100%;border-radius:2px;transition:width 0.3s;}
+.player-expand-icon{font-size:0.6rem;color:var(--text-dim);transition:transform 0.15s;flex-shrink:0;}
 .player-item.expanded .player-expand-icon{transform:rotate(90deg);}
-
-/* ── Char sub-list ── */
-.char-list{display:none;padding:0.25rem 0 0.25rem 2.4rem;}
+.char-list{display:none;padding:0.2rem 0 0.2rem 2.2rem;}
 .player-item.expanded .char-list{display:block;}
-.char-entry{
-  padding:0.3rem 0.5rem;border-radius:var(--radius);cursor:pointer;
-  font-size:0.8rem;color:var(--text-dim);transition:background 0.1s,color 0.1s;
-  display:flex;align-items:center;gap:0.4rem;
-}
-.char-entry:hover{background:rgba(201,168,76,0.1);color:var(--text);}
+.char-entry{padding:0.25rem 0.45rem;border-radius:var(--radius);cursor:pointer;font-size:0.78rem;color:var(--text-dim);transition:background 0.1s,color 0.1s;display:flex;align-items:center;gap:0.35rem;}
+.char-entry:hover{background:rgba(201,168,76,0.08);color:var(--text);}
 .char-entry.open{color:var(--gold);font-weight:600;}
-.char-entry-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0;}
-.char-entry.open .char-entry-dot{background:var(--gold);}
+.char-dot{width:5px;height:5px;border-radius:50%;background:var(--border);flex-shrink:0;}
+.char-entry.open .char-dot{background:var(--gold);}
 
-/* ── Main area ── */
-#dm-main{flex:1;overflow-y:auto;padding:1.25rem;background:var(--bg);}
+/* ── Initiative Tracker ── */
+#init-bar{background:var(--bg-nav);border-bottom:1px solid var(--border);overflow:hidden;transition:max-height 0.25s;}
+#init-bar.collapsed{max-height:36px;}
+#init-bar.open{max-height:140px;}
+#init-header{display:flex;align-items:center;gap:0.5rem;padding:0 1rem;height:36px;flex-shrink:0;}
+#init-toggle{background:none;border:none;color:var(--gold);font-family:'Cinzel',serif;font-size:0.75rem;letter-spacing:0.05em;display:flex;align-items:center;gap:0.35rem;padding:0;}
+#init-toggle .arrow{transition:transform 0.2s;font-size:0.6rem;}
+#init-bar.open #init-toggle .arrow{transform:rotate(90deg);}
+.init-sep{width:1px;height:16px;background:var(--border);}
+.init-ctrl{background:none;border:1px solid var(--border);color:var(--text-dim);width:22px;height:22px;border-radius:3px;font-size:0.7rem;display:flex;align-items:center;justify-content:center;transition:color 0.1s,border-color 0.1s;}
+.init-ctrl:hover{color:var(--gold);border-color:var(--gold-dark);}
+#init-round-label{font-size:0.75rem;color:var(--text-dim);padding:0 0.25rem;}
+#init-roll-all{background:rgba(201,168,76,0.1);border:1px solid var(--gold-dark);color:var(--gold);font-size:0.7rem;padding:0.15rem 0.5rem;border-radius:3px;transition:background 0.1s;}
+#init-roll-all:hover{background:rgba(201,168,76,0.2);}
+#init-clear{color:var(--text-dim);border-color:var(--border);font-size:0.7rem;padding:0.15rem 0.45rem;border-radius:3px;background:none;border:1px solid var(--border);transition:color 0.1s,border-color 0.1s;}
+#init-clear:hover{color:var(--danger);border-color:var(--danger);}
+#init-chips{display:flex;gap:0.45rem;padding:0 1rem 0.6rem;overflow-x:auto;flex-wrap:nowrap;}
+#init-chips::-webkit-scrollbar{height:3px;}
+#init-chips::-webkit-scrollbar-thumb{background:var(--border);}
+.init-chip{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:0.3rem 0.55rem;min-width:58px;cursor:pointer;transition:border-color 0.15s,background 0.15s;
+  position:relative;flex-shrink:0;
+}
+.init-chip:hover{border-color:var(--gold-dark);}
+.init-chip.active-turn{border-color:var(--gold);background:rgba(201,168,76,0.1);}
+.init-chip.active-turn::before{content:'▼';position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-size:0.55rem;color:var(--gold);}
+.init-chip.dead{opacity:0.4;}
+.chip-avatar{font-size:0.9rem;line-height:1;}
+.chip-name{font-size:0.62rem;color:var(--text-dim);white-space:nowrap;max-width:60px;overflow:hidden;text-overflow:ellipsis;}
+.chip-init{font-family:'Cinzel',serif;font-size:0.75rem;color:var(--gold);}
+.chip-hp-bar{height:3px;background:var(--border);border-radius:2px;width:100%;overflow:hidden;}
+.chip-hp-fill{height:100%;border-radius:2px;transition:width 0.3s;}
+.init-chip-inp{width:36px;background:var(--bg-input);border:1px solid var(--border);color:var(--text);border-radius:3px;padding:0.1rem 0.2rem;font-size:0.72rem;text-align:center;}
+.init-chip-inp:focus{outline:none;border-color:var(--gold-dark);}
+
+/* ── Main ── */
+#dm-main{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
 #dm-main::-webkit-scrollbar{width:6px;}
 #dm-main::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
-#panels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:1rem;}
-#empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:calc(100vh - var(--nav-h) - 2.5rem);color:var(--text-dim);text-align:center;gap:0.5rem;}
-#empty-state .empty-icon{font-size:3rem;opacity:0.3;}
-#empty-state p{font-size:0.9rem;}
+#panels-area{flex:1;padding:1rem;}
+#panels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:0.85rem;}
+body.compact #panels-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:0.5rem;}
+#empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;color:var(--text-dim);text-align:center;gap:0.5rem;padding:2rem;min-height:200px;}
+#empty-state .empty-icon{font-size:2.5rem;opacity:0.25;}
+#empty-state p{font-size:0.85rem;}
 
-/* ── Combat panel ── */
-.combat-panel{
-  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
-  overflow:hidden;box-shadow:var(--shadow);transition:border-color 0.2s;
-}
+/* ── Combat Panel ── */
+.combat-panel{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);transition:border-color 0.2s;}
 .combat-panel:hover{border-color:var(--gold-dark);}
-.panel-header{
-  display:flex;align-items:center;gap:0.6rem;padding:0.65rem 0.85rem;
-  background:var(--bg-nav);border-bottom:1px solid var(--border);
-}
-.panel-avatar{font-size:1.2rem;}
+.combat-panel.monster-panel{border-color:rgba(192,57,43,0.3);}
+.combat-panel.monster-panel:hover{border-color:var(--danger);}
+.combat-panel.hp-alert{animation:hp-flash 0.6s ease 3;}
+@keyframes hp-flash{0%,100%{border-color:var(--danger);}50%{border-color:transparent;box-shadow:0 0 18px rgba(192,57,43,0.6);}}
+
+/* Panel header */
+.panel-header{display:flex;align-items:center;gap:0.55rem;padding:0.55rem 0.75rem;background:var(--bg-nav);border-bottom:1px solid var(--border);}
+.monster-panel .panel-header{background:rgba(80,10,5,0.5);}
+.panel-avatar{font-size:1.1rem;}
 .panel-title{flex:1;min-width:0;}
-.panel-char-name{font-family:'Cinzel',serif;color:var(--gold);font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.panel-char-sub{font-size:0.72rem;color:var(--text-dim);}
-.panel-actions{display:flex;gap:0.35rem;flex-shrink:0;}
-.panel-btn{
-  background:none;border:1px solid var(--border);color:var(--text-dim);
-  width:24px;height:24px;border-radius:4px;font-size:0.7rem;
-  display:flex;align-items:center;justify-content:center;transition:color 0.15s,border-color 0.15s;
-}
-.panel-btn:hover{color:var(--gold);border-color:var(--gold-dark);}
-.panel-btn.danger:hover{color:var(--danger);border-color:var(--danger);}
+.panel-char-name{font-family:'Cinzel',serif;color:var(--gold);font-size:0.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.panel-char-sub{font-size:0.68rem;color:var(--text-dim);}
+.panel-acts{display:flex;gap:0.3rem;flex-shrink:0;}
+.pact{background:none;border:1px solid var(--border);color:var(--text-dim);width:22px;height:22px;border-radius:3px;font-size:0.68rem;display:flex;align-items:center;justify-content:center;transition:color 0.1s,border-color 0.1s;}
+.pact:hover{color:var(--gold);border-color:var(--gold-dark);}
+.pact.danger:hover{color:var(--danger);border-color:var(--danger);}
+.pact.rest-long{font-size:0.6rem;width:auto;padding:0 0.35rem;}
+.pact.rest-long:hover{color:var(--heal);border-color:var(--heal);}
 
-/* HP section */
-.panel-hp{padding:0.75rem 0.85rem;border-bottom:1px solid var(--border);}
-.hp-bar-wrap{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:0.5rem;}
+/* HP */
+.panel-hp{padding:0.6rem 0.75rem;border-bottom:1px solid var(--border);}
+.hp-bar-wrap{height:7px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:0.4rem;}
 .hp-bar-fill{height:100%;border-radius:4px;transition:width 0.35s,background 0.35s;}
-.hp-numbers{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem;}
-.hp-text{font-family:'Cinzel',serif;font-size:0.9rem;}
-.hp-temp{font-size:0.75rem;color:var(--gold);margin-left:0.4rem;}
-.hp-controls{display:flex;gap:0.4rem;align-items:center;}
-.hp-quick-btn{
-  background:var(--bg-input);border:1px solid var(--border);color:var(--text);
-  padding:0.25rem 0.5rem;border-radius:var(--radius);font-size:0.8rem;
-  transition:background 0.1s,border-color 0.1s;
-}
-.hp-quick-btn.minus:hover{background:rgba(192,57,43,0.15);border-color:var(--danger);color:var(--danger);}
-.hp-quick-btn.plus:hover{background:rgba(39,174,96,0.15);border-color:var(--heal);color:var(--heal);}
-.hp-inp{
-  flex:1;background:var(--bg-input);border:1px solid var(--border);color:var(--text);
-  padding:0.25rem 0.4rem;border-radius:var(--radius);font-size:0.82rem;text-align:center;
-  min-width:0;
-}
+.hp-row{display:flex;align-items:baseline;gap:0.4rem;margin-bottom:0.45rem;}
+.hp-num{font-family:'Cinzel',serif;font-size:0.9rem;}
+.hp-max{color:var(--text-dim);font-size:0.78rem;}
+.hp-temp-badge{font-size:0.72rem;color:var(--gold);background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);border-radius:3px;padding:0 0.3rem;}
+.hp-controls{display:flex;gap:0.35rem;align-items:center;margin-bottom:0.3rem;}
+.hp-qbtn{background:var(--bg-input);border:1px solid var(--border);color:var(--text);padding:0.2rem 0.4rem;border-radius:3px;font-size:0.75rem;transition:background 0.1s,border-color 0.1s,color 0.1s;}
+.hp-qbtn.m:hover{background:rgba(192,57,43,0.15);border-color:var(--danger);color:var(--danger);}
+.hp-qbtn.p:hover{background:rgba(39,174,96,0.15);border-color:var(--heal);color:var(--heal);}
+.hp-inp{flex:1;background:var(--bg-input);border:1px solid var(--border);color:var(--text);padding:0.2rem 0.35rem;border-radius:3px;font-size:0.78rem;text-align:center;min-width:0;}
 .hp-inp:focus{outline:none;border-color:var(--gold-dark);}
-.hp-apply{
-  background:var(--gold-dark);border:none;color:#fff;
-  padding:0.25rem 0.6rem;border-radius:var(--radius);font-size:0.78rem;
-  transition:background 0.15s;
-}
+.hp-apply{background:var(--gold-dark);border:none;color:#fff;padding:0.2rem 0.5rem;border-radius:3px;font-size:0.72rem;transition:background 0.15s;}
 .hp-apply:hover{background:var(--gold);}
-.hp-death{
-  display:flex;gap:0.25rem;align-items:center;flex-wrap:wrap;margin-top:0.4rem;font-size:0.72rem;color:var(--text-dim);
-}
-.hp-death-dot{width:10px;height:10px;border-radius:50%;border:1px solid var(--border);}
-.hp-death-dot.success{background:var(--heal);border-color:var(--heal);}
-.hp-death-dot.fail{background:var(--danger);border-color:var(--danger);}
+/* Temp HP */
+.temp-row{display:flex;align-items:center;gap:0.35rem;}
+.temp-label{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-dim);}
+.temp-inp{width:52px;background:var(--bg-input);border:1px solid var(--border);color:var(--gold);padding:0.15rem 0.3rem;border-radius:3px;font-size:0.75rem;text-align:center;}
+.temp-inp:focus{outline:none;border-color:var(--gold-dark);}
+.temp-set{background:none;border:1px solid var(--border);color:var(--text-dim);font-size:0.65rem;padding:0.15rem 0.3rem;border-radius:3px;transition:color 0.1s,border-color 0.1s;}
+.temp-set:hover{color:var(--gold);border-color:var(--gold-dark);}
+/* Death saves */
+.death-row{display:flex;align-items:center;gap:0.3rem;margin-top:0.4rem;font-size:0.68rem;color:var(--text-dim);}
+.ds-dot{width:11px;height:11px;border-radius:50%;border:1px solid var(--border);cursor:pointer;transition:background 0.15s,border-color 0.15s;flex-shrink:0;}
+.ds-dot.s{background:var(--heal);border-color:var(--heal);}
+.ds-dot.f{background:var(--danger);border-color:var(--danger);}
+.ds-dot:hover{border-color:var(--gold);}
+.ds-sep{width:1px;height:10px;background:var(--border);}
 
-/* Stats row */
+/* Stats */
 .panel-stats{display:flex;border-bottom:1px solid var(--border);}
-.stat-cell{flex:1;text-align:center;padding:0.55rem 0.3rem;border-right:1px solid var(--border);}
+.stat-cell{flex:1;text-align:center;padding:0.45rem 0.25rem;border-right:1px solid var(--border);}
 .stat-cell:last-child{border-right:none;}
-.stat-val{font-family:'Cinzel',serif;color:var(--gold);font-size:1rem;}
-.stat-lbl{font-size:0.62rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-dim);}
+.stat-val{font-family:'Cinzel',serif;color:var(--gold);font-size:0.95rem;}
+.stat-lbl{font-size:0.58rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-dim);}
+
+/* Spell slots */
+.panel-slots{border-bottom:1px solid var(--border);}
+.slots-toggle{width:100%;background:none;border:none;color:var(--text-dim);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.05em;padding:0.3rem 0.75rem;text-align:left;display:flex;align-items:center;gap:0.3rem;transition:color 0.1s;}
+.slots-toggle:hover{color:var(--gold);}
+.slots-toggle .arrow{font-size:0.5rem;transition:transform 0.15s;}
+.slots-toggle.open .arrow{transform:rotate(90deg);}
+.slots-grid{display:none;padding:0 0.75rem 0.5rem;display:grid;grid-template-columns:repeat(9,1fr);gap:0.25rem;}
+.slots-toggle.open + .slots-grid{display:grid;}
+.slot-cell{text-align:center;}
+.slot-niv{font-size:0.55rem;color:var(--text-dim);}
+.slot-count{font-family:'Cinzel',serif;font-size:0.72rem;color:var(--gold);}
+.slot-count.empty{color:var(--border);font-size:0.65rem;}
+body.compact .panel-slots{display:none;}
 
 /* Conditions */
-.panel-cond{padding:0.65rem 0.85rem;}
-.cond-label{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-dim);margin-bottom:0.45rem;}
-.cond-badges{display:flex;flex-wrap:wrap;gap:0.35rem;}
-.cond-badge{
-  background:rgba(192,57,43,0.15);border:1px solid rgba(192,57,43,0.4);color:#e07060;
-  font-size:0.72rem;padding:0.15rem 0.45rem;border-radius:3px;cursor:pointer;
-  transition:background 0.1s;display:flex;align-items:center;gap:0.25rem;
-}
-.cond-badge:hover{background:rgba(192,57,43,0.3);}
-.cond-badge .cond-x{opacity:0.7;font-size:0.65rem;}
-.cond-add-btn{
-  background:none;border:1px dashed var(--border);color:var(--text-dim);
-  font-size:0.72rem;padding:0.15rem 0.5rem;border-radius:3px;cursor:pointer;
-  transition:border-color 0.1s,color 0.1s;
-}
+.panel-cond{padding:0.5rem 0.75rem;}
+.sec-label{font-size:0.62rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-dim);margin-bottom:0.35rem;}
+.cond-badges{display:flex;flex-wrap:wrap;gap:0.3rem;}
+.cond-badge{background:rgba(192,57,43,0.12);border:1px solid rgba(192,57,43,0.35);color:#e07060;font-size:0.68rem;padding:0.12rem 0.4rem;border-radius:3px;cursor:pointer;transition:background 0.1s;display:flex;align-items:center;gap:0.2rem;}
+.cond-badge:hover{background:rgba(192,57,43,0.28);}
+.cond-x{opacity:0.6;font-size:0.6rem;}
+.cond-picker{position:relative;display:inline-block;}
+.cond-add-btn{background:none;border:1px dashed var(--border);color:var(--text-dim);font-size:0.68rem;padding:0.12rem 0.4rem;border-radius:3px;cursor:pointer;transition:border-color 0.1s,color 0.1s;}
 .cond-add-btn:hover{border-color:var(--gold-dark);color:var(--gold);}
+.cond-menu{position:absolute;bottom:calc(100% + 4px);left:0;z-index:500;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);display:none;min-width:150px;max-height:200px;overflow-y:auto;}
+.cond-menu.open{display:block;}
+.cond-opt{padding:0.3rem 0.7rem;font-size:0.78rem;cursor:pointer;transition:background 0.1s;white-space:nowrap;}
+.cond-opt:hover{background:rgba(201,168,76,0.08);color:var(--gold);}
 
-/* Condition picker dropdown */
-.cond-picker{
-  position:relative;display:inline-block;
-}
-.cond-picker-menu{
-  position:absolute;bottom:calc(100% + 4px);left:0;z-index:200;
-  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
-  box-shadow:var(--shadow);display:none;min-width:160px;
-}
-.cond-picker-menu.open{display:block;}
-.cond-picker-opt{
-  padding:0.35rem 0.75rem;font-size:0.8rem;cursor:pointer;
-  transition:background 0.1s;white-space:nowrap;
-}
-.cond-picker-opt:hover{background:rgba(201,168,76,0.1);color:var(--gold);}
+/* ── Resources (compact sidebar display) ── */
+body.compact .panel-char-sub{display:none;}
+
+/* ── Modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:900;display:none;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;width:340px;max-width:94vw;box-shadow:0 8px 40px rgba(0,0,0,0.7);}
+.modal-title{font-family:'Cinzel',serif;color:var(--gold);font-size:0.9rem;margin-bottom:1rem;}
+.modal-field{margin-bottom:0.65rem;}
+.modal-label{display:block;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-dim);margin-bottom:0.25rem;}
+.modal-inp{width:100%;background:var(--bg-input);border:1px solid var(--border);color:var(--text);border-radius:3px;padding:0.35rem 0.6rem;font-size:0.9rem;}
+.modal-inp:focus{outline:none;border-color:var(--gold-dark);}
+.modal-row{display:flex;gap:0.5rem;}
+.modal-row .modal-field{flex:1;}
+.modal-actions{display:flex;gap:0.5rem;margin-top:1rem;justify-content:flex-end;}
+.btn-cancel{background:none;border:1px solid var(--border);color:var(--text-dim);padding:0.35rem 0.75rem;border-radius:var(--radius);font-size:0.82rem;transition:color 0.1s;}
+.btn-cancel:hover{color:var(--text);}
+.btn-danger{background:var(--danger);border:none;color:#fff;padding:0.35rem 0.75rem;border-radius:var(--radius);font-size:0.82rem;transition:opacity 0.1s;}
+.btn-danger:hover{opacity:0.85;}
 
 /* ── Misc ── */
-.loading{color:var(--text-dim);font-size:0.85rem;font-style:italic;padding:1rem;}
+.loading{color:var(--text-dim);font-size:0.82rem;font-style:italic;padding:0.85rem 1rem;}
+.sep-label{font-size:0.62rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-dim);padding:0.4rem 1rem 0.15rem;}
 </style>
 </head>
 <body>
@@ -218,57 +276,121 @@ input,select{font-family:inherit;}
   </div>
 </div>
 
-<!-- ══ DM screen ══ -->
+<!-- ══ DM Screen ══ -->
 <div id="screen-dm">
   <nav id="dm-nav">
-    <span class="brand">Kaleysur <span>· Table du DM</span></span>
+    <span class="brand">Kaleysur <span>· DM</span></span>
+    <button id="btn-init-open" class="nav-btn">⚔ Initiative</button>
+    <button id="btn-compact" class="nav-btn" title="Vue compacte">⊞ Compact</button>
     <div class="nav-right">
       <span id="poll-indicator">—</span>
-      <button id="btn-refresh" class="panel-btn" title="Actualiser maintenant" style="width:auto;padding:0 0.5rem;height:26px;">↺ Actualiser</button>
-      <button id="btn-logout">Déconnexion</button>
+      <button id="btn-refresh" class="nav-btn">↺</button>
+      <button id="btn-logout">Déco.</button>
     </div>
   </nav>
 
   <div id="dm-layout">
-    <!-- Sidebar joueurs -->
+    <!-- Sidebar -->
     <div id="dm-sidebar">
-      <div id="sidebar-header">
+      <div id="sidebar-top">
         <h2>Joueurs</h2>
         <input type="text" id="player-search" placeholder="Rechercher…">
       </div>
       <div id="player-list"><div class="loading">Chargement…</div></div>
+
+      <!-- Monsters -->
+      <div id="monster-section">
+        <div id="monster-section-title">
+          <span>PNJ / Monstres</span>
+          <button id="btn-add-monster">+ Nouveau</button>
+        </div>
+        <div id="monster-list"></div>
+        <div id="monster-form">
+          <div class="m-form-row">
+            <input class="m-inp" id="mf-name" placeholder="Nom" autocomplete="off">
+            <input class="m-inp m-inp-sm" id="mf-avatar" placeholder="🐉" maxlength="2">
+          </div>
+          <div class="m-form-row">
+            <input class="m-inp" id="mf-hp" placeholder="HP max" type="number" min="1">
+            <input class="m-inp m-inp-sm" id="mf-ac" placeholder="CA" type="number" min="0">
+            <input class="m-inp m-inp-sm" id="mf-init" placeholder="Init" type="number">
+          </div>
+          <button id="btn-create-monster">Créer</button>
+        </div>
+      </div>
     </div>
 
-    <!-- Panneaux combat -->
+    <!-- Main -->
     <div id="dm-main">
-      <div id="empty-state">
-        <div class="empty-icon">⚔</div>
-        <p>Sélectionne un personnage dans la barre latérale<br>pour ouvrir un panneau de combat.</p>
+      <!-- Initiative tracker -->
+      <div id="init-bar" class="collapsed">
+        <div id="init-header">
+          <button id="init-toggle"><span class="arrow">▶</span> Initiative</button>
+          <div class="init-sep"></div>
+          <button class="init-ctrl" id="init-prev" title="Tour précédent">◀</button>
+          <span id="init-round-label">Tour 1</span>
+          <button class="init-ctrl" id="init-next" title="Tour suivant">▶</button>
+          <div class="init-sep"></div>
+          <button id="init-roll-all">🎲 Lancer tous</button>
+          <button id="init-clear">Effacer</button>
+        </div>
+        <div id="init-chips"></div>
       </div>
-      <div id="panels-grid"></div>
+
+      <!-- Panels -->
+      <div id="panels-area">
+        <div id="empty-state">
+          <div class="empty-icon">⚔</div>
+          <p>Sélectionne un personnage dans la barre latérale<br>pour ouvrir un panneau de combat.</p>
+        </div>
+        <div id="panels-grid" style="display:none;"></div>
+      </div>
     </div>
   </div>
 </div>
 
+<!-- Monster modal (unused, using inline form) -->
+
 <script>
-/* ══ Config ══ */
+/* ══════════════════════════════════════════
+   Config
+══════════════════════════════════════════ */
 const SB_URL  = 'https://hevwgdsvgepiieuvhclg.supabase.co';
 const SB_KEY  = 'sb_publishable_TDTCogCSFP-Lvus2x3rAAg_60l036tq';
 const SB_HDR  = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' };
 const ADMIN_USER = 'dm';
 const POLL_MS = 10000;
-const ALL_CONDITIONS = ['Blinded','Charmed','Deafened','Frightened','Grappled',
-  'Incapacitated','Invisible','Poisoned','Prone','Restrained','Stunned','Unconscious','Concentrating'];
+const ALL_CONDITIONS = [
+  'Blinded','Charmed','Deafened','Frightened','Grappled',
+  'Incapacitated','Invisible','Poisoned','Prone',
+  'Restrained','Stunned','Unconscious','Concentrating'
+];
 
-/* ══ État ══ */
-let currentUser = null;
-let allPlayers  = [];   // [{username, data}]
-let openPanels  = {};   // { "username::charId": {username, charId} }
-let expandedPlayers = new Set();
-let pollTimer   = null;
-let saveTimers  = {};
+/* ══════════════════════════════════════════
+   State
+══════════════════════════════════════════ */
+let currentUser    = null;
+let allPlayers     = [];
+let openPanels     = {};       // key → {type:'player'|'monster', username?, charId?, monsterId?}
+let expandedPlayers= new Set();
+let localMonsters  = {};       // id → {id,name,avatar,hpMax,hp,ac,initiative,conditions}
+let monsterCounter = 0;
+let pollTimer      = null;
+let saveTimers     = {};
+let compactMode    = false;
+let prevHp         = {};       // key → pvActuel, for 0-HP detection
 
-/* ══ Supabase helpers ══ */
+// Initiative tracker state
+let initState = {
+  open: false,
+  combatants: [],  // [{id, label, avatar, type, ref, initVal, hp, hpMax}]
+  currentIdx: -1,
+  round: 1
+};
+
+/* ══════════════════════════════════════════
+   Supabase
+══════════════════════════════════════════ */
 async function sbFetch(path, opts={}) {
   return fetch(SB_URL + path, { ...opts, headers: { ...SB_HDR, ...(opts.headers||{}) } });
 }
@@ -292,12 +414,13 @@ async function sbUpdateData(username, data) {
   });
 }
 
-/* ══ Session ══ */
+/* ══════════════════════════════════════════
+   Session / Auth
+══════════════════════════════════════════ */
 function saveSession(u) { localStorage.setItem('kaleysur_dm_user', u); }
 function loadSession()  { return localStorage.getItem('kaleysur_dm_user'); }
 function clearSession() { localStorage.removeItem('kaleysur_dm_user'); }
 
-/* ══ Auth ══ */
 document.getElementById('btn-login').addEventListener('click', doLogin);
 document.getElementById('auth-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
 
@@ -337,52 +460,58 @@ document.getElementById('btn-logout').addEventListener('click', () => {
   location.reload();
 });
 
-/* ══ Polling ══ */
+/* ══════════════════════════════════════════
+   Polling
+══════════════════════════════════════════ */
 async function refreshAllPlayers() {
-  updatePollIndicator('↻');
+  document.getElementById('poll-indicator').textContent = '↻';
   allPlayers = await sbGetAllPlayers();
   renderSidebar();
   refreshOpenPanels();
-  updatePollIndicator('✓ ' + new Date().toLocaleTimeString('fr',{hour:'2-digit',minute:'2-digit',second:'2-digit'}));
+  renderInitChips();
+  document.getElementById('poll-indicator').textContent =
+    '✓ ' + new Date().toLocaleTimeString('fr',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 }
-
 async function pollPlayers() { await refreshAllPlayers(); }
-
 document.getElementById('btn-refresh').addEventListener('click', refreshAllPlayers);
 
-function updatePollIndicator(msg) {
-  document.getElementById('poll-indicator').textContent = msg;
-}
+/* ══════════════════════════════════════════
+   Compact mode
+══════════════════════════════════════════ */
+document.getElementById('btn-compact').addEventListener('click', () => {
+  compactMode = !compactMode;
+  document.body.classList.toggle('compact', compactMode);
+  document.getElementById('btn-compact').classList.toggle('active', compactMode);
+});
 
-/* ══ Sidebar ══ */
+/* ══════════════════════════════════════════
+   Sidebar — Players
+══════════════════════════════════════════ */
 document.getElementById('player-search').addEventListener('input', renderSidebar);
 
 function renderSidebar() {
-  const q    = document.getElementById('player-search').value.trim().toLowerCase();
+  const q = document.getElementById('player-search').value.trim().toLowerCase();
   const list = document.getElementById('player-list');
   const filtered = allPlayers.filter(p => p.username !== ADMIN_USER && p.username.includes(q));
 
-  if (!filtered.length) {
-    list.innerHTML = '<div class="loading">Aucun joueur trouvé.</div>';
-    return;
-  }
+  if (!filtered.length) { list.innerHTML = '<div class="loading">Aucun joueur.</div>'; return; }
 
   list.innerHTML = '';
   filtered.forEach(player => {
-    const data  = player.data || {};
-    const chars = Object.entries(data.characters || {});
-    const avatar= data.avatar || '⚔';
+    const data     = player.data || {};
+    const chars    = Object.entries(data.characters || {});
+    const avatar   = data.avatar || '⚔';
     const expanded = expandedPlayers.has(player.username);
 
-    // Mini HP : premier personnage actif
-    const activeId  = data.activeCharId;
+    const activeId   = data.activeCharId;
     const activeChar = activeId ? data.characters?.[activeId]?.character : null;
-    const hpPct = activeChar ? Math.max(0, Math.min(100, (activeChar.pvActuel||0) / Math.max(1, activeChar.pvMax||1) * 100)) : 0;
+    const hpPct = activeChar
+      ? Math.max(0, Math.min(100, (activeChar.pvActuel||0) / Math.max(1, activeChar.pvMax||1) * 100))
+      : 0;
 
     const item = document.createElement('div');
     item.className = 'player-item' + (expanded ? ' expanded' : '');
     item.dataset.username = player.username;
-
     item.innerHTML = `
       <div class="player-head">
         <span class="player-avatar">${avatar}</span>
@@ -394,17 +523,17 @@ function renderSidebar() {
       </div>
       <div class="char-list">
         ${chars.map(([cid, slot]) => {
-          const key = player.username + '::' + cid;
+          const key   = 'p::' + player.username + '::' + cid;
           const isOpen = !!openPanels[key];
-          const c = slot.character || {};
-          const sub = [c.classe, c.niveau ? 'niv.'+c.niveau : ''].filter(Boolean).join(' ');
+          const c     = slot.character || {};
+          const sub   = [c.classe, c.niveau ? 'niv.'+c.niveau : ''].filter(Boolean).join(' ');
           return `<div class="char-entry${isOpen?' open':''}" data-key="${esc(key)}">
-            <span class="char-entry-dot"></span>
+            <span class="char-dot"></span>
             <span>${esc(slot.name||'Personnage')}</span>
-            ${sub ? `<span style="font-size:0.7rem;color:var(--text-dim);margin-left:auto;">${esc(sub)}</span>` : ''}
+            ${sub ? `<span style="font-size:0.66rem;color:var(--text-dim);margin-left:auto;">${esc(sub)}</span>` : ''}
           </div>`;
         }).join('')}
-        ${chars.length===0 ? '<div style="font-size:0.75rem;color:var(--text-dim);padding:0.2rem 0;">Aucun personnage</div>' : ''}
+        ${!chars.length ? '<div style="font-size:0.72rem;color:var(--text-dim);">Aucun personnage</div>' : ''}
       </div>`;
 
     item.querySelector('.player-head').addEventListener('click', () => {
@@ -412,36 +541,83 @@ function renderSidebar() {
       else expandedPlayers.add(player.username);
       renderSidebar();
     });
-
     item.querySelectorAll('.char-entry').forEach(el => {
       el.addEventListener('click', e => {
         e.stopPropagation();
-        const key = el.dataset.key;
-        const [uname, cid] = key.split('::');
-        togglePanel(uname, cid);
+        togglePanel(el.dataset.key);
       });
     });
-
     list.appendChild(item);
   });
 }
 
-/* ══ Panels ══ */
-function togglePanel(username, charId) {
-  const key = username + '::' + charId;
-  if (openPanels[key]) {
-    closePanel(key);
-  } else {
-    openPanel(username, charId);
-  }
+/* ══════════════════════════════════════════
+   Sidebar — Monsters
+══════════════════════════════════════════ */
+document.getElementById('btn-add-monster').addEventListener('click', () => {
+  const f = document.getElementById('monster-form');
+  f.classList.toggle('open');
+  if (f.classList.contains('open')) document.getElementById('mf-name').focus();
+});
+
+document.getElementById('btn-create-monster').addEventListener('click', createMonster);
+document.getElementById('mf-hp').addEventListener('keydown', e => { if(e.key==='Enter') createMonster(); });
+
+function createMonster() {
+  const name  = document.getElementById('mf-name').value.trim();
+  const hp    = parseInt(document.getElementById('mf-hp').value) || 1;
+  const ac    = parseInt(document.getElementById('mf-ac').value) || 10;
+  const init  = parseInt(document.getElementById('mf-init').value) || 0;
+  const avatar= document.getElementById('mf-avatar').value.trim() || '👹';
+  if (!name) { document.getElementById('mf-name').focus(); return; }
+
+  const id = 'monster-' + (++monsterCounter);
+  localMonsters[id] = { id, name, avatar, hpMax:hp, hp, ac, initiative:init, conditions:[] };
+
+  ['mf-name','mf-hp','mf-ac','mf-init','mf-avatar'].forEach(i => { document.getElementById(i).value = ''; });
+  document.getElementById('monster-form').classList.remove('open');
+
+  renderMonsterSidebar();
+  openPanel('m::' + id);
 }
 
-function openPanel(username, charId) {
-  const key = username + '::' + charId;
-  openPanels[key] = { username, charId };
-  const player = allPlayers.find(p => p.username === username);
-  addPanelDOM(key, player?.data || {}, charId);
+function renderMonsterSidebar() {
+  const list = document.getElementById('monster-list');
+  const ids  = Object.keys(localMonsters);
+  list.innerHTML = ids.map(id => {
+    const m   = localMonsters[id];
+    const key = 'm::' + id;
+    const isOpen = !!openPanels[key];
+    return `<div class="monster-sidebar-entry${isOpen?' open':''}" data-mkey="${esc(key)}">
+      <span class="m-dot"></span>
+      <span>${m.avatar} ${esc(m.name)}</span>
+      <span style="margin-left:auto;font-size:0.68rem;">${m.hp}/${m.hpMax}</span>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('[data-mkey]').forEach(el => {
+    el.addEventListener('click', () => togglePanel(el.dataset.mkey));
+  });
+}
+
+/* ══════════════════════════════════════════
+   Panel management
+══════════════════════════════════════════ */
+function togglePanel(key) {
+  if (openPanels[key]) closePanel(key);
+  else openPanel(key);
+}
+
+function openPanel(key) {
+  const type = key.startsWith('m::') ? 'monster' : 'player';
+  openPanels[key] = { type, key };
+  const grid = document.getElementById('panels-grid');
+  const el   = document.createElement('div');
+  el.className = 'combat-panel' + (type === 'monster' ? ' monster-panel' : '');
+  el.id = 'panel-' + key;
+  grid.appendChild(el);
+  updatePanel(key);
   renderSidebar();
+  renderMonsterSidebar();
   updateEmptyState();
 }
 
@@ -449,189 +625,352 @@ function closePanel(key) {
   delete openPanels[key];
   document.getElementById('panel-' + key)?.remove();
   renderSidebar();
+  renderMonsterSidebar();
   updateEmptyState();
 }
 
 function updateEmptyState() {
-  const empty = Object.keys(openPanels).length === 0;
+  const empty = !Object.keys(openPanels).length;
   document.getElementById('empty-state').style.display = empty ? '' : 'none';
   document.getElementById('panels-grid').style.display = empty ? 'none' : '';
 }
 
 function refreshOpenPanels() {
-  for (const [key, {username, charId}] of Object.entries(openPanels)) {
-    const player = allPlayers.find(p => p.username === username);
-    if (player) updatePanelDOM(key, player.data || {}, charId);
-  }
+  Object.keys(openPanels).forEach(key => updatePanel(key));
 }
 
-/* ══ Panel DOM ══ */
-function addPanelDOM(key, playerData, charId) {
-  const grid = document.getElementById('panels-grid');
-  const el = document.createElement('div');
-  el.className = 'combat-panel';
-  el.id = 'panel-' + key;
-  grid.appendChild(el);
-  updatePanelDOM(key, playerData, charId);
-}
-
-function updatePanelDOM(key, playerData, charId) {
+/* ══════════════════════════════════════════
+   Panel rendering
+══════════════════════════════════════════ */
+function updatePanel(key) {
   const panel = document.getElementById('panel-' + key);
   if (!panel) return;
+  if (key.startsWith('m::')) renderMonsterPanel(panel, key);
+  else renderPlayerPanel(panel, key);
+}
 
-  const slot = playerData?.characters?.[charId];
-  const c    = slot?.character || {};
+/* ── Player panel ── */
+function renderPlayerPanel(panel, key) {
+  const parts    = key.split('::'); // ['p', username, charId]
+  const username = parts[1];
+  const charId   = parts[2];
+  const pData    = allPlayers.find(p => p.username === username)?.data || {};
+  const slot     = pData?.characters?.[charId];
+  const c        = slot?.character || {};
   const charName = slot?.name || 'Inconnu';
-  const avatar   = playerData?.avatar || '⚔';
-  const sub      = [c.classe, c.niveau ? 'Niv. '+c.niveau : '', c.species].filter(Boolean).join(' · ');
+  const avatar   = pData?.avatar || '⚔';
+  const sub      = [c.classe, c.niveau ? 'Niv.'+c.niveau : '', c.species].filter(Boolean).join(' · ');
 
-  const pvMax   = parseInt(c.pvMax)    || 0;
-  const pvAct   = parseInt(c.pvActuel) || 0;
-  const pvTemp  = parseInt(c.pvTemp)   || 0;
-  const pct     = pvMax > 0 ? Math.max(0, Math.min(100, pvAct / pvMax * 100)) : 0;
-  const dead    = pvAct <= 0 && pvMax > 0;
+  const pvMax  = parseInt(c.pvMax)    || 0;
+  const pvAct  = parseInt(c.pvActuel) || 0;
+  const pvTemp = parseInt(c.pvTemp)   || 0;
+  const pct    = pvMax > 0 ? Math.max(0, Math.min(100, pvAct / pvMax * 100)) : 0;
+  const dead   = pvAct <= 0 && pvMax > 0;
+  const succ   = Math.min(3, parseInt(c.mortSucces) || 0);
+  const fail   = Math.min(3, parseInt(c.mortEchecs) || 0);
 
-  const succès  = parseInt(c.mortSucces)  || 0;
-  const échecs  = parseInt(c.mortEchecs)  || 0;
+  // 0-HP flash detection
+  const prev = prevHp[key];
+  if (prev !== undefined && prev > 0 && pvAct === 0) {
+    panel.classList.remove('hp-alert');
+    void panel.offsetWidth;
+    panel.classList.add('hp-alert');
+  }
+  prevHp[key] = pvAct;
 
-  const ca       = c.ca       ?? '—';
-  const init     = c.initiative !== undefined ? (c.initiative >= 0 ? '+'+c.initiative : c.initiative) : '—';
-  const vitesse  = c.vitesse  ?? '—';
-
-  const conditions = Array.isArray(c.conditions) ? c.conditions : [];
+  // Spell slots
+  const slots  = c.emplacementsSort || {};
+  const used   = c.emplacementsUtilises || {};
+  const hasSlots = Object.values(slots).some(v => v > 0);
 
   panel.innerHTML = `
-    <!-- Header -->
     <div class="panel-header">
       <span class="panel-avatar">${avatar}</span>
       <div class="panel-title">
         <div class="panel-char-name">${esc(charName)}</div>
         ${sub ? `<div class="panel-char-sub">${esc(sub)}</div>` : ''}
       </div>
-      <div class="panel-actions">
-        <button class="panel-btn" title="Fermer" data-close="${esc(key)}">✕</button>
+      <div class="panel-acts">
+        <button class="pact rest-long" data-key="${esc(key)}" title="Repos long">☀ Long</button>
+        <button class="pact danger" data-close="${esc(key)}" title="Fermer">✕</button>
       </div>
     </div>
 
-    <!-- HP -->
     <div class="panel-hp">
-      <div class="hp-bar-wrap">
-        <div class="hp-bar-fill" style="width:${pct}%;background:${hpColor(pct)};"></div>
-      </div>
-      <div class="hp-numbers">
-        <span class="hp-text" style="color:${dead?'var(--danger)':'var(--text)'};">
-          ${pvAct} <span style="color:var(--text-dim);">/ ${pvMax} HP</span>
-          ${pvTemp > 0 ? `<span class="hp-temp">(+${pvTemp} temp)</span>` : ''}
-        </span>
-        ${dead ? `<span style="color:var(--danger);font-size:0.75rem;">💀 Mort / 0 HP</span>` : ''}
+      <div class="hp-bar-wrap"><div class="hp-bar-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>
+      <div class="hp-row">
+        <span class="hp-num" style="color:${dead?'var(--danger)':'var(--text)'};">${pvAct}</span>
+        <span class="hp-max">/ ${pvMax} HP</span>
+        ${pvTemp > 0 ? `<span class="hp-temp-badge">+${pvTemp} temp</span>` : ''}
+        ${dead ? `<span style="color:var(--danger);font-size:0.72rem;margin-left:auto;">💀 À terre</span>` : ''}
       </div>
       <div class="hp-controls">
-        <button class="hp-quick-btn minus" data-delta="-5">−5</button>
-        <button class="hp-quick-btn minus" data-delta="-1">−1</button>
-        <input type="number" class="hp-inp" placeholder="±HP" id="hp-inp-${esc(key)}">
-        <button class="hp-quick-btn plus"  data-delta="+1">+1</button>
-        <button class="hp-quick-btn plus"  data-delta="+5">+5</button>
+        <button class="hp-qbtn m" data-delta="-10">−10</button>
+        <button class="hp-qbtn m" data-delta="-5">−5</button>
+        <button class="hp-qbtn m" data-delta="-1">−1</button>
+        <input type="number" class="hp-inp" placeholder="±HP" id="hpinp-${esc(key)}">
+        <button class="hp-qbtn p" data-delta="+1">+1</button>
+        <button class="hp-qbtn p" data-delta="+5">+5</button>
         <button class="hp-apply" data-apply="${esc(key)}">✓</button>
       </div>
-      ${dead ? `<div class="hp-death">
+      <div class="temp-row">
+        <span class="temp-label">Temp HP</span>
+        <input type="number" class="temp-inp" id="tempinp-${esc(key)}" value="${pvTemp}" min="0">
+        <button class="temp-set" data-temp="${esc(key)}">Définir</button>
+      </div>
+      ${dead ? `<div class="death-row">
         Jets de mort :
-        ${[1,2,3].map(i=>`<span class="hp-death-dot${i<=succès?' success':''}" title="Succès ${i}"></span>`).join('')}
-        <span style="margin:0 3px;">|</span>
-        ${[1,2,3].map(i=>`<span class="hp-death-dot${i<=échecs?' fail':''}" title="Échec ${i}"></span>`).join('')}
+        ${[0,1,2].map(i=>`<span class="ds-dot${i<succ?' s':''}" data-ds="s" data-i="${i}" title="Succès ${i+1}"></span>`).join('')}
+        <span class="ds-sep"></span>
+        ${[0,1,2].map(i=>`<span class="ds-dot${i<fail?' f':''}" data-ds="f" data-i="${i}" title="Échec ${i+1}"></span>`).join('')}
       </div>` : ''}
     </div>
 
-    <!-- Stats -->
     <div class="panel-stats">
-      <div class="stat-cell"><div class="stat-val">${ca}</div><div class="stat-lbl">CA</div></div>
-      <div class="stat-cell"><div class="stat-val">${init}</div><div class="stat-lbl">Init.</div></div>
-      <div class="stat-cell"><div class="stat-val">${vitesse}m</div><div class="stat-lbl">Vitesse</div></div>
+      <div class="stat-cell"><div class="stat-val">${c.ca ?? '—'}</div><div class="stat-lbl">CA</div></div>
+      <div class="stat-cell"><div class="stat-val">${fmtInit(c.initiative)}</div><div class="stat-lbl">Init.</div></div>
+      <div class="stat-cell"><div class="stat-val">${c.vitesse ?? '—'}m</div><div class="stat-lbl">Vitesse</div></div>
     </div>
 
-    <!-- Conditions -->
+    ${hasSlots ? `<div class="panel-slots">
+      <button class="slots-toggle" id="slotbtn-${esc(key)}"><span class="arrow">▶</span> Sorts</button>
+      <div class="slots-grid" id="slotgrid-${esc(key)}">
+        ${[1,2,3,4,5,6,7,8,9].map(n => {
+          const max = parseInt(slots[n]) || 0;
+          const u   = parseInt(used[n])  || 0;
+          const rem = Math.max(0, max - u);
+          return `<div class="slot-cell">
+            <div class="slot-niv">${n}</div>
+            <div class="slot-count${rem===0?' empty':''}">${max>0 ? rem+'/'+max : '—'}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>` : ''}
+
     <div class="panel-cond">
-      <div class="cond-label">Conditions</div>
+      <div class="sec-label">Conditions</div>
       <div class="cond-badges">
-        ${conditions.map(cond => `
-          <span class="cond-badge" data-remove-cond="${esc(cond)}" data-panel-key="${esc(key)}" title="Retirer">
-            ${esc(cond)} <span class="cond-x">✕</span>
-          </span>`).join('')}
+        ${(Array.isArray(c.conditions) ? c.conditions : []).map(cond =>
+          `<span class="cond-badge" data-remove-cond="${esc(cond)}" title="Retirer">${esc(cond)} <span class="cond-x">✕</span></span>`
+        ).join('')}
         <div class="cond-picker">
-          <button class="cond-add-btn" data-panel-key="${esc(key)}">+ Condition</button>
-          <div class="cond-picker-menu" id="cond-menu-${esc(key)}">
-            ${ALL_CONDITIONS.filter(c => !conditions.includes(c)).map(c =>
-              `<div class="cond-picker-opt" data-add-cond="${esc(c)}" data-panel-key="${esc(key)}">${esc(c)}</div>`
+          <button class="cond-add-btn">+ Condition</button>
+          <div class="cond-menu" id="cmenu-${esc(key)}">
+            ${ALL_CONDITIONS.filter(co => !(c.conditions||[]).includes(co)).map(co =>
+              `<div class="cond-opt" data-add-cond="${esc(co)}">${esc(co)}</div>`
             ).join('')}
           </div>
         </div>
       </div>
     </div>`;
 
-  attachPanelEvents(panel, key);
+  attachPlayerPanelEvents(panel, key, username, charId);
 }
 
-function attachPanelEvents(panel, key) {
-  const [username, charId] = key.split('::');
-
-  /* Fermer */
+function attachPlayerPanelEvents(panel, key, username, charId) {
   panel.querySelector('[data-close]')?.addEventListener('click', () => closePanel(key));
 
-  /* HP quick buttons */
-  panel.querySelectorAll('.hp-quick-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const delta = parseInt(btn.dataset.delta);
-      applyHpDelta(username, charId, key, delta);
-    });
+  panel.querySelector('[data-key].rest-long')?.addEventListener('click', () => longRest(username, charId, key));
+
+  panel.querySelectorAll('.hp-qbtn').forEach(btn => {
+    btn.addEventListener('click', () => applyHpDelta(username, charId, key, parseInt(btn.dataset.delta)));
   });
 
-  /* HP apply */
   panel.querySelector('[data-apply]')?.addEventListener('click', () => {
-    const inp = document.getElementById('hp-inp-' + key);
-    const v = parseInt(inp?.value);
-    if (!isNaN(v) && v !== 0) {
-      applyHpDelta(username, charId, key, v);
-      if (inp) inp.value = '';
-    }
+    const inp = document.getElementById('hpinp-' + key);
+    const v   = parseInt(inp?.value);
+    if (!isNaN(v) && v !== 0) { applyHpDelta(username, charId, key, v); if(inp) inp.value=''; }
   });
   panel.querySelector('.hp-inp')?.addEventListener('keydown', e => {
-    if (e.key === 'Enter') panel.querySelector('[data-apply]')?.click();
+    if(e.key==='Enter') panel.querySelector('[data-apply]')?.click();
   });
 
-  /* Retirer condition */
-  panel.querySelectorAll('[data-remove-cond]').forEach(el => {
-    el.addEventListener('click', () => {
-      const cond = el.dataset.removeCond;
-      modifyCondition(username, charId, key, cond, false);
+  panel.querySelector('[data-temp]')?.addEventListener('click', () => {
+    const inp = document.getElementById('tempinp-' + key);
+    const v   = Math.max(0, parseInt(inp?.value) || 0);
+    const data = getPlayerData(username);
+    if (!data) return;
+    const c = data.characters?.[charId]?.character;
+    if (!c) return;
+    c.pvTemp = v;
+    updatePanel(key);
+    schedulePlayerSave(username, data);
+  });
+
+  // Death saves
+  panel.querySelectorAll('.ds-dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      const type = dot.dataset.ds;
+      const i    = parseInt(dot.dataset.i);
+      const data = getPlayerData(username);
+      if (!data) return;
+      const c = data.characters?.[charId]?.character;
+      if (!c) return;
+      const field = type === 's' ? 'mortSucces' : 'mortEchecs';
+      const cur   = Math.min(3, parseInt(c[field]) || 0);
+      // toggle: if clicking index < cur → reduce, else → increase
+      c[field] = (i < cur) ? i : i + 1;
+      updatePanel(key);
+      schedulePlayerSave(username, data);
     });
   });
 
-  /* Ouvrir picker */
+  // Spell slot toggle
+  const slotBtn = panel.querySelector('.slots-toggle');
+  if (slotBtn) {
+    slotBtn.addEventListener('click', () => slotBtn.classList.toggle('open'));
+  }
+
+  // Conditions
+  panel.querySelectorAll('[data-remove-cond]').forEach(el => {
+    el.addEventListener('click', () => playerCondition(username, charId, key, el.dataset.removeCond, false));
+  });
   panel.querySelectorAll('.cond-add-btn').forEach(btn => {
     btn.addEventListener('click', e => {
       e.stopPropagation();
-      const menuId = 'cond-menu-' + key;
-      document.querySelectorAll('.cond-picker-menu.open').forEach(m => { if (m.id !== menuId) m.classList.remove('open'); });
-      document.getElementById(menuId)?.classList.toggle('open');
+      closeAllMenus();
+      document.getElementById('cmenu-' + key)?.classList.add('open');
     });
   });
-
-  /* Ajouter condition depuis picker */
   panel.querySelectorAll('[data-add-cond]').forEach(el => {
     el.addEventListener('click', e => {
       e.stopPropagation();
-      const cond = el.dataset.addCond;
-      document.getElementById('cond-menu-' + key)?.classList.remove('open');
-      modifyCondition(username, charId, key, cond, true);
+      document.getElementById('cmenu-' + key)?.classList.remove('open');
+      playerCondition(username, charId, key, el.dataset.addCond, true);
     });
   });
 }
 
-/* Fermer tous les menus si clic extérieur */
-document.addEventListener('click', () => {
-  document.querySelectorAll('.cond-picker-menu.open').forEach(m => m.classList.remove('open'));
-});
+/* ── Monster panel ── */
+function renderMonsterPanel(panel, key) {
+  const id = key.replace('m::', '');
+  const m  = localMonsters[id];
+  if (!m) { panel.remove(); delete openPanels[key]; updateEmptyState(); return; }
 
-/* ══ HP mutations ══ */
+  const pct  = m.hpMax > 0 ? Math.max(0, Math.min(100, m.hp / m.hpMax * 100)) : 0;
+  const dead = m.hp <= 0 && m.hpMax > 0;
+
+  panel.innerHTML = `
+    <div class="panel-header">
+      <span class="panel-avatar">${m.avatar}</span>
+      <div class="panel-title">
+        <div class="panel-char-name">${esc(m.name)}</div>
+        <div class="panel-char-sub" style="color:rgba(192,57,43,0.7);">PNJ / Monstre</div>
+      </div>
+      <div class="panel-acts">
+        <button class="pact danger" data-close="${esc(key)}" title="Supprimer">🗑</button>
+      </div>
+    </div>
+    <div class="panel-hp">
+      <div class="hp-bar-wrap"><div class="hp-bar-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>
+      <div class="hp-row">
+        <span class="hp-num" style="color:${dead?'var(--danger)':'var(--text)'};">${m.hp}</span>
+        <span class="hp-max">/ ${m.hpMax} HP</span>
+        ${dead ? `<span style="color:var(--danger);font-size:0.72rem;margin-left:auto;">💀 Éliminé</span>` : ''}
+      </div>
+      <div class="hp-controls">
+        <button class="hp-qbtn m" data-delta="-10">−10</button>
+        <button class="hp-qbtn m" data-delta="-5">−5</button>
+        <button class="hp-qbtn m" data-delta="-1">−1</button>
+        <input type="number" class="hp-inp" placeholder="±HP" id="hpinp-${esc(key)}">
+        <button class="hp-qbtn p" data-delta="+1">+1</button>
+        <button class="hp-qbtn p" data-delta="+5">+5</button>
+        <button class="hp-apply" data-apply="${esc(key)}">✓</button>
+      </div>
+    </div>
+    <div class="panel-stats">
+      <div class="stat-cell"><div class="stat-val">${m.ac}</div><div class="stat-lbl">CA</div></div>
+      <div class="stat-cell"><div class="stat-val">${fmtInit(m.initiative)}</div><div class="stat-lbl">Init.</div></div>
+      <div class="stat-cell">
+        <input type="number" class="hp-inp" id="maxhp-${esc(key)}" value="${m.hpMax}" style="width:55px;margin:0 auto;" title="HP Max">
+        <div class="stat-lbl">HP Max</div>
+      </div>
+    </div>
+    <div class="panel-cond">
+      <div class="sec-label">Conditions</div>
+      <div class="cond-badges">
+        ${m.conditions.map(cond =>
+          `<span class="cond-badge" data-remove-cond="${esc(cond)}">${esc(cond)} <span class="cond-x">✕</span></span>`
+        ).join('')}
+        <div class="cond-picker">
+          <button class="cond-add-btn">+ Condition</button>
+          <div class="cond-menu" id="cmenu-${esc(key)}">
+            ${ALL_CONDITIONS.filter(co => !m.conditions.includes(co)).map(co =>
+              `<div class="cond-opt" data-add-cond="${esc(co)}">${esc(co)}</div>`
+            ).join('')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  // Events
+  panel.querySelector('[data-close]')?.addEventListener('click', () => {
+    delete localMonsters[id];
+    closePanel(key);
+    renderMonsterSidebar();
+    removeInitCombatant(key);
+  });
+
+  panel.querySelectorAll('.hp-qbtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      m.hp = Math.max(0, Math.min(m.hpMax, m.hp + parseInt(btn.dataset.delta)));
+      updatePanel(key);
+      renderMonsterSidebar();
+      renderInitChips();
+    });
+  });
+  panel.querySelector('[data-apply]')?.addEventListener('click', () => {
+    const inp = document.getElementById('hpinp-' + key);
+    const v   = parseInt(inp?.value);
+    if (!isNaN(v) && v !== 0) {
+      m.hp = Math.max(0, Math.min(m.hpMax, m.hp + v));
+      if(inp) inp.value = '';
+      updatePanel(key);
+      renderMonsterSidebar();
+      renderInitChips();
+    }
+  });
+  panel.querySelector('.hp-inp')?.addEventListener('keydown', e => {
+    if(e.key==='Enter') panel.querySelector('[data-apply]')?.click();
+  });
+
+  // HP Max edit
+  const maxInp = panel.querySelector('#maxhp-' + key);
+  if (maxInp) {
+    maxInp.addEventListener('change', () => {
+      const v = Math.max(1, parseInt(maxInp.value) || 1);
+      m.hpMax = v;
+      m.hp = Math.min(m.hp, v);
+      updatePanel(key);
+    });
+  }
+
+  panel.querySelectorAll('[data-remove-cond]').forEach(el => {
+    el.addEventListener('click', () => {
+      m.conditions = m.conditions.filter(x => x !== el.dataset.removeCond);
+      updatePanel(key);
+    });
+  });
+  panel.querySelectorAll('.cond-add-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      closeAllMenus();
+      document.getElementById('cmenu-' + key)?.classList.add('open');
+    });
+  });
+  panel.querySelectorAll('[data-add-cond]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      document.getElementById('cmenu-' + key)?.classList.remove('open');
+      if (!m.conditions.includes(el.dataset.addCond)) m.conditions.push(el.dataset.addCond);
+      updatePanel(key);
+    });
+  });
+}
+
+/* ══════════════════════════════════════════
+   Mutations — Players
+══════════════════════════════════════════ */
 function getPlayerData(username) {
   return allPlayers.find(p => p.username === username)?.data || null;
 }
@@ -643,11 +982,12 @@ function applyHpDelta(username, charId, key, delta) {
   if (!c) return;
   const max = parseInt(c.pvMax) || 0;
   c.pvActuel = Math.max(0, Math.min(max, (parseInt(c.pvActuel)||0) + delta));
-  updatePanelDOM(key, data, charId);
+  updatePanel(key);
+  renderInitChips();
   schedulePlayerSave(username, data);
 }
 
-function modifyCondition(username, charId, key, cond, add) {
+function playerCondition(username, charId, key, cond, add) {
   const data = getPlayerData(username);
   if (!data) return;
   const c = data.characters?.[charId]?.character;
@@ -655,7 +995,29 @@ function modifyCondition(username, charId, key, cond, add) {
   c.conditions = Array.isArray(c.conditions) ? c.conditions : [];
   if (add && !c.conditions.includes(cond)) c.conditions.push(cond);
   if (!add) c.conditions = c.conditions.filter(x => x !== cond);
-  updatePanelDOM(key, data, charId);
+  updatePanel(key);
+  schedulePlayerSave(username, data);
+}
+
+function longRest(username, charId, key) {
+  const data = getPlayerData(username);
+  if (!data) return;
+  const c = data.characters?.[charId]?.character;
+  if (!c) return;
+  c.pvActuel = parseInt(c.pvMax) || 0;
+  c.pvTemp   = 0;
+  c.mortSucces = 0;
+  c.mortEchecs = 0;
+  // Reset spell slots
+  const max = c.emplacementsSort || {};
+  c.emplacementsUtilises = {};
+  for (let i = 1; i <= 9; i++) c.emplacementsUtilises[i] = 0;
+  // Reset resources
+  if (Array.isArray(c.resources)) {
+    c.resources.forEach(r => { if (r.recharge === 'long') r.used = 0; });
+  }
+  updatePanel(key);
+  renderInitChips();
   schedulePlayerSave(username, data);
 }
 
@@ -664,7 +1026,151 @@ function schedulePlayerSave(username, data) {
   saveTimers[username] = setTimeout(() => sbUpdateData(username, data), 800);
 }
 
-/* ══ Utils ══ */
+/* ══════════════════════════════════════════
+   Initiative Tracker
+══════════════════════════════════════════ */
+document.getElementById('btn-init-open').addEventListener('click', () => {
+  initState.open = !initState.open;
+  document.getElementById('init-bar').className = initState.open ? 'open' : 'collapsed';
+  document.getElementById('btn-init-open').classList.toggle('active', initState.open);
+  if (initState.open && !initState.combatants.length) buildInitCombatants();
+});
+document.getElementById('init-toggle').addEventListener('click', () => {
+  initState.open = !initState.open;
+  document.getElementById('init-bar').className = initState.open ? 'open' : 'collapsed';
+  document.getElementById('btn-init-open').classList.toggle('active', initState.open);
+  document.getElementById('init-toggle').querySelector('.arrow').style.transform = initState.open ? 'rotate(90deg)' : '';
+});
+document.getElementById('init-next').addEventListener('click', () => {
+  if (!initState.combatants.length) return;
+  initState.currentIdx = (initState.currentIdx + 1) % initState.combatants.length;
+  if (initState.currentIdx === 0) initState.round++;
+  document.getElementById('init-round-label').textContent = 'Tour ' + initState.round;
+  renderInitChips();
+});
+document.getElementById('init-prev').addEventListener('click', () => {
+  if (!initState.combatants.length) return;
+  if (initState.currentIdx === 0) { initState.round = Math.max(1, initState.round - 1); }
+  initState.currentIdx = (initState.currentIdx - 1 + initState.combatants.length) % initState.combatants.length;
+  document.getElementById('init-round-label').textContent = 'Tour ' + initState.round;
+  renderInitChips();
+});
+document.getElementById('init-roll-all').addEventListener('click', () => {
+  buildInitCombatants(true);
+  if (!initState.open) {
+    initState.open = true;
+    document.getElementById('init-bar').className = 'open';
+    document.getElementById('btn-init-open').classList.add('active');
+  }
+});
+document.getElementById('init-clear').addEventListener('click', () => {
+  initState.combatants = [];
+  initState.currentIdx = -1;
+  initState.round = 1;
+  document.getElementById('init-round-label').textContent = 'Tour 1';
+  renderInitChips();
+});
+
+function buildInitCombatants(roll = false) {
+  initState.combatants = [];
+
+  // Players with open panels
+  allPlayers.forEach(player => {
+    if (player.username === ADMIN_USER) return;
+    const data = player.data || {};
+    Object.entries(data.characters || {}).forEach(([cid, slot]) => {
+      const key = 'p::' + player.username + '::' + cid;
+      if (!openPanels[key]) return;
+      const c = slot.character || {};
+      const initMod = parseInt(c.initiative) || 0;
+      const initVal = roll ? Math.floor(Math.random() * 20) + 1 + initMod : initMod;
+      initState.combatants.push({
+        id: key, label: slot.name || player.username,
+        avatar: data.avatar || '⚔', type: 'player',
+        initVal, hp: parseInt(c.pvActuel)||0, hpMax: parseInt(c.pvMax)||0
+      });
+    });
+  });
+
+  // Local monsters with open panels
+  Object.values(localMonsters).forEach(m => {
+    const key = 'm::' + m.id;
+    if (!openPanels[key]) return;
+    const initVal = roll ? Math.floor(Math.random() * 20) + 1 + (parseInt(m.initiative)||0) : (parseInt(m.initiative)||0);
+    initState.combatants.push({
+      id: key, label: m.name, avatar: m.avatar, type: 'monster',
+      initVal, hp: m.hp, hpMax: m.hpMax
+    });
+  });
+
+  // Sort descending
+  initState.combatants.sort((a, b) => b.initVal - a.initVal);
+  if (initState.currentIdx >= initState.combatants.length) initState.currentIdx = 0;
+  renderInitChips();
+}
+
+function renderInitChips() {
+  const chips = document.getElementById('init-chips');
+  chips.innerHTML = '';
+
+  // Update hp from live data
+  initState.combatants.forEach(ct => {
+    if (ct.type === 'player') {
+      const parts = ct.id.split('::');
+      const data  = allPlayers.find(p => p.username === parts[1])?.data;
+      const c     = data?.characters?.[parts[2]]?.character;
+      if (c) { ct.hp = parseInt(c.pvActuel)||0; ct.hpMax = parseInt(c.pvMax)||0; }
+    } else {
+      const m = localMonsters[ct.id.replace('m::','')];
+      if (m) { ct.hp = m.hp; ct.hpMax = m.hpMax; }
+    }
+  });
+
+  initState.combatants.forEach((ct, idx) => {
+    const pct  = ct.hpMax > 0 ? Math.max(0, Math.min(100, ct.hp / ct.hpMax * 100)) : 0;
+    const dead = ct.hp <= 0 && ct.hpMax > 0;
+    const active = idx === initState.currentIdx;
+
+    const chip = document.createElement('div');
+    chip.className = 'init-chip' + (active ? ' active-turn' : '') + (dead ? ' dead' : '');
+    chip.innerHTML = `
+      <span class="chip-avatar">${ct.avatar}</span>
+      <input class="init-chip-inp" type="number" value="${ct.initVal}" title="Modifier initiative">
+      <span class="chip-name">${esc(ct.label)}</span>
+      <div class="chip-hp-bar"><div class="chip-hp-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>`;
+
+    chip.addEventListener('click', e => {
+      if (e.target.classList.contains('init-chip-inp')) return;
+      initState.currentIdx = idx;
+      renderInitChips();
+    });
+    chip.querySelector('.init-chip-inp').addEventListener('change', e => {
+      ct.initVal = parseInt(e.target.value) || 0;
+      initState.combatants.sort((a,b) => b.initVal - a.initVal);
+      initState.currentIdx = initState.combatants.findIndex(x => x.id === ct.id);
+      renderInitChips();
+    });
+    chips.appendChild(chip);
+  });
+}
+
+function removeInitCombatant(key) {
+  initState.combatants = initState.combatants.filter(c => c.id !== key);
+  if (initState.currentIdx >= initState.combatants.length) initState.currentIdx = Math.max(0, initState.combatants.length - 1);
+  renderInitChips();
+}
+
+/* ══════════════════════════════════════════
+   Close menus on outside click
+══════════════════════════════════════════ */
+function closeAllMenus() {
+  document.querySelectorAll('.cond-menu.open').forEach(m => m.classList.remove('open'));
+}
+document.addEventListener('click', closeAllMenus);
+
+/* ══════════════════════════════════════════
+   Utils
+══════════════════════════════════════════ */
 function esc(s) {
   return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
@@ -674,16 +1180,22 @@ function hpColor(pct) {
   if (pct > 0)  return '#c0392b';
   return '#4a0000';
 }
+function fmtInit(v) {
+  if (v === undefined || v === null || v === '') return '—';
+  const n = parseInt(v);
+  return isNaN(n) ? '—' : (n >= 0 ? '+'+n : String(n));
+}
 
-/* ══ Init ══ */
+/* ══════════════════════════════════════════
+   Init
+══════════════════════════════════════════ */
 (function init() {
   const saved = loadSession();
   if (saved) {
     currentUser = saved;
-    // Verify session is still valid
     sbGetPlayer(saved).then(row => {
       if (row) enterDM();
-      else { clearSession(); }
+      else clearSession();
     }).catch(() => {});
   }
   updateEmptyState();
