@@ -664,20 +664,42 @@
     #chat-fab { position:fixed; bottom:1.2rem; right:1.2rem; z-index:2000; width:46px; height:46px; border-radius:50%; background:var(--gold-dark); border:none; color:#fff; font-size:1.3rem; cursor:pointer; box-shadow:0 3px 14px rgba(0,0,0,0.55); transition:background var(--transition), transform 0.15s; display:flex; align-items:center; justify-content:center; }
     #chat-fab:hover { background:var(--gold); transform:scale(1.08); }
     #chat-fab .chat-unread { position:absolute; top:-3px; right:-3px; background:var(--danger); color:#fff; font-size:0.6rem; font-family:'Cinzel',serif; border-radius:99px; min-width:16px; height:16px; line-height:16px; text-align:center; padding:0 3px; display:none; }
-    #chat-panel { position:fixed; bottom:4.2rem; right:1.2rem; z-index:1999; width:320px; height:460px; background:#0e0a04; border:1px solid var(--gold-dark); border-radius:2px; box-shadow:0 8px 32px rgba(0,0,0,0.75); display:none; flex-direction:column; overflow:hidden; resize:vertical; min-height:200px; max-height:80vh; }
+    #chat-panel { position:fixed; bottom:4.2rem; right:1.2rem; z-index:1999; width:320px; height:480px; background:#0e0a04; border:1px solid var(--gold-dark); border-radius:2px; box-shadow:0 8px 32px rgba(0,0,0,0.75); display:none; flex-direction:column; overflow:hidden; resize:vertical; min-height:200px; max-height:80vh; }
     #chat-panel.open { display:flex; }
-    .chat-header { padding:0.5rem 0.85rem; background:#080604; border-bottom:1px solid #3a2810; font-family:'Cinzel',serif; font-size:0.75rem; color:var(--gold); letter-spacing:0.08em; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
-    .chat-header-left { display:flex; align-items:center; gap:0.5rem; }
+    #chat-view-rooms { display:flex; flex-direction:column; flex:1; min-height:0; }
+    #chat-view-msgs { display:none; flex-direction:column; flex:1; min-height:0; }
+    #chat-view-msgs.active { display:flex; }
+    .chat-header { padding:0.45rem 0.75rem; background:#080604; border-bottom:1px solid #3a2810; font-family:'Cinzel',serif; font-size:0.75rem; color:var(--gold); letter-spacing:0.08em; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+    .chat-header-left { display:flex; align-items:center; gap:0.45rem; overflow:hidden; }
+    .chat-header-left span { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:180px; }
     .chat-online-dot { width:7px; height:7px; border-radius:50%; background:#6aba6a; box-shadow:0 0 5px rgba(106,186,106,0.5); flex-shrink:0; }
     .chat-online-dot.offline { background:#555; box-shadow:none; }
-    .chat-close { background:none; border:none; color:#555; cursor:pointer; font-size:1rem; line-height:1; padding:0 0.2rem; }
+    .chat-header-actions { display:flex; align-items:center; gap:0.2rem; flex-shrink:0; }
+    .chat-close, .chat-back-btn, .chat-new-btn { background:none; border:none; color:#666; cursor:pointer; font-size:0.95rem; line-height:1; padding:0.1rem 0.25rem; border-radius:2px; transition:color 0.15s; }
     .chat-close:hover { color:#aaa; }
+    .chat-back-btn { color:var(--gold-dark); font-size:1.1rem; }
+    .chat-back-btn:hover { color:var(--gold); }
+    .chat-new-btn { color:var(--gold-dark); font-size:1rem; }
+    .chat-new-btn:hover { color:var(--gold); }
     .chat-error-bar { padding:0.3rem 0.65rem; background:rgba(201,122,122,0.15); border-bottom:1px solid rgba(201,122,122,0.3); font-size:0.7rem; color:var(--danger); text-align:center; display:none; }
     .chat-error-bar.visible { display:block; }
+    /* Room list */
+    #chat-room-list { flex:1; overflow-y:auto; }
+    #chat-room-list::-webkit-scrollbar { width:4px; }
+    #chat-room-list::-webkit-scrollbar-thumb { background:#3a2810; border-radius:2px; }
+    .chat-room-item { display:flex; align-items:center; gap:0.6rem; padding:0.55rem 0.85rem; border-bottom:1px solid #1a1208; cursor:pointer; transition:background 0.12s; }
+    .chat-room-item:hover { background:rgba(201,162,39,0.06); }
+    .chat-room-item.active { background:rgba(201,162,39,0.1); }
+    .chat-room-icon { width:30px; height:30px; border-radius:50%; background:#1a1208; border:1px solid #3a2810; display:flex; align-items:center; justify-content:center; font-size:0.85rem; flex-shrink:0; }
+    .chat-room-info { flex:1; min-width:0; }
+    .chat-room-name { font-family:'Cinzel',serif; font-size:0.72rem; color:var(--gold-dark); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .chat-room-preview { font-size:0.67rem; color:#555; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:0.1rem; }
+    .chat-room-badge { background:var(--danger); color:#fff; font-size:0.6rem; border-radius:99px; min-width:16px; height:16px; line-height:16px; text-align:center; padding:0 3px; display:none; flex-shrink:0; }
+    .chat-room-badge.visible { display:block; }
+    /* Messages */
     .chat-messages { flex:1; overflow-y:auto; padding:0.6rem 0.65rem; display:flex; flex-direction:column; gap:0.15rem; scroll-behavior:smooth; min-height:0; }
     .chat-messages::-webkit-scrollbar { width:4px; }
     .chat-messages::-webkit-scrollbar-thumb { background:#3a2810; border-radius:2px; }
-    /* Message bubbles */
     .chat-bubble-wrap { display:flex; flex-direction:column; margin-bottom:0.2rem; }
     .chat-bubble-wrap.me { align-items:flex-end; }
     .chat-bubble-wrap.other { align-items:flex-start; }
@@ -697,10 +719,8 @@
     .chat-del-btn:hover { color:var(--danger); }
     .chat-msg-system { font-size:0.67rem; color:#444; font-style:italic; text-align:center; padding:0.2rem 0; }
     .chat-day-sep { text-align:center; font-size:0.62rem; color:#3a2810; margin:0.5rem 0; border-top:1px solid #1a1208; padding-top:0.35rem; font-family:'Cinzel',serif; letter-spacing:0.06em; }
-    /* Scroll-to-bottom button */
     #chat-scroll-btn { position:absolute; bottom:3.8rem; right:0.6rem; background:var(--gold-dark); border:none; border-radius:50%; width:26px; height:26px; color:#fff; font-size:0.85rem; cursor:pointer; display:none; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.5); z-index:10; }
     #chat-scroll-btn.visible { display:flex; }
-    /* Input area */
     .chat-footer { flex-shrink:0; border-top:1px solid #3a2810; }
     .chat-input-row { display:flex; gap:0.4rem; padding:0.45rem 0.65rem; }
     .chat-input { flex:1; background:#080604; border:1px solid #3a2810; border-radius:2px; color:var(--j-text,#e8e0d0); font-size:0.82rem; padding:0.35rem 0.55rem; resize:none; height:34px; }
@@ -708,9 +728,29 @@
     .chat-send { background:var(--gold-dark); border:none; border-radius:2px; color:#fff; padding:0.35rem 0.7rem; cursor:pointer; font-size:0.9rem; transition:background var(--transition); flex-shrink:0; }
     .chat-send:hover { background:var(--gold); }
     .chat-login-msg { padding:0.85rem; text-align:center; font-size:0.78rem; color:#666; font-style:italic; }
-    /* Share-to-chat button on dice toast */
     #dice-share-btn { position:absolute; top:6px; left:6px; background:none; border:none; color:var(--gold-dark); cursor:pointer; font-size:0.8rem; opacity:0.6; transition:opacity 0.15s; padding:0; line-height:1; }
     #dice-share-btn:hover { opacity:1; }
+    /* Modal nouvelle conversation */
+    #chat-new-modal { position:fixed; inset:0; z-index:3000; background:rgba(0,0,0,0.7); display:none; align-items:center; justify-content:center; }
+    #chat-new-modal.open { display:flex; }
+    .chat-new-box { background:#0e0a04; border:1px solid var(--gold-dark); border-radius:2px; padding:1.25rem; width:280px; max-width:90vw; }
+    .chat-new-title { font-family:'Cinzel',serif; font-size:0.85rem; color:var(--gold); margin-bottom:1rem; }
+    .chat-new-tabs { display:flex; gap:0.5rem; margin-bottom:0.85rem; }
+    .chat-new-tab { flex:1; padding:0.3rem; background:none; border:1px solid #3a2810; color:#777; font-family:'Cinzel',serif; font-size:0.7rem; cursor:pointer; border-radius:2px; transition:all 0.15s; }
+    .chat-new-tab.active { background:rgba(201,162,39,0.12); border-color:var(--gold-dark); color:var(--gold); }
+    .chat-new-section { display:none; }
+    .chat-new-section.active { display:block; }
+    .chat-new-input { width:100%; background:#080604; border:1px solid #3a2810; border-radius:2px; color:var(--j-text,#e8e0d0); font-size:0.82rem; padding:0.35rem 0.55rem; margin-bottom:0.5rem; box-sizing:border-box; }
+    .chat-new-input:focus { outline:none; border-color:var(--gold-dark); }
+    .chat-player-list { display:flex; flex-direction:column; gap:0.3rem; max-height:160px; overflow-y:auto; margin-bottom:0.65rem; }
+    .chat-player-opt { display:flex; align-items:center; gap:0.5rem; padding:0.3rem 0.4rem; cursor:pointer; border-radius:2px; transition:background 0.12s; }
+    .chat-player-opt:hover { background:rgba(201,162,39,0.06); }
+    .chat-player-opt input[type=checkbox] { accent-color:var(--gold-dark); }
+    .chat-player-opt label { font-size:0.78rem; color:var(--j-text,#e8e0d0); cursor:pointer; }
+    .chat-new-actions { display:flex; gap:0.5rem; justify-content:flex-end; margin-top:0.5rem; }
+    .chat-new-cancel { background:none; border:1px solid #3a2810; color:#777; padding:0.3rem 0.7rem; border-radius:2px; cursor:pointer; font-size:0.78rem; }
+    .chat-new-confirm { background:var(--gold-dark); border:none; color:#fff; padding:0.3rem 0.7rem; border-radius:2px; cursor:pointer; font-size:0.78rem; transition:background 0.15s; }
+    .chat-new-confirm:hover { background:var(--gold); }
 
     /* ── Vue fiche partagée ── */
     .view-screen-wrap { max-width:720px; margin:0 auto; padding:1.5rem 1rem; }
@@ -2883,24 +2923,64 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
 </div><!-- /page-wrapper -->
 
 <!-- ══ Chat flottant ══ -->
-<button id="chat-fab" style="display:none;" title="Chat du groupe">
+<button id="chat-fab" style="display:none;" title="Chat">
   💬<span class="chat-unread" id="chat-unread"></span>
 </button>
 <div id="chat-panel">
-  <div class="chat-header">
-    <div class="chat-header-left">
-      <div class="chat-online-dot offline" id="chat-online-dot"></div>
-      <span>Chat du groupe</span>
+  <!-- Vue : liste des conversations -->
+  <div id="chat-view-rooms">
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <div class="chat-online-dot offline" id="chat-online-dot"></div>
+        <span>Messages</span>
+      </div>
+      <div class="chat-header-actions">
+        <button class="chat-new-btn" id="chat-new-btn" title="Nouvelle conversation">＋</button>
+        <button class="chat-close" id="chat-close" title="Fermer">✕</button>
+      </div>
     </div>
-    <button class="chat-close" id="chat-close" title="Fermer">✕</button>
+    <div class="chat-error-bar" id="chat-error-bar">⚠ Impossible de joindre le serveur</div>
+    <div id="chat-room-list"></div>
   </div>
-  <div class="chat-error-bar" id="chat-error-bar">⚠ Impossible de joindre le serveur</div>
-  <div class="chat-messages" id="chat-messages" style="position:relative;"></div>
-  <button id="chat-scroll-btn" title="Défiler en bas">↓</button>
-  <div class="chat-footer">
-    <div class="chat-input-row">
-      <input type="text" class="chat-input" id="chat-input" placeholder="Votre message… (Entrée pour envoyer)" maxlength="400" autocomplete="off">
-      <button class="chat-send" id="chat-send" title="Envoyer">↑</button>
+  <!-- Vue : messages d'une conversation -->
+  <div id="chat-view-msgs">
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <button class="chat-back-btn" id="chat-back-btn" title="Retour">‹</button>
+        <span id="chat-room-title">Général</span>
+      </div>
+      <div class="chat-header-actions">
+        <button class="chat-close" id="chat-close-2" title="Fermer">✕</button>
+      </div>
+    </div>
+    <div class="chat-messages" id="chat-messages" style="position:relative;"></div>
+    <button id="chat-scroll-btn" title="Défiler en bas">↓</button>
+    <div class="chat-footer">
+      <div class="chat-input-row">
+        <input type="text" class="chat-input" id="chat-input" placeholder="Message… (Entrée)" maxlength="400" autocomplete="off">
+        <button class="chat-send" id="chat-send" title="Envoyer">↑</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal : nouvelle conversation -->
+<div id="chat-new-modal">
+  <div class="chat-new-box">
+    <div class="chat-new-title">Nouvelle conversation</div>
+    <div class="chat-new-tabs">
+      <button class="chat-new-tab active" data-ntab="private">Privé</button>
+      <button class="chat-new-tab" data-ntab="group">Groupe</button>
+    </div>
+    <div class="chat-new-section active" id="chat-ntab-private">
+      <div class="chat-player-list" id="chat-private-players"></div>
+    </div>
+    <div class="chat-new-section" id="chat-ntab-group">
+      <input class="chat-new-input" id="chat-group-name" placeholder="Nom du groupe…" maxlength="30">
+      <div class="chat-player-list" id="chat-group-players"></div>
+    </div>
+    <div class="chat-new-actions">
+      <button class="chat-new-cancel" id="chat-new-cancel">Annuler</button>
+      <button class="chat-new-confirm" id="chat-new-confirm">Créer</button>
     </div>
   </div>
 </div>
@@ -8073,40 +8153,65 @@ function renderViewSheet(el, pd, c, slot, username) {
 }
 
 /* ════════════════════════════════════════════════════════════
-   CHAT
+   CHAT — multi-room (général, privé, groupe)
    ════════════════════════════════════════════════════════════ */
-/* ════════════════════════════════════════════════
-   CHAT DU GROUPE
-   ════════════════════════════════════════════════ */
 const CHAT_TABLE = '/rest/v1/chat_messages';
-let _chatLastId    = 0;
-let _chatOpen      = false;
-let _chatPollTimer = null;
-let _chatUnread    = 0;
-let _chatOnline    = false;
-let _lastShareText = '';  // dernière ligne du toast pour partage
+const ROOMS_TABLE = '/rest/v1/chat_rooms';
+
+let _chatOpen         = false;
+let _chatOnline       = false;
+let _chatPollTimer    = null;
+let _chatRealtimeChannel = null;
+let _lastShareText    = '';
+
+// State multi-room
+let _currentRoom   = null;  // objet room actif
+let _rooms         = {};    // roomId → {id,name,type,members,unread,lastMsg,lastTs,lastId}
+let _allPlayers    = [];    // liste des usernames connus (pour créer des convos)
 
 function escHtml(s) {
   return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
 }
 
+/* ── Helpers room ── */
+function _roomName(room) {
+  if (!room) return '';
+  if (room.id === 'general') return 'Général';
+  if (room.type === 'private') {
+    const other = (room.members || []).find(m => m !== currentUser);
+    return other || room.id;
+  }
+  return room.name || room.id;
+}
+function _roomIcon(room) {
+  if (!room) return '💬';
+  if (room.id === 'general') return '⚔';
+  if (room.type === 'private') return '🔒';
+  return '👥';
+}
+function _isMember(room) {
+  if (room.id === 'general') return true;
+  return (room.members || []).includes(currentUser);
+}
+
 /* ── API ── */
-async function chatFetch(sinceId) {
+async function chatFetchRoom(roomId, sinceId) {
+  const filter = `room=eq.${encodeURIComponent(roomId)}`;
   const url = sinceId
-    ? `${CHAT_TABLE}?id=gt.${sinceId}&order=id.asc&limit=60`
-    : `${CHAT_TABLE}?order=id.desc&limit=60`;
+    ? `${CHAT_TABLE}?${filter}&id=gt.${sinceId}&order=id.asc&limit=80`
+    : `${CHAT_TABLE}?${filter}&order=id.desc&limit=80`;
   const r = await sbFetch(url);
   if (!r.ok) throw new Error(r.status);
   const msgs = await r.json();
   return sinceId ? msgs : msgs.reverse();
 }
 
-async function chatSend(message, type) {
+async function chatSend(message, type, roomId) {
   if (!message.trim() || !currentUser) return;
   return sbFetch(CHAT_TABLE, {
     method: 'POST',
     headers: { 'Prefer': 'return=minimal' },
-    body: JSON.stringify({ username: currentUser, message: message.trim(), type: type || 'text' })
+    body: JSON.stringify({ username: currentUser, message: message.trim(), type: type || 'text', room: roomId || 'general' })
   });
 }
 
@@ -8114,7 +8219,123 @@ async function chatDelete(id) {
   return sbFetch(`${CHAT_TABLE}?id=eq.${id}`, { method: 'DELETE' });
 }
 
-/* ── Rendu ── */
+async function loadRooms() {
+  // Toujours inclure 'general'
+  if (!_rooms['general']) _rooms['general'] = { id:'general', name:'Général', type:'general', members:[], unread:0, lastId:0 };
+  // Charger les rooms depuis la DB où l'utilisateur est membre
+  try {
+    const r = await sbFetch(`${ROOMS_TABLE}?members=cs.{"${currentUser}"}&order=created_at.desc`);
+    if (r.ok) {
+      const rows = await r.json();
+      rows.forEach(row => {
+        if (!_rooms[row.id]) _rooms[row.id] = { ...row, unread:0, lastId:0 };
+        else Object.assign(_rooms[row.id], row);
+      });
+    }
+  } catch(e) {}
+  renderRoomList();
+}
+
+async function createPrivateRoom(otherUser) {
+  const id = 'private:' + [currentUser, otherUser].sort().join(':');
+  if (_rooms[id]) { openRoom(id); return; }
+  try {
+    const r = await sbFetch(ROOMS_TABLE, {
+      method: 'POST',
+      headers: { 'Prefer': 'return=representation' },
+      body: JSON.stringify({ id, type:'private', members:[currentUser, otherUser], created_by:currentUser })
+    });
+    if (r.ok) {
+      const [row] = await r.json();
+      _rooms[id] = { ...row, unread:0, lastId:0 };
+      renderRoomList();
+      openRoom(id);
+    }
+  } catch(e) {}
+}
+
+async function createGroupRoom(name, members) {
+  if (!name.trim() || members.length === 0) return;
+  const id = 'group:' + Date.now().toString(36);
+  const allMembers = [...new Set([currentUser, ...members])];
+  try {
+    const r = await sbFetch(ROOMS_TABLE, {
+      method: 'POST',
+      headers: { 'Prefer': 'return=representation' },
+      body: JSON.stringify({ id, type:'group', name:name.trim(), members:allMembers, created_by:currentUser })
+    });
+    if (r.ok) {
+      const [row] = await r.json();
+      _rooms[id] = { ...row, unread:0, lastId:0 };
+      renderRoomList();
+      openRoom(id);
+    }
+  } catch(e) {}
+}
+
+/* ── Rendu liste rooms ── */
+function renderRoomList() {
+  const list = document.getElementById('chat-room-list');
+  if (!list) return;
+  const sorted = Object.values(_rooms).sort((a,b) => {
+    if (a.id === 'general') return -1;
+    if (b.id === 'general') return 1;
+    return (b.lastTs || 0) - (a.lastTs || 0);
+  });
+  list.innerHTML = sorted.map(room => {
+    const active = _currentRoom?.id === room.id ? ' active' : '';
+    const badge = room.unread > 0 ? `<span class="chat-room-badge visible">${room.unread > 9 ? '9+' : room.unread}</span>` : '';
+    const preview = room.lastMsg ? escHtml(room.lastMsg).substring(0, 35) : '<em style="color:#333">Aucun message</em>';
+    return `<div class="chat-room-item${active}" data-room-id="${room.id}">
+      <div class="chat-room-icon">${_roomIcon(room)}</div>
+      <div class="chat-room-info">
+        <div class="chat-room-name">${escHtml(_roomName(room))}</div>
+        <div class="chat-room-preview">${preview}</div>
+      </div>
+      ${badge}
+    </div>`;
+  }).join('');
+  list.querySelectorAll('.chat-room-item').forEach(el => {
+    el.addEventListener('click', () => openRoom(el.dataset.roomId));
+  });
+  // Badge global FAB
+  const total = Object.values(_rooms).reduce((s,r) => s + (r.unread||0), 0);
+  const fabBadge = document.getElementById('chat-unread');
+  if (fabBadge) { fabBadge.textContent = total > 9 ? '9+' : total || ''; fabBadge.style.display = total > 0 ? 'block' : 'none'; }
+}
+
+/* ── Ouvrir une room ── */
+function openRoom(roomId) {
+  _currentRoom = _rooms[roomId];
+  if (!_currentRoom) return;
+  _rooms[roomId].unread = 0;
+  document.getElementById('chat-room-title').textContent = _roomName(_currentRoom);
+  document.getElementById('chat-view-rooms').style.display = 'none';
+  document.getElementById('chat-view-msgs').classList.add('active');
+  const box = document.getElementById('chat-messages');
+  if (box) box.innerHTML = '';
+  loadRoomMessages(roomId);
+  renderRoomList();
+}
+
+function showRoomList() {
+  _currentRoom = null;
+  document.getElementById('chat-view-msgs').classList.remove('active');
+  document.getElementById('chat-view-rooms').style.display = 'flex';
+}
+
+async function loadRoomMessages(roomId) {
+  try {
+    const msgs = await chatFetchRoom(roomId, null);
+    _chatSetOnline(true);
+    if (msgs.length) {
+      _rooms[roomId].lastId = msgs[msgs.length - 1].id;
+      chatRenderMessages(msgs, false);
+    }
+  } catch(e) { _chatSetOnline(false); }
+}
+
+/* ── Rendu messages ── */
 function _chatDaySep(date) {
   const d = new Date(date);
   const today = new Date();
@@ -8131,7 +8352,6 @@ function _renderOneBubble(m, box, prevUser, prevDay) {
   const time = d.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
   const isRoll = m.type === 'roll';
 
-  // Day separator
   if (day !== prevDay) {
     const sep = document.createElement('div');
     sep.className = 'chat-day-sep';
@@ -8143,7 +8363,6 @@ function _renderOneBubble(m, box, prevUser, prevDay) {
   wrap.className = 'chat-bubble-wrap ' + (isMe ? 'me' : 'other');
   wrap.dataset.msgId = m.id;
 
-  // Sender name (only if first in consecutive group or after day sep)
   if (m.username !== prevUser || day !== prevDay) {
     const sender = document.createElement('div');
     sender.className = 'chat-sender';
@@ -8155,7 +8374,6 @@ function _renderOneBubble(m, box, prevUser, prevDay) {
   bubble.className = 'chat-bubble' + (isRoll ? ' roll' : '');
 
   if (isRoll) {
-    // Parse roll format: "🎲 Label · d20=14 +2 = 16"
     bubble.innerHTML = escHtml(m.message)
       .replace(/\b(\d{1,2})\b(?=\s*=\s*\d)/g, '<span class="roll-result">$1</span>')
       .replace(/d20=20/g, '<span class="roll-result roll-nat20">20</span>')
@@ -8165,7 +8383,6 @@ function _renderOneBubble(m, box, prevUser, prevDay) {
     bubble.innerHTML = escHtml(m.message);
   }
 
-  // Delete button (own messages)
   if (isMe) {
     const del = document.createElement('button');
     del.className = 'chat-del-btn';
@@ -8180,12 +8397,10 @@ function _renderOneBubble(m, box, prevUser, prevDay) {
   }
 
   wrap.appendChild(bubble);
-
   const ts = document.createElement('div');
   ts.className = 'chat-bubble-time';
   ts.textContent = time;
   wrap.appendChild(ts);
-
   box.appendChild(wrap);
   return { user: m.username, day };
 }
@@ -8193,193 +8408,210 @@ function _renderOneBubble(m, box, prevUser, prevDay) {
 function chatRenderMessages(msgs, append) {
   const box = document.getElementById('chat-messages');
   if (!box) return;
-
   const atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 40;
-
-  if (!append) {
-    box.innerHTML = '';
-    _chatUnread = 0;
-  }
-
+  if (!append) box.innerHTML = '';
   let prevUser = append ? (box.lastElementChild?.dataset?.lastUser || '') : '';
   let prevDay  = append ? (box.lastElementChild?.dataset?.lastDay  || '') : '';
-
   msgs.forEach(m => {
-    if (m.id > _chatLastId) _chatLastId = m.id;
     const result = _renderOneBubble(m, box, prevUser, prevDay);
-    prevUser = result.user;
-    prevDay  = result.day;
-    if (append && !_chatOpen) _chatUnread++;
+    prevUser = result.user; prevDay = result.day;
   });
-
-  // Track last user/day for future appends
   if (box.lastElementChild) {
     box.lastElementChild.dataset.lastUser = prevUser;
     box.lastElementChild.dataset.lastDay  = prevDay;
   }
-
-  if (!append || atBottom) {
-    box.scrollTop = box.scrollHeight;
-    _updateScrollBtn(box, false);
-  } else if (msgs.length > 0) {
-    _updateScrollBtn(box, true);
-    // Update unread badge
-    if (_chatUnread > 0) {
-      const badge = document.getElementById('chat-unread');
-      if (badge) { badge.textContent = _chatUnread > 9 ? '9+' : _chatUnread; badge.style.display = 'block'; }
-    }
-  }
+  if (!append || atBottom) { box.scrollTop = box.scrollHeight; _updateScrollBtn(box, false); }
+  else _updateScrollBtn(box, true);
 }
 
 function _updateScrollBtn(box, show) {
-  const btn = document.getElementById('chat-scroll-btn');
-  if (btn) btn.classList.toggle('visible', show);
+  document.getElementById('chat-scroll-btn')?.classList.toggle('visible', show);
 }
 
-/* ── Realtime + Poll fallback ── */
-let _chatRealtimeChannel = null;
-
+/* ── Online / Offline ── */
 function _chatSetOnline(ok) {
   if (_chatOnline === ok) return;
   _chatOnline = ok;
-  const dot  = document.getElementById('chat-online-dot');
-  const err  = document.getElementById('chat-error-bar');
-  if (dot) dot.classList.toggle('offline', !ok);
-  if (err) err.classList.toggle('visible', !ok);
+  document.getElementById('chat-online-dot')?.classList.toggle('offline', !ok);
+  document.getElementById('chat-error-bar')?.classList.toggle('visible', !ok);
 }
 
-async function chatPoll() {
-  try {
-    const msgs = await chatFetch(_chatLastId || null);
-    _chatSetOnline(true);
-    if (msgs.length) chatRenderMessages(msgs, _chatLastId > 0);
-  } catch(e) {
-    _chatSetOnline(false);
-  }
-}
-
-function startChatPoll() {
-  if (_chatPollTimer) return;
-  chatPoll();
-  _chatPollTimer = setInterval(() => chatPoll(), 30000);
-}
-
-function _restartPoll() {
-  // no-op quand Realtime actif
-  if (_chatRealtimeChannel) return;
-  clearInterval(_chatPollTimer);
-  _chatPollTimer = null;
-  startChatPoll();
-}
-
+/* ── Realtime ── */
 function startChatRealtime() {
   const client = getSbClient();
-  if (!client) { startChatPoll(); return; }
+  if (!client) { _startChatFallbackPoll(); return; }
   try {
-    _chatRealtimeChannel = client.channel('chat-messages-rt')
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'chat_messages'
-      }, payload => {
+    _chatRealtimeChannel = client.channel('chat-multi-rt')
+      .on('postgres_changes', { event:'INSERT', schema:'public', table:'chat_messages' }, payload => {
         const m = payload.new;
         if (!m) return;
-        chatRenderMessages([m], true);
         _chatSetOnline(true);
+        const roomId = m.room || 'general';
+        // Mettre à jour le preview dans la liste
+        if (_rooms[roomId]) {
+          _rooms[roomId].lastMsg = m.message;
+          _rooms[roomId].lastTs  = Date.now();
+          _rooms[roomId].lastId  = m.id;
+          if (_currentRoom?.id !== roomId) _rooms[roomId].unread = (_rooms[roomId].unread || 0) + 1;
+        }
+        // Afficher si c'est la room active
+        if (_currentRoom?.id === roomId) chatRenderMessages([m], true);
+        renderRoomList();
+      })
+      .on('postgres_changes', { event:'INSERT', schema:'public', table:'chat_rooms' }, payload => {
+        const row = payload.new;
+        if (!row || !_isMember(row)) return;
+        if (!_rooms[row.id]) { _rooms[row.id] = { ...row, unread:0, lastId:0 }; renderRoomList(); }
       })
       .subscribe(status => {
         if (status === 'SUBSCRIBED') {
           _chatSetOnline(true);
-          // Fallback poll lent (60s) en cas de message manqué
-          if (!_chatPollTimer) _chatPollTimer = setInterval(() => chatPoll(), 60000);
+          if (!_chatPollTimer) _chatPollTimer = setInterval(_chatFallbackPollTick, 60000);
         } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
           _chatRealtimeChannel = null;
           _chatSetOnline(false);
-          startChatPoll();
+          _startChatFallbackPoll();
         }
       });
-  } catch(e) {
-    startChatPoll();
-  }
+  } catch(e) { _startChatFallbackPoll(); }
+}
+
+function _startChatFallbackPoll() {
+  if (_chatPollTimer) return;
+  _chatFallbackPollTick();
+  _chatPollTimer = setInterval(_chatFallbackPollTick, 15000);
+}
+
+async function _chatFallbackPollTick() {
+  if (!_currentRoom) return;
+  try {
+    const sinceId = _rooms[_currentRoom.id]?.lastId || 0;
+    const msgs = await chatFetchRoom(_currentRoom.id, sinceId || null);
+    if (msgs.length) {
+      _rooms[_currentRoom.id].lastId = msgs[msgs.length-1].id;
+      chatRenderMessages(msgs, sinceId > 0);
+    }
+    _chatSetOnline(true);
+  } catch(e) { _chatSetOnline(false); }
+}
+
+/* ── Modal nouvelle conversation ── */
+function openNewChatModal() {
+  const modal = document.getElementById('chat-new-modal');
+  if (!modal) return;
+  // Remplir la liste des joueurs connus (sauf soi-même)
+  const players = _allPlayers.filter(u => u !== currentUser);
+  ['chat-private-players','chat-group-players'].forEach((listId, idx) => {
+    const el = document.getElementById(listId);
+    if (!el) return;
+    el.innerHTML = players.map(u =>
+      `<div class="chat-player-opt">
+        <input type="${idx===0?'radio':'checkbox'}" name="${listId}" id="${listId}-${u}" value="${u}">
+        <label for="${listId}-${u}">${u}</label>
+      </div>`
+    ).join('') || '<div style="color:#555;font-size:0.75rem;padding:0.3rem;">Aucun joueur disponible</div>';
+  });
+  modal.classList.add('open');
 }
 
 /* ── Init ── */
 function initChat() {
   const fab   = document.getElementById('chat-fab');
   const panel = document.getElementById('chat-panel');
-  const close = document.getElementById('chat-close');
-  const input = document.getElementById('chat-input');
-  const send  = document.getElementById('chat-send');
-  const badge = document.getElementById('chat-unread');
-  const box   = document.getElementById('chat-messages');
-  const scrollBtn = document.getElementById('chat-scroll-btn');
   if (!fab || !panel) return;
-
   fab.style.display = 'flex';
 
-  // Open / close
+  // FAB
   fab.addEventListener('click', () => {
     _chatOpen = !_chatOpen;
     panel.classList.toggle('open', _chatOpen);
-    if (_chatOpen) {
-      if (badge) { badge.textContent = ''; badge.style.display = 'none'; }
-      _chatUnread = 0;
-      box.scrollTop = box.scrollHeight;
-      input?.focus();
-      _restartPoll();
+    if (_chatOpen) loadRooms();
+  });
+
+  // Fermer
+  const closePanel = () => { _chatOpen = false; panel.classList.remove('open'); showRoomList(); };
+  document.getElementById('chat-close')?.addEventListener('click', closePanel);
+  document.getElementById('chat-close-2')?.addEventListener('click', closePanel);
+
+  // Retour à la liste
+  document.getElementById('chat-back-btn')?.addEventListener('click', showRoomList);
+
+  // Bouton nouvelle conversation
+  document.getElementById('chat-new-btn')?.addEventListener('click', openNewChatModal);
+
+  // Modal nouvelle conversation
+  document.getElementById('chat-new-cancel')?.addEventListener('click', () => {
+    document.getElementById('chat-new-modal').classList.remove('open');
+  });
+  document.getElementById('chat-new-modal')?.addEventListener('click', e => {
+    if (e.target === e.currentTarget) e.currentTarget.classList.remove('open');
+  });
+  // Onglets modal
+  document.querySelectorAll('.chat-new-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.chat-new-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.chat-new-section').forEach(s => s.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('chat-ntab-' + tab.dataset.ntab)?.classList.add('active');
+    });
+  });
+  // Confirmer nouvelle conversation
+  document.getElementById('chat-new-confirm')?.addEventListener('click', async () => {
+    const activeTab = document.querySelector('.chat-new-tab.active')?.dataset.ntab;
+    document.getElementById('chat-new-modal').classList.remove('open');
+    if (activeTab === 'private') {
+      const sel = document.querySelector('#chat-private-players input[type=radio]:checked');
+      if (sel) await createPrivateRoom(sel.value);
     } else {
-      _restartPoll();
+      const name = document.getElementById('chat-group-name')?.value.trim();
+      const sels = [...document.querySelectorAll('#chat-group-players input[type=checkbox]:checked')].map(i => i.value);
+      if (name && sels.length) await createGroupRoom(name, sels);
     }
   });
 
-  close?.addEventListener('click', () => {
-    _chatOpen = false;
-    panel.classList.remove('open');
-    _restartPoll();
-  });
-
-  // Scroll-to-bottom button
+  // Scroll-to-bottom
+  const box = document.getElementById('chat-messages');
   box?.addEventListener('scroll', () => {
     const atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 60;
     _updateScrollBtn(box, !atBottom);
-    if (atBottom) { _chatUnread = 0; if (badge) { badge.textContent=''; badge.style.display='none'; } }
   });
-  scrollBtn?.addEventListener('click', () => {
-    box.scrollTop = box.scrollHeight;
+  document.getElementById('chat-scroll-btn')?.addEventListener('click', () => {
+    if (box) box.scrollTop = box.scrollHeight;
     _updateScrollBtn(box, false);
   });
 
-  // Send
+  // Envoi message
+  const input = document.getElementById('chat-input');
+  const send  = document.getElementById('chat-send');
   async function doSend() {
     const msg = input?.value.trim();
-    if (!msg) return;
+    if (!msg || !_currentRoom) return;
     input.value = '';
     send.disabled = true;
     try {
-      await chatSend(msg, 'text');
-      await chatPoll();
+      await chatSend(msg, 'text', _currentRoom.id);
     } finally {
       send.disabled = false;
       input.focus();
     }
   }
   send?.addEventListener('click', doSend);
-  input?.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); doSend(); }
-  });
+  input?.addEventListener('keydown', e => { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); doSend(); } });
 
-  // Share-to-chat button on dice toast
+  // Share dé → chat général
   document.getElementById('dice-share-btn')?.addEventListener('click', async () => {
     if (!_lastShareText || !currentUser) return;
-    await chatSend(_lastShareText, 'roll');
-    if (!_chatOpen) {
-      _chatOpen = true;
-      panel.classList.add('open');
-      input?.focus();
-    }
-    await chatPoll();
+    await chatSend(_lastShareText, 'roll', 'general');
+    if (!_chatOpen) { _chatOpen = true; panel.classList.add('open'); loadRooms(); }
+    openRoom('general');
   });
 
+  // Charger la liste des joueurs pour le modal (depuis la table players)
+  sbFetch('/rest/v1/players?select=username&order=username.asc').then(async r => {
+    if (r.ok) { const rows = await r.json(); _allPlayers = rows.map(r => r.username).filter(u => u && u !== 'dm'); }
+  }).catch(() => {});
+
+  loadRooms();
   startChatRealtime();
 }
 
