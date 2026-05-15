@@ -1639,6 +1639,90 @@
   #undo-toast { bottom: calc(68px + env(safe-area-inset-bottom, 0px)) !important; }
 }
 
+/* ── Barre d'onglets de sections (mobile/tablette ≤ 1024px) ── */
+#sec-tab-bar {
+  display: none;
+  overflow-x: auto;
+  gap: 0.4rem;
+  padding: 0.45rem 0.75rem 0.5rem;
+  background: var(--bg-nav, #0a0703);
+  border-bottom: 1px solid var(--j-border-col, #4a3510);
+  scrollbar-width: none;
+  margin-bottom: 0.75rem;
+}
+#sec-tab-bar::-webkit-scrollbar { display: none; }
+.sec-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.28rem 0.8rem;
+  border-radius: 20px;
+  border: 1px solid var(--j-border-col, #4a3510);
+  background: transparent;
+  color: #777;
+  font-family: 'Cinzel', serif;
+  font-size: 0.63rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+  min-height: 32px;
+}
+.sec-tab-btn.active {
+  background: rgba(201,169,110,0.15);
+  border-color: var(--gold, #c9a96e);
+  color: var(--gold, #c9a96e);
+}
+.sec-tab-btn:active { opacity: 0.75; }
+
+@media (max-width: 1024px) {
+  /* Barre fixée sous la topbar (nav 60px + topbar 52px = 112px) */
+  #sec-tab-bar {
+    display: flex;
+    position: fixed;
+    top: 112px;
+    left: 0; right: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    margin-bottom: 0;
+  }
+
+  /* Décaler le contenu pour éviter l'overlap avec la barre fixe */
+  #screen-dashboard { padding-top: 101px; } /* 52px topbar + 49px sec-tab-bar */
+
+  /* Aplatir les colonnes */
+  #layout-wrapper { display: block !important; gap: 0 !important; }
+  #layout-bottom { margin-top: 0 !important; }
+  .layout-col, .layout-col-full {
+    display: block !important;
+    flex: none !important;
+    width: 100% !important;
+  }
+
+  /* Section tab mode — masquer tout sauf l'onglet actif */
+  #layout-wrapper .sheet-section,
+  #layout-bottom .sheet-section {
+    display: none !important;
+  }
+  #layout-wrapper .sheet-section.sec-tab-active,
+  #layout-bottom .sheet-section.sec-tab-active {
+    display: block !important;
+    margin-bottom: 1rem !important;
+  }
+
+  /* Masquer outils de réorganisation (inutilisables en mode onglet) */
+  #layout-toolbar { display: none !important; }
+  #btn-layout-edit { display: none !important; }
+}
+
+/* Mobile : topbar réduite à 48px → ajuster le top de la barre de sections */
+@media (max-width: 640px) {
+  #sec-tab-bar { top: 108px; } /* nav 60px + topbar 48px */
+  #screen-dashboard { padding-top: 97px; } /* 48px topbar + 49px sec-tab-bar */
+}
+
 /* ── Coins carrés (remplacement global) ── */
 :root { --radius: 2px; }
 .field-input, .ability-score-input, .atk-inp, .inv-inp,
@@ -2215,6 +2299,9 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
 
       </div><!-- /#vb-hero -->
       <hr id="vb-hero-divider">
+
+    <!-- ── Barre de sections fixée (mobile/tablette) ── -->
+    <div id="sec-tab-bar" role="tablist" aria-label="Sections"></div>
 
     <!-- ── Onglets : début du contenu commuté ── -->
     <div class="tab-panel active" id="tab-personnage">
@@ -5091,6 +5178,7 @@ async function openDashboard() {
   renderDashboard();
   startRealtime(currentUser);
   applyLayout();
+  buildSecTabBar();
   initLayoutDrag();
   if (playerData?.fontSize) applyFontSizeValue(playerData.fontSize);
   document.getElementById('tab-admin-btn').style.display = currentUser === ADMIN_USER ? '' : 'none';
@@ -8826,6 +8914,60 @@ function esc(val) {
   return String(val).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+/* ── Barre d'onglets de sections (mobile/tablette ≤ 1024px) ── */
+const SEC_LABELS = {
+  saves: 'Compét.', attaques: 'Attaques', cf: 'Classe',
+  ressources: 'Ressources', conditions: 'Conditions',
+  features: 'Traits', sorts: 'Sorts'
+};
+
+function buildSecTabBar() {
+  const bar = document.getElementById('sec-tab-bar');
+  if (!bar) return;
+  bar.innerHTML = '';
+  const sections = Array.from(document.querySelectorAll(
+    '#layout-wrapper .sheet-section[data-sec]:not(.sec-hidden), ' +
+    '#layout-bottom .sheet-section[data-sec]:not(.sec-hidden)'
+  )).filter(s => s.style.display !== 'none');
+  if (!sections.length) return;
+  sections.forEach(sec => {
+    const secId = sec.dataset.sec;
+    const label = SEC_LABELS[secId] || (() => {
+      const el = sec.querySelector('.sheet-section-title span') || sec.querySelector('.sheet-section-title');
+      return (el?.firstChild?.nodeType === 3 ? el.firstChild.textContent : el?.textContent || secId).trim().split(/\s+/).slice(0, 2).join(' ');
+    })();
+    const btn = document.createElement('button');
+    btn.className = 'sec-tab-btn';
+    btn.setAttribute('role', 'tab');
+    btn.dataset.sec = secId;
+    btn.textContent = label;
+    btn.addEventListener('click', () => activateSecTab(secId));
+    bar.appendChild(btn);
+  });
+  activateSecTab(sections[0].dataset.sec, false);
+}
+
+function activateSecTab(secId, autoScroll = true) {
+  document.querySelectorAll('.sec-tab-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.sec === secId)
+  );
+  document.querySelectorAll(
+    '#layout-wrapper .sheet-section[data-sec], #layout-bottom .sheet-section[data-sec]'
+  ).forEach(s => s.classList.toggle('sec-tab-active', s.dataset.sec === secId));
+  // Faire défiler le bouton actif dans la barre
+  const activeBtn = document.querySelector(`.sec-tab-btn[data-sec="${secId}"]`);
+  activeBtn?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  // Scroller vers la section pour passer le vb-hero
+  if (autoScroll) {
+    const sec = document.querySelector(`.sheet-section[data-sec="${secId}"]`);
+    if (sec) {
+      const fixedH = (document.getElementById('sec-tab-bar')?.getBoundingClientRect().bottom || 160) + 8;
+      const top = sec.getBoundingClientRect().top + window.scrollY - fixedH;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+  }
+}
+
 /* ════════════════════════════════════════════════════════════
    LISTENERS
    ════════════════════════════════════════════════════════════ */
@@ -8898,6 +9040,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Bouton Organiser visible uniquement dans l'onglet Personnage
       const organBtn = document.getElementById('btn-layout-edit');
       if (organBtn) organBtn.style.display = tabId === 'personnage' ? '' : 'none';
+      // Barre de sections : visible seulement sur l'onglet personnage
+      const secBar = document.getElementById('sec-tab-bar');
+      if (secBar) secBar.hidden = tabId !== 'personnage';
       // Onglet Identité : scroll jusqu'au formulaire
       if (tabId === 'identite') {
         requestAnimationFrame(() => {
@@ -8915,6 +9060,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     _renderTab(tabId);
     const organBtn = document.getElementById('btn-layout-edit');
     if (organBtn) organBtn.style.display = tabId === 'personnage' ? '' : 'none';
+    // Barre de sections : visible seulement sur l'onglet personnage
+    const secBar = document.getElementById('sec-tab-bar');
+    if (secBar) secBar.hidden = tabId !== 'personnage';
   }
   // Brancher les boutons de la barre basse sur le même système
   document.querySelectorAll('.mbn-btn').forEach(btn => {
