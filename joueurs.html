@@ -4382,6 +4382,7 @@ let currentUser = null;
 let playerData  = null;
 let saveTimer   = null;
 let _lastSaveAt = 0;  // timestamp de la dernière sauvegarde (pour ignorer l'écho Realtime)
+let _saveScheduledAt = 0; // timestamp du dernier triggerSave() appelé (debounce en cours)
 
 /* ── État admin ── */
 let adminEditUser   = null;
@@ -4552,6 +4553,7 @@ function updateConnIndicator(state) {
 }
 
 function triggerSave() {
+  _saveScheduledAt = Date.now(); // marquer qu'une sauvegarde est en attente
   const badge = document.getElementById('save-badge');
   badge.textContent = 'Sauvegarde…'; badge.className = 'save-badge';
   clearTimeout(saveTimer);
@@ -10297,6 +10299,7 @@ function startRealtime(username) {
         filter: 'username=eq.' + username
       }, payload => {
         if (Date.now() - _lastSaveAt < 3000) return;
+        if (Date.now() - _saveScheduledAt < 5000) return; // sauvegarde en cours ou récente
         const newData = payload.new?.data;
         if (!newData || !playerData) return;
         const tag = document.activeElement?.tagName;
