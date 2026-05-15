@@ -7965,15 +7965,26 @@ async function initViewMode() {
     const slot = pd.characters?.[activeId];
     const c = slot?.character || {};
     renderViewSheet(el, pd, c, slot, viewUser);
-    // Auto-refresh toutes les 30s
-    setInterval(async () => {
-      try {
-        const r2 = await sbGetPlayer(viewUser);
-        if (!r2) return;
-        const pd2 = r2.data; const s2 = pd2.characters?.[pd2.activeCharId]; const c2 = s2?.character || {};
-        renderViewSheet(el, pd2, c2, s2, viewUser);
-      } catch(e) {}
-    }, 30000);
+    // Realtime sync — fallback poll 60s si non disponible
+    const _vc = getSbClient();
+    if (_vc) {
+      _vc.channel('view-sync-' + viewUser)
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'players', filter: 'username=eq.' + viewUser }, payload => {
+          const pd2 = payload.new?.data;
+          if (!pd2) return;
+          const s2 = pd2.characters?.[pd2.activeCharId]; const c2 = s2?.character || {};
+          renderViewSheet(el, pd2, c2, s2, viewUser);
+        }).subscribe();
+    } else {
+      setInterval(async () => {
+        try {
+          const r2 = await sbGetPlayer(viewUser);
+          if (!r2) return;
+          const pd2 = r2.data; const s2 = pd2.characters?.[pd2.activeCharId]; const c2 = s2?.character || {};
+          renderViewSheet(el, pd2, c2, s2, viewUser);
+        } catch(e) {}
+      }, 60000);
+    }
   } catch(e) {
     el.innerHTML = `<p style="text-align:center;color:#c97a7a;padding:3rem;">Erreur de chargement.</p>`;
   }
@@ -8225,7 +8236,9 @@ function _updateScrollBtn(box, show) {
   if (btn) btn.classList.toggle('visible', show);
 }
 
-/* ── Poll ── */
+/* ── Realtime + Poll fallback ── */
+let _chatRealtimeChannel = null;
+
 function _chatSetOnline(ok) {
   if (_chatOnline === ok) return;
   _chatOnline = ok;
@@ -8248,14 +8261,46 @@ async function chatPoll() {
 function startChatPoll() {
   if (_chatPollTimer) return;
   chatPoll();
-  // Fast poll when open (3s), slow when closed (8s)
-  _chatPollTimer = setInterval(() => chatPoll(), _chatOpen ? 3000 : 8000);
+  _chatPollTimer = setInterval(() => chatPoll(), 30000);
 }
 
 function _restartPoll() {
+  // no-op quand Realtime actif
+  if (_chatRealtimeChannel) return;
   clearInterval(_chatPollTimer);
   _chatPollTimer = null;
   startChatPoll();
+}
+
+function startChatRealtime() {
+  const client = getSbClient();
+  if (!client) { startChatPoll(); return; }
+  try {
+    _chatRealtimeChannel = client.channel('chat-messages-rt')
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'chat_messages'
+      }, payload => {
+        const m = payload.new;
+        if (!m) return;
+        chatRenderMessages([m], true);
+        _chatSetOnline(true);
+      })
+      .subscribe(status => {
+        if (status === 'SUBSCRIBED') {
+          _chatSetOnline(true);
+          // Fallback poll lent (60s) en cas de message manqué
+          if (!_chatPollTimer) _chatPollTimer = setInterval(() => chatPoll(), 60000);
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          _chatRealtimeChannel = null;
+          _chatSetOnline(false);
+          startChatPoll();
+        }
+      });
+  } catch(e) {
+    startChatPoll();
+  }
 }
 
 /* ── Init ── */
@@ -8335,7 +8380,7 @@ function initChat() {
     await chatPoll();
   });
 
-  startChatPoll();
+  startChatRealtime();
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -9999,14 +10044,19 @@ document.addEventListener('keydown', e => {
 </div>
 
 <script>
-/* ── Supabase Realtime — sync DM ↔ Joueur ── */
+/* ── Supabase Realtime — client partagé + sync DM ↔ Joueur ── */
+let _sbRealtimeClient = null;
+function getSbClient() {
+  if (!_sbRealtimeClient && window.supabase) {
+    _sbRealtimeClient = window.supabase.createClient(SB_URL, SB_KEY);
+  }
+  return _sbRealtimeClient;
+}
+
 function startRealtime(username) {
-  if (!window.supabase) return;
+  const client = getSbClient();
+  if (!client) return;
   try {
-    const client = window.supabase.createClient(
-      'https://hevwgdsvgepiieuvhclg.supabase.co',
-      'sb_publishable_TDTCogCSFP-Lvus2x3rAAg_60l036tq'
-    );
     client.channel('joueur-sync-' + username)
       .on('postgres_changes', {
         event: 'UPDATE',
@@ -10014,14 +10064,11 @@ function startRealtime(username) {
         table: 'players',
         filter: 'username=eq.' + username
       }, payload => {
-        // Ignorer l'écho de notre propre sauvegarde (fenêtre de 3s)
         if (Date.now() - _lastSaveAt < 3000) return;
         const newData = payload.new?.data;
         if (!newData || !playerData) return;
-        // Ne pas écraser si l'utilisateur est en train de saisir
         const tag = document.activeElement?.tagName;
         if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-        // Appliquer les changements externes (ex: HP modifié par le DM)
         Object.assign(playerData, newData);
         renderAll();
         updateHpBar();
