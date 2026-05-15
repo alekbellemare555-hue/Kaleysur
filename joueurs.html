@@ -1531,6 +1531,114 @@
   .vb-facts { grid-template-columns: repeat(2, 1fr) !important; }
 }
 
+/* ══ Barre de navigation mobile ══ */
+#mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 58px;
+  background: var(--bg-nav, #0a0703);
+  border-top: 1px solid var(--j-border-col, #4a3510);
+  z-index: 500;
+  flex-direction: row;
+  align-items: stretch;
+  /* Safe area pour iPhone notch/home bar */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.mbn-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  color: #555;
+  cursor: pointer;
+  transition: color 0.15s, background 0.1s;
+  padding: 6px 0 4px;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+}
+.mbn-btn::before {
+  content: '';
+  position: absolute;
+  inset: 4px 8px;
+  border-radius: 10px;
+  background: transparent;
+  transition: background 0.15s;
+}
+.mbn-btn.active::before { background: rgba(201,169,110,0.12); }
+.mbn-btn:active::before { background: rgba(201,169,110,0.08); }
+.mbn-icon { font-size: 1.15rem; line-height: 1; position: relative; z-index: 1; }
+.mbn-label { font-family: 'Cinzel', serif; font-size: 0.52rem; letter-spacing: 0.06em; text-transform: uppercase; position: relative; z-index: 1; }
+.mbn-btn.active { color: var(--gold, #c9a96e); }
+
+/* ══ Mobile phone (≤ 640px) — améliorations ══ */
+@media (max-width: 640px) {
+  /* Afficher la barre basse */
+  #mobile-bottom-nav { display: flex; }
+
+  /* Masquer les onglets dans la topbar (remplacés par la barre basse) */
+  .vb-topbar .vb-tabs { display: none !important; }
+
+  /* Espace pour la barre basse */
+  #screen-dashboard { padding-bottom: calc(58px + env(safe-area-inset-bottom, 0px)); }
+
+  /* Topbar plus compacte — seulement le nécessaire */
+  .dash-header.vb-topbar { padding: 0 10px !important; height: 48px !important; }
+  #screen-dashboard { padding-top: 48px; }
+  .vb-brand-sigil { display: none; }
+
+  /* HP controls — gros boutons tactiles */
+  .hp-quick-btn, .vb-hp-btn {
+    min-width: 48px !important;
+    min-height: 48px !important;
+    font-size: 1.1rem !important;
+  }
+  .hp-quick-input, .vb-hp-quick-input {
+    height: 48px !important;
+    font-size: 1.1rem !important;
+    width: 70px !important;
+  }
+
+  /* Roll triggers — plus grands */
+  .roll-trigger { min-height: 40px; padding: 0 8px; }
+
+  /* Ability score boxes — plus grandes, plus faciles à taper */
+  .ability-box { min-height: 72px; }
+  .ability-score-input { font-size: 1.25rem !important; height: 36px !important; }
+  .ability-mod { font-size: 1rem !important; }
+
+  /* Sheet section — padding réduit pour plus de contenu visible */
+  .sheet-section { padding: 0.75rem 0.9rem; }
+  .sheet-section-title { font-size: 0.72rem; margin-bottom: 0.65rem; }
+
+  /* Stat badges dans le hero */
+  .vb-mini-stats { grid-template-columns: repeat(4, 1fr) !important; gap: 6px !important; }
+  .vb-mini-stat-val { font-size: 0.95rem !important; }
+
+  /* Inventaire — colonnes plus larges */
+  .inv-inp { font-size: 0.82rem; }
+
+  /* Bouton de lancer de dé inline — plus grand */
+  .roll-btn { width: 32px !important; height: 32px !important; font-size: 0.85rem !important; }
+
+  /* Formulaires — labels + inputs plus grands */
+  .field-input, .ability-score-input {
+    font-size: 0.92rem;
+    padding: 0.4rem 0.6rem;
+    min-height: 40px;
+  }
+
+  /* Chat FAB — remonter au-dessus de la barre basse */
+  #chat-fab { bottom: calc(68px + env(safe-area-inset-bottom, 0px)) !important; }
+
+  /* Undo toast — remonter au-dessus de la barre basse */
+  #undo-toast { bottom: calc(68px + env(safe-area-inset-bottom, 0px)) !important; }
+}
+
 /* ── Coins carrés (remplacement global) ── */
 :root { --radius: 2px; }
 .field-input, .ability-score-input, .atk-inp, .inv-inp,
@@ -2920,6 +3028,15 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
     </div>
 
   </div><!-- /screen-dashboard -->
+
+  <!-- ══ Barre de navigation mobile (bas) ══ -->
+  <nav id="mobile-bottom-nav" aria-label="Navigation">
+    <button class="mbn-btn active" data-tab="personnage"><span class="mbn-icon">⚔</span><span class="mbn-label">Perso</span></button>
+    <button class="mbn-btn" data-tab="identite"><span class="mbn-icon">👤</span><span class="mbn-label">Identité</span></button>
+    <button class="mbn-btn" data-tab="inventaire"><span class="mbn-icon">🎒</span><span class="mbn-label">Sac</span></button>
+    <button class="mbn-btn" data-tab="notes"><span class="mbn-icon">✏</span><span class="mbn-label">Notes</span></button>
+    <button class="mbn-btn" data-tab="parametres"><span class="mbn-icon">⚙</span><span class="mbn-label">Config</span></button>
+  </nav>
 
   <!-- ══ VUE FICHE PARTAGÉE (lecture seule) ══ -->
   <div class="j-screen" id="screen-view">
@@ -8787,6 +8904,26 @@ document.addEventListener('DOMContentLoaded', async () => {
           document.getElementById('tab-identite')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
       }
+    });
+  });
+
+  /* ── Barre de navigation mobile (bas) ── */
+  function switchToTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tabId));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + tabId));
+    document.querySelectorAll('.mbn-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tabId));
+    _renderTab(tabId);
+    const organBtn = document.getElementById('btn-layout-edit');
+    if (organBtn) organBtn.style.display = tabId === 'personnage' ? '' : 'none';
+  }
+  // Brancher les boutons de la barre basse sur le même système
+  document.querySelectorAll('.mbn-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchToTab(btn.dataset.tab));
+  });
+  // Synchroniser la barre basse quand on clique sur les onglets du topbar
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.mbn-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === btn.dataset.tab));
     });
   });
 
