@@ -1159,7 +1159,7 @@
     #hero-note::placeholder { color:#3a3020; font-style:italic; }
     #vb-hero-vitals { display: flex; flex-direction: column; gap: 12px; }
     .vb-vitals-box {
-      background: linear-gradient(180deg, #1a1308, #0e0a04);
+      background: linear-gradient(180deg, var(--j-panel, #1a1308), var(--bg-primary, #0e0a04));
       border: 1px solid var(--gold-dark);
       border-radius: 4px;
       padding: 16px 16px 14px;
@@ -1170,13 +1170,13 @@
     }
     .vb-hp-display { display: flex; align-items: baseline; gap: 6px; margin-bottom: 6px; }
     .vb-hp-current {
-      font-family: 'Cinzel', serif; font-size: 40px; color: #e8c84a;
+      font-family: 'Cinzel', serif; font-size: 40px; color: var(--gold, #c9a227);
       line-height: 1; text-shadow: 0 0 20px rgba(201,162,39,0.35);
     }
     .vb-hp-max { color: #555; font-size: 13px; }
     .vb-hp-label { font-family: 'Cinzel', serif; font-size: 8px; color: #555; margin-left: auto; }
     .vb-hp-bar-track {
-      height: 8px; background: #0a0703;
+      height: 8px; background: var(--j-input, #0a0703);
       border: 1px solid var(--j-border-col, #4a3510);
       border-radius: 4px; overflow: hidden;
     }
