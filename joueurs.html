@@ -1952,6 +1952,106 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
 /* Éviter les repaints sur les boutons hover fréquents */
 .roll-trigger, .prof-dot, .cond-badge, .hp-step-btn { will-change: color, background; }
 
+/* ── Compendium modal ── */
+#compendium-overlay {
+  display: none; position: fixed; inset: 0; z-index: 3000;
+  background: rgba(0,0,0,0.72); backdrop-filter: blur(3px);
+  align-items: flex-start; justify-content: center; padding: 1rem;
+}
+#compendium-overlay.open { display: flex; }
+#compendium-modal {
+  background: var(--j-panel, #1a1208);
+  border: 1px solid var(--j-border-col, #4a3510);
+  border-radius: 6px; width: 100%; max-width: 720px;
+  max-height: calc(100dvh - 2rem); display: flex; flex-direction: column;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.8); overflow: hidden;
+}
+#compendium-modal-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.85rem 1.1rem 0.6rem;
+  border-bottom: 1px solid var(--j-border-col, #4a3510);
+  flex-shrink: 0;
+}
+#compendium-modal-head h2 {
+  font-family: 'Cinzel', serif; font-size: 1.05rem;
+  color: var(--gold, #c9a96e); margin: 0; letter-spacing: 0.06em;
+}
+#btn-compendium-close {
+  background: none; border: none; color: #888; font-size: 1.35rem;
+  cursor: pointer; padding: 0 0.2rem; line-height: 1;
+}
+#btn-compendium-close:hover { color: var(--gold, #c9a96e); }
+.comp-tabs {
+  display: flex; gap: 0; border-bottom: 1px solid var(--j-border-col, #4a3510);
+  flex-shrink: 0;
+}
+.comp-tab-btn {
+  padding: 0.55rem 1.2rem; background: none; border: none;
+  border-bottom: 2px solid transparent; color: #888;
+  font-family: 'Cinzel', serif; font-size: 0.78rem; letter-spacing: 0.05em;
+  cursor: pointer; text-transform: uppercase; transition: color 0.15s, border-color 0.15s;
+  margin-bottom: -1px;
+}
+.comp-tab-btn.active { color: var(--gold, #c9a96e); border-bottom-color: var(--gold, #c9a96e); }
+.comp-filters {
+  display: flex; gap: 0.5rem; padding: 0.65rem 1rem 0.5rem;
+  align-items: center; flex-wrap: wrap; flex-shrink: 0;
+  border-bottom: 1px solid var(--j-border-col, #4a3510);
+}
+.comp-search {
+  flex: 1; min-width: 180px; padding: 0.38rem 0.65rem;
+  background: var(--j-input, #0d0a05); border: 1px solid var(--j-border-col, #4a3510);
+  border-radius: 4px; color: var(--j-text, #e2cfa0); font-size: 0.85rem;
+}
+.comp-search:focus { outline: none; border-color: var(--gold-dark, #8a6e1a); }
+.comp-filter-select {
+  padding: 0.38rem 0.55rem; background: var(--j-input, #0d0a05);
+  border: 1px solid var(--j-border-col, #4a3510); border-radius: 4px;
+  color: var(--j-text, #e2cfa0); font-size: 0.8rem; cursor: pointer;
+}
+.comp-filter-select:focus { outline: none; }
+#compendium-list {
+  overflow-y: auto; flex: 1; padding: 0.5rem 0;
+}
+.comp-item {
+  display: flex; align-items: flex-start; padding: 0.55rem 1rem;
+  gap: 0.7rem; border-bottom: 1px solid rgba(74,53,16,0.35);
+  transition: background 0.1s;
+}
+.comp-item:hover { background: rgba(201,169,110,0.06); }
+.comp-item-info { flex: 1; min-width: 0; }
+.comp-item-name {
+  font-family: 'Cinzel', serif; font-size: 0.82rem; color: var(--j-text, #e2cfa0);
+  font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.comp-item-meta { font-size: 0.73rem; color: #888; margin-top: 0.15rem; }
+.comp-item-desc {
+  font-size: 0.73rem; color: #aaa; margin-top: 0.25rem;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.btn-comp-add {
+  flex-shrink: 0; padding: 0.28rem 0.7rem;
+  background: rgba(201,169,110,0.12); border: 1px solid var(--gold-dark, #8a6e1a);
+  border-radius: 4px; color: var(--gold, #c9a96e); font-size: 0.75rem;
+  cursor: pointer; white-space: nowrap; transition: background 0.15s;
+  align-self: center;
+}
+.btn-comp-add:hover { background: rgba(201,169,110,0.25); }
+.btn-comp-add:disabled { opacity: 0.5; cursor: default; }
+.comp-empty {
+  text-align: center; padding: 2rem; color: #666; font-style: italic; font-size: 0.85rem;
+}
+.comp-loading {
+  text-align: center; padding: 2rem; color: #888; font-size: 0.85rem;
+}
+.comp-level-badge {
+  display: inline-block; min-width: 20px; height: 20px; line-height: 20px;
+  text-align: center; border-radius: 3px; font-size: 0.7rem; font-weight: 700;
+  background: rgba(201,169,110,0.15); color: var(--gold, #c9a96e);
+  border: 1px solid rgba(201,169,110,0.3); flex-shrink: 0; margin-top: 0.1rem;
+}
+
   </style>
 
   <!-- PWA -->
@@ -2493,6 +2593,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
                 <div class="field-label">Prepared Spells</div>
                 <span class="spell-prep-counter" id="spell-prep-counter">—</span>
               </div>
+              <button class="btn btn-sm" id="btn-open-compendium-spell" style="background:rgba(201,169,110,0.1);border:1px solid var(--gold-dark);color:var(--gold);margin-right:0.4rem;">⊕ Compendium</button>
               <button class="btn btn-sm btn-gold" id="btn-add-spell">+ Ajouter</button>
             </div>
             <input type="search" id="spell-filter" class="field-input" placeholder="Filtrer sorts…" style="width:100%;margin-bottom:0.4rem;padding:0.3rem 0.5rem;font-size:0.78rem;">
@@ -2626,6 +2727,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
         </div>
         <div class="inv-controls">
           <input type="text" class="field-input" id="inv-search" placeholder="Rechercher un objet…" style="flex:1;min-width:120px;">
+          <button class="btn btn-sm" id="btn-open-compendium-item" style="background:rgba(201,169,110,0.1);border:1px solid var(--gold-dark);color:var(--gold);">⊕ Compendium</button>
           <button class="btn btn-sm btn-gold" id="btn-add-item">+ Ajouter</button>
         </div>
         <table class="inv-table">
@@ -10590,6 +10692,196 @@ function getSbClient() {
   return _sbRealtimeClient;
 }
 
+/* ── Compendium D&D 5e ── */
+(function () {
+  const API = 'https://www.dnd5eapi.co';
+  const _cache = {};
+  let _activeTab = 'spells';
+  let _allItems = [];
+  let _searchTimer = null;
+
+  const overlay = () => document.getElementById('compendium-overlay');
+  const list = () => document.getElementById('compendium-list');
+
+  window.openCompendium = function (tab) {
+    _activeTab = tab || 'spells';
+    const ov = overlay();
+    ov.classList.add('open');
+    document.querySelectorAll('.comp-tab-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.compTab === _activeTab)
+    );
+    document.getElementById('comp-filter-level').style.display = _activeTab === 'spells' ? '' : 'none';
+    document.getElementById('comp-filter-cat').style.display = _activeTab === 'equipment' ? '' : 'none';
+    document.getElementById('comp-search').value = '';
+    document.getElementById('comp-filter-level').value = '';
+    document.getElementById('comp-filter-cat').value = '';
+    _loadTab(_activeTab);
+  };
+
+  function _closeCompendium() {
+    overlay().classList.remove('open');
+  }
+
+  async function _loadTab(tab) {
+    if (_cache[tab]) { _allItems = _cache[tab]; _render(); return; }
+    list().innerHTML = '<div class="comp-loading">Chargement…</div>';
+    try {
+      const endpoint = tab === 'spells' ? '/api/spells' : '/api/equipment';
+      const r = await fetch(API + endpoint);
+      const data = await r.json();
+      const entries = data.results || [];
+      if (tab === 'spells') {
+        const detailed = await Promise.allSettled(
+          entries.map(e => fetch(API + e.url).then(r => r.json()))
+        );
+        _allItems = detailed
+          .filter(r => r.status === 'fulfilled')
+          .map(r => r.value);
+      } else {
+        _allItems = entries;
+      }
+      _cache[tab] = _allItems;
+      _render();
+    } catch (e) {
+      list().innerHTML = '<div class="comp-empty">Impossible de charger le compendium. Vérifiez votre connexion.</div>';
+    }
+  }
+
+  function _render() {
+    const query = (document.getElementById('comp-search')?.value || '').toLowerCase().trim();
+    const levelFilter = document.getElementById('comp-filter-level')?.value;
+    const catFilter = document.getElementById('comp-filter-cat')?.value.toLowerCase();
+
+    let items = _allItems;
+    if (query) items = items.filter(i => (i.name || i.index || '').toLowerCase().includes(query));
+    if (_activeTab === 'spells' && levelFilter !== '') {
+      items = items.filter(i => String(i.level) === levelFilter);
+    }
+    if (_activeTab === 'equipment' && catFilter) {
+      items = items.filter(i =>
+        (i.equipment_category?.name || '').toLowerCase().includes(catFilter.toLowerCase())
+      );
+    }
+
+    if (!items.length) {
+      list().innerHTML = '<div class="comp-empty">Aucun résultat.</div>';
+      return;
+    }
+
+    const frag = document.createDocumentFragment();
+    items.slice(0, 80).forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'comp-item';
+      if (_activeTab === 'spells') {
+        const lvl = item.level === 0 ? 'C' : item.level;
+        const school = item.school?.name || '';
+        const castTime = item.casting_time || '';
+        const range = item.range || '';
+        const conc = item.concentration ? ' · Conc.' : '';
+        const desc = (Array.isArray(item.desc) ? item.desc[0] : item.desc) || '';
+        div.innerHTML = `
+          <div class="comp-level-badge">${lvl}</div>
+          <div class="comp-item-info">
+            <div class="comp-item-name">${item.name}</div>
+            <div class="comp-item-meta">${school}${conc} · ${castTime} · Portée: ${range}</div>
+            <div class="comp-item-desc">${desc}</div>
+          </div>
+          <button class="btn-comp-add" data-comp-type="spell" data-comp-idx="${_allItems.indexOf(item)}">+ Ajouter</button>`;
+      } else {
+        const cat = item.equipment_category?.name || '';
+        const cost = item.cost ? `${item.cost.quantity} ${item.cost.unit}` : '';
+        const weight = item.weight ? `${item.weight} lbs` : '';
+        const meta = [cat, cost, weight].filter(Boolean).join(' · ');
+        div.innerHTML = `
+          <div class="comp-item-info">
+            <div class="comp-item-name">${item.name}</div>
+            <div class="comp-item-meta">${meta}</div>
+          </div>
+          <button class="btn-comp-add" data-comp-type="item" data-comp-idx="${_allItems.indexOf(item)}">+ Ajouter</button>`;
+      }
+      frag.appendChild(div);
+    });
+    list().innerHTML = '';
+    list().appendChild(frag);
+    if (items.length > 80) {
+      const more = document.createElement('div');
+      more.className = 'comp-empty';
+      more.textContent = `… ${items.length - 80} résultats supplémentaires. Affinez votre recherche.`;
+      list().appendChild(more);
+    }
+  }
+
+  function _addSpell(item) {
+    if (!playerData) return;
+    const lvl = item.level != null ? String(item.level) : '';
+    const desc = (Array.isArray(item.desc) ? item.desc.join(' ') : item.desc) || '';
+    const dmg = item.damage?.damage_dice || '';
+    const dmgType = item.damage?.damage_type?.name || '';
+    const range = item.range || '';
+    const castTime = item.casting_time || 'Action';
+    const conc = item.concentration || false;
+    const spell = { level: lvl, name: item.name, degat: dmg, typeDegat: dmgType, portee: range, action: castTime, conc, desc, _open: false };
+    if (!C().spells) C().spells = [];
+    C().spells.push(spell);
+    renderSpells();
+    triggerSave();
+  }
+
+  function _addItem(item) {
+    if (!playerData) return;
+    const notes = item.cost ? `${item.cost.quantity} ${item.cost.unit}` : '';
+    INV().items.push({ qty: 1, name: item.name, notes });
+    renderInventory();
+    triggerSave();
+  }
+
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.btn-comp-add');
+    if (!btn) return;
+    const idx = parseInt(btn.dataset.compIdx);
+    const type = btn.dataset.compType;
+    const item = _allItems[idx];
+    if (!item) return;
+    if (type === 'spell') _addSpell(item);
+    else _addItem(item);
+    btn.textContent = '✓ Ajouté';
+    btn.disabled = true;
+    setTimeout(() => { btn.textContent = '+ Ajouter'; btn.disabled = false; }, 1800);
+  });
+
+  document.getElementById('btn-compendium-close')?.addEventListener('click', _closeCompendium);
+  overlay()?.addEventListener('click', e => { if (e.target === overlay()) _closeCompendium(); });
+
+  document.querySelectorAll('.comp-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      _activeTab = btn.dataset.compTab;
+      document.querySelectorAll('.comp-tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+      document.getElementById('comp-filter-level').style.display = _activeTab === 'spells' ? '' : 'none';
+      document.getElementById('comp-filter-cat').style.display = _activeTab === 'equipment' ? '' : 'none';
+      document.getElementById('comp-search').value = '';
+      document.getElementById('comp-filter-level').value = '';
+      document.getElementById('comp-filter-cat').value = '';
+      if (_cache[_activeTab]) { _allItems = _cache[_activeTab]; _render(); }
+      else _loadTab(_activeTab);
+    });
+  });
+
+  function _debouncedRender() {
+    clearTimeout(_searchTimer);
+    _searchTimer = setTimeout(_render, 200);
+  }
+  document.getElementById('comp-search')?.addEventListener('input', _debouncedRender);
+  document.getElementById('comp-filter-level')?.addEventListener('change', _render);
+  document.getElementById('comp-filter-cat')?.addEventListener('change', _render);
+
+  document.getElementById('btn-open-compendium-spell')?.addEventListener('click', () => openCompendium('spells'));
+  document.getElementById('btn-open-compendium-item')?.addEventListener('click', () => openCompendium('equipment'));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && overlay()?.classList.contains('open')) _closeCompendium();
+  });
+})();
+
 function startRealtime(username) {
   const client = getSbClient();
   if (!client) return;
@@ -10616,6 +10908,47 @@ function startRealtime(username) {
   } catch(e) {}
 }
 </script>
+
+<!-- ── Compendium Modal ── -->
+<div id="compendium-overlay" role="dialog" aria-modal="true" aria-label="Compendium D&D">
+  <div id="compendium-modal">
+    <div id="compendium-modal-head">
+      <h2>⚔ Compendium D&D 5e</h2>
+      <button id="btn-compendium-close" title="Fermer">✕</button>
+    </div>
+    <div class="comp-tabs" role="tablist">
+      <button class="comp-tab-btn active" data-comp-tab="spells" role="tab">Sorts</button>
+      <button class="comp-tab-btn" data-comp-tab="equipment" role="tab">Équipements</button>
+    </div>
+    <div class="comp-filters">
+      <input type="search" class="comp-search" id="comp-search" placeholder="Rechercher…" autocomplete="off">
+      <select class="comp-filter-select" id="comp-filter-level" title="Filtrer par niveau">
+        <option value="">Tout niveau</option>
+        <option value="0">Cantrip</option>
+        <option value="1">Niveau 1</option>
+        <option value="2">Niveau 2</option>
+        <option value="3">Niveau 3</option>
+        <option value="4">Niveau 4</option>
+        <option value="5">Niveau 5</option>
+        <option value="6">Niveau 6</option>
+        <option value="7">Niveau 7</option>
+        <option value="8">Niveau 8</option>
+        <option value="9">Niveau 9</option>
+      </select>
+      <select class="comp-filter-select" id="comp-filter-cat" title="Filtrer par catégorie" style="display:none;">
+        <option value="">Toute catégorie</option>
+        <option value="Adventuring Gear">Équipement</option>
+        <option value="Weapon">Armes</option>
+        <option value="Armor">Armures</option>
+        <option value="Tools">Outils</option>
+        <option value="Mounts and Vehicles">Montures</option>
+        <option value="Trade Goods">Marchandises</option>
+        <option value="Magic Items">Objets magiques</option>
+      </select>
+    </div>
+    <div id="compendium-list"><div class="comp-loading">Chargement…</div></div>
+  </div>
+</div>
 
 <script>
 if ('serviceWorker' in navigator) {
