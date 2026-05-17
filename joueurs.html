@@ -11439,13 +11439,22 @@ function renderFamiliars() {
     setTimeout(() => { btn.textContent = '+ Ajouter'; btn.disabled = false; }, 1800);
   });
 
-  document.getElementById('btn-compendium-close')?.addEventListener('click', _closeCompendium);
-  overlay()?.addEventListener('click', e => { if (e.target === overlay()) _closeCompendium(); });
+  function _debouncedRender() {
+    clearTimeout(_searchTimer);
+    _searchTimer = setTimeout(_render, 200);
+  }
 
-  document.querySelectorAll('.comp-tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      _activeTab = btn.dataset.compTab;
-      document.querySelectorAll('.comp-tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+  /* ── Délégation globale : tous les éléments du modal sont parsés après ce script ── */
+  document.addEventListener('click', e => {
+    /* fermer via bouton ✕ */
+    if (e.target.closest('#btn-compendium-close')) { _closeCompendium(); return; }
+    /* fermer via clic sur le fond */
+    if (e.target.id === 'compendium-overlay') { _closeCompendium(); return; }
+    /* onglets Sorts / Équipements / Monstres */
+    const compTab = e.target.closest('.comp-tab-btn');
+    if (compTab) {
+      _activeTab = compTab.dataset.compTab;
+      document.querySelectorAll('.comp-tab-btn').forEach(b => b.classList.toggle('active', b === compTab));
       document.getElementById('comp-filter-level').style.display = _activeTab === 'spells' ? '' : 'none';
       document.getElementById('comp-filter-cat').style.display = _activeTab === 'equipment' ? '' : 'none';
       document.getElementById('comp-filter-cr').style.display = _activeTab === 'monsters' ? '' : 'none';
@@ -11455,20 +11464,20 @@ function renderFamiliars() {
       document.getElementById('comp-filter-cr').value = '';
       if (_cache[_activeTab]) { _allItems = _cache[_activeTab]; _render(); }
       else _loadTab(_activeTab);
-    });
+    }
+    /* boutons d'ouverture */
+    if (e.target.id === 'btn-open-compendium-spell') openCompendium('spells');
+    if (e.target.id === 'btn-open-compendium-item') openCompendium('equipment');
   });
 
-  function _debouncedRender() {
-    clearTimeout(_searchTimer);
-    _searchTimer = setTimeout(_render, 200);
-  }
-  document.getElementById('comp-search')?.addEventListener('input', _debouncedRender);
-  document.getElementById('comp-filter-level')?.addEventListener('change', _render);
-  document.getElementById('comp-filter-cat')?.addEventListener('change', _render);
-  document.getElementById('comp-filter-cr')?.addEventListener('change', _render);
+  document.addEventListener('input', e => {
+    if (e.target.id === 'comp-search') _debouncedRender();
+  });
 
-  document.getElementById('btn-open-compendium-spell')?.addEventListener('click', () => openCompendium('spells'));
-  document.getElementById('btn-open-compendium-item')?.addEventListener('click', () => openCompendium('equipment'));
+  document.addEventListener('change', e => {
+    const ids = ['comp-filter-level', 'comp-filter-cat', 'comp-filter-cr'];
+    if (ids.includes(e.target.id)) _render();
+  });
 
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && overlay()?.classList.contains('open')) _closeCompendium();
