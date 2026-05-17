@@ -20,6 +20,7 @@
       --j-input: #110d07;
       --j-border-col: #4a3510;
       --j-text: var(--j-text,#e2cfa0);
+      --info: #5a9fd4;
     }
 
     /* ── Écrans ── */
@@ -1952,6 +1953,48 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
 /* Éviter les repaints sur les boutons hover fréquents */
 .roll-trigger, .prof-dot, .cond-badge, .hp-step-btn { will-change: color, background; }
 
+/* ── Modificateurs ── */
+.mod-row {
+  display: grid;
+  grid-template-columns: 20px 1fr 120px 56px 28px;
+  gap: 0.35rem; align-items: center; margin-bottom: 0.3rem;
+}
+.mod-toggle { cursor: pointer; accent-color: var(--gold, #c9a96e); width: 16px; height: 16px; }
+.mod-name-input, .mod-val-input {
+  background: var(--j-input, #0d0a05); border: 1px solid var(--j-border-col, #4a3510);
+  border-radius: 3px; color: var(--j-text, #e2cfa0); font-size: 0.78rem; padding: 0.22rem 0.4rem;
+}
+.mod-name-input { width: 100%; }
+.mod-val-input { width: 100%; text-align: center; }
+.mod-name-input:focus, .mod-val-input:focus { outline: none; border-color: var(--gold-dark, #8a6e1a); }
+.mod-target-select {
+  background: var(--j-input, #0d0a05); border: 1px solid var(--j-border-col, #4a3510);
+  border-radius: 3px; color: var(--j-text, #e2cfa0); font-size: 0.75rem; padding: 0.22rem 0.3rem;
+  width: 100%; cursor: pointer;
+}
+.mod-target-select:focus { outline: none; border-color: var(--gold-dark); }
+.btn-mod-del {
+  background: none; border: none; color: #555; cursor: pointer;
+  font-size: 0.82rem; padding: 0; transition: color 0.15s; line-height: 1;
+}
+.btn-mod-del:hover { color: var(--danger, #c97a7a); }
+.mod-row.off .mod-name-input, .mod-row.off .mod-val-input,
+.mod-row.off .mod-target-select { opacity: 0.4; }
+.mod-summary {
+  display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem;
+  padding-top: 0.5rem; border-top: 1px solid var(--j-border-col, #4a3510);
+}
+.mod-badge {
+  display: inline-flex; align-items: center; gap: 0.25rem;
+  background: rgba(201,169,110,0.1); border: 1px solid rgba(201,169,110,0.25);
+  border-radius: 12px; padding: 0.15rem 0.5rem; font-size: 0.7rem;
+  color: var(--gold, #c9a96e);
+}
+.mod-badge-val { font-weight: 700; }
+@media (max-width: 480px) {
+  .mod-row { grid-template-columns: 20px 1fr 90px 48px 24px; }
+}
+
 /* ── Compendium modal ── */
 #compendium-overlay {
   display: none; position: fixed; inset: 0; z-index: 3000;
@@ -2478,7 +2521,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
               <span class="vb-hp-label">HP</span>
             </div>
             <div class="vb-hp-bar-track">
-              <div class="vb-hp-bar-fill" id="vb-hero-hp-bar" style="width:0%;background:#6aba6a;"></div>
+              <div class="vb-hp-bar-fill" id="vb-hero-hp-bar" style="width:0%;background:var(--success,#6aba6a);"></div>
             </div>
             <!-- HP inputs (édition directe) -->
             <div class="vb-hp-inputs">
@@ -2646,6 +2689,23 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
             </tr></thead>
             <tbody id="attack-tbody"></tbody>
           </table>
+        </div>
+
+        <!-- Modificateurs actifs -->
+        <div class="sheet-section" data-sec="mods">
+          <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
+            <span>Modificateurs actifs</span>
+            <button class="btn btn-sm btn-gold" id="btn-add-mod">+ Ajouter</button>
+          </div>
+          <div style="display:grid;grid-template-columns:20px 1fr 120px 56px 28px;gap:0.35rem;margin-bottom:0.2rem;">
+            <span></span>
+            <span style="font-size:0.65rem;color:#555;text-transform:uppercase;letter-spacing:0.04em;">Nom / Source</span>
+            <span style="font-size:0.65rem;color:#555;text-transform:uppercase;letter-spacing:0.04em;">Cible</span>
+            <span style="font-size:0.65rem;color:#555;text-transform:uppercase;letter-spacing:0.04em;text-align:center;">Bonus</span>
+            <span></span>
+          </div>
+          <div id="mods-list"></div>
+          <div class="mod-summary" id="mods-summary"></div>
         </div>
 
         </div><!-- /col-1: combat & attacks -->
@@ -3511,7 +3571,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
     <!-- Contenu -->
     <div id="modal-body"></div>
     <!-- Actions -->
-    <div style="display:flex;gap:0.75rem;justify-content:flex-end;margin-top:1.25rem;border-top:1px solid #4a3510;padding-top:1rem;">
+    <div style="display:flex;gap:0.75rem;justify-content:flex-end;margin-top:1.25rem;border-top:1px solid var(--j-border-col,#4a3510);padding-top:1rem;">
       <button class="btn btn-danger" id="btn-admin-cancel">Annuler</button>
       <button class="btn btn-gold" id="btn-admin-save">💾 Sauvegarder</button>
     </div>
@@ -5791,6 +5851,7 @@ const _TAB_RENDERERS = {
     renderMulticlasses(); renderAbilities(); renderSaves(); renderSkills();
     renderCombat(); renderSpellSlots(); renderClassFeatures(); renderPassiveSkills();
     renderResources(); renderConditions(); renderAttacks(); renderCustomFeatures(); renderSpells();
+    renderMods();
   },
   identite:   () => { fillFields(); },
   inventaire: () => { renderInventory(); renderRationTracker(); renderAttunement(); fillCurrency(); },
@@ -5910,12 +5971,12 @@ function renderHero() {
   const caEl   = document.getElementById('vb-hero-ca');
   const initEl = document.getElementById('vb-hero-init');
   const spdEl  = document.getElementById('vb-hero-speed');
-  if (caEl)   caEl.textContent  = c.ca    || '10';
+  if (caEl)   caEl.textContent  = (parseInt(c.ca) || 10) + getMod('ac') || '10';
   if (spdEl)  spdEl.textContent = c.vitesse || '30';
   if (initEl) {
     const dexMod = Math.floor((abilScore('dex') - 10) / 2);
     const bonus  = parseInt(c.initiative) || 0;
-    const total  = dexMod + bonus;
+    const total  = dexMod + bonus + getMod('init');
     initEl.textContent = (total >= 0 ? '+' : '') + total;
     initEl.className = 'vb-mini-stat-val roll-trigger';
     initEl.dataset.rollLabel = 'Initiative';
@@ -6033,6 +6094,66 @@ const SAVES = [
   { key:'saveSag', attr:'sag', label:'Wisdom' },
   { key:'saveCha', attr:'cha', label:'Charisma' }
 ];
+/* ── Modificateurs actifs — helper ── */
+function getMod(cible) {
+  const mods = C()?.mods || [];
+  return mods.filter(m => m.on && m.cible === cible).reduce((s, m) => s + (parseInt(m.val) || 0), 0);
+}
+
+const MOD_TARGETS = [
+  { v:'ac',      l:'CA' },
+  { v:'atk',     l:'Toutes attaques' },
+  { v:'init',    l:'Initiative' },
+  { v:'all_sv',  l:'Tous jets de save.' },
+  { v:'sv_for',  l:'Save FOR' },   { v:'sv_dex',  l:'Save DEX' },
+  { v:'sv_con',  l:'Save CON' },   { v:'sv_int',  l:'Save INT' },
+  { v:'sv_sag',  l:'Save SAG' },   { v:'sv_cha',  l:'Save CHA' },
+  { v:'all_sk',  l:'Toutes compétences' },
+  { v:'for',     l:'FOR (stat)' }, { v:'dex',     l:'DEX (stat)' },
+  { v:'con',     l:'CON (stat)' }, { v:'int',     l:'INT (stat)' },
+  { v:'sag',     l:'SAG (stat)' }, { v:'cha',     l:'CHA (stat)' },
+  { v:'sort_dc', l:'DD de sort' }, { v:'sort_atk',l:'Atk. de sort' },
+  { v:'autre',   l:'Autre / Notes' },
+];
+
+function renderMods() {
+  const c = C();
+  if (!c) return;
+  if (!c.mods) c.mods = [];
+  const list = document.getElementById('mods-list');
+  const summary = document.getElementById('mods-summary');
+  if (!list) return;
+
+  list.innerHTML = '';
+  c.mods.forEach((m, i) => {
+    const row = document.createElement('div');
+    row.className = 'mod-row' + (m.on ? '' : ' off');
+    row.innerHTML = `
+      <input type="checkbox" class="mod-toggle" data-mi="${i}" ${m.on ? 'checked' : ''} title="Activer/désactiver">
+      <input type="text" class="mod-name-input" data-mi="${i}" data-mk="name" value="${m.name||''}" placeholder="Ex: Épée +1, Bénédiction…">
+      <select class="mod-target-select" data-mi="${i}" data-mk="cible">
+        ${MOD_TARGETS.map(t => `<option value="${t.v}"${m.cible===t.v?' selected':''}>${t.l}</option>`).join('')}
+      </select>
+      <input type="number" class="mod-val-input" data-mi="${i}" data-mk="val" value="${m.val||0}" placeholder="+0">
+      <button class="btn-mod-del" data-mi="${i}" title="Supprimer">✕</button>`;
+    list.appendChild(row);
+  });
+
+  // Summary badges
+  if (summary) {
+    const totals = {};
+    c.mods.filter(m => m.on && m.cible !== 'autre').forEach(m => {
+      const t = MOD_TARGETS.find(t => t.v === m.cible);
+      const label = t?.l || m.cible;
+      totals[label] = (totals[label] || 0) + (parseInt(m.val) || 0);
+    });
+    summary.innerHTML = Object.entries(totals).filter(([,v]) => v !== 0).map(([label, val]) =>
+      `<span class="mod-badge"><span>${label}</span><span class="mod-badge-val">${val >= 0 ? '+' : ''}${val}</span></span>`
+    ).join('');
+    summary.style.display = Object.keys(totals).length ? '' : 'none';
+  }
+}
+
 function renderSaves() {
   const col = document.getElementById('saves-col');
   const c = C(); const bonus = pb(getTotalLevel(c));
@@ -6043,7 +6164,8 @@ function renderSaves() {
   frag.appendChild(hdr);
   SAVES.forEach(sv => {
     const prof = !!c[sv.key];
-    const val  = mod(abilScore(sv.attr)) + (prof ? bonus : 0);
+    const modBonus = getMod('all_sv') + getMod('sv_' + sv.attr) + getMod(sv.attr);
+    const val  = mod(abilScore(sv.attr)) + (prof ? bonus : 0) + modBonus;
     const row  = document.createElement('div');
     row.className = 'sv-row';
     row.innerHTML = `<div class="prof-dot ${prof ? 'on' : ''}" data-sv="${sv.key}" role="button" tabindex="0" title="Proficiency" aria-label="Maîtrise ${sv.label}"></div><span class="sv-val roll-trigger" data-roll-label="${sv.label} Save" data-roll-bonus="${val}" title="Lancer d20 + ${val}">${val >= 0 ? '+' : ''}${val}</span><span>${sv.label}</span>`;
@@ -6093,7 +6215,8 @@ function renderSkills() {
     if (filterQ && !sk.label.toLowerCase().includes(filterQ) && !sk.attr.includes(filterQ)) return;
     const profLevel = Math.min(2, Math.max(0, parseInt(c[sk.key]) || (c[sk.key] === true ? 1 : 0)));
     const jatBonus = (jat && profLevel === 0) ? halfBonus : 0;
-    const val = mod(abilScore(sk.attr)) + (profLevel >= 1 ? bonus : 0) + (profLevel >= 2 ? bonus : 0) + jatBonus;
+    const modBonus = getMod('all_sk') + getMod(sk.attr);
+    const val = mod(abilScore(sk.attr)) + (profLevel >= 1 ? bonus : 0) + (profLevel >= 2 ? bonus : 0) + jatBonus + modBonus;
     const dotClass = profLevel === 2 ? 'on expert' : profLevel === 1 ? 'on' : '';
     const title = profLevel === 2 ? 'Expertise (double proficiency)' : profLevel === 1 ? 'Proficiency' : 'Not proficient';
     const row = document.createElement('div');
@@ -6183,10 +6306,11 @@ function updateSpellCalcs() {
   const totalLvl = getTotalLevel(c);
   const bonus = pb(totalLvl);
   const m = mod(abilScore(attr));
-  document.getElementById('sort-dd').textContent  = 8 + bonus + m;
-  document.getElementById('sort-atk').textContent = (bonus + m >= 0 ? '+' : '') + (bonus + m);
+  const dcMod = getMod('sort_dc'); const atkMod = getMod('sort_atk');
+  document.getElementById('sort-dd').textContent  = 8 + bonus + m + dcMod;
+  document.getElementById('sort-atk').textContent = (bonus + m + atkMod >= 0 ? '+' : '') + (bonus + m + atkMod);
   const dcEl = document.getElementById('vb-hero-dc');
-  if (dcEl) dcEl.textContent = 8 + bonus + m;
+  if (dcEl) dcEl.textContent = 8 + bonus + m + dcMod;
   // Spell prep counter (leveled spells only, not cantrips)
   if (prepEl) {
     const spells = c.spells || [];
@@ -6208,14 +6332,20 @@ function calcAtkBonus(atk) {
     return { val: v, tip: 'Modificateur de sort', num: parseInt(v) || 0 };
   }
   const abilLabels = {for:'FOR',dex:'DEX',int:'INT',sag:'SAG',cha:'CHA'};
+  const globalAtk = getMod('atk');
   if (abilLabels[t]) {
     const m = mod(abilScore(t));
-    const total = m + (atk.prof ? profBonus : 0);
+    const total = m + (atk.prof ? profBonus : 0) + globalAtk;
     const sign = total >= 0 ? '+' : '';
-    const tip = `${abilLabels[t]} ${m >= 0 ? '+' : ''}${m}` + (atk.prof ? ` + Maît. +${profBonus}` : '') + ` = ${sign}${total}`;
+    const tip = `${abilLabels[t]} ${m >= 0 ? '+' : ''}${m}` + (atk.prof ? ` + Maît. +${profBonus}` : '') + (globalAtk ? ` + Mod. ${globalAtk >= 0 ? '+' : ''}${globalAtk}` : '') + ` = ${sign}${total}`;
     return { val: sign + total, tip, num: total };
   }
   const v = atk.bonus || '—';
+  const manualTotal = (parseInt(v) || 0) + globalAtk;
+  if (globalAtk && !isNaN(parseInt(v))) {
+    const sign = manualTotal >= 0 ? '+' : '';
+    return { val: sign + manualTotal, tip: `Manuel + Mod. ${globalAtk >= 0 ? '+' : ''}${globalAtk}`, num: manualTotal };
+  }
   return { val: v, tip: 'Bonus manuel', num: parseInt(v) || 0 };
 }
 function renderAttacks() {
@@ -7083,7 +7213,7 @@ function showUndoToast(name) {
     toast.id = 'undo-toast';
     toast.innerHTML = `<span id="undo-toast-msg"></span><button id="undo-toast-btn">↺ Annuler l'import</button><span class="undo-countdown" id="undo-countdown">15s</span>`;
     document.body.appendChild(toast);
-    document.getElementById('undo-toast-btn').addEventListener('click', undoDdbImport);
+    document.getElementById('undo-toast-btn')?.addEventListener('click', undoDdbImport);
   }
   document.getElementById('undo-toast-msg').textContent = `✓ ${name} importé.`;
   toast.classList.add('visible');
@@ -7825,7 +7955,7 @@ function renderAdminModalTab() {
         <div class="sheet-section-title">Active Conditions</div>
         <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.25rem;">
           ${['Blinded','Charmed','Frightened','Poisoned','Stunned','Restrained','Incapacitated','Invisible','Paralyzed','Petrified','Prone','Slowed','Deafened'].map(cond => `
-            <label style="display:flex;align-items:center;gap:0.35rem;font-size:0.82rem;color:#bbb;cursor:pointer;background:#140f08;border:1px solid #4a3510;border-radius:6px;padding:0.3rem 0.6rem;">
+            <label style="display:flex;align-items:center;gap:0.35rem;font-size:0.82rem;color:#bbb;cursor:pointer;background:var(--j-input,#140f08);border:1px solid var(--j-border-col,#4a3510);border-radius:6px;padding:0.3rem 0.6rem;">
               <input type="checkbox" class="ae-condition" data-cond="${cond}" ${(c.conditions||[]).includes(cond)?'checked':''} style="accent-color:var(--danger);">
               ${cond}
             </label>
@@ -8551,7 +8681,7 @@ async function initViewMode() {
   const el = document.getElementById('view-content');
   try {
     const row = await sbGetPlayer(viewUser);
-    if (!row) { el.innerHTML = `<p style="text-align:center;color:#c97a7a;padding:3rem;">Joueur "${viewUser}" introuvable.</p>`; return true; }
+    if (!row) { el.innerHTML = `<p style="text-align:center;color:var(--danger,#c97a7a);padding:3rem;">Joueur "${viewUser}" introuvable.</p>`; return true; }
     const pd = row.data;
     const activeId = pd.activeCharId;
     const slot = pd.characters?.[activeId];
@@ -8640,7 +8770,7 @@ function renderViewSheet(el, pd, c, slot, username) {
       <div class="view-combat-grid">
         <div class="view-combat-item"><div class="view-combat-label">PV Actuels</div><div class="view-combat-val" style="color:${hpColor}">${pvCur}</div></div>
         <div class="view-combat-item"><div class="view-combat-label">PV Max</div><div class="view-combat-val">${pvMax}</div></div>
-        <div class="view-combat-item"><div class="view-combat-label">PV Temp</div><div class="view-combat-val" style="color:#5a9fd4">${parseInt(c.pvTemp)||0}</div></div>
+        <div class="view-combat-item"><div class="view-combat-label">PV Temp</div><div class="view-combat-val" style="color:var(--info,#5a9fd4)">${parseInt(c.pvTemp)||0}</div></div>
       </div>
       <div class="view-hp-bar"><div class="view-hp-fill" style="width:${hpPct}%;background:${hpColor}"></div></div>
       ${conditions?`<div style="margin-top:0.55rem;display:flex;flex-wrap:wrap;gap:0.3rem;">${conditions}</div>`:''}
@@ -9214,7 +9344,7 @@ function esc(val) {
 const SEC_LABELS = {
   saves: 'Compét.', attaques: 'Attaques', cf: 'Classe',
   ressources: 'Ressources', conditions: 'Conditions',
-  features: 'Traits', sorts: 'Sorts'
+  features: 'Traits', sorts: 'Sorts', mods: 'Modif.'
 };
 
 function buildSecTabBar() {
@@ -9468,7 +9598,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Jets de mort — dots cachés (compat)
   ['death-success','death-fail'].forEach(id => {
-    document.getElementById(id).addEventListener('click', e => {
+    document.getElementById(id)?.addEventListener('click', e => {
       const dot = e.target.closest('.death-dot');
       if (!dot) return;
       const type = dot.dataset.type; const idx = parseInt(dot.dataset.idx);
@@ -9722,6 +9852,49 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   // Bouton ajouter sort
+  /* ── Modificateurs ── */
+  document.getElementById('btn-add-mod')?.addEventListener('click', () => {
+    if (!playerData) return;
+    if (!C().mods) C().mods = [];
+    C().mods.push({ name: '', cible: 'ac', val: 0, on: true });
+    renderMods(); triggerSave();
+  });
+
+  document.getElementById('mods-list').addEventListener('click', e => {
+    const del = e.target.closest('.btn-mod-del');
+    if (del) {
+      const i = parseInt(del.dataset.mi);
+      C().mods.splice(i, 1);
+      renderMods(); renderSaves(); renderSkills(); renderAttacks(); updateSpellCalcs(); renderHero(); triggerSave();
+    }
+    const toggle = e.target.closest('.mod-toggle');
+    if (toggle) {
+      const i = parseInt(toggle.dataset.mi);
+      C().mods[i].on = toggle.checked;
+      renderMods(); renderSaves(); renderSkills(); renderAttacks(); updateSpellCalcs(); renderHero(); triggerSave();
+    }
+  });
+
+  document.getElementById('mods-list').addEventListener('change', e => {
+    const el = e.target;
+    const i = parseInt(el.dataset.mi);
+    const mk = el.dataset.mk;
+    if (i === undefined || !mk || !C().mods?.[i]) return;
+    C().mods[i][mk] = mk === 'val' ? (parseInt(el.value) || 0) : (mk === 'on' ? el.checked : el.value);
+    renderMods(); renderSaves(); renderSkills(); renderAttacks(); updateSpellCalcs(); renderHero(); triggerSave();
+  });
+
+  document.getElementById('mods-list').addEventListener('input', e => {
+    const el = e.target;
+    const i = parseInt(el.dataset.mi);
+    const mk = el.dataset.mk;
+    if (mk !== 'name' || !C().mods?.[i]) return;
+    C().mods[i].name = el.value;
+    /* update summary lazily */
+    clearTimeout(el._mt);
+    el._mt = setTimeout(() => { renderMods(); triggerSave(); }, 600);
+  });
+
   document.getElementById('btn-add-spell').addEventListener('click', () => {
     if (!playerData) return;
     C().spells = C().spells || [];
@@ -10861,7 +11034,7 @@ document.addEventListener('keydown', e => {
     </div>
 
 <!-- ── Bannière mise à jour PWA ── -->
-<div id="sw-update-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#1a1408;border-top:1px solid var(--gold-dark);padding:0.55rem 1rem;display:none;align-items:center;justify-content:center;gap:0.8rem;font-size:0.82rem;color:#c9a96a;">
+<div id="sw-update-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:99999;background:var(--j-panel,#1a1408);border-top:1px solid var(--gold-dark);padding:0.55rem 1rem;align-items:center;justify-content:center;gap:0.8rem;font-size:0.82rem;color:var(--gold,#c9a96e);">
   🔄 Une mise à jour est disponible.
   <button onclick="document.getElementById('sw-update-banner').style.display='none';window._swReg&&window._swReg.waiting&&window._swReg.waiting.postMessage('skipWaiting');" style="background:var(--gold-dark);color:#fff;border:none;border-radius:4px;padding:0.25rem 0.7rem;font-size:0.78rem;cursor:pointer;font-family:'Cinzel',serif;">Actualiser</button>
   <button onclick="document.getElementById('sw-update-banner').style.display='none';" style="background:none;border:none;color:#666;cursor:pointer;font-size:0.9rem;">✕</button>
