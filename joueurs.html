@@ -2052,6 +2052,176 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
   border: 1px solid rgba(201,169,110,0.3); flex-shrink: 0; margin-top: 0.1rem;
 }
 
+/* ── Familiers ── */
+#tab-familiers { padding: 0.5rem 0 2rem; }
+.fam-toolbar {
+  display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;
+  align-items: center;
+}
+.fam-toolbar-title {
+  font-family: 'Cinzel', serif; font-size: 0.95rem;
+  color: var(--gold, #c9a96e); flex: 1; letter-spacing: 0.05em;
+}
+.fam-cards-wrap { display: flex; flex-direction: column; gap: 1rem; }
+.familiar-card {
+  background: var(--j-panel, #1a1208);
+  border: 1px solid var(--j-border-col, #4a3510);
+  border-radius: 4px; overflow: hidden;
+}
+.familiar-card-head {
+  display: flex; align-items: center; gap: 0.6rem;
+  padding: 0.55rem 0.85rem;
+  background: rgba(201,169,110,0.07);
+  border-bottom: 1px solid var(--j-border-col, #4a3510);
+  cursor: pointer; user-select: none;
+}
+.fam-head-name {
+  font-family: 'Cinzel', serif; font-size: 0.9rem;
+  color: var(--gold, #c9a96e); flex: 1; min-width: 0;
+}
+.fam-head-type { font-size: 0.73rem; color: #888; font-style: italic; }
+.fam-head-hp {
+  font-size: 0.8rem; color: var(--j-text, #e2cfa0);
+  background: rgba(0,0,0,0.3); border-radius: 3px;
+  padding: 0.15rem 0.45rem; white-space: nowrap;
+}
+.fam-collapse-btn {
+  background: none; border: none; color: #666; font-size: 0.85rem;
+  cursor: pointer; padding: 0; line-height: 1; flex-shrink: 0;
+  transition: transform 0.2s;
+}
+.familiar-card.collapsed .fam-collapse-btn { transform: rotate(-90deg); }
+.btn-fam-del {
+  background: none; border: none; color: #555; font-size: 0.85rem;
+  cursor: pointer; padding: 0; line-height: 1; flex-shrink: 0;
+  transition: color 0.15s;
+}
+.btn-fam-del:hover { color: var(--danger, #c97a7a); }
+.fam-body { padding: 0.85rem; }
+.familiar-card.collapsed .fam-body { display: none; }
+
+/* Stat block layout */
+.fam-sb-header { margin-bottom: 0.6rem; }
+.fam-name-input {
+  font-family: 'Cinzel', serif; font-size: 1.05rem; font-weight: 700;
+  color: var(--j-text, #e2cfa0); background: transparent;
+  border: none; border-bottom: 1px solid transparent;
+  width: 100%; padding: 0; margin-bottom: 0.2rem;
+  transition: border-color 0.15s;
+}
+.fam-name-input:focus { outline: none; border-bottom-color: var(--gold-dark, #8a6e1a); }
+.fam-type-line {
+  display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center;
+}
+.fam-inline-input {
+  background: var(--j-input, #0d0a05); border: 1px solid var(--j-border-col, #4a3510);
+  border-radius: 3px; color: var(--j-text, #e2cfa0); font-size: 0.78rem;
+  padding: 0.2rem 0.4rem; min-width: 60px;
+}
+.fam-inline-input:focus { outline: none; border-color: var(--gold-dark, #8a6e1a); }
+.fam-divider {
+  height: 2px; background: var(--j-border-col, #4a3510);
+  margin: 0.55rem 0; border: none;
+  background: linear-gradient(90deg, var(--gold-dark,#8a6e1a), transparent);
+}
+.fam-topstats {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 0.4rem;
+  margin-bottom: 0.1rem;
+}
+.fam-stat-box { text-align: center; }
+.fam-stat-label { font-size: 0.67rem; color: #888; text-transform: uppercase; letter-spacing: 0.05em; }
+.fam-stat-val {
+  font-size: 0.9rem; color: var(--j-text, #e2cfa0); font-weight: 600;
+  display: flex; align-items: center; justify-content: center; gap: 0.3rem;
+}
+.fam-hp-input {
+  width: 46px; text-align: center;
+  background: var(--j-input, #0d0a05); border: 1px solid var(--j-border-col, #4a3510);
+  border-radius: 3px; color: var(--gold, #c9a96e); font-size: 0.9rem; font-weight: 700;
+  padding: 0.1rem 0.2rem;
+}
+.fam-hp-input:focus { outline: none; border-color: var(--gold-dark); }
+.fam-hp-step {
+  background: none; border: none; color: #888; cursor: pointer;
+  font-size: 0.9rem; padding: 0; line-height: 1; transition: color 0.15s;
+}
+.fam-hp-step:hover { color: var(--gold, #c9a96e); }
+.fam-abilities {
+  display: grid; grid-template-columns: repeat(6,1fr); gap: 0.3rem;
+  text-align: center; margin: 0.5rem 0;
+}
+.fam-ab-box { }
+.fam-ab-label { font-size: 0.6rem; color: #888; text-transform: uppercase; letter-spacing: 0.04em; }
+.fam-ab-score {
+  font-size: 0.82rem; color: var(--j-text, #e2cfa0); font-weight: 700;
+}
+.fam-ab-mod { font-size: 0.7rem; color: #aaa; }
+.fam-ab-input {
+  width: 100%; text-align: center;
+  background: var(--j-input, #0d0a05); border: 1px solid var(--j-border-col, #4a3510);
+  border-radius: 3px; color: var(--j-text, #e2cfa0); font-size: 0.8rem;
+  padding: 0.15rem 0; margin-top: 0.1rem;
+}
+.fam-ab-input:focus { outline: none; border-color: var(--gold-dark); }
+.fam-props { font-size: 0.77rem; color: var(--j-text, #e2cfa0); margin-bottom: 0.35rem; }
+.fam-props span { color: #888; }
+.fam-props-input {
+  width: 100%; background: var(--j-input, #0d0a05);
+  border: 1px solid var(--j-border-col, #4a3510); border-radius: 3px;
+  color: var(--j-text, #e2cfa0); font-size: 0.77rem; padding: 0.2rem 0.4rem;
+}
+.fam-props-input:focus { outline: none; border-color: var(--gold-dark); }
+.fam-section-title {
+  font-family: 'Cinzel', serif; font-size: 0.78rem;
+  color: var(--gold-dark, #8a6e1a); letter-spacing: 0.05em;
+  margin: 0.55rem 0 0.3rem; text-transform: uppercase;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.btn-fam-add-entry {
+  font-size: 0.7rem; padding: 0.1rem 0.4rem;
+  background: rgba(201,169,110,0.08); border: 1px solid var(--gold-dark, #8a6e1a);
+  border-radius: 3px; color: var(--gold-dark, #8a6e1a); cursor: pointer;
+  font-family: inherit; transition: background 0.15s;
+}
+.btn-fam-add-entry:hover { background: rgba(201,169,110,0.18); }
+.fam-entry { display: flex; gap: 0.4rem; align-items: flex-start; margin-bottom: 0.3rem; }
+.fam-entry-name {
+  flex-shrink: 0; min-width: 90px; max-width: 130px;
+  background: var(--j-input, #0d0a05); border: 1px solid var(--j-border-col, #4a3510);
+  border-radius: 3px; color: var(--gold, #c9a96e); font-size: 0.77rem; font-weight: 600;
+  padding: 0.2rem 0.35rem;
+}
+.fam-entry-name:focus { outline: none; border-color: var(--gold-dark); }
+.fam-entry-desc {
+  flex: 1; background: var(--j-input, #0d0a05);
+  border: 1px solid var(--j-border-col, #4a3510); border-radius: 3px;
+  color: var(--j-text, #e2cfa0); font-size: 0.77rem; padding: 0.2rem 0.35rem;
+  resize: vertical; min-height: 32px; font-family: inherit;
+}
+.fam-entry-desc:focus { outline: none; border-color: var(--gold-dark); }
+.btn-fam-del-entry {
+  background: none; border: none; color: #555; cursor: pointer;
+  font-size: 0.8rem; padding: 0; flex-shrink: 0; margin-top: 0.25rem;
+  transition: color 0.15s;
+}
+.btn-fam-del-entry:hover { color: var(--danger, #c97a7a); }
+.fam-notes-input {
+  width: 100%; background: var(--j-input, #0d0a05);
+  border: 1px solid var(--j-border-col, #4a3510); border-radius: 3px;
+  color: var(--j-text, #e2cfa0); font-size: 0.8rem; padding: 0.35rem 0.5rem;
+  resize: vertical; min-height: 52px; font-family: inherit; box-sizing: border-box;
+}
+.fam-notes-input:focus { outline: none; border-color: var(--gold-dark); }
+.fam-empty {
+  text-align: center; padding: 2.5rem 1rem; color: #666;
+  font-style: italic; font-size: 0.88rem;
+}
+
+@media (max-width: 480px) {
+  .fam-abilities { grid-template-columns: repeat(3,1fr); }
+  .fam-topstats { grid-template-columns: repeat(2,1fr); }
+}
+
   </style>
 
   <!-- PWA -->
@@ -2161,6 +2331,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
         <button class="tab-btn" data-tab="notes">Notes</button>
         <button class="tab-btn" data-tab="parametres">Settings</button>
         <button class="tab-btn" data-tab="aide">Reference</button>
+        <button class="tab-btn" data-tab="familiers">Familiers</button>
         <button class="tab-btn" data-tab="admin" id="tab-admin-btn" style="display:none;color:var(--danger);">👁 Admin</button>
       </div>
       <!-- Hidden player info (kept for JS) -->
@@ -3214,6 +3385,18 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
       </div><!-- /cheat-grid -->
     </div><!-- /tab-aide -->
 
+    <!-- ── Onglet Familiers ── -->
+    <div class="tab-panel" id="tab-familiers">
+      <div class="fam-toolbar">
+        <span class="fam-toolbar-title">⟡ Familiers &amp; Compagnons</span>
+        <button class="btn btn-sm" id="btn-open-compendium-monster" style="background:rgba(201,169,110,0.1);border:1px solid var(--gold-dark);color:var(--gold);">⊕ Compendium</button>
+        <button class="btn btn-sm btn-gold" id="btn-add-familiar">+ Ajouter</button>
+      </div>
+      <div class="fam-cards-wrap" id="fam-cards-wrap">
+        <div class="fam-empty">Aucun familier. Cliquez sur <em>+ Ajouter</em> pour créer une fiche ou importez depuis le compendium.</div>
+      </div>
+    </div>
+
     <div class="tab-panel" id="tab-admin">
       <div class="sheet-section">
         <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
@@ -3234,6 +3417,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
     <button class="mbn-btn" data-tab="inventaire"><span class="mbn-icon">🎒</span><span class="mbn-label">Sac</span></button>
     <button class="mbn-btn" data-tab="notes"><span class="mbn-icon">✏</span><span class="mbn-label">Notes</span></button>
     <button class="mbn-btn" data-tab="parametres"><span class="mbn-icon">⚙</span><span class="mbn-label">Config</span></button>
+    <button class="mbn-btn" data-tab="familiers"><span class="mbn-icon">🐾</span><span class="mbn-label">Familiers</span></button>
   </nav>
 
   <!-- ══ VUE FICHE PARTAGÉE (lecture seule) ══ -->
@@ -5613,6 +5797,7 @@ const _TAB_RENDERERS = {
   notes:      () => { renderNotesPages(); loadCurrentNoteInEditor(); },
   parametres: () => { renderSectionVisibility(); },
   aide:       null,
+  familiers:  () => { renderFamiliars(); },
   admin:      () => { renderAdminPanel(); }
 };
 
@@ -9153,7 +9338,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (organBtn) organBtn.style.display = tabId === 'personnage' ? '' : 'none';
       // Barre de sections : visible seulement sur l'onglet personnage
       const secBar = document.getElementById('sec-tab-bar');
-      if (secBar) secBar.hidden = tabId !== 'personnage';
+      if (secBar) secBar.style.display = tabId === 'personnage' ? '' : 'none';
       // Onglet Identité : scroll jusqu'au formulaire
       if (tabId === 'identite') {
         requestAnimationFrame(() => {
@@ -9173,7 +9358,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (organBtn) organBtn.style.display = tabId === 'personnage' ? '' : 'none';
     // Barre de sections : visible seulement sur l'onglet personnage
     const secBar = document.getElementById('sec-tab-bar');
-    if (secBar) secBar.hidden = tabId !== 'personnage';
+    if (secBar) secBar.style.display = tabId === 'personnage' ? '' : 'none';
   }
   // Brancher les boutons de la barre basse sur le même système
   document.querySelectorAll('.mbn-btn').forEach(btn => {
@@ -10692,6 +10877,328 @@ function getSbClient() {
   return _sbRealtimeClient;
 }
 
+/* ── Familiers ── */
+function _famDefault() {
+  return {
+    name: 'Nouveau familier', type: 'Bête', size: 'Petite', alignment: 'Non aligné',
+    ac: 10, acNote: '', pvMax: 4, pvActuel: 4, speed: '30 ft.',
+    for: 10, dex: 10, con: 10, int: 10, sag: 10, cha: 10,
+    savesNote: '', skillsNote: '', vulnerabilities: '', resistances: '', immunities: '',
+    senses: 'Perception passive 10', languages: '—', cr: '0',
+    traits: [], actions: [], bonusActions: [], reactions: [],
+    notes: '', _collapsed: false
+  };
+}
+
+function _famMod(score) { return Math.floor((parseInt(score)||10) / 2) - 5; }
+function _famModStr(score) { const m = _famMod(score); return (m >= 0 ? '+' : '') + m; }
+
+function renderFamiliars() {
+  if (!playerData) return;
+  const c = C();
+  if (!c.familiars) c.familiars = [];
+  const wrap = document.getElementById('fam-cards-wrap');
+  if (!wrap) return;
+  if (!c.familiars.length) {
+    wrap.innerHTML = '<div class="fam-empty">Aucun familier. Cliquez sur <em>+ Ajouter</em> ou importez depuis le compendium.</div>';
+    return;
+  }
+  wrap.innerHTML = '';
+  c.familiars.forEach((fam, fi) => {
+    const card = document.createElement('div');
+    card.className = 'familiar-card' + (fam._collapsed ? ' collapsed' : '');
+    card.dataset.fi = fi;
+    const AB = ['for','dex','con','int','sag','cha'];
+    const AB_LABELS = ['FOR','DEX','CON','INT','SAG','CHA'];
+    const abilitiesHtml = AB.map((ab, i) => `
+      <div class="fam-ab-box">
+        <div class="fam-ab-label">${AB_LABELS[i]}</div>
+        <input class="fam-ab-input" type="number" min="1" max="30"
+          data-fi="${fi}" data-fk="${ab}" value="${fam[ab]||10}">
+        <div class="fam-ab-mod">${_famModStr(fam[ab])}</div>
+      </div>`).join('');
+
+    const traitsHtml = (fam.traits||[]).map((t,ti) => `
+      <div class="fam-entry">
+        <input class="fam-entry-name" type="text" placeholder="Nom…"
+          data-fi="${fi}" data-fk="traits" data-ei="${ti}" data-ek="name" value="${t.name||''}">
+        <textarea class="fam-entry-desc" rows="2" placeholder="Description…"
+          data-fi="${fi}" data-fk="traits" data-ei="${ti}" data-ek="desc">${t.desc||''}</textarea>
+        <button class="btn-fam-del-entry" data-fi="${fi}" data-fk="traits" data-ei="${ti}" title="Supprimer">✕</button>
+      </div>`).join('');
+    const actionsHtml = (fam.actions||[]).map((a,ai) => `
+      <div class="fam-entry">
+        <input class="fam-entry-name" type="text" placeholder="Nom…"
+          data-fi="${fi}" data-fk="actions" data-ei="${ai}" data-ek="name" value="${a.name||''}">
+        <textarea class="fam-entry-desc" rows="2" placeholder="Description + dégâts…"
+          data-fi="${fi}" data-fk="actions" data-ei="${ai}" data-ek="desc">${a.desc||''}</textarea>
+        <button class="btn-fam-del-entry" data-fi="${fi}" data-fk="actions" data-ei="${ai}" title="Supprimer">✕</button>
+      </div>`).join('');
+    const bonusHtml = (fam.bonusActions||[]).map((a,ai) => `
+      <div class="fam-entry">
+        <input class="fam-entry-name" type="text" placeholder="Nom…"
+          data-fi="${fi}" data-fk="bonusActions" data-ei="${ai}" data-ek="name" value="${a.name||''}">
+        <textarea class="fam-entry-desc" rows="2" placeholder="Description…"
+          data-fi="${fi}" data-fk="bonusActions" data-ei="${ai}" data-ek="desc">${a.desc||''}</textarea>
+        <button class="btn-fam-del-entry" data-fi="${fi}" data-fk="bonusActions" data-ei="${ai}" title="Supprimer">✕</button>
+      </div>`).join('');
+    const reactionsHtml = (fam.reactions||[]).map((a,ai) => `
+      <div class="fam-entry">
+        <input class="fam-entry-name" type="text" placeholder="Nom…"
+          data-fi="${fi}" data-fk="reactions" data-ei="${ai}" data-ek="name" value="${a.name||''}">
+        <textarea class="fam-entry-desc" rows="2" placeholder="Description…"
+          data-fi="${fi}" data-fk="reactions" data-ei="${ai}" data-ek="desc">${a.desc||''}</textarea>
+        <button class="btn-fam-del-entry" data-fi="${fi}" data-fk="reactions" data-ei="${ai}" title="Supprimer">✕</button>
+      </div>`).join('');
+
+    card.innerHTML = `
+      <div class="familiar-card-head" data-fi="${fi}">
+        <button class="fam-collapse-btn" data-fi="${fi}" title="Réduire">▾</button>
+        <div class="fam-head-name">${fam.name||'—'}</div>
+        <div class="fam-head-type">${fam.size||''} ${fam.type||''}</div>
+        <div class="fam-head-hp">♥ ${fam.pvActuel}/${fam.pvMax}</div>
+        <button class="btn-fam-del" data-fi="${fi}" title="Supprimer ce familier">🗑</button>
+      </div>
+      <div class="fam-body">
+        <div class="fam-sb-header">
+          <input class="fam-name-input field-input" type="text" placeholder="Nom du familier"
+            data-fi="${fi}" data-fk="name" value="${fam.name||''}">
+          <div class="fam-type-line">
+            <select class="fam-inline-input" data-fi="${fi}" data-fk="size">
+              ${['Très petite','Petite','Moyenne','Grande','Très grande','Gigantesque'].map(s =>
+                `<option${fam.size===s?' selected':''}>${s}</option>`).join('')}
+            </select>
+            <input class="fam-inline-input" type="text" placeholder="Type (Bête, Fée…)"
+              data-fi="${fi}" data-fk="type" value="${fam.type||''}" style="flex:1;min-width:80px;">
+            <input class="fam-inline-input" type="text" placeholder="Alignement"
+              data-fi="${fi}" data-fk="alignment" value="${fam.alignment||''}" style="flex:1;min-width:80px;">
+          </div>
+        </div>
+        <hr class="fam-divider">
+        <div class="fam-topstats">
+          <div class="fam-stat-box">
+            <div class="fam-stat-label">CA</div>
+            <div class="fam-stat-val">
+              <input class="fam-inline-input" type="number" min="0" max="40"
+                data-fi="${fi}" data-fk="ac" value="${fam.ac||10}" style="width:40px;text-align:center;">
+              <input class="fam-inline-input" type="text" placeholder="(armure nat.)"
+                data-fi="${fi}" data-fk="acNote" value="${fam.acNote||''}" style="flex:1;min-width:60px;">
+            </div>
+          </div>
+          <div class="fam-stat-box">
+            <div class="fam-stat-label">Points de vie</div>
+            <div class="fam-stat-val">
+              <button class="fam-hp-step" data-fi="${fi}" data-hp="-1">−</button>
+              <input class="fam-hp-input" type="number" min="0"
+                data-fi="${fi}" data-fk="pvActuel" value="${fam.pvActuel}">
+              <span style="color:#666;">/</span>
+              <input class="fam-hp-input" type="number" min="1"
+                data-fi="${fi}" data-fk="pvMax" value="${fam.pvMax}">
+              <button class="fam-hp-step" data-fi="${fi}" data-hp="+1">+</button>
+            </div>
+          </div>
+          <div class="fam-stat-box">
+            <div class="fam-stat-label">Vitesse</div>
+            <div class="fam-stat-val">
+              <input class="fam-inline-input" type="text" placeholder="30 ft."
+                data-fi="${fi}" data-fk="speed" value="${fam.speed||''}" style="width:100%;text-align:center;">
+            </div>
+          </div>
+        </div>
+        <hr class="fam-divider">
+        <div class="fam-abilities">${abilitiesHtml}</div>
+        <hr class="fam-divider">
+        <div class="fam-props">
+          <div style="display:flex;gap:0.4rem;align-items:center;margin-bottom:0.25rem;">
+            <span style="flex-shrink:0;">Jets de sauvegarde :</span>
+            <input class="fam-props-input" type="text" placeholder="ex: Dex +4, Con +2"
+              data-fi="${fi}" data-fk="savesNote" value="${fam.savesNote||''}">
+          </div>
+          <div style="display:flex;gap:0.4rem;align-items:center;margin-bottom:0.25rem;">
+            <span style="flex-shrink:0;">Compétences :</span>
+            <input class="fam-props-input" type="text" placeholder="ex: Perception +3"
+              data-fi="${fi}" data-fk="skillsNote" value="${fam.skillsNote||''}">
+          </div>
+          <div style="display:flex;gap:0.4rem;align-items:center;margin-bottom:0.25rem;">
+            <span style="flex-shrink:0;">Résistances :</span>
+            <input class="fam-props-input" type="text" placeholder="ex: feu, froid"
+              data-fi="${fi}" data-fk="resistances" value="${fam.resistances||''}">
+          </div>
+          <div style="display:flex;gap:0.4rem;align-items:center;margin-bottom:0.25rem;">
+            <span style="flex-shrink:0;">Immunités :</span>
+            <input class="fam-props-input" type="text" placeholder="ex: poison, charme"
+              data-fi="${fi}" data-fk="immunities" value="${fam.immunities||''}">
+          </div>
+          <div style="display:flex;gap:0.4rem;align-items:center;margin-bottom:0.25rem;">
+            <span style="flex-shrink:0;">Sens :</span>
+            <input class="fam-props-input" type="text" placeholder="Vision nocturne 60 ft., Perception passive 12"
+              data-fi="${fi}" data-fk="senses" value="${fam.senses||''}">
+          </div>
+          <div style="display:flex;gap:0.4rem;align-items:center;">
+            <span style="flex-shrink:0;">Langues :</span>
+            <input class="fam-props-input" type="text" placeholder="—"
+              data-fi="${fi}" data-fk="languages" value="${fam.languages||''}">
+            <span style="flex-shrink:0;margin-left:0.5rem;">FC :</span>
+            <input class="fam-props-input" type="text" placeholder="0"
+              data-fi="${fi}" data-fk="cr" value="${fam.cr||'0'}" style="max-width:50px;">
+          </div>
+        </div>
+        <hr class="fam-divider">
+        <div class="fam-section-title">Traits
+          <button class="btn-fam-add-entry" data-fi="${fi}" data-fk="traits">+ Ajouter</button>
+        </div>
+        <div id="fam-traits-${fi}">${traitsHtml}</div>
+        <div class="fam-section-title">Actions
+          <button class="btn-fam-add-entry" data-fi="${fi}" data-fk="actions">+ Ajouter</button>
+        </div>
+        <div id="fam-actions-${fi}">${actionsHtml}</div>
+        ${(fam.bonusActions?.length || 0) > 0 ? `
+        <div class="fam-section-title">Actions bonus
+          <button class="btn-fam-add-entry" data-fi="${fi}" data-fk="bonusActions">+ Ajouter</button>
+        </div>
+        <div id="fam-bonusActions-${fi}">${bonusHtml}</div>` : `
+        <div class="fam-section-title" style="color:#555;font-size:0.7rem;cursor:default;">
+          <span>Actions bonus</span>
+          <button class="btn-fam-add-entry" data-fi="${fi}" data-fk="bonusActions">+ Ajouter</button>
+        </div>`}
+        ${(fam.reactions?.length || 0) > 0 ? `
+        <div class="fam-section-title">Réactions
+          <button class="btn-fam-add-entry" data-fi="${fi}" data-fk="reactions">+ Ajouter</button>
+        </div>
+        <div id="fam-reactions-${fi}">${reactionsHtml}</div>` : `
+        <div class="fam-section-title" style="color:#555;font-size:0.7rem;cursor:default;">
+          <span>Réactions</span>
+          <button class="btn-fam-add-entry" data-fi="${fi}" data-fk="reactions">+ Ajouter</button>
+        </div>`}
+        <hr class="fam-divider">
+        <div class="fam-section-title" style="margin-bottom:0.2rem;">Notes</div>
+        <textarea class="fam-notes-input" placeholder="Notes libres…"
+          data-fi="${fi}" data-fk="notes">${fam.notes||''}</textarea>
+      </div>`;
+    wrap.appendChild(card);
+  });
+}
+
+(function () {
+  /* ── Familiar event delegation ── */
+  document.addEventListener('click', e => {
+    /* collapse/expand */
+    const head = e.target.closest('.familiar-card-head');
+    if (head && !e.target.closest('.btn-fam-del')) {
+      const fi = parseInt(head.dataset.fi);
+      const c = C();
+      if (!c.familiars?.[fi]) return;
+      c.familiars[fi]._collapsed = !c.familiars[fi]._collapsed;
+      renderFamiliars(); triggerSave();
+      return;
+    }
+    /* delete familiar */
+    const delBtn = e.target.closest('.btn-fam-del');
+    if (delBtn && delBtn.dataset.fi !== undefined) {
+      const fi = parseInt(delBtn.dataset.fi);
+      if (!confirm('Supprimer ce familier ?')) return;
+      C().familiars.splice(fi, 1);
+      renderFamiliars(); triggerSave();
+      return;
+    }
+    /* add entry (trait/action/etc.) */
+    const addEntry = e.target.closest('.btn-fam-add-entry');
+    if (addEntry) {
+      const fi = parseInt(addEntry.dataset.fi);
+      const fk = addEntry.dataset.fk;
+      const c = C();
+      if (!c.familiars?.[fi]) return;
+      if (!c.familiars[fi][fk]) c.familiars[fi][fk] = [];
+      c.familiars[fi][fk].push({ name: '', desc: '' });
+      renderFamiliars(); triggerSave();
+      return;
+    }
+    /* delete entry */
+    const delEntry = e.target.closest('.btn-fam-del-entry');
+    if (delEntry) {
+      const fi = parseInt(delEntry.dataset.fi);
+      const fk = delEntry.dataset.fk;
+      const ei = parseInt(delEntry.dataset.ei);
+      C().familiars[fi][fk].splice(ei, 1);
+      renderFamiliars(); triggerSave();
+      return;
+    }
+    /* hp step buttons */
+    const hpStep = e.target.closest('.fam-hp-step');
+    if (hpStep) {
+      const fi = parseInt(hpStep.dataset.fi);
+      const delta = parseInt(hpStep.dataset.hp);
+      const fam = C().familiars?.[fi];
+      if (!fam) return;
+      fam.pvActuel = Math.max(0, Math.min(fam.pvMax, (parseInt(fam.pvActuel)||0) + delta));
+      renderFamiliars(); triggerSave();
+      return;
+    }
+    /* add familiar */
+    if (e.target.id === 'btn-add-familiar') {
+      if (!C().familiars) C().familiars = [];
+      C().familiars.push(_famDefault());
+      renderFamiliars(); triggerSave();
+    }
+    /* open compendium monsters */
+    if (e.target.id === 'btn-open-compendium-monster') {
+      openCompendium('monsters');
+    }
+  });
+
+  /* Input changes — debounced save */
+  let _famSaveTimer = null;
+  function _famSave() {
+    clearTimeout(_famSaveTimer);
+    _famSaveTimer = setTimeout(triggerSave, 400);
+  }
+
+  document.addEventListener('input', e => {
+    const el = e.target;
+    const fi = el.dataset?.fi;
+    if (fi === undefined) return;
+    const fk = el.dataset.fk;
+    if (!fk) return;
+    const fam = C().familiars?.[parseInt(fi)];
+    if (!fam) return;
+    const ei = el.dataset.ei;
+    const ek = el.dataset.ek;
+    if (ei !== undefined && ek) {
+      if (!fam[fk]) fam[fk] = [];
+      if (!fam[fk][parseInt(ei)]) fam[fk][parseInt(ei)] = {};
+      fam[fk][parseInt(ei)][ek] = el.value;
+    } else {
+      const abScores = ['for','dex','con','int','sag','cha'];
+      fam[fk] = (fk === 'pvActuel' || fk === 'pvMax' || fk === 'ac' || abScores.includes(fk))
+        ? (parseInt(el.value)||0) : el.value;
+      /* update modifier display for ability scores */
+      if (abScores.includes(fk)) {
+        const mod = el.closest('.fam-ab-box')?.querySelector('.fam-ab-mod');
+        if (mod) mod.textContent = _famModStr(el.value);
+      }
+      /* update head HP display */
+      if (fk === 'pvActuel' || fk === 'pvMax') {
+        const card = el.closest('.familiar-card');
+        const hpDisplay = card?.querySelector('.fam-head-hp');
+        if (hpDisplay) hpDisplay.textContent = `♥ ${fam.pvActuel}/${fam.pvMax}`;
+      }
+      /* update head name */
+      if (fk === 'name') {
+        const card = el.closest('.familiar-card');
+        const nameDisplay = card?.querySelector('.fam-head-name');
+        if (nameDisplay) nameDisplay.textContent = el.value || '—';
+      }
+      /* update head type */
+      if (fk === 'size' || fk === 'type') {
+        const card = el.closest('.familiar-card');
+        const typeDisplay = card?.querySelector('.fam-head-type');
+        if (typeDisplay) typeDisplay.textContent = `${fam.size||''} ${fam.type||''}`;
+      }
+    }
+    _famSave();
+  });
+})();
+
 /* ── Compendium D&D 5e ── */
 (function () {
   const API = 'https://www.dnd5eapi.co';
@@ -10712,6 +11219,7 @@ function getSbClient() {
     );
     document.getElementById('comp-filter-level').style.display = _activeTab === 'spells' ? '' : 'none';
     document.getElementById('comp-filter-cat').style.display = _activeTab === 'equipment' ? '' : 'none';
+    document.getElementById('comp-filter-cr').style.display = _activeTab === 'monsters' ? '' : 'none';
     document.getElementById('comp-search').value = '';
     document.getElementById('comp-filter-level').value = '';
     document.getElementById('comp-filter-cat').value = '';
@@ -10726,7 +11234,7 @@ function getSbClient() {
     if (_cache[tab]) { _allItems = _cache[tab]; _render(); return; }
     list().innerHTML = '<div class="comp-loading">Chargement…</div>';
     try {
-      const endpoint = tab === 'spells' ? '/api/spells' : '/api/equipment';
+      const endpoint = tab === 'spells' ? '/api/spells' : tab === 'equipment' ? '/api/equipment' : '/api/monsters';
       const r = await fetch(API + endpoint);
       const data = await r.json();
       const entries = data.results || [];
@@ -10751,6 +11259,7 @@ function getSbClient() {
     const query = (document.getElementById('comp-search')?.value || '').toLowerCase().trim();
     const levelFilter = document.getElementById('comp-filter-level')?.value;
     const catFilter = document.getElementById('comp-filter-cat')?.value.toLowerCase();
+    const crFilter = document.getElementById('comp-filter-cr')?.value;
 
     let items = _allItems;
     if (query) items = items.filter(i => (i.name || i.index || '').toLowerCase().includes(query));
@@ -10761,6 +11270,13 @@ function getSbClient() {
       items = items.filter(i =>
         (i.equipment_category?.name || '').toLowerCase().includes(catFilter.toLowerCase())
       );
+    }
+    if (_activeTab === 'monsters' && crFilter !== '') {
+      items = items.filter(i => {
+        const name = i.name || i.index || '';
+        if (crFilter === '6') return true; // "FC 6+" — can't filter without fetching details on list-only data
+        return name.toLowerCase().includes(query);
+      });
     }
 
     if (!items.length) {
@@ -10787,7 +11303,7 @@ function getSbClient() {
             <div class="comp-item-desc">${desc}</div>
           </div>
           <button class="btn-comp-add" data-comp-type="spell" data-comp-idx="${_allItems.indexOf(item)}">+ Ajouter</button>`;
-      } else {
+      } else if (_activeTab === 'equipment') {
         const cat = item.equipment_category?.name || '';
         const cost = item.cost ? `${item.cost.quantity} ${item.cost.unit}` : '';
         const weight = item.weight ? `${item.weight} lbs` : '';
@@ -10798,6 +11314,14 @@ function getSbClient() {
             <div class="comp-item-meta">${meta}</div>
           </div>
           <button class="btn-comp-add" data-comp-type="item" data-comp-idx="${_allItems.indexOf(item)}">+ Ajouter</button>`;
+      } else {
+        /* monsters — list only has name+url, fetch details on import */
+        div.innerHTML = `
+          <div class="comp-item-info">
+            <div class="comp-item-name">${item.name}</div>
+            <div class="comp-item-meta comp-item-desc" id="comp-mon-meta-${item.index}">Cliquez pour importer</div>
+          </div>
+          <button class="btn-comp-add" data-comp-type="monster" data-comp-url="${item.url}" data-comp-name="${item.name}">⊕ Importer</button>`;
       }
       frag.appendChild(div);
     });
@@ -10835,11 +11359,77 @@ function getSbClient() {
     triggerSave();
   }
 
-  document.addEventListener('click', e => {
+  function _addMonsterAsFamiliar(data) {
+    if (!playerData) return;
+    const c = C();
+    if (!c.familiars) c.familiars = [];
+    const sizeMap = { Tiny:'Très petite', Small:'Petite', Medium:'Moyenne', Large:'Grande', Huge:'Très grande', Gargantuan:'Gigantesque' };
+    const typeStr = [data.type, data.subtype].filter(Boolean).join(', ');
+    const traits = (data.special_abilities||[]).map(t => ({ name: t.name||'', desc: t.desc||'' }));
+    const actions = (data.actions||[]).map(a => ({ name: a.name||'', desc: a.desc||'' }));
+    const bonusActions = (data.bonus_actions||[]).map(a => ({ name: a.name||'', desc: a.desc||'' }));
+    const reactions = (data.reactions||[]).map(a => ({ name: a.name||'', desc: a.desc||'' }));
+    const speeds = data.speed ? Object.entries(data.speed).map(([k,v]) => k === 'walk' ? v : `${k} ${v}`).join(', ') : '';
+    const acVal = data.armor_class?.[0]?.value || 10;
+    const acNote = data.armor_class?.[0]?.type || '';
+    const senses = Object.entries(data.senses||{}).map(([k,v]) => `${k.replace(/_/g,' ')} ${v}`).join(', ');
+    const fam = {
+      name: data.name || 'Monstre',
+      type: typeStr || 'Bête',
+      size: sizeMap[data.size] || data.size || 'Moyenne',
+      alignment: data.alignment || 'Non aligné',
+      ac: acVal, acNote,
+      pvMax: data.hit_points || 4,
+      pvActuel: data.hit_points || 4,
+      speed: speeds,
+      for: data.strength||10, dex: data.dexterity||10, con: data.constitution||10,
+      int: data.intelligence||10, sag: data.wisdom||10, cha: data.charisma||10,
+      savesNote: (data.proficiencies||[]).filter(p => p.proficiency?.index?.startsWith('saving-throw'))
+        .map(p => `${p.proficiency.name?.replace('Saving Throw: ','')} +${p.value}`).join(', '),
+      skillsNote: (data.proficiencies||[]).filter(p => p.proficiency?.index?.startsWith('skill-'))
+        .map(p => `${p.proficiency.name?.replace('Skill: ','')} +${p.value}`).join(', '),
+      vulnerabilities: (data.damage_vulnerabilities||[]).join(', '),
+      resistances: (data.damage_resistances||[]).join(', '),
+      immunities: (data.damage_immunities||[]).join(', '),
+      senses, languages: data.languages || '—',
+      cr: String(data.challenge_rating ?? '0'),
+      traits, actions, bonusActions, reactions, notes: '', _collapsed: false
+    };
+    c.familiars.push(fam);
+    /* mark tab dirty so next visit re-renders */
+    if (typeof _tabDirty !== 'undefined') _tabDirty.familiers = true;
+    renderFamiliars();
+    triggerSave();
+    /* switch to familiers tab if dashboard is active */
+    if (document.getElementById('screen-dashboard')?.classList.contains('active')) {
+      const switchFn = document.querySelector('.tab-btn[data-tab="familiers"]');
+      switchFn?.click();
+    }
+  }
+
+  document.addEventListener('click', async e => {
     const btn = e.target.closest('.btn-comp-add');
     if (!btn) return;
-    const idx = parseInt(btn.dataset.compIdx);
     const type = btn.dataset.compType;
+    if (type === 'monster') {
+      btn.textContent = '…';
+      btn.disabled = true;
+      try {
+        const r = await fetch(API + btn.dataset.compUrl);
+        const data = await r.json();
+        _addMonsterAsFamiliar(data);
+        btn.textContent = '✓ Importé';
+        setTimeout(() => { btn.textContent = '⊕ Importer'; btn.disabled = false; }, 2000);
+        /* show a brief meta preview */
+        const metaEl = btn.closest('.comp-item')?.querySelector('.comp-item-meta');
+        if (metaEl) metaEl.textContent = `CA ${data.armor_class?.[0]?.value||'?'} · PV ${data.hit_points||'?'} · FC ${data.challenge_rating??'?'}`;
+      } catch {
+        btn.textContent = 'Erreur';
+        setTimeout(() => { btn.textContent = '⊕ Importer'; btn.disabled = false; }, 2000);
+      }
+      return;
+    }
+    const idx = parseInt(btn.dataset.compIdx);
     const item = _allItems[idx];
     if (!item) return;
     if (type === 'spell') _addSpell(item);
@@ -10858,9 +11448,11 @@ function getSbClient() {
       document.querySelectorAll('.comp-tab-btn').forEach(b => b.classList.toggle('active', b === btn));
       document.getElementById('comp-filter-level').style.display = _activeTab === 'spells' ? '' : 'none';
       document.getElementById('comp-filter-cat').style.display = _activeTab === 'equipment' ? '' : 'none';
+      document.getElementById('comp-filter-cr').style.display = _activeTab === 'monsters' ? '' : 'none';
       document.getElementById('comp-search').value = '';
       document.getElementById('comp-filter-level').value = '';
       document.getElementById('comp-filter-cat').value = '';
+      document.getElementById('comp-filter-cr').value = '';
       if (_cache[_activeTab]) { _allItems = _cache[_activeTab]; _render(); }
       else _loadTab(_activeTab);
     });
@@ -10873,6 +11465,7 @@ function getSbClient() {
   document.getElementById('comp-search')?.addEventListener('input', _debouncedRender);
   document.getElementById('comp-filter-level')?.addEventListener('change', _render);
   document.getElementById('comp-filter-cat')?.addEventListener('change', _render);
+  document.getElementById('comp-filter-cr')?.addEventListener('change', _render);
 
   document.getElementById('btn-open-compendium-spell')?.addEventListener('click', () => openCompendium('spells'));
   document.getElementById('btn-open-compendium-item')?.addEventListener('click', () => openCompendium('equipment'));
@@ -10919,6 +11512,7 @@ function startRealtime(username) {
     <div class="comp-tabs" role="tablist">
       <button class="comp-tab-btn active" data-comp-tab="spells" role="tab">Sorts</button>
       <button class="comp-tab-btn" data-comp-tab="equipment" role="tab">Équipements</button>
+      <button class="comp-tab-btn" data-comp-tab="monsters" role="tab">Monstres</button>
     </div>
     <div class="comp-filters">
       <input type="search" class="comp-search" id="comp-search" placeholder="Rechercher…" autocomplete="off">
@@ -10934,6 +11528,14 @@ function startRealtime(username) {
         <option value="7">Niveau 7</option>
         <option value="8">Niveau 8</option>
         <option value="9">Niveau 9</option>
+      </select>
+      <select class="comp-filter-select" id="comp-filter-cr" title="Filtrer par FC" style="display:none;">
+        <option value="">Tout FC</option>
+        <option value="0">FC 0</option><option value="1/8">FC 1/8</option>
+        <option value="1/4">FC 1/4</option><option value="1/2">FC 1/2</option>
+        <option value="1">FC 1</option><option value="2">FC 2</option>
+        <option value="3">FC 3</option><option value="4">FC 4</option>
+        <option value="5">FC 5</option><option value="6">FC 6+</option>
       </select>
       <select class="comp-filter-select" id="comp-filter-cat" title="Filtrer par catégorie" style="display:none;">
         <option value="">Toute catégorie</option>
