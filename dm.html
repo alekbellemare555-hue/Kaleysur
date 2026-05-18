@@ -449,11 +449,86 @@ body.focus-mode #dm-main{width:100%;}
 .dice-result.fail{color:var(--danger);}
 #nav-dice-wrap{position:relative;}
 
+/* ── Sorts drawer ── */
+.ds-spell-filter{
+  width:100%;background:var(--bg-card);border:1px solid var(--border);
+  border-radius:4px;color:var(--text);font-size:0.8rem;padding:0.3rem 0.55rem;
+  margin-bottom:0.65rem;box-sizing:border-box;
+}
+.ds-spell-filter:focus{outline:none;border-color:var(--gold-dark);}
+.ds-spell-calcs{
+  display:flex;gap:0.5rem;margin-bottom:0.75rem;flex-wrap:wrap;
+}
+.ds-spell-calc{
+  flex:1;min-width:70px;text-align:center;
+  background:var(--bg-card);border:1px solid var(--border);border-radius:5px;
+  padding:0.3rem 0.5rem;
+}
+.ds-spell-calc-label{font-size:0.62rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;}
+.ds-spell-calc-val{font-family:'Cinzel',serif;font-size:1rem;color:var(--gold);font-weight:700;}
+.ds-spell-level-group{margin-bottom:0.6rem;}
+.ds-spell-level-header{
+  font-family:'Cinzel',serif;font-size:0.67rem;letter-spacing:0.08em;
+  text-transform:uppercase;color:var(--gold-dark);margin-bottom:0.3rem;
+  padding:0.15rem 0;border-bottom:1px solid var(--border);
+}
+.ds-spell-item{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:4px;padding:0.35rem 0.6rem;margin-bottom:0.25rem;
+  font-size:0.8rem;
+}
+.ds-spell-name{color:var(--text);font-weight:600;display:flex;align-items:center;gap:0.4rem;margin-bottom:0.12rem;}
+.ds-spell-conc{
+  font-size:0.62rem;color:#8ad;background:rgba(100,160,220,0.12);
+  border:1px solid rgba(100,160,220,0.3);border-radius:10px;padding:0.05rem 0.35rem;
+}
+.ds-spell-meta{display:flex;gap:0.3rem;flex-wrap:wrap;}
+.ds-spell-tag{
+  font-size:0.68rem;color:var(--text-dim);background:var(--border-bright);
+  border-radius:3px;padding:0.05rem 0.3rem;white-space:nowrap;
+}
+.ds-spell-dmg{color:var(--danger);background:rgba(200,80,80,0.1);border-color:rgba(200,80,80,0.25);}
+
 /* ── Chat sidebar section ── */
 #chat-section{
   border-top:1px solid var(--border-bright);
-  display:flex;flex-direction:column;max-height:220px;flex-shrink:0;
+  display:flex;flex-direction:column;max-height:320px;flex-shrink:0;
 }
+#chat-room-tabs{
+  display:flex;gap:0;overflow-x:auto;flex-shrink:0;
+  border-bottom:1px solid var(--border);scrollbar-width:none;
+}
+#chat-room-tabs::-webkit-scrollbar{display:none;}
+.chat-room-tab{
+  padding:0.3rem 0.7rem;background:none;border:none;
+  border-bottom:2px solid transparent;color:var(--text-dim);
+  font-size:0.7rem;font-family:'Cinzel',serif;letter-spacing:0.04em;
+  cursor:pointer;white-space:nowrap;transition:all 0.15s;flex-shrink:0;
+}
+.chat-room-tab:hover{color:var(--gold);}
+.chat-room-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.chat-room-tab .tab-unread{
+  background:var(--danger);color:#fff;border-radius:8px;
+  font-size:0.58rem;padding:0.02rem 0.32rem;margin-left:0.2rem;display:none;
+}
+.chat-room-tab .tab-unread.visible{display:inline;}
+#chat-send-row{
+  display:flex;gap:0.4rem;padding:0.4rem 0.6rem;flex-shrink:0;
+  border-top:1px solid var(--border);
+}
+#dm-chat-input{
+  flex:1;background:var(--bg-card);border:1px solid var(--border);
+  border-radius:4px;color:var(--text);font-size:0.8rem;
+  padding:0.3rem 0.5rem;resize:none;font-family:inherit;
+}
+#dm-chat-input:focus{outline:none;border-color:var(--gold-dark);}
+#dm-chat-send{
+  background:var(--gold-dark);border:none;border-radius:4px;
+  color:#fff;padding:0.3rem 0.6rem;cursor:pointer;font-size:0.85rem;
+  transition:background 0.15s;flex-shrink:0;
+}
+#dm-chat-send:hover{background:var(--gold);}
+#dm-chat-send:disabled{opacity:0.5;cursor:default;}
 #chat-section-header{
   padding:0.5rem 1rem;display:flex;align-items:center;justify-content:space-between;
   font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.1em;
@@ -473,8 +548,11 @@ body.focus-mode #dm-main{width:100%;}
 .dm-chat-msg .chat-author{color:var(--gold-dark);font-family:'Cinzel',serif;font-size:0.65rem;margin-right:0.35rem;}
 .dm-chat-msg .chat-text{color:var(--text);}
 #chat-section.collapsed #chat-msgs-list{display:none;}
+#chat-section.collapsed #chat-room-tabs{display:none;}
+#chat-section.collapsed #chat-send-row{display:none;}
 #chat-section-chevron{transition:transform 0.2s;font-size:0.5rem;}
 #chat-section.collapsed #chat-section-chevron{transform:rotate(-90deg);}
+.dm-chat-msg.dm-own .chat-author{color:var(--gold);}
 
 /* ── Initiative Tracker ── */
 #init-bar{
@@ -933,7 +1011,12 @@ body.sidebar-open #sidebar-backdrop{display:block;}
           <span class="chat-unread" id="chat-unread-badge">0</span>
           <span id="chat-section-chevron">▼</span>
         </div>
+        <div id="chat-room-tabs"></div>
         <div id="chat-msgs-list"><div class="loading">Chargement…</div></div>
+        <div id="chat-send-row">
+          <input type="text" id="dm-chat-input" placeholder="Message en tant que MJ…" maxlength="500" autocomplete="off">
+          <button id="dm-chat-send" title="Envoyer">↵</button>
+        </div>
       </div>
 
       <!-- Monsters -->
@@ -1175,6 +1258,7 @@ async function enterDM() {
   await refreshAllPlayers();
   restoreDmState();
   startRealtime();
+  renderChatRoomTabs();
   loadDmChat();
   startDmChatRealtime();
   // Polling de secours toutes les 60s si Realtime déconnecté
@@ -1234,6 +1318,7 @@ async function refreshAllPlayers() {
   renderSidebar();
   refreshOpenPanels();
   renderInitChips();
+  renderChatRoomTabs();
   document.getElementById('poll-indicator').textContent =
     '✓ ' + new Date().toLocaleTimeString('fr',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 }
@@ -2104,11 +2189,13 @@ document.querySelectorAll('.dice-btn').forEach(btn => {
 });
 
 /* ══════════════════════════════════════════
-   Chat DM (lecture)
+   Chat DM (lecture + envoi + rooms)
 ══════════════════════════════════════════ */
 const DM_CHAT_TABLE = '/rest/v1/chat_messages';
-let _chatLastId = 0;
-let _chatUnread = 0;
+let _chatLastId  = 0;
+let _chatUnread  = 0;
+let _chatRoom    = 'general';   // room active
+let _chatRooms   = ['general']; // toutes les rooms connues
 
 document.getElementById('chat-section-header').addEventListener('click', () => {
   document.getElementById('chat-section').classList.toggle('collapsed');
@@ -2120,46 +2207,119 @@ document.getElementById('chat-section-header').addEventListener('click', () => {
   }
 });
 
+/* ── Tabs de rooms ── */
+function renderChatRoomTabs() {
+  const container = document.getElementById('chat-room-tabs');
+  if (!container) return;
+  // General + une room privée par joueur (dm_{username})
+  const players = allPlayers.filter(p => p.username !== ADMIN_USER);
+  _chatRooms = ['general', ...players.map(p => 'dm_' + p.username)];
+  container.innerHTML = _chatRooms.map(r => {
+    const label = r === 'general' ? 'Général'
+      : (allPlayers.find(p => 'dm_' + p.username === r)?.data?.characters?.[allPlayers.find(p2=>'dm_'+p2.username===r)?.data?.activeCharId]?.name
+         || r.replace('dm_', ''));
+    return `<button class="chat-room-tab${r === _chatRoom ? ' active' : ''}" data-room="${esc(r)}">${esc(label)}</button>`;
+  }).join('');
+  container.querySelectorAll('.chat-room-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      _chatRoom = btn.dataset.room;
+      renderChatRoomTabs();
+      loadDmChat();
+    });
+  });
+}
+
+/* ── Chargement des messages de la room active ── */
 async function loadDmChat() {
+  const list = document.getElementById('chat-msgs-list');
+  list.innerHTML = '<div class="loading">Chargement…</div>';
   try {
-    const r = await sbFetch(`${DM_CHAT_TABLE}?room=eq.general&order=id.desc&limit=20`);
-    if (!r.ok) return;
+    const r = await sbFetch(`${DM_CHAT_TABLE}?room=eq.${encodeURIComponent(_chatRoom)}&order=id.desc&limit=40`);
+    if (!r.ok) { list.innerHTML = '<div style="color:var(--text-dim);font-size:0.78rem;padding:0.3rem;">Erreur réseau.</div>'; return; }
     const msgs = (await r.json()).reverse();
     if (msgs.length) _chatLastId = msgs[msgs.length - 1].id;
     renderDmChat(msgs);
-  } catch(e) {}
+  } catch(e) { list.innerHTML = '<div style="color:var(--text-dim);font-size:0.78rem;padding:0.3rem;">Erreur réseau.</div>'; }
 }
 
 function renderDmChat(msgs) {
   const list = document.getElementById('chat-msgs-list');
-  if (!msgs.length) { list.innerHTML = '<div style="color:var(--text-dim);font-size:0.78rem;font-style:italic;padding:0.3rem 0;">Aucun message.</div>'; return; }
+  if (!msgs.length) {
+    list.innerHTML = '<div style="color:var(--text-dim);font-size:0.78rem;font-style:italic;padding:0.3rem 0;">Aucun message.</div>';
+    return;
+  }
   list.innerHTML = msgs.map(m => `
-    <div class="dm-chat-msg">
-      <span class="chat-author">${esc(m.username||'?')}</span>
-      <span class="chat-text">${esc(m.content||'')}</span>
+    <div class="dm-chat-msg${m.username === 'MJ' ? ' dm-own' : ''}">
+      <span class="chat-author">${esc(m.username || '?')}</span>
+      <span class="chat-text">${esc(m.content || '')}</span>
     </div>`).join('');
   list.scrollTop = list.scrollHeight;
 }
 
+function _appendChatMsg(m) {
+  const list = document.getElementById('chat-msgs-list');
+  // Supprimer le placeholder "Aucun message" si présent
+  const placeholder = list.querySelector('div[style]');
+  if (placeholder && placeholder.textContent.includes('Aucun')) placeholder.remove();
+
+  const div = document.createElement('div');
+  div.className = 'dm-chat-msg' + (m.username === 'MJ' ? ' dm-own' : '');
+  div.innerHTML = `<span class="chat-author">${esc(m.username || '?')}</span><span class="chat-text">${esc(m.content || '')}</span>`;
+  list.appendChild(div);
+  list.scrollTop = list.scrollHeight;
+
+  if (document.getElementById('chat-section').classList.contains('collapsed')) {
+    _chatUnread++;
+    const badge = document.getElementById('chat-unread-badge');
+    badge.textContent = _chatUnread;
+    badge.classList.add('visible');
+  }
+}
+
+/* ── Envoi d'un message ── */
+async function sendDmMessage() {
+  const inp = document.getElementById('dm-chat-input');
+  const btn = document.getElementById('dm-chat-send');
+  const msg = inp?.value?.trim();
+  if (!msg) return;
+  inp.value = '';
+  btn.disabled = true;
+  try {
+    const r = await sbFetch(DM_CHAT_TABLE, {
+      method: 'POST',
+      body: JSON.stringify({ username: 'MJ', content: msg, room: _chatRoom, type: 'chat' }),
+      headers: { 'Prefer': 'return=minimal' }
+    });
+    if (!r.ok) { inp.value = msg; } // restaurer si erreur
+  } catch(e) { inp.value = msg; }
+  btn.disabled = false;
+  inp.focus();
+}
+
+// Wiring send button + Enter key
+document.getElementById('dm-chat-send')?.addEventListener('click', sendDmMessage);
+document.getElementById('dm-chat-input')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendDmMessage(); }
+});
+
+/* ── Realtime toutes rooms ── */
 function startDmChatRealtime() {
   if (!window.supabase) return;
   try {
     const client = window.supabase.createClient(SB_URL, SB_KEY);
     client.channel('dm-chat-watch')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages', filter: 'room=eq.general' }, payload => {
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, payload => {
         const m = payload.new;
-        const list = document.getElementById('chat-msgs-list');
-        const div = document.createElement('div');
-        div.className = 'dm-chat-msg';
-        div.innerHTML = `<span class="chat-author">${esc(m.username||'?')}</span><span class="chat-text">${esc(m.content||'')}</span>`;
-        list.appendChild(div);
-        list.scrollTop = list.scrollHeight;
-        // Badge si section réduite
-        if (document.getElementById('chat-section').classList.contains('collapsed')) {
-          _chatUnread++;
-          const badge = document.getElementById('chat-unread-badge');
-          badge.textContent = _chatUnread;
-          badge.classList.add('visible');
+        // Afficher seulement si on est dans la bonne room
+        if (m.room === _chatRoom) _appendChatMsg(m);
+        else {
+          // Incrémenter le badge de la section si la room est différente
+          if (document.getElementById('chat-section').classList.contains('collapsed') || m.room !== _chatRoom) {
+            _chatUnread++;
+            const badge = document.getElementById('chat-unread-badge');
+            badge.textContent = _chatUnread;
+            badge.classList.add('visible');
+          }
         }
       })
       .subscribe();
@@ -2293,9 +2453,57 @@ function renderDrawerBody() {
     <div class="drawer-inner-tabs">
       <button class="drawer-inner-tab${_drawerSection==='perso'?' active':''}" data-sec="perso">🗡 Personnage</button>
       <button class="drawer-inner-tab${_drawerSection==='inventaire'?' active':''}" data-sec="inventaire">🎒 Inventaire</button>
+      <button class="drawer-inner-tab${_drawerSection==='sorts'?' active':''}" data-sec="sorts">✨ Sorts</button>
     </div>
 
-    ${_drawerSection === 'perso' ? `
+    ${_drawerSection === 'sorts' ? (() => {
+      const sorts = c.sorts || [];
+      const niveau = parseInt(c.niveau) || 1;
+      const pb = Math.ceil(niveau / 4) + 1;
+      const statKey = c.sortStat || c.spellcastingAbility || 'int';
+      const statScore = parseInt(c[statKey]) || 10;
+      const statMod = Math.floor((statScore - 10) / 2);
+      const dc = 8 + pb + statMod;
+      const atkBonus = pb + statMod;
+      const grouped = {};
+      sorts.forEach(s => {
+        const lvl = s.level ?? s.niveau ?? 0;
+        if (!grouped[lvl]) grouped[lvl] = [];
+        grouped[lvl].push(s);
+      });
+      const levelLabel = lvl => parseInt(lvl) === 0 ? 'Tours de magie' : `Niveau ${lvl}`;
+      return `
+      <div class="ds-section">
+        <div class="ds-spell-calcs">
+          <div class="ds-spell-calc"><div class="ds-label">DD de sort</div><div class="ds-value" style="font-size:1.1rem;font-weight:700;color:var(--gold);">${dc}</div></div>
+          <div class="ds-spell-calc"><div class="ds-label">Atk. sort</div><div class="ds-value" style="font-size:1.1rem;font-weight:700;color:var(--gold);">${atkBonus >= 0 ? '+' : ''}${atkBonus}</div></div>
+          <div class="ds-spell-calc"><div class="ds-label">Mod. incant.</div><div class="ds-value" style="font-size:0.9rem;color:var(--text-mid);">${statKey.toUpperCase()} (${statMod >= 0 ? '+' : ''}${statMod})</div></div>
+        </div>
+        <input type="search" class="ds-spell-filter" id="ds-spell-search" placeholder="Filtrer les sorts…">
+        <div id="ds-spells-container">
+          ${Object.keys(grouped).sort((a, b) => parseInt(a) - parseInt(b)).map(lvl => `
+            <div class="ds-spell-level-group">
+              <div class="ds-spell-level-header">${levelLabel(lvl)} <span style="color:var(--text-dim);font-weight:400;">(${grouped[lvl].length})</span></div>
+              ${grouped[lvl].map(s => `
+                <div class="ds-spell-item">
+                  <div class="ds-spell-name">
+                    ${esc(s.name || '—')}
+                    ${s.concentration ? `<span class="ds-spell-conc" title="Concentration">C</span>` : ''}
+                    ${s.ritual ? `<span class="ds-spell-conc" title="Rituel">R</span>` : ''}
+                  </div>
+                  <div class="ds-spell-meta">
+                    ${(s.school || s.ecole) ? `<span class="ds-spell-tag">${esc(s.school || s.ecole)}</span>` : ''}
+                    ${s.castingTime ? `<span class="ds-spell-tag">⏱ ${esc(s.castingTime)}</span>` : ''}
+                    ${s.range ? `<span class="ds-spell-tag">⦾ ${esc(s.range)}</span>` : ''}
+                    ${s.duration ? `<span class="ds-spell-tag">⧗ ${esc(s.duration)}</span>` : ''}
+                    ${(s.damage || s.degats) ? `<span class="ds-spell-tag ds-spell-dmg">⚔ ${esc(s.damage || s.degats)}</span>` : ''}
+                  </div>
+                </div>`).join('')}
+            </div>`).join('')}
+          ${!sorts.length ? `<div style="color:var(--text-dim);font-size:0.82rem;font-style:italic;padding:0.5rem 0;">Aucun sort enregistré.</div>` : ''}
+        </div>
+      </div>`;
+    })() : _drawerSection === 'perso' ? `
     <!-- ══ ONGLET PERSONNAGE ══ -->
     <div class="ds-section">
       <div class="ds-section-title">Infos</div>
@@ -2425,6 +2633,19 @@ function renderDrawerBody() {
       el.addEventListener('input',  () => scheduleDrawerSave());
       el.addEventListener('change', () => scheduleDrawerSave());
     });
+  } else if (_drawerSection === 'sorts') {
+    // Sorts search filter (read-only tab, no save)
+    const spellSearch = body.querySelector('#ds-spell-search');
+    spellSearch?.addEventListener('input', () => {
+      const q = spellSearch.value.toLowerCase().trim();
+      body.querySelectorAll('.ds-spell-item').forEach(item => {
+        item.style.display = q && !item.textContent.toLowerCase().includes(q) ? 'none' : '';
+      });
+      body.querySelectorAll('.ds-spell-level-group').forEach(grp => {
+        const hasVisible = [...grp.querySelectorAll('.ds-spell-item')].some(it => it.style.display !== 'none');
+        grp.style.display = hasVisible ? '' : 'none';
+      });
+    });
   } else {
     // Currency inputs
     body.querySelectorAll('[data-inv-currency]').forEach(el => {
@@ -2465,6 +2686,7 @@ function scheduleDrawerSave() {
 }
 
 async function commitDrawerSave() {
+  if (_drawerSection === 'sorts') return; // lecture seule
   if (!_drawerPlayer || !_drawerChar) return;
   const player = allPlayers.find(p => p.username === _drawerPlayer);
   if (!player) return;
