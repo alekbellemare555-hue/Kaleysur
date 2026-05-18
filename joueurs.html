@@ -3570,7 +3570,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
     <div id="admin-char-bar" style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap;"></div>
     <!-- Tabs -->
     <div class="modal-tabs">
-      <button class="modal-tab-btn active" data-mtab="fiche">⚔ Fiche</button>
+      <button class="modal-tab-btn active" data-mtab="fiche">⚔ Sheet</button>
       <button class="modal-tab-btn" data-mtab="competences">🎯 Skills</button>
       <button class="modal-tab-btn" data-mtab="sorts">✨ Spells</button>
       <button class="modal-tab-btn" data-mtab="inventaire">🎒 Inventory</button>
@@ -3580,7 +3580,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
     <div id="modal-body"></div>
     <!-- Actions -->
     <div style="display:flex;gap:0.75rem;justify-content:flex-end;margin-top:1.25rem;border-top:1px solid var(--j-border-col,#4a3510);padding-top:1rem;">
-      <button class="btn btn-danger" id="btn-admin-cancel">Annuler</button>
+      <button class="btn btn-danger" id="btn-admin-cancel">Cancel</button>
       <button class="btn btn-gold" id="btn-admin-save">💾 Sauvegarder</button>
     </div>
   </div>
@@ -5032,7 +5032,7 @@ function emptyCharacter() {
     heroNote:''
   };
 }
-function emptyNotesPages() { return [{ name: 'Notes de session', content: '' }]; }
+function emptyNotesPages() { return [{ name: 'Session Notes', content: '' }]; }
 function emptyCharSlot(name) {
   return { name, character: emptyCharacter(), inventory: { items:[], currency:{pp:0,gp:0,ep:0,sp:0,cp:0} }, notes: emptyNotesPages() };
 }
@@ -5056,7 +5056,7 @@ function getNotePages() {
   if (!slot) return [];
   // Compatibilité ascendante : convertir l'ancien format string en tableau
   if (typeof slot.notes === 'string') {
-    slot.notes = slot.notes ? [{ name: 'Notes de session', content: slot.notes }] : emptyNotesPages();
+    slot.notes = slot.notes ? [{ name: 'Session Notes', content: slot.notes }] : emptyNotesPages();
   }
   if (!Array.isArray(slot.notes) || slot.notes.length === 0) slot.notes = emptyNotesPages();
   return slot.notes;
@@ -7972,8 +7972,8 @@ function renderAdminModalTab() {
 
       <!-- Ressources -->
       <div class="sheet-section">
-        <div class="sheet-section-title">Ressources de classe</div>
-        <div style="font-size:0.8rem;color:#888;font-style:italic;margin-bottom:0.5rem;">Valeurs actuelles (les maximums sont calculés automatiquement selon la classe et le niveau)</div>
+        <div class="sheet-section-title">Class Resources</div>
+        <div style="font-size:0.8rem;color:#888;font-style:italic;margin-bottom:0.5rem;">Current values (maximums are automatically calculated based on class and level)</div>
         <div id="ae-resources-wrap" style="display:flex;flex-wrap:wrap;gap:0.75rem;">
           ${(c.resources||[]).map((r,i) => `
             <div style="background:#140f08;border:1px solid #4a3510;border-radius:6px;padding:0.5rem 0.75rem;min-width:120px;">
@@ -7984,39 +7984,39 @@ function renderAdminModalTab() {
                 <span style="color:#888;font-size:0.82rem;">${r.max||0}</span>
               </div>
             </div>
-          `).join('') || '<span style="color:#555;font-size:0.82rem;">Aucune ressource (dépend de la classe/niveau)</span>'}
+          `).join('') || '<span style="color:#555;font-size:0.82rem;">No resources (depends on class/level)</span>'}
         </div>
       </div>
     `;
 
   } else if (adminActiveTab === 'competences') {
     const SKILLS_LIST = [
-      { key:'acrobaties',   label:'Acrobaties',   stat:'DEX' },
-      { key:'animaux',      label:'Dressage',      stat:'SAG' },
-      { key:'arcanes',      label:'Arcanes',       stat:'INT' },
-      { key:'athletisme',   label:'Athlétisme',    stat:'FOR' },
-      { key:'discret',      label:'Discrétion',    stat:'DEX' },
-      { key:'duperie',      label:'Duperie',       stat:'CHA' },
-      { key:'histoire',     label:'Histoire',      stat:'INT' },
+      { key:'acrobaties',   label:'Acrobatics',    stat:'DEX' },
+      { key:'animaux',      label:'Animal Handling',stat:'WIS' },
+      { key:'arcanes',      label:'Arcana',        stat:'INT' },
+      { key:'athletisme',   label:'Athletics',     stat:'STR' },
+      { key:'discret',      label:'Stealth',       stat:'DEX' },
+      { key:'duperie',      label:'Deception',     stat:'CHA' },
+      { key:'histoire',     label:'History',       stat:'INT' },
       { key:'intimidation', label:'Intimidation',  stat:'CHA' },
       { key:'investigation',label:'Investigation', stat:'INT' },
-      { key:'medecine',     label:'Médecine',      stat:'SAG' },
+      { key:'medecine',     label:'Medicine',      stat:'WIS' },
       { key:'nature',       label:'Nature',        stat:'INT' },
-      { key:'perception',   label:'Perception',    stat:'SAG' },
+      { key:'perception',   label:'Perception',    stat:'WIS' },
       { key:'performance',  label:'Performance',   stat:'CHA' },
       { key:'persuasion',   label:'Persuasion',    stat:'CHA' },
-      { key:'prestidig',    label:'Prestidigitation', stat:'DEX' },
+      { key:'prestidig',    label:'Sleight of Hand',stat:'DEX' },
       { key:'religion',     label:'Religion',      stat:'INT' },
-      { key:'perspicacite', label:'Perspicacité',  stat:'SAG' },
-      { key:'survie',       label:'Survie',        stat:'SAG' },
+      { key:'perspicacite', label:'Insight',       stat:'WIS' },
+      { key:'survie',       label:'Survival',      stat:'WIS' },
     ];
     const SAVES = ['for','dex','con','int','sag','cha'];
-    const SAVE_LABELS = { for:'Force', dex:'Dextérité', con:'Constitution', int:'Intelligence', sag:'Sagesse', cha:'Charisme' };
+    const SAVE_LABELS = { for:'Strength', dex:'Dexterity', con:'Constitution', int:'Intelligence', sag:'Wisdom', cha:'Charisma' };
 
     body.innerHTML = `
       <!-- Jets de sauvegarde -->
       <div class="sheet-section">
-        <div class="sheet-section-title">Jets de sauvegarde</div>
+        <div class="sheet-section-title">Saving Throws</div>
         <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
           ${SAVES.map(s => `
             <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;color:#bbb;cursor:pointer;background:#140f08;border:1px solid #4a3510;border-radius:6px;padding:0.3rem 0.65rem;">
@@ -8028,7 +8028,7 @@ function renderAdminModalTab() {
       </div>
       <!-- Compétences -->
       <div class="sheet-section">
-        <div class="sheet-section-title">Compétences</div>
+        <div class="sheet-section-title">Skills</div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.4rem;">
           ${SKILLS_LIST.map(sk => `
             <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;color:#bbb;cursor:pointer;padding:0.25rem 0.35rem;border-radius:5px;background:rgba(255,255,255,0.02);">
@@ -8058,8 +8058,8 @@ function renderAdminModalTab() {
     body.innerHTML = `
       <div class="sheet-section">
         <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
-          <span>Sorts (${spells.length})</span>
-          <button class="btn btn-sm btn-gold" id="ae-add-spell">+ Ajouter</button>
+          <span>Spells (${spells.length})</span>
+          <button class="btn btn-sm btn-gold" id="ae-add-spell">+ Add</button>
         </div>
         <div style="overflow-x:auto;">
           <table class="inv-table" style="min-width:500px;">
@@ -8146,8 +8146,8 @@ function renderAdminModalTab() {
   } else if (adminActiveTab === 'notes') {
     // Normaliser le format (compatibilité ascendante)
     let pages = slot.notes;
-    if (typeof pages === 'string') pages = pages ? [{ name: 'Notes de session', content: pages }] : [{ name: 'Notes de session', content: '' }];
-    if (!Array.isArray(pages) || pages.length === 0) pages = [{ name: 'Notes de session', content: '' }];
+    if (typeof pages === 'string') pages = pages ? [{ name: 'Session Notes', content: pages }] : [{ name: 'Session Notes', content: '' }];
+    if (!Array.isArray(pages) || pages.length === 0) pages = [{ name: 'Session Notes', content: '' }];
     const pagesHtml = pages.map((page, i) => `
       <div style="margin-bottom:1.2rem;">
         <div style="font-size:0.75rem;color:var(--gold);font-family:'Cinzel',serif;letter-spacing:0.06em;margin-bottom:0.4rem;padding-bottom:0.3rem;border-bottom:1px solid #4a3510;">${esc(page.name || `Page ${i + 1}`)}</div>
@@ -8156,7 +8156,7 @@ function renderAdminModalTab() {
     `).join('');
     body.innerHTML = `
       <div class="sheet-section">
-        <div class="sheet-section-title">Notes du joueur (éditables par le MJ)</div>
+        <div class="sheet-section-title">Player Notes (editable by DM)</div>
         ${pagesHtml}
       </div>
     `;
@@ -8260,8 +8260,8 @@ async function adminSaveEdit() {
 
   } else if (adminActiveTab === 'notes') {
     let pages = slot.notes;
-    if (typeof pages === 'string') pages = pages ? [{ name: 'Notes de session', content: pages }] : [{ name: 'Notes de session', content: '' }];
-    if (!Array.isArray(pages) || pages.length === 0) pages = [{ name: 'Notes de session', content: '' }];
+    if (typeof pages === 'string') pages = pages ? [{ name: 'Session Notes', content: pages }] : [{ name: 'Session Notes', content: '' }];
+    if (!Array.isArray(pages) || pages.length === 0) pages = [{ name: 'Session Notes', content: '' }];
     document.querySelectorAll('.ae-notes-page').forEach(ta => {
       const i = parseInt(ta.dataset.pageIdx);
       if (!isNaN(i) && pages[i]) pages[i].content = ta.value;
