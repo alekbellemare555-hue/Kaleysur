@@ -2273,95 +2273,128 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
   .fam-topstats { grid-template-columns: repeat(2,1fr); }
 }
 
-/* ── Level Up Plan ── */
-.lvlup-header {
-  display: flex; align-items: center; gap: 0.6rem;
-  font-size: 0.85rem; color: var(--j-text, #e2cfa0); margin-bottom: 0.9rem;
+/* ── Level Plan Tab ── */
+#tab-lvlup { padding: 0.85rem 1.5rem 3rem; }
+.lvlplan-bar {
+  display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap;
+  background: var(--j-panel, #1a1a24); border: 1px solid var(--j-border-col, #2a2a3a);
+  border-radius: 6px; padding: 0.7rem 1rem; margin-bottom: 0.85rem;
 }
-.lvlup-arrow { color: var(--gold, #c9a96e); font-size: 1.1rem; }
-.lvlup-next {
-  font-family: 'Cinzel', serif; font-size: 0.95rem; font-weight: 700;
-  color: var(--gold, #c9a96e); letter-spacing: 0.04em;
+.lvlplan-bar-stat { min-width: 80px; }
+.lvlplan-bar-label { font-size: 0.62rem; color: #888; text-transform: uppercase; letter-spacing: 0.05em; }
+.lvlplan-bar-val { font-size: 0.95rem; font-weight: 700; color: var(--gold, #c9a96e); line-height: 1.2; }
+.lvlplan-bar-actions { margin-left: auto; display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+.lvlrow {
+  border: 1px solid var(--j-border-col, #2a2a3a); border-radius: 5px; margin-bottom: 0.3rem;
+  background: var(--j-panel, #1a1a24); overflow: hidden; transition: border-color 0.15s;
 }
-.lvlup-max-badge {
-  font-size: 0.72rem; color: #888; font-style: italic; margin-left: 0.4rem;
+.lvlrow.open { border-color: rgba(201,169,110,0.35); }
+.lvlrow-hd {
+  display: grid;
+  grid-template-columns: 40px minmax(90px,140px) 34px minmax(54px,auto) 36px 1fr 22px;
+  gap: 0.4rem; align-items: center; padding: 0.4rem 0.6rem;
+  cursor: pointer; user-select: none; transition: background 0.12s;
 }
-.lvlup-block {
+.lvlrow-hd:hover { background: rgba(255,255,255,0.025); }
+.lvlrow.open .lvlrow-hd { background: rgba(201,169,110,0.03); }
+.lvlrow-num {
+  font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 700;
+  color: var(--gold-dark, #8a6e1a); text-align: center; white-space: nowrap;
+}
+.lvlrow-cls-sel {
+  width: 100%; background: var(--j-input, #0d0a05); border: 1px solid var(--j-border-col, #2a2a3a);
+  border-radius: 3px; color: var(--j-text, #e2cfa0); font-size: 0.75rem; padding: 0.18rem 0.25rem;
+  cursor: pointer; transition: border-color 0.15s;
+}
+.lvlrow-cls-sel:focus { outline: none; border-color: var(--gold-dark); }
+.lvlrow-die { font-size: 0.68rem; color: #666; text-align: center; }
+.lvlrow-hp-chip {
+  font-size: 0.78rem; font-weight: 700; color: #7ac0a0; white-space: nowrap;
+  text-align: center;
+}
+.lvlrow-hp-empty { font-size: 0.72rem; color: #444; text-align: center; }
+.lvlrow-pb {
+  font-size: 0.68rem; color: #888; text-align: center; white-space: nowrap;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 3px; padding: 0.08rem 0.25rem;
+}
+.lvlrow-feats {
+  font-size: 0.7rem; color: #777; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.lvlrow-feat-tag { color: var(--gold-dark, #8a6e1a); font-weight: 600; }
+.lvlrow-feat-tag.asi-tag { color: var(--gold, #c9a96e); }
+.lvlrow-expand-btn {
+  background: none; border: none; color: #555; cursor: pointer; font-size: 0.75rem;
+  padding: 0; transition: transform 0.2s, color 0.12s; line-height: 1; flex-shrink: 0;
+}
+.lvlrow.open .lvlrow-expand-btn { transform: rotate(180deg); color: var(--gold-dark); }
+.lvlrow-expand-btn:hover { color: var(--gold); }
+.lvlrow-body {
+  display: none; padding: 0.7rem 0.85rem 0.85rem;
+  border-top: 1px solid var(--j-border-col, #2a2a3a);
+}
+.lvlrow.open .lvlrow-body { display: block; }
+.lvlrow-section { margin-bottom: 0.7rem; }
+.lvlrow-section:last-child { margin-bottom: 0; }
+.lvlrow-sec-title {
+  font-family: 'Cinzel', serif; font-size: 0.65rem; font-weight: 600;
+  color: var(--gold-dark, #8a6e1a); text-transform: uppercase; letter-spacing: 0.06em;
+  margin-bottom: 0.35rem;
+}
+.lvlrow-feat-card {
   background: rgba(255,255,255,0.025); border: 1px solid var(--j-border-col, #2a2a3a);
-  border-radius: 5px; padding: 0.65rem 0.85rem; margin-bottom: 0.7rem;
+  border-radius: 4px; padding: 0.35rem 0.5rem; margin-bottom: 0.28rem; cursor: pointer;
+  transition: background 0.12s;
 }
-.lvlup-block:last-child { margin-bottom: 0; }
-.lvlup-block-title {
-  font-family: 'Cinzel', serif; font-size: 0.7rem; font-weight: 600;
-  color: var(--gold-dark, #8a6e1a); letter-spacing: 0.07em; text-transform: uppercase;
-  margin-bottom: 0.5rem;
+.lvlrow-feat-card:last-child { margin-bottom: 0; }
+.lvlrow-feat-card:hover { background: rgba(201,169,110,0.04); }
+.lvlrow-feat-card-name {
+  display: flex; align-items: center; gap: 0.35rem;
+  font-size: 0.8rem; color: var(--j-text, #e2cfa0); font-weight: 600;
 }
-.lvlup-hp-row {
-  display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;
-  font-size: 0.82rem; color: var(--j-text, #e2cfa0);
+.lvlrow-feat-card-desc {
+  font-size: 0.74rem; color: #999; line-height: 1.4; margin-top: 0.22rem; display: none;
 }
-.lvlup-hp-row strong { color: var(--gold, #c9a96e); }
-.lvlup-hp-result {
-  margin-top: 0.45rem; display: flex; align-items: center; gap: 0.5rem;
-  font-size: 0.85rem; color: #6dbf6d; font-weight: 600;
-}
-.lvlup-feature {
-  padding: 0.35rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);
-}
-.lvlup-feature:last-child { border-bottom: none; }
-.lvlup-feature-name {
-  font-size: 0.82rem; font-weight: 600; color: var(--j-text, #e2cfa0);
-  display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.2rem;
-}
+.lvlrow-feat-card.open .lvlrow-feat-card-desc { display: block; }
+/* reuse the type badges from old approach */
 .lvlup-type-badge {
-  font-size: 0.62rem; padding: 0.08rem 0.35rem; border-radius: 3px;
-  font-family: inherit; font-weight: 500; letter-spacing: 0.03em; text-transform: uppercase;
+  font-size: 0.6rem; padding: 0.06rem 0.32rem; border-radius: 3px; flex-shrink: 0;
+  font-weight: 500; letter-spacing: 0.03em; text-transform: uppercase;
 }
-.lvlup-type-asi   { background: rgba(201,169,110,0.18); color: var(--gold, #c9a96e); border: 1px solid rgba(201,169,110,0.3); }
-.lvlup-type-epic  { background: rgba(201,100,50,0.18);  color: #e88a5a; border: 1px solid rgba(201,100,50,0.3); }
-.lvlup-type-subclass { background: rgba(90,150,230,0.15); color: #7ab0ee; border: 1px solid rgba(90,150,230,0.25); }
-.lvlup-type-feature { background: rgba(100,200,150,0.12); color: #7ac0a0; border: 1px solid rgba(100,200,150,0.2); }
-.lvlup-feature-desc {
-  font-size: 0.76rem; color: #999; line-height: 1.4;
-  display: none;
+.lvlup-type-asi      { background: rgba(201,169,110,0.18); color: var(--gold); border: 1px solid rgba(201,169,110,0.3); }
+.lvlup-type-epic     { background: rgba(201,100,50,0.18);  color: #e88a5a;     border: 1px solid rgba(201,100,50,0.3); }
+.lvlup-type-subclass { background: rgba(90,150,230,0.15);  color: #7ab0ee;     border: 1px solid rgba(90,150,230,0.25); }
+.lvlup-type-feature  { background: rgba(100,200,150,0.12); color: #7ac0a0;     border: 1px solid rgba(100,200,150,0.2); }
+.lvlrow-hp-row { display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; }
+.lvlrow-hp-result { color: #7ac0a0; font-weight: 700; font-size: 0.85rem; }
+.lvlrow-slots-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(58px,1fr)); gap: 0.3rem;
+  margin-top: 0.35rem;
 }
-.lvlup-feature.open .lvlup-feature-desc { display: block; }
-.lvlup-feature-name { cursor: pointer; }
-.lvlup-feature-name:hover { color: var(--gold, #c9a96e); }
-.lvlup-slots-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 0.4rem;
-}
-.lvlup-slot-cell {
+.lvlrow-slot {
   background: rgba(255,255,255,0.03); border: 1px solid var(--j-border-col, #2a2a3a);
-  border-radius: 4px; padding: 0.3rem 0.4rem; text-align: center;
+  border-radius: 3px; text-align: center; padding: 0.22rem 0.3rem;
 }
-.lvlup-slot-cell.lvlup-slot-gained { border-color: rgba(100,200,150,0.35); background: rgba(100,200,150,0.06); }
-.lvlup-slot-level {
-  font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 0.05em;
-  margin-bottom: 0.15rem;
+.lvlrow-slot.gained { border-color: rgba(100,200,150,0.35); background: rgba(100,200,150,0.06); }
+.lvlrow-slot-lv { font-size: 0.6rem; color: #888; }
+.lvlrow-slot-n { font-size: 0.82rem; font-weight: 700; color: var(--j-text, #e2cfa0); }
+.lvlrow-slot-diff { font-size: 0.62rem; color: #7ac0a0; font-weight: 700; }
+.lvlrow-textarea {
+  width: 100%; box-sizing: border-box; background: var(--j-input, #0d0a05);
+  border: 1px solid var(--j-border-col, #4a3510); border-radius: 4px;
+  color: var(--j-text, #e2cfa0); font-size: 0.78rem; padding: 0.35rem 0.5rem;
+  resize: vertical; min-height: 50px; font-family: inherit; transition: border-color 0.15s;
 }
-.lvlup-slot-val { font-size: 0.82rem; color: var(--j-text, #e2cfa0); font-weight: 600; }
-.lvlup-gain-badge {
-  display: inline-block; font-size: 0.65rem; color: #7ac0a0; font-weight: 700;
-  background: rgba(100,200,150,0.15); border-radius: 3px; padding: 0 0.25rem;
-  margin-left: 0.15rem;
+.lvlrow-textarea:focus { outline: none; border-color: var(--gold-dark); }
+@media (max-width: 640px) {
+  #tab-lvlup { padding: 0.6rem 0.6rem 3rem; }
+  .lvlrow-hd { grid-template-columns: 36px 1fr 30px auto 22px; }
+  .lvlrow-die, .lvlrow-feats { display: none; }
 }
-.lvlup-textarea {
-  width: 100%; box-sizing: border-box;
-  background: var(--j-input, #0d0a05); border: 1px solid var(--j-border-col, #4a3510);
-  border-radius: 4px; color: var(--j-text, #e2cfa0); font-size: 0.8rem;
-  padding: 0.45rem 0.55rem; resize: vertical; min-height: 60px;
-  font-family: inherit; transition: border-color 0.15s;
+@media (max-width: 480px) {
+  .lvlplan-bar { gap: 0.7rem; }
+  .lvlplan-bar-actions { width: 100%; justify-content: flex-end; }
 }
-.lvlup-textarea:focus { outline: none; border-color: var(--gold-dark, #8a6e1a); }
-.lvlup-multiclass-note {
-  font-size: 0.73rem; color: #888; font-style: italic; margin-bottom: 0.5rem;
-}
-.lvlup-pb-row {
-  display: flex; gap: 1.2rem; font-size: 0.82rem; color: var(--j-text, #e2cfa0);
-  margin-bottom: 0.45rem;
-}
-.lvlup-pb-row strong { color: var(--gold, #c9a96e); }
 
   </style>
 
@@ -2473,6 +2506,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
         <button class="tab-btn" data-tab="parametres">Settings</button>
         <button class="tab-btn" data-tab="aide">Reference</button>
         <button class="tab-btn" data-tab="familiers">Familiars</button>
+        <button class="tab-btn" data-tab="lvlup">📈 Level Plan</button>
         <button class="tab-btn" data-tab="admin" id="tab-admin-btn" style="display:none;color:var(--danger);">👁 Admin</button>
       </div>
       <!-- Hidden player info (kept for JS) -->
@@ -2945,14 +2979,6 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
 
         </div><!-- /layout-col-2 -->
       </div><!-- /layout-bottom -->
-
-      <!-- Zone pleine largeur (bas 2) — Level Up Plan -->
-      <div class="layout-bottom" id="layout-lvlup-row" style="margin-top:0;">
-        <div class="sheet-section" data-sec="lvlup" id="lvlup-section">
-          <div class="sheet-section-title">Level Up Plan</div>
-          <div id="lvlup-body"></div>
-        </div>
-      </div>
 
     </div><!-- /tab-personnage -->
 
@@ -3572,6 +3598,12 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
         <div id="admin-loading" style="color:#666;font-style:italic;padding:0.75rem 0;">Chargement…</div>
         <div class="admin-grid" id="admin-grid"></div>
       </div>
+    </div>
+
+    <!-- ══ LEVEL PLAN TAB ══ -->
+    <div class="tab-panel" id="tab-lvlup">
+      <div id="lvlplan-summary-bar"></div>
+      <div id="lvlplan-rows"></div>
     </div>
 
   </div><!-- /screen-dashboard -->
@@ -5957,7 +5989,7 @@ const _TAB_RENDERERS = {
     renderMulticlasses(); renderAbilities(); renderSaves(); renderSkills();
     renderCombat(); renderSpellSlots(); renderClassFeatures(); renderPassiveSkills();
     renderResources(); renderConditions(); renderAttacks(); renderCustomFeatures(); renderSpells();
-    renderMods(); renderLvlupPlan();
+    renderMods();
   },
   identite:   () => { fillFields(); },
   inventaire: () => { renderInventory(); renderRationTracker(); renderAttunement(); fillCurrency(); },
@@ -5965,6 +5997,7 @@ const _TAB_RENDERERS = {
   parametres: () => { renderSectionVisibility(); },
   aide:       null,
   familiers:  () => { renderFamiliars(); },
+  lvlup:      () => { renderLvlupTab(); },
   admin:      () => { renderAdminPanel(); }
 };
 
@@ -7472,254 +7505,330 @@ function renderCustomFeatures() {
 }
 
 /* ════════════════════════════════════════════════════════════
-   LEVEL UP PLAN
+   LEVEL PLAN TAB — full 20-level planner with multiclass support
    ════════════════════════════════════════════════════════════ */
-function renderLvlupPlan() {
+function renderLvlupTab() {
   const c = C();
   if (!c) return;
-  const body = document.getElementById('lvlup-body');
-  if (!body) return;
+  const sumBar   = document.getElementById('lvlplan-summary-bar');
+  const rowsCont = document.getElementById('lvlplan-rows');
+  if (!sumBar || !rowsCont) return;
 
-  /* ── Data ── */
-  const classes = (c.classes || []).filter(cl => cl.classe && parseInt(cl.niveau) > 0);
-  const isMulti = classes.length > 1;
-  const totalLevel = classes.length > 0
-    ? classes.reduce((s, cl) => s + (parseInt(cl.niveau) || 0), 0)
-    : (parseInt(c.niveau) || 1);
-  const nextLevel = Math.min(totalLevel + 1, 20);
-  const atMax = totalLevel >= 20;
+  /* ── Init data ── */
+  if (!c.levelPlan) c.levelPlan = {};
+  if (!Array.isArray(c.levelPlan.rows) || c.levelPlan.rows.length < 20) {
+    const ex = Array.isArray(c.levelPlan.rows) ? c.levelPlan.rows : [];
+    while (ex.length < 20) ex.push({ cls:'', hp:null, asi:'', spells:'', notes:'' });
+    c.levelPlan.rows = ex;
+  }
+  const rows = c.levelPlan.rows;
 
-  // Proficiency bonus
-  const pb = Math.ceil(totalLevel / 4) + 1;
-  const nextPb = Math.ceil(nextLevel / 4) + 1;
+  // Determine default class from character data
+  const charClasses = (c.classes || []).filter(cl => cl.classe && parseInt(cl.niveau) > 0);
+  const defaultCls  = charClasses[0]?.classe || c.classe || 'Fighter';
 
-  // Ensure plan object
-  if (!c.lvlupPlan) c.lvlupPlan = {};
-  const plan = c.lvlupPlan;
-
-  // Primary class (first class, or c.classe fallback)
-  const primaryCl = classes[0] || null;
-  const primaryClassName = primaryCl?.classe || c.classe || '';
-  const primaryLevel = parseInt(primaryCl?.niveau || c.niveau) || totalLevel;
-  const primaryNextLevel = primaryLevel + 1;
-
-  const dndInfo = DND_CLASSES[primaryClassName] || {};
-  const hitDie = dndInfo.de || 'unknown';
-  const hitDieNum = parseInt((hitDie || '1d8').replace('1d', '')) || 8;
-  const conMod = Math.floor(((parseInt(c.con) || 10) - 10) / 2);
-  const avgHp = Math.floor(hitDieNum / 2) + 1 + conMod;
-
-  // Class features at next primary class level
-  const classData = CLASS_DATA[primaryClassName];
-  const nextFeatures = classData?.features?.[primaryNextLevel] || [];
-  const isAsi = !atMax && nextFeatures.some(f => f.type === 'asi' || f.type === 'epic');
-
-  // Spell slots (use primary class only for display)
-  const FULL_CAST  = ['Bard','Cleric','Druid','Sorcerer','Wizard'];
-  const HALF_CAST  = ['Paladin','Ranger'];
-  const isCaster   = FULL_CAST.includes(primaryClassName) || HALF_CAST.includes(primaryClassName)
-                     || primaryClassName === 'Warlock' || primaryClassName === 'Artificer';
-
-  let currentSlots = null, nextSlots = null;
-  if (isCaster) {
-    const slotLevel = isMulti ? totalLevel : primaryLevel; // simplified: use total level for multiclass
-    const nextSlotLevel = isMulti ? nextLevel : primaryNextLevel;
-    let table;
-    if (isMulti) { table = MULTICLASS_SLOTS; }
-    else if (primaryClassName === 'Warlock')   { table = WARLOCK_SLOTS; }
-    else if (primaryClassName === 'Artificer') { table = ARTIFICER_SLOTS; }
-    else if (HALF_CAST.includes(primaryClassName)) { table = HALF_CASTER_SLOTS; }
-    else { table = FULL_CASTER_SLOTS; }
-    currentSlots = table[Math.min(slotLevel, 20)] || null;
-    nextSlots    = table[Math.min(nextSlotLevel, 20)] || null;
+  // Auto-fill empty plan from existing class distribution (first time only)
+  if (rows.every(r => !r.cls) && charClasses.length > 0) {
+    let idx = 0;
+    charClasses.forEach(cl => {
+      const lvls = Math.min(parseInt(cl.niveau) || 0, 20 - idx);
+      for (let i = 0; i < lvls; i++, idx++) rows[idx].cls = cl.classe;
+    });
   }
 
-  /* ── Build HTML ── */
+  /* ── Per-row calculations ── */
+  const FULL_CAST_CLS  = ['Bard','Cleric','Druid','Sorcerer','Wizard'];
+  const HALF_CAST_CLS  = ['Paladin','Ranger'];
+  const KNOWN_SPL_CLS  = ['Bard','Ranger','Sorcerer','Warlock'];
   const ordinals = ['','1st','2nd','3rd','4th','5th','6th','7th','8th','9th'];
 
-  // Header
-  let html = `
-  <div class="lvlup-header">
-    <span style="font-size:0.8rem;color:#888;">Current:</span>
-    <strong style="color:var(--j-text)">Lv ${totalLevel}</strong>
-    <span class="lvlup-arrow">→</span>
-    <span class="lvlup-next">Level ${nextLevel}</span>
-    ${atMax ? '<span class="lvlup-max-badge">Max level reached</span>' : ''}
-  </div>`;
-
-  // Proficiency bonus row (only if changes)
-  if (!atMax && nextPb !== pb) {
-    html += `
-  <div class="lvlup-block">
-    <div class="lvlup-block-title">Proficiency Bonus</div>
-    <div class="lvlup-pb-row">
-      <span>Now: <strong>+${pb}</strong></span>
-      <span class="lvlup-arrow">→</span>
-      <span>Next level: <strong style="color:#7ac0a0;">+${nextPb}</strong></span>
-    </div>
-  </div>`;
-  }
-
-  // HP Gain block
-  if (!atMax) {
-    html += `
-  <div class="lvlup-block">
-    <div class="lvlup-block-title">HP Gain${hitDie !== 'unknown' ? ` — ${hitDie} + CON (${conMod >= 0 ? '+' : ''}${conMod})` : ''}</div>
-    <div class="lvlup-hp-row">
-      ${hitDie !== 'unknown' ? `<button class="btn btn-sm btn-gold" id="lvlup-btn-roll">🎲 Roll ${hitDie}</button>
-      <button class="btn btn-sm" id="lvlup-btn-avg" style="background:rgba(201,169,110,0.08);border:1px solid var(--gold-dark);color:var(--gold);">⊘ Take Average (+${avgHp})</button>` : '<span style="color:#888">Hit die unknown — enter class first</span>'}
-    </div>
-    ${plan.hpRolled != null ? `<div class="lvlup-hp-result">
-      ✔ +${plan.hpRolled} HP planned
-      <button class="btn btn-sm" id="lvlup-btn-clear-hp" style="background:none;border:1px solid #666;color:#888;padding:0.15rem 0.4rem;font-size:0.7rem;">Reset</button>
-    </div>` : ''}
-  </div>`;
-  }
-
-  // Class features block
-  if (!atMax && nextFeatures.length > 0) {
-    const featureRows = nextFeatures.map(f => {
-      const typeClass = `lvlup-type-${f.type}`;
-      const typeLabel = f.type === 'asi' ? 'ASI / Feat' : f.type === 'epic' ? 'Epic Boon' : f.type === 'subclass' ? 'Subclass' : 'Feature';
-      return `<div class="lvlup-feature" data-lvlup-feat>
-        <div class="lvlup-feature-name">
-          ${esc(f.name)} <span class="lvlup-type-badge ${typeClass}">${typeLabel}</span>
-        </div>
-        <div class="lvlup-feature-desc">${esc(f.desc)}</div>
-      </div>`;
-    }).join('');
-
-    html += `
-  <div class="lvlup-block">
-    <div class="lvlup-block-title">Class Features at Level ${primaryNextLevel}${isMulti ? ` (${esc(primaryClassName)})` : ''}</div>
-    ${isMulti ? `<div class="lvlup-multiclass-note">Showing features for your primary class. Other classes may also grant features.</div>` : ''}
-    ${featureRows}
-    <div style="font-size:0.68rem;color:#666;margin-top:0.35rem;">Click a feature to expand</div>
-  </div>`;
-  }
-
-  // ASI / Feat decision block
-  if (isAsi) {
-    html += `
-  <div class="lvlup-block" style="border-color:rgba(201,169,110,0.25);">
-    <div class="lvlup-block-title">⬆ ASI / Feat Decision</div>
-    <textarea class="lvlup-textarea" id="lvlup-asi" placeholder="e.g. +2 STR, or Feat: Sentinel, or +1 STR +1 DEX…">${esc(plan.asiChoice || '')}</textarea>
-  </div>`;
-  }
-
-  // Spell slots block
-  if (!atMax && isCaster && nextSlots) {
-    const slotCells = [1,2,3,4,5,6,7,8,9].map((lv, i) => {
-      const cur = currentSlots?.[i] || 0;
-      const nxt = nextSlots[i] || 0;
-      if (cur === 0 && nxt === 0) return '';
-      const gained = nxt - cur;
-      return `<div class="lvlup-slot-cell${gained > 0 ? ' lvlup-slot-gained' : ''}">
-        <div class="lvlup-slot-level">${ordinals[lv]}</div>
-        <div class="lvlup-slot-val">${cur} → ${nxt}${gained > 0 ? ` <span class="lvlup-gain-badge">+${gained}</span>` : ''}</div>
-      </div>`;
-    }).join('');
-    if (slotCells.trim()) {
-      html += `
-  <div class="lvlup-block">
-    <div class="lvlup-block-title">Spell Slots${isMulti ? ' (Multiclass table)' : ''}</div>
-    <div class="lvlup-slots-grid">${slotCells}</div>
-  </div>`;
+  // Helper: compute spell slots at a given running class-count map
+  function slotsForCounts(clsCount) {
+    const unique = Object.keys(clsCount);
+    if (unique.length === 0) return null;
+    if (unique.length === 1) {
+      const cls = unique[0]; const lv = clsCount[cls];
+      if (cls === 'Warlock')   return WARLOCK_SLOTS[Math.min(lv,20)];
+      if (cls === 'Artificer') return ARTIFICER_SLOTS[Math.min(lv,20)];
+      if (HALF_CAST_CLS.includes(cls)) return HALF_CASTER_SLOTS[Math.min(lv,20)];
+      if (FULL_CAST_CLS.includes(cls)) return FULL_CASTER_SLOTS[Math.min(lv,20)];
+      return null;
     }
+    // Multiclass caster level
+    let cL = 0;
+    for (const [cl, n] of Object.entries(clsCount)) {
+      if (FULL_CAST_CLS.includes(cl))       cL += n;
+      else if (HALF_CAST_CLS.includes(cl))  cL += Math.floor(n / 2);
+      else if (cl === 'Artificer')           cL += Math.ceil(n / 2);
+      // Warlock pact slots handled separately; not contributed to combined slots
+    }
+    return cL > 0 ? MULTICLASS_SLOTS[Math.min(cL, 20)] : null;
   }
 
-  // Spell picks reminder (for known-spell classes)
-  const KNOWN_SPELL_CLASSES = ['Bard','Ranger','Sorcerer','Warlock'];
-  if (!atMax && KNOWN_SPELL_CLASSES.includes(primaryClassName)) {
-    html += `
-  <div class="lvlup-block">
-    <div class="lvlup-block-title">📖 Spell Picks</div>
-    <textarea class="lvlup-textarea" id="lvlup-spells" placeholder="New spells to learn, cantrips to swap…">${esc(plan.spellsPicked || '')}</textarea>
+  const rowData = rows.map((row, i) => {
+    const cls = row.cls || defaultCls;
+    // Running class level counts up to and including row i
+    const clsCnt = {};
+    for (let j = 0; j <= i; j++) { const rc = rows[j].cls || defaultCls; clsCnt[rc] = (clsCnt[rc]||0)+1; }
+    const classLv = clsCnt[cls];
+    const totalLv  = i + 1;
+    const pb = Math.ceil(totalLv / 4) + 1;
+    const dndInfo   = DND_CLASSES[cls] || {};
+    const hitDie    = dndInfo.de || '1d8';
+    const hitDieNum = parseInt(hitDie.replace('1d','')) || 8;
+    const conMod    = Math.floor(((parseInt(c.con)||10) - 10) / 2);
+    // Level 1: max HP; others: average (floor(die/2)+1+CON)
+    const avgHp = i === 0 ? hitDieNum + conMod : Math.floor(hitDieNum/2)+1+conMod;
+    const features = CLASS_DATA[cls]?.features?.[classLv] || [];
+    const isAsi    = features.some(f => f.type==='asi'||f.type==='epic');
+    const hasKnown = KNOWN_SPL_CLS.includes(cls);
+    const slots     = slotsForCounts(clsCnt);
+    // Previous level counts
+    const clsCntPrev = {};
+    for (let j = 0; j < i; j++) { const rc = rows[j].cls||defaultCls; clsCntPrev[rc]=(clsCntPrev[rc]||0)+1; }
+    const prevSlots = i > 0 ? slotsForCounts(clsCntPrev) : null;
+    const isMultiHere = Object.keys(clsCnt).length > 1;
+    return { cls, classLv, totalLv, pb, hitDie, hitDieNum, conMod, avgHp,
+             features, isAsi, hasKnown, slots, prevSlots, isMultiHere, clsCnt };
+  });
+
+  /* ── Summary bar ── */
+  const finalCounts = {};
+  rows.forEach(r => { const cls=r.cls||defaultCls; finalCounts[cls]=(finalCounts[cls]||0)+1; });
+  const clsDist = Object.entries(finalCounts)
+    .filter(([,v])=>v>0)
+    .map(([cls,n])=>`<span style="color:var(--gold)">${cls}</span>&thinsp;${n}`)
+    .join(' <span style="color:#555">·</span> ');
+  const totalHp = rows.reduce((s,row,i) => s + (row.hp ?? rowData[i].avgHp), 0);
+  const rolledN = rows.filter(r=>r.hp!=null).length;
+  const hpNote  = rolledN===20 ? 'fully rolled' : rolledN>0 ? `${rolledN}/20 rolled` : 'avg estimate';
+
+  sumBar.innerHTML = `
+  <div class="lvlplan-bar">
+    <div class="lvlplan-bar-stat">
+      <div class="lvlplan-bar-label">Classes (Lv 20 plan)</div>
+      <div class="lvlplan-bar-val" style="font-size:0.82rem;">${clsDist||'—'}</div>
+    </div>
+    <div class="lvlplan-bar-stat">
+      <div class="lvlplan-bar-label">Est. HP at 20</div>
+      <div class="lvlplan-bar-val">${totalHp} <span style="font-size:0.6rem;color:#888;">(${hpNote})</span></div>
+    </div>
+    <div class="lvlplan-bar-stat">
+      <div class="lvlplan-bar-label">Final PB</div>
+      <div class="lvlplan-bar-val">+6</div>
+    </div>
+    <div class="lvlplan-bar-actions">
+      <button class="btn btn-sm" id="lvlp-roll-all" style="background:rgba(201,169,110,0.1);border:1px solid var(--gold-dark);color:var(--gold);">🎲 Roll All HP</button>
+      <button class="btn btn-sm" id="lvlp-avg-all"  style="background:rgba(100,200,150,0.07);border:1px solid rgba(100,200,150,0.3);color:#7ac0a0;">⊘ Average All</button>
+      <button class="btn btn-sm" id="lvlp-reset"    style="background:none;border:1px solid #444;color:#666;">↺ Reset</button>
+    </div>
   </div>`;
-  }
 
-  // Planning notes
-  html += `
-  <div class="lvlup-block">
-    <div class="lvlup-block-title">Planning Notes</div>
-    <textarea class="lvlup-textarea" id="lvlup-notes" placeholder="Gear to buy, subclass to pick, skills, anything…">${esc(plan.notes || '')}</textarea>
-  </div>`;
+  /* ── Level rows ── */
+  const ALL_CLASSES = Object.keys(DND_CLASSES).sort();
+  const openSet = new Set(Array.isArray(c.levelPlan._open) ? c.levelPlan._open : []);
 
-  body.innerHTML = html;
+  rowsCont.innerHTML = rows.map((row, i) => {
+    const d    = rowData[i];
+    const isOpen = openSet.has(i);
+    const lvl  = i + 1;
 
-  /* ── Event listeners ── */
+    // Features preview for collapsed header
+    const featPreview = d.features.length > 0
+      ? d.features.map(f => `<span class="lvlrow-feat-tag${f.type==='asi'||f.type==='epic'?' asi-tag':''}">${f.name}</span>`).join('<span style="color:#333"> · </span>')
+      : '<span style="color:#444;font-style:italic;">No features</span>';
 
-  // Feature expand / collapse
-  body.querySelectorAll('[data-lvlup-feat]').forEach(el => {
-    el.querySelector('.lvlup-feature-name')?.addEventListener('click', () => {
-      el.classList.toggle('open');
+    // HP chip in header
+    const hpChip = row.hp != null
+      ? `<div class="lvlrow-hp-chip">+${row.hp}</div>`
+      : `<div class="lvlrow-hp-empty">—</div>`;
+
+    // Slot gain preview for collapsed header
+    let slotPreview = '';
+    if (d.slots) {
+      const gained = d.slots.map((n,si)=>({diff:n-(d.prevSlots?.[si]||0),ord:ordinals[si+1]})).filter(s=>s.diff>0);
+      if (gained.length) slotPreview = ` <span style="font-size:0.62rem;color:#7ac0a0;">(${gained.map(s=>`+${s.diff} ${s.ord}`).join(', ')})</span>`;
+    }
+
+    // Body: features
+    let bodyHtml = '';
+    if (d.features.length > 0) {
+      const typeLabel = t => t==='asi'?'ASI/Feat':t==='epic'?'Epic Boon':t==='subclass'?'Subclass':'Feature';
+      bodyHtml += `<div class="lvlrow-section">
+        <div class="lvlrow-sec-title">${esc(d.cls)} Features — ${esc(d.cls)} Lv ${d.classLv}${d.isMultiHere?' (multiclass)':''}</div>
+        ${d.features.map(f=>`<div class="lvlrow-feat-card" data-feat-card>
+          <div class="lvlrow-feat-card-name">${esc(f.name)} <span class="lvlup-type-badge lvlup-type-${f.type}">${typeLabel(f.type)}</span></div>
+          <div class="lvlrow-feat-card-desc">${esc(f.desc)}</div>
+        </div>`).join('')}
+      </div>`;
+    }
+
+    // Body: HP
+    bodyHtml += `<div class="lvlrow-section">
+      <div class="lvlrow-sec-title">HP Gain — ${d.hitDie} + CON (${d.conMod>=0?'+':''}${d.conMod})${lvl===1?' · Max at Lv 1':''}</div>
+      <div class="lvlrow-hp-row">
+        ${lvl===1
+          ? `<button class="btn btn-sm btn-gold" data-roll="${i}" title="Take max at level 1">★ Take Max (+${d.hitDieNum+d.conMod})</button>`
+          : `<button class="btn btn-sm btn-gold" data-roll="${i}">🎲 Roll ${d.hitDie}</button>
+             <button class="btn btn-sm" data-avg="${i}" style="background:rgba(201,169,110,0.08);border:1px solid var(--gold-dark);color:var(--gold);">⊘ Avg (+${d.avgHp})</button>`}
+        ${row.hp!=null?`<span class="lvlrow-hp-result">✔ +${row.hp} HP</span>
+          <button class="btn btn-sm" data-clrhp="${i}" style="background:none;border:1px solid #444;color:#666;padding:0.1rem 0.35rem;font-size:0.7rem;">✕</button>`:''}
+      </div>
+    </div>`;
+
+    // Body: ASI
+    if (d.isAsi) {
+      bodyHtml += `<div class="lvlrow-section">
+        <div class="lvlrow-sec-title">⬆ ASI / Feat Decision</div>
+        <textarea class="lvlrow-textarea" data-asi="${i}" placeholder="e.g. +2 STR, Feat: Sentinel, +1 STR +1 DEX…">${esc(row.asi||'')}</textarea>
+      </div>`;
+    }
+
+    // Body: Spell slots
+    if (d.slots && d.slots.some(s=>s>0)) {
+      const cells = d.slots.map((n,si)=>{
+        const prev=d.prevSlots?.[si]||0, diff=n-prev;
+        if (n===0&&prev===0) return '';
+        return `<div class="lvlrow-slot${diff>0?' gained':''}">
+          <div class="lvlrow-slot-lv">${ordinals[si+1]}</div>
+          <div class="lvlrow-slot-n">${n}</div>
+          ${diff>0?`<div class="lvlrow-slot-diff">+${diff}</div>`:''}
+        </div>`;
+      }).join('');
+      if (cells.trim()) bodyHtml += `<div class="lvlrow-section">
+        <div class="lvlrow-sec-title">Spell Slots${d.isMultiHere?' (multiclass)':''}</div>
+        <div class="lvlrow-slots-grid">${cells}</div>
+      </div>`;
+    }
+
+    // Body: Spell picks (known-spell classes)
+    if (d.hasKnown) {
+      bodyHtml += `<div class="lvlrow-section">
+        <div class="lvlrow-sec-title">📖 Spell Picks</div>
+        <textarea class="lvlrow-textarea" data-spl="${i}" placeholder="Spells to learn, cantrips to swap…">${esc(row.spells||'')}</textarea>
+      </div>`;
+    }
+
+    // Body: Notes
+    bodyHtml += `<div class="lvlrow-section">
+      <div class="lvlrow-sec-title">Notes</div>
+      <textarea class="lvlrow-textarea" data-nts="${i}" placeholder="Plans, feats, gear, subclass choice…">${esc(row.notes||'')}</textarea>
+    </div>`;
+
+    // Class options
+    const clsOpts = ALL_CLASSES.map(cls=>`<option value="${cls}"${cls===d.cls?'selected':''}>${cls}</option>`).join('');
+
+    return `<div class="lvlrow${isOpen?' open':''}" data-ri="${i}">
+      <div class="lvlrow-hd" data-hd="${i}">
+        <div class="lvlrow-num">Lv ${lvl}</div>
+        <select class="lvlrow-cls-sel" data-cls="${i}">${clsOpts}</select>
+        <div class="lvlrow-die">${d.hitDie}</div>
+        ${hpChip}
+        <div class="lvlrow-pb">+${d.pb}</div>
+        <div class="lvlrow-feats">${featPreview}${slotPreview}</div>
+        <button class="lvlrow-expand-btn" data-exp="${i}" aria-label="Toggle level ${lvl}">▾</button>
+      </div>
+      <div class="lvlrow-body">${bodyHtml}</div>
+    </div>`;
+  }).join('');
+
+  /* ── Wire events ── */
+
+  // Class change → full re-render (all downstream levels shift)
+  rowsCont.querySelectorAll('[data-cls]').forEach(sel => {
+    sel.addEventListener('change', e => {
+      e.stopPropagation();
+      rows[+sel.dataset.cls].cls = sel.value;
+      triggerSave(); renderLvlupTab();
     });
   });
 
-  // Roll HP
-  const rollBtn = document.getElementById('lvlup-btn-roll');
-  if (rollBtn) {
-    rollBtn.addEventListener('click', () => {
-      const roll = rollDiceExpr(hitDie);
-      const total = roll.total + conMod;
-      const gained = Math.max(1, total);
-      c.lvlupPlan = c.lvlupPlan || {};
-      c.lvlupPlan.hpRolled = gained;
-      triggerSave();
-      showDiceRoll(`HP Gain (${hitDie} + CON)`, conMod);
-      setTimeout(() => renderLvlupPlan(), 400);
-    });
-  }
+  // Expand/collapse (button or header click)
+  const toggleRow = i => {
+    const el = rowsCont.querySelector(`[data-ri="${i}"]`);
+    if (!el) return;
+    el.classList.toggle('open');
+    const now = new Set(c.levelPlan._open||[]);
+    el.classList.contains('open') ? now.add(i) : now.delete(i);
+    c.levelPlan._open = [...now];
+  };
+  rowsCont.querySelectorAll('[data-exp]').forEach(btn =>
+    btn.addEventListener('click', e => { e.stopPropagation(); toggleRow(+btn.dataset.exp); })
+  );
+  rowsCont.querySelectorAll('[data-hd]').forEach(hd =>
+    hd.addEventListener('click', e => {
+      if (e.target.tagName==='SELECT'||e.target.tagName==='BUTTON') return;
+      toggleRow(+hd.dataset.hd);
+    })
+  );
 
-  // Take average
-  const avgBtn = document.getElementById('lvlup-btn-avg');
-  if (avgBtn) {
-    avgBtn.addEventListener('click', () => {
-      c.lvlupPlan = c.lvlupPlan || {};
-      c.lvlupPlan.hpRolled = avgHp;
-      triggerSave(); renderLvlupPlan();
-    });
-  }
+  // HP Roll
+  rowsCont.querySelectorAll('[data-roll]').forEach(btn =>
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const i = +btn.dataset.roll;
+      const d = rowData[i];
+      let hp;
+      if (i===0) { hp = Math.max(1, d.hitDieNum + d.conMod); }
+      else { const r = rollDiceExpr(d.hitDie); hp = Math.max(1, r.total + d.conMod);
+             showDiceRoll(`Lv ${i+1} HP (${d.hitDie}+CON)`, d.conMod); }
+      rows[i].hp = hp; triggerSave();
+      setTimeout(() => renderLvlupTab(), i===0?0:380);
+    })
+  );
 
-  // Clear HP
-  const clearHpBtn = document.getElementById('lvlup-btn-clear-hp');
-  if (clearHpBtn) {
-    clearHpBtn.addEventListener('click', () => {
-      c.lvlupPlan = c.lvlupPlan || {};
-      c.lvlupPlan.hpRolled = null;
-      triggerSave(); renderLvlupPlan();
-    });
-  }
+  // HP Average
+  rowsCont.querySelectorAll('[data-avg]').forEach(btn =>
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      rows[+btn.dataset.avg].hp = rowData[+btn.dataset.avg].avgHp;
+      triggerSave(); renderLvlupTab();
+    })
+  );
 
-  // ASI textarea
-  const asiTa = document.getElementById('lvlup-asi');
-  if (asiTa) {
-    asiTa.addEventListener('input', () => {
-      c.lvlupPlan = c.lvlupPlan || {};
-      c.lvlupPlan.asiChoice = asiTa.value;
-      triggerSave();
-    });
-  }
+  // HP Clear
+  rowsCont.querySelectorAll('[data-clrhp]').forEach(btn =>
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      rows[+btn.dataset.clrhp].hp = null;
+      triggerSave(); renderLvlupTab();
+    })
+  );
 
-  // Spell picks textarea
-  const spellTa = document.getElementById('lvlup-spells');
-  if (spellTa) {
-    spellTa.addEventListener('input', () => {
-      c.lvlupPlan = c.lvlupPlan || {};
-      c.lvlupPlan.spellsPicked = spellTa.value;
-      triggerSave();
-    });
-  }
+  // Feature card expand
+  rowsCont.querySelectorAll('[data-feat-card]').forEach(card =>
+    card.addEventListener('click', () => card.classList.toggle('open'))
+  );
 
-  // Notes textarea
-  const notesTa = document.getElementById('lvlup-notes');
-  if (notesTa) {
-    notesTa.addEventListener('input', () => {
-      c.lvlupPlan = c.lvlupPlan || {};
-      c.lvlupPlan.notes = notesTa.value;
-      triggerSave();
+  // Textareas (ASI / spells / notes) — just save, no re-render
+  rowsCont.querySelectorAll('[data-asi]').forEach(ta =>
+    ta.addEventListener('input', () => { rows[+ta.dataset.asi].asi = ta.value; triggerSave(); })
+  );
+  rowsCont.querySelectorAll('[data-spl]').forEach(ta =>
+    ta.addEventListener('input', () => { rows[+ta.dataset.spl].spells = ta.value; triggerSave(); })
+  );
+  rowsCont.querySelectorAll('[data-nts]').forEach(ta =>
+    ta.addEventListener('input', () => { rows[+ta.dataset.nts].notes = ta.value; triggerSave(); })
+  );
+
+  /* ── Summary bar buttons ── */
+  document.getElementById('lvlp-roll-all')?.addEventListener('click', () => {
+    rows.forEach((row, i) => {
+      const d = rowData[i];
+      row.hp = i===0 ? Math.max(1, d.hitDieNum+d.conMod)
+                     : Math.max(1, rollDiceExpr(d.hitDie).total + d.conMod);
     });
-  }
+    triggerSave(); renderLvlupTab();
+  });
+  document.getElementById('lvlp-avg-all')?.addEventListener('click', () => {
+    rows.forEach((row, i) => { row.hp = rowData[i].avgHp; });
+    triggerSave(); renderLvlupTab();
+  });
+  document.getElementById('lvlp-reset')?.addEventListener('click', () => {
+    if (!confirm('Reset all HP values and class assignments?')) return;
+    c.levelPlan = { rows: Array(20).fill(null).map(()=>({cls:'',hp:null,asi:'',spells:'',notes:''})), _open:[] };
+    triggerSave(); renderLvlupTab();
+  });
 }
 
 /* ── Spells ── */
@@ -8643,13 +8752,13 @@ const SECTION_KEYS = {
   'Identity':'identite','Class Features':'cf','Ability Scores':'caracteristiques',
   'Saving Throws':'saves','Passive Skills':'passives','Combat':'combat',
   'Resources':'ressources','Conditions':'conditions','Attacks':'attaques',
-  'Spells':'sorts','Traits':'features','Personality':'perso','Level Up':'lvlup'
+  'Spells':'sorts','Traits':'features','Personality':'perso'
 };
 const SECTION_LABELS = {
   cf:'Class Features', caracteristiques:'Ability Scores',
   saves:'Saving Throws', passives:'Passive Skills',
   ressources:'Resources', conditions:'Conditions', attaques:'Attacks',
-  sorts:'Spells', features:'Traits & Features', perso:'Personality', lvlup:'Level Up Plan'
+  sorts:'Spells', features:'Traits & Features', perso:'Personality'
 };
 const DEFAULT_LAYOUT = {
   columns:[
@@ -8726,10 +8835,9 @@ function applyLayout() {
     else sec.classList.remove('sec-hidden');
   });
 
-  // Construire la map data-sec → élément (colonnes + zone bas + zones annexes)
+  // Construire la map data-sec → élément (colonnes + zone bas)
   const sectionMap = {};
-  const lvlupRow = document.getElementById('layout-lvlup-row');
-  [wrapper, bottomCol, lvlupRow].forEach(container => {
+  [wrapper, bottomCol].forEach(container => {
     if (!container) return;
     container.querySelectorAll('.sheet-section[data-sec]').forEach(s => {
       if (!FIXED_SECTIONS.includes(s.dataset.sec)) sectionMap[s.dataset.sec] = s;
@@ -8744,8 +8852,6 @@ function applyLayout() {
     if (hidden.includes(id)) sec.classList.add('sec-hidden');
     else sec.classList.remove('sec-hidden');
   });
-  // Hide/show lvlup container row
-  if (lvlupRow) lvlupRow.style.display = hidden.includes('lvlup') ? 'none' : '';
 
   // Si layout personnalisé sauvegardé → réorganiser les sections dans les colonnes
   if (playerData?.layout?.columns) {
