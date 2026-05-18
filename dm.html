@@ -658,9 +658,9 @@ body.focus-mode #dm-main{width:100%;}
   background:var(--border-bright);border-radius:10px;
   padding:0.1rem 0.5rem;font-family:'Cinzel',serif;letter-spacing:0.05em;
 }
-#player-panels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:1.1rem;}
-#monster-panels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:1.1rem;}
-body.compact #player-panels-grid,body.compact #monster-panels-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:0.7rem;}
+#player-panels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:0.9rem;}
+#monster-panels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:0.9rem;}
+body.compact #player-panels-grid,body.compact #monster-panels-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.6rem;}
 
 /* Empty state */
 #empty-state{
@@ -769,6 +769,33 @@ body.compact #player-panels-grid,body.compact #monster-panels-grid{grid-template
 .stat-cell:last-child{border-right:none;}
 .stat-val{font-family:'Cinzel',serif;color:var(--gold);font-size:1.05rem;letter-spacing:0.02em;}
 .stat-lbl{font-size:0.55rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-dim);margin-top:2px;}
+
+/* ── Panel compact redesign ── */
+.panel-badges{display:flex;flex-wrap:wrap;gap:0.22rem;margin-top:3px;}
+.pbadge{font-size:0.57rem;padding:0.05rem 0.32rem;border-radius:3px;background:rgba(232,201,106,0.07);border:1px solid rgba(232,201,106,0.15);color:var(--text-dim);font-family:'Cinzel',serif;letter-spacing:0.02em;}
+.pbadge-conc{background:rgba(128,80,200,0.12)!important;border-color:rgba(128,80,200,0.3)!important;color:#a080e0!important;}
+.pbadge-insp{background:rgba(240,208,80,0.1)!important;border-color:rgba(240,208,80,0.3)!important;color:#f0c020!important;}
+/* Compact HP row */
+.panel-hp-compact{padding:0.5rem 0.85rem;border-bottom:1px solid var(--border);}
+.php-bar{height:7px;background:rgba(0,0,0,0.4);border-radius:4px;overflow:hidden;margin-bottom:0.42rem;border:1px solid var(--border);}
+.php-fill{height:100%;border-radius:4px;transition:width 0.4s,background 0.4s;}
+.php-row{display:flex;align-items:center;gap:0.3rem;flex-wrap:nowrap;}
+.php-num{font-family:'Cinzel',serif;font-size:0.95rem;color:var(--text);flex-shrink:0;}
+.php-slash,.php-max{color:var(--text-dim);font-size:0.78rem;flex-shrink:0;}
+.php-temp{font-size:0.62rem;color:var(--gold);background:var(--gold-glow);border:1px solid var(--border-gold);border-radius:3px;padding:0.03rem 0.28rem;flex-shrink:0;}
+.php-dead{font-size:0.75rem;flex-shrink:0;}
+.php-ctrl{display:flex;align-items:center;gap:0.18rem;margin-left:auto;flex-shrink:0;}
+.php-ctrl .hp-qbtn{padding:0.16rem 0.3rem;font-size:0.67rem;border-radius:4px;}
+.php-ctrl .hp-inp{width:38px;font-size:0.77rem;padding:0.16rem 0.22rem;border-radius:4px;}
+.php-ctrl .hp-apply{padding:0.16rem 0.45rem;font-size:0.64rem;border-radius:4px;}
+/* Conditions mini strip (always visible if conditions exist) */
+.panel-cond-mini{padding:0.26rem 0.85rem;border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;gap:0.2rem;}
+/* Details expand/collapse */
+.panel-details{display:none;border-top:1px solid var(--border);}
+.panel-details.open{display:block;}
+.pdet-hp-ext{padding:0.42rem 0.85rem;border-bottom:1px solid var(--border);}
+.pdet-hp-ext-row{display:flex;align-items:center;gap:0.4rem;}
+.pact.pdet.expanded{color:var(--gold);border-color:var(--border-gold);background:var(--gold-glow);}
 
 /* Spell slots */
 .panel-slots{border-bottom:1px solid var(--border);}
@@ -1119,6 +1146,7 @@ const ALL_CONDITIONS = [
 let currentUser    = null;
 let allPlayers     = [];
 let openPanels     = {};       // key → {type:'player'|'monster', username?, charId?, monsterId?}
+let _panelExpanded = new Set();  // keys of panels with details open
 let expandedPlayers= new Set();
 let localMonsters  = {};       // id → {id,name,avatar,hpMax,hp,ac,initiative,conditions}
 let monsterCounter = 0;
@@ -1561,99 +1589,113 @@ function renderPlayerPanel(panel, key) {
       <span class="panel-avatar">${avatar}</span>
       <div class="panel-title">
         <div class="panel-char-name">${esc(charName)}</div>
-        ${sub ? `<div class="panel-char-sub">${esc(sub)}</div>` : ''}
+        <div class="panel-badges">
+          ${c.ca !== undefined ? `<span class="pbadge">AC ${c.ca}</span>` : ''}
+          ${c.initiative !== undefined ? `<span class="pbadge">${fmtInit(c.initiative)} Init</span>` : ''}
+          ${c.vitesse ? `<span class="pbadge">${esc(String(c.vitesse))} ft</span>` : ''}
+          ${c.concentration ? `<span class="pbadge pbadge-conc">🎯 ${esc(String(c.concentration).slice(0,12))}</span>` : ''}
+          ${c.inspiration ? `<span class="pbadge pbadge-insp">⭐ Inspi.</span>` : ''}
+        </div>
       </div>
       <div class="panel-acts">
         <button class="pact${c.inspiration?' insp-on':''}" data-insp="${esc(key)}" title="Inspiration">⭐</button>
-        <button class="pact rest-long" data-key="${esc(key)}" title="Repos long">☀ Long</button>
-        <button class="pact danger" data-close="${esc(key)}" title="Fermer">✕</button>
+        <button class="pact rest-long" data-key="${esc(key)}" title="Long Rest">☀</button>
+        <button class="pact pdet${_panelExpanded.has(key)?' expanded':''}" data-expand="${esc(key)}" title="Details">▾</button>
+        <button class="pact danger" data-close="${esc(key)}" title="Close">✕</button>
       </div>
     </div>
 
-    <div class="panel-hp">
-      <div class="hp-bar-wrap"><div class="hp-bar-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>
-      <div class="hp-row">
-        <span class="hp-num" style="color:${dead?'var(--danger)':'var(--text)'};">${pvAct}</span>
-        <span class="hp-max">/ ${pvMax} HP</span>
-        ${pvTemp > 0 ? `<span class="hp-temp-badge">+${pvTemp} temp</span>` : ''}
-        ${dead ? `<span style="color:var(--danger);font-size:0.72rem;margin-left:auto;">💀 À terre</span>` : ''}
-      </div>
-      <div class="hp-controls">
-        <button class="hp-qbtn m" data-delta="-10">−10</button>
-        <button class="hp-qbtn m" data-delta="-5">−5</button>
-        <button class="hp-qbtn m" data-delta="-1">−1</button>
-        <input type="number" class="hp-inp" placeholder="±HP" id="hpinp-${esc(key)}">
-        <button class="hp-qbtn p" data-delta="+1">+1</button>
-        <button class="hp-qbtn p" data-delta="+5">+5</button>
-        <button class="hp-apply" data-apply="${esc(key)}">✓</button>
-      </div>
-      <div class="temp-row">
-        <span class="temp-label">Temp HP</span>
-        <input type="number" class="temp-inp" id="tempinp-${esc(key)}" value="${pvTemp}" min="0">
-        <button class="temp-set" data-temp="${esc(key)}">Définir</button>
-      </div>
-      ${dead ? `<div class="death-row">
-        Jets de mort :
-        ${[0,1,2].map(i=>`<span class="ds-dot${i<succ?' s':''}" data-ds="s" data-i="${i}" title="Succès ${i+1}"></span>`).join('')}
-        <span class="ds-sep"></span>
-        ${[0,1,2].map(i=>`<span class="ds-dot${i<fail?' f':''}" data-ds="f" data-i="${i}" title="Échec ${i+1}"></span>`).join('')}
-      </div>` : ''}
-    </div>
-
-    <div class="panel-stats">
-      <div class="stat-cell"><div class="stat-val">${c.ca ?? '—'}</div><div class="stat-lbl">CA</div></div>
-      <div class="stat-cell"><div class="stat-val">${fmtInit(c.initiative)}</div><div class="stat-lbl">Init.</div></div>
-      <div class="stat-cell"><div class="stat-val">${c.vitesse ?? '—'}m</div><div class="stat-lbl">Vitesse</div></div>
-      ${c.inspiration ? `<div class="stat-cell"><div class="stat-val" style="color:#f0d060;">⭐</div><div class="stat-lbl">Inspi.</div></div>` : ''}
-      ${c.concentration ? `<div class="stat-cell"><div class="stat-val" style="font-size:0.7rem;">🎯</div><div class="stat-lbl" style="color:#a080e0;">${esc(String(c.concentration).slice(0,8))}</div></div>` : ''}
-    </div>
-
-    ${(Array.isArray(c.ressources) && c.ressources.length) ? `<div class="panel-res">
-      ${c.ressources.map((r,ri) => {
-        const max = parseInt(r.max)||0;
-        const act = parseInt(r.actuel)||0;
-        return `<div class="res-row">
-          <span class="res-name">${esc(r.name||r.nom||'Ressource')}</span>
-          <span class="res-pips">${Array.from({length:max},(_,pi)=>`<span class="res-pip${pi<act?' used':''}" data-res-key="${esc(key)}" data-res-i="${ri}" data-res-pip="${pi}"></span>`).join('')}</span>
-          <span style="font-size:0.72rem;color:var(--text-dim);margin-left:0.3rem;">${act}/${max}</span>
-        </div>`;
-      }).join('')}
-    </div>` : ''}
-
-    ${hasSlots ? `<div class="panel-slots">
-      <button class="slots-toggle" id="slotbtn-${esc(key)}"><span class="arrow">▶</span> Sorts</button>
-      <div class="slots-grid" id="slotgrid-${esc(key)}">
-        ${[1,2,3,4,5,6,7,8,9].map(n => {
-          const max = parseInt(slots[n]) || 0;
-          const u   = parseInt(used[n])  || 0;
-          const rem = Math.max(0, max - u);
-          return `<div class="slot-cell">
-            <div class="slot-niv">${n}</div>
-            <div class="slot-count${rem===0?' empty':''}">${max>0 ? rem+'/'+max : '—'}</div>
-          </div>`;
-        }).join('')}
-      </div>
-    </div>` : ''}
-
-    <div class="panel-cond">
-      <div class="sec-label">Conditions</div>
-      <div class="cond-badges">
-        ${(Array.isArray(c.conditions) ? c.conditions : []).map(cond =>
-          `<span class="cond-badge" data-remove-cond="${esc(cond)}" title="Retirer">${esc(cond)} <span class="cond-x">✕</span></span>`
-        ).join('')}
-        <div class="cond-picker">
-          <button class="cond-add-btn">+ Condition</button>
-          <div class="cond-menu" id="cmenu-${esc(key)}">
-            ${ALL_CONDITIONS.filter(co => !(c.conditions||[]).includes(co)).map(co =>
-              `<div class="cond-opt" data-add-cond="${esc(co)}">${esc(co)}</div>`
-            ).join('')}
-          </div>
+    <div class="panel-hp-compact">
+      <div class="php-bar"><div class="php-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>
+      <div class="php-row">
+        <span class="php-num" style="${dead?'color:var(--danger);':''}">${pvAct}</span>
+        <span class="php-slash">/</span>
+        <span class="php-max">${pvMax} HP</span>
+        ${pvTemp > 0 ? `<span class="php-temp">+${pvTemp}</span>` : ''}
+        ${dead ? `<span class="php-dead">💀</span>` : ''}
+        <div class="php-ctrl">
+          <button class="hp-qbtn m" data-delta="-5">−5</button>
+          <button class="hp-qbtn m" data-delta="-1">−1</button>
+          <input type="number" class="hp-inp" placeholder="±" id="hpinp-${esc(key)}">
+          <button class="hp-qbtn p" data-delta="+1">+1</button>
+          <button class="hp-qbtn p" data-delta="+5">+5</button>
+          <button class="hp-apply" data-apply="${esc(key)}">✓</button>
         </div>
       </div>
     </div>
-    <div class="panel-dm-notes">
-      <div class="dm-notes-label">🗒 Notes DM (local)</div>
-      <textarea class="dm-notes-inp" data-dm-notes="${esc(key)}" rows="2" placeholder="Notes privées…">${esc(_panelNotes[key]||'')}</textarea>
+
+    ${(Array.isArray(c.conditions) && c.conditions.length) ? `
+    <div class="panel-cond-mini">
+      ${c.conditions.map(cond => `<span class="cond-badge" data-remove-cond="${esc(cond)}">${esc(cond)} <span class="cond-x">✕</span></span>`).join('')}
+    </div>` : ''}
+
+    <div class="panel-details${_panelExpanded.has(key)?' open':''}">
+
+      <div class="pdet-hp-ext">
+        <div class="pdet-hp-ext-row">
+          <button class="hp-qbtn m" data-delta="-10">−10</button>
+          <span style="flex:1;"></span>
+          <span class="temp-label">Temp HP</span>
+          <input type="number" class="temp-inp" id="tempinp-${esc(key)}" value="${pvTemp}" min="0">
+          <button class="temp-set" data-temp="${esc(key)}">Set</button>
+        </div>
+        ${dead ? `<div class="death-row">
+          Death saves:
+          ${[0,1,2].map(i=>`<span class="ds-dot${i<succ?' s':''}" data-ds="s" data-i="${i}" title="Success ${i+1}"></span>`).join('')}
+          <span class="ds-sep"></span>
+          ${[0,1,2].map(i=>`<span class="ds-dot${i<fail?' f':''}" data-ds="f" data-i="${i}" title="Failure ${i+1}"></span>`).join('')}
+        </div>` : ''}
+      </div>
+
+      ${(Array.isArray(c.ressources) && c.ressources.length) ? `<div class="panel-res">
+        ${c.ressources.map((r,ri) => {
+          const max = parseInt(r.max)||0;
+          const act = parseInt(r.actuel)||0;
+          return `<div class="res-row">
+            <span class="res-name">${esc(r.name||r.nom||'Resource')}</span>
+            <span class="res-pips">${Array.from({length:max},(_,pi)=>`<span class="res-pip${pi<act?' used':''}" data-res-key="${esc(key)}" data-res-i="${ri}" data-res-pip="${pi}"></span>`).join('')}</span>
+            <span style="font-size:0.72rem;color:var(--text-dim);margin-left:0.3rem;">${act}/${max}</span>
+          </div>`;
+        }).join('')}
+      </div>` : ''}
+
+      ${hasSlots ? `<div class="panel-slots">
+        <button class="slots-toggle" id="slotbtn-${esc(key)}"><span class="arrow">▶</span> Spell Slots</button>
+        <div class="slots-grid" id="slotgrid-${esc(key)}">
+          ${[1,2,3,4,5,6,7,8,9].map(n => {
+            const max = parseInt(slots[n]) || 0;
+            const u   = parseInt(used[n])  || 0;
+            const rem = Math.max(0, max - u);
+            return `<div class="slot-cell">
+              <div class="slot-niv">${n}</div>
+              <div class="slot-count${rem===0?' empty':''}">${max>0 ? rem+'/'+max : '—'}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>` : ''}
+
+      <div class="panel-cond">
+        <div class="sec-label">Conditions</div>
+        <div class="cond-badges">
+          ${(Array.isArray(c.conditions) ? c.conditions : []).map(cond =>
+            `<span class="cond-badge" data-remove-cond="${esc(cond)}">${esc(cond)} <span class="cond-x">✕</span></span>`
+          ).join('')}
+          <div class="cond-picker">
+            <button class="cond-add-btn">+ Condition</button>
+            <div class="cond-menu" id="cmenu-${esc(key)}">
+              ${ALL_CONDITIONS.filter(co => !(c.conditions||[]).includes(co)).map(co =>
+                `<div class="cond-opt" data-add-cond="${esc(co)}">${esc(co)}</div>`
+              ).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-dm-notes">
+        <div class="dm-notes-label">🗒 DM Notes (local)</div>
+        <textarea class="dm-notes-inp" data-dm-notes="${esc(key)}" rows="2" placeholder="Private notes…">${esc(_panelNotes[key]||'')}</textarea>
+      </div>
+
     </div>`;
 
   attachPlayerPanelEvents(panel, key, username, charId);
@@ -1663,6 +1705,13 @@ const _panelNotes = {};
 
 function attachPlayerPanelEvents(panel, key, username, charId) {
   panel.querySelector('[data-close]')?.addEventListener('click', () => closePanel(key));
+
+  // Expand/collapse details
+  panel.querySelector('[data-expand]')?.addEventListener('click', () => {
+    if (_panelExpanded.has(key)) _panelExpanded.delete(key);
+    else _panelExpanded.add(key);
+    updatePanel(key);
+  });
 
   // Inspiration toggle
   panel.querySelector('[data-insp]')?.addEventListener('click', () => {
