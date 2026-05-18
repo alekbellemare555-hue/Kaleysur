@@ -1542,25 +1542,33 @@
   border-top: 1px solid var(--j-border-col, #4a3510);
   z-index: 500;
   flex-direction: row;
+  flex-wrap: nowrap;
   align-items: stretch;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
   /* Safe area pour iPhone notch/home bar */
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+#mobile-bottom-nav::-webkit-scrollbar { display: none; }
 .mbn-btn {
-  flex: 1;
+  flex: 1 0 52px; /* min 52px, grow to fill */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 2px;
   background: none;
   border: none;
   color: #555;
   cursor: pointer;
   transition: color 0.15s, background 0.1s;
-  padding: 6px 0 4px;
+  padding: 5px 2px 3px;
   -webkit-tap-highlight-color: transparent;
   position: relative;
+  overflow: hidden;
+  min-width: 52px;
 }
 .mbn-btn::before {
   content: '';
@@ -1572,8 +1580,8 @@
 }
 .mbn-btn.active::before { background: rgba(201,169,110,0.12); }
 .mbn-btn:active::before { background: rgba(201,169,110,0.08); }
-.mbn-icon { font-size: 1.15rem; line-height: 1; position: relative; z-index: 1; }
-.mbn-label { font-family: 'Cinzel', serif; font-size: 0.52rem; letter-spacing: 0.06em; text-transform: uppercase; position: relative; z-index: 1; }
+.mbn-icon { font-size: 1.1rem; line-height: 1; position: relative; z-index: 1; flex-shrink: 0; }
+.mbn-label { font-family: 'Cinzel', serif; font-size: 0.5rem; letter-spacing: 0.04em; text-transform: uppercase; position: relative; z-index: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 .mbn-btn.active { color: var(--gold, #c9a96e); }
 
 /* ══ Mobile phone (≤ 640px) — améliorations ══ */
@@ -8714,45 +8722,68 @@ async function initViewMode() {
 
 function renderViewSheet(el, pd, c, slot, username) {
   const esc = s => (s||'').toString().replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const scores = c.scores || {};
-  const ABILITY_NAMES = ['STR','DEX','CON','INT','WIS','CHA'];
-  const ABILITY_KEYS  = ['STR','DEX','CON','INT','WIS','CHA'];
-  function mod(score) { return Math.floor(((parseInt(score)||10)-10)/2); }
-  function fmtMod(m)  { return (m>=0?'+':'')+m; }
+  // ── Helpers
+  function abilScore(key) { return parseInt(c[key]) || 10; }
+  function mod(score)  { return Math.floor((score-10)/2); }
+  function fmtMod(m)   { return (m>=0?'+':'')+m; }
+  // ── Stats — stored as c.for, c.dex, c.con, c.int, c.sag, c.cha
+  const ABILITIES = [
+    {key:'for',label:'STR'},{key:'dex',label:'DEX'},{key:'con',label:'CON'},
+    {key:'int',label:'INT'},{key:'sag',label:'WIS'},{key:'cha',label:'CHA'}
+  ];
+  // ── Proficiency bonus
+  const niveau = parseInt(c.niveau) || 1;
+  const profBonus = Math.ceil(niveau/4) + 1;
+  // ── HP
   const pvCur = parseInt(c.pvActuel)||0; const pvMax = parseInt(c.pvMax)||1;
   const hpPct = Math.round((pvCur/pvMax)*100);
   const hpColor = hpPct>50?'#6aba6a':hpPct>25?'#dca03c':'#c97a7a';
+  // ── Header
   const avatarHtml = c.avatarPng
     ? `<div class="view-avatar"><img src="${c.avatarPng}" alt="avatar"></div>`
     : `<div class="view-avatar">${esc(c.avatar||pd.avatar||'⚔')}</div>`;
   const classes = (c.classes||[{classe:c.classe,niveau:c.niveau}]).filter(cl=>cl.classe).map(cl=>`${cl.classe} ${cl.niveau}`).join(' / ') || '—';
-  const statsHtml = ABILITY_KEYS.map((k,i) => {
-    const val = parseInt(scores[k])||10; const m = mod(val);
+  // ── Ability score boxes
+  const statsHtml = ABILITIES.map(ab => {
+    const val = abilScore(ab.key); const m = mod(val);
     return `<div class="view-stat">
-      <div class="view-stat-name">${ABILITY_NAMES[i]}</div>
+      <div class="view-stat-name">${ab.label}</div>
       <div class="view-stat-val">${val}</div>
       <div class="view-stat-mod">${fmtMod(m)}</div>
     </div>`;
   }).join('');
-  const SKILLS_DATA = [
-    {name:'Acrobatics',key:'DEX'},{name:'Arcana',key:'INT'},{name:'Athletics',key:'STR'},
-    {name:'Stealth',key:'DEX'},{name:'Animal Handling',key:'WIS'},{name:'Sleight of Hand',key:'DEX'},
-    {name:'History',key:'INT'},{name:'Intimidation',key:'CHA'},{name:'Investigation',key:'INT'},
-    {name:'Medicine',key:'WIS'},{name:'Nature',key:'INT'},{name:'Perception',key:'WIS'},
-    {name:'Insight',key:'WIS'},{name:'Persuasion',key:'CHA'},{name:'Religion',key:'INT'},
-    {name:'Performance',key:'CHA'},{name:'Survival',key:'WIS'},{name:'Deception',key:'CHA'},
+  // ── Saving Throws — stored as c.saveFor/saveDex/saveCon/saveInt/saveSag/saveCha (bool)
+  const SAVES_V = [
+    {key:'saveFor',attr:'for',label:'STR'},{key:'saveDex',attr:'dex',label:'DEX'},
+    {key:'saveCon',attr:'con',label:'CON'},{key:'saveInt',attr:'int',label:'INT'},
+    {key:'saveSag',attr:'sag',label:'WIS'},{key:'saveCha',attr:'cha',label:'CHA'},
   ];
-  const pb = parseInt(c.bonusMaitrise)||2;
-  const saves = c.savingThrows||{};
-  const skillProfs = c.skillProficiencies||{};
-  const skillsHtml = SKILLS_DATA.map(sk => {
-    const lvl = skillProfs[sk.name] || 0;
-    const base = mod(parseInt(scores[sk.key])||10);
-    const bonus = lvl===2 ? pb*2 : lvl===1 ? pb : 0;
-    const total = fmtMod(base+bonus);
-    const dotCls = lvl===2?'expert':lvl===1?'prof':'';
-    return `<div class="view-skill"><span class="view-skill-dot ${dotCls}"></span>${esc(sk.name)} <strong style="color:var(--j-text,#e8e0d0);margin-left:auto">${total}</strong></div>`;
+  const savesHtml = SAVES_V.map(sv => {
+    const prof = !!c[sv.key];
+    const val = mod(abilScore(sv.attr)) + (prof ? profBonus : 0);
+    return `<div class="view-skill"><span class="view-skill-dot ${prof?'prof':''}"></span>${esc(sv.label)} <strong style="color:var(--j-text,#e8e0d0);margin-left:auto">${fmtMod(val)}</strong></div>`;
   }).join('');
+  // ── Skills — stored as c[sk.key] = 0|1|2 (or bool true=1, false=0)
+  const SKILLS_V = [
+    {key:'acrobaties',attr:'dex',label:'Acrobatics'},{key:'animaux',attr:'sag',label:'Animal Handling'},
+    {key:'arcanes',attr:'int',label:'Arcana'},{key:'athletisme',attr:'for',label:'Athletics'},
+    {key:'discret',attr:'dex',label:'Stealth'},{key:'duperie',attr:'cha',label:'Deception'},
+    {key:'histoire',attr:'int',label:'History'},{key:'intimidation',attr:'cha',label:'Intimidation'},
+    {key:'investigation',attr:'int',label:'Investigation'},{key:'medecine',attr:'sag',label:'Medicine'},
+    {key:'nature',attr:'int',label:'Nature'},{key:'perception',attr:'sag',label:'Perception'},
+    {key:'performance',attr:'cha',label:'Performance'},{key:'persuasion',attr:'cha',label:'Persuasion'},
+    {key:'prestidig',attr:'dex',label:'Sleight of Hand'},{key:'religion',attr:'int',label:'Religion'},
+    {key:'survie',attr:'sag',label:'Survival'},{key:'perspicacite',attr:'sag',label:'Insight'},
+  ];
+  const jat = !!c.jackOfAllTrades; const halfBonus = Math.floor(profBonus/2);
+  const skillsHtml = [...SKILLS_V].sort((a,b)=>a.label.localeCompare(b.label)).map(sk => {
+    const profLevel = Math.min(2, Math.max(0, parseInt(c[sk.key]) || (c[sk.key]===true?1:0)));
+    const jatBonus = (jat && profLevel===0) ? halfBonus : 0;
+    const val = mod(abilScore(sk.attr)) + (profLevel>=1?profBonus:0) + (profLevel>=2?profBonus:0) + jatBonus;
+    const dotCls = profLevel===2?'expert':profLevel===1?'prof':'';
+    return `<div class="view-skill"><span class="view-skill-dot ${dotCls}"></span>${esc(sk.label)} <strong style="color:var(--j-text,#e8e0d0);margin-left:auto">${fmtMod(val)}</strong></div>`;
+  }).join('');
+  // ── Conditions
   const conditions = (c.conditions||[]).filter(x=>x).map(x=>`<span style="background:rgba(201,122,122,0.15);border:1px solid rgba(201,122,122,0.3);color:#c97a7a;border-radius:4px;font-size:0.68rem;padding:0.1rem 0.45rem;">${esc(x)}</span>`).join(' ');
   const now = new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
   el.innerHTML = `
@@ -8778,13 +8809,18 @@ function renderViewSheet(el, pd, c, slot, username) {
       <div class="view-section-title">Combat</div>
       <div class="view-combat-grid">
         <div class="view-combat-item"><div class="view-combat-label">AC</div><div class="view-combat-val">${parseInt(c.ca)||10}</div></div>
-        <div class="view-combat-item"><div class="view-combat-label">Initiative</div><div class="view-combat-val">${fmtMod(parseInt(c.initiative)||mod(parseInt(scores.DEX)||10))}</div></div>
+        <div class="view-combat-item"><div class="view-combat-label">Initiative</div><div class="view-combat-val">${fmtMod(parseInt(c.initiative)||mod(abilScore('dex')))}</div></div>
         <div class="view-combat-item"><div class="view-combat-label">Speed</div><div class="view-combat-val">${esc(c.vitesse||'30 ft')}</div></div>
+        <div class="view-combat-item"><div class="view-combat-label">Prof.</div><div class="view-combat-val">+${profBonus}</div></div>
       </div>
     </div>
     <div class="view-section">
       <div class="view-section-title">Ability Scores</div>
       <div class="view-stats">${statsHtml}</div>
+    </div>
+    <div class="view-section">
+      <div class="view-section-title">Saving Throws</div>
+      <div class="view-skills-grid">${savesHtml}</div>
     </div>
     <div class="view-section">
       <div class="view-section-title">Skills</div>
