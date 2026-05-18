@@ -2457,29 +2457,30 @@ function renderDrawerBody() {
     </div>
 
     ${_drawerSection === 'sorts' ? (() => {
-      const sorts = c.sorts || [];
+      const spells = c.spells || [];
       const niveau = parseInt(c.niveau) || 1;
       const pb = Math.ceil(niveau / 4) + 1;
-      const statKey = c.sortStat || c.spellcastingAbility || 'int';
+      // joueurs.html stores the casting stat in c.caractSort (uppercase: 'INT', 'SAG'…)
+      const statKey = (c.caractSort || c.sortStat || c.spellcastingAbility || 'int').toLowerCase();
       const statScore = parseInt(c[statKey]) || 10;
       const statMod = Math.floor((statScore - 10) / 2);
       const dc = 8 + pb + statMod;
       const atkBonus = pb + statMod;
       const grouped = {};
-      sorts.forEach(s => {
+      spells.forEach(s => {
         const lvl = s.level ?? s.niveau ?? 0;
         if (!grouped[lvl]) grouped[lvl] = [];
         grouped[lvl].push(s);
       });
-      const levelLabel = lvl => parseInt(lvl) === 0 ? 'Tours de magie' : `Niveau ${lvl}`;
+      const levelLabel = lvl => parseInt(lvl) === 0 ? '✧ Cantrips' : `✦ Level ${lvl}`;
       return `
       <div class="ds-section">
         <div class="ds-spell-calcs">
-          <div class="ds-spell-calc"><div class="ds-label">DD de sort</div><div class="ds-value" style="font-size:1.1rem;font-weight:700;color:var(--gold);">${dc}</div></div>
-          <div class="ds-spell-calc"><div class="ds-label">Atk. sort</div><div class="ds-value" style="font-size:1.1rem;font-weight:700;color:var(--gold);">${atkBonus >= 0 ? '+' : ''}${atkBonus}</div></div>
-          <div class="ds-spell-calc"><div class="ds-label">Mod. incant.</div><div class="ds-value" style="font-size:0.9rem;color:var(--text-mid);">${statKey.toUpperCase()} (${statMod >= 0 ? '+' : ''}${statMod})</div></div>
+          <div class="ds-spell-calc"><div class="ds-label">Spell DC</div><div class="ds-value" style="font-size:1.1rem;font-weight:700;color:var(--gold);">${dc}</div></div>
+          <div class="ds-spell-calc"><div class="ds-label">Spell Atk.</div><div class="ds-value" style="font-size:1.1rem;font-weight:700;color:var(--gold);">${atkBonus >= 0 ? '+' : ''}${atkBonus}</div></div>
+          <div class="ds-spell-calc"><div class="ds-label">Cast. Mod.</div><div class="ds-value" style="font-size:0.9rem;color:var(--text-mid);">${statKey.toUpperCase()} (${statMod >= 0 ? '+' : ''}${statMod})</div></div>
         </div>
-        <input type="search" class="ds-spell-filter" id="ds-spell-search" placeholder="Filtrer les sorts…">
+        <input type="search" class="ds-spell-filter" id="ds-spell-search" placeholder="Filter spells…">
         <div id="ds-spells-container">
           ${Object.keys(grouped).sort((a, b) => parseInt(a) - parseInt(b)).map(lvl => `
             <div class="ds-spell-level-group">
@@ -2488,19 +2489,17 @@ function renderDrawerBody() {
                 <div class="ds-spell-item">
                   <div class="ds-spell-name">
                     ${esc(s.name || '—')}
-                    ${s.concentration ? `<span class="ds-spell-conc" title="Concentration">C</span>` : ''}
-                    ${s.ritual ? `<span class="ds-spell-conc" title="Rituel">R</span>` : ''}
+                    ${s.conc ? `<span class="ds-spell-conc" title="Concentration">C</span>` : ''}
                   </div>
                   <div class="ds-spell-meta">
-                    ${(s.school || s.ecole) ? `<span class="ds-spell-tag">${esc(s.school || s.ecole)}</span>` : ''}
-                    ${s.castingTime ? `<span class="ds-spell-tag">⏱ ${esc(s.castingTime)}</span>` : ''}
-                    ${s.range ? `<span class="ds-spell-tag">⦾ ${esc(s.range)}</span>` : ''}
-                    ${s.duration ? `<span class="ds-spell-tag">⧗ ${esc(s.duration)}</span>` : ''}
-                    ${(s.damage || s.degats) ? `<span class="ds-spell-tag ds-spell-dmg">⚔ ${esc(s.damage || s.degats)}</span>` : ''}
+                    ${s.action ? `<span class="ds-spell-tag">⏱ ${esc(s.action)}</span>` : ''}
+                    ${s.portee ? `<span class="ds-spell-tag">⦾ ${esc(s.portee)}</span>` : ''}
+                    ${(s.degat || s.damage) ? `<span class="ds-spell-tag ds-spell-dmg">⚔ ${esc(s.degat || s.damage)}${s.typeDegat ? ' ' + esc(s.typeDegat) : ''}</span>` : ''}
+                    ${s.desc ? `<span class="ds-spell-tag" style="color:var(--text-dim);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(s.desc)}">${esc(s.desc.slice(0,40))}${s.desc.length>40?'…':''}</span>` : ''}
                   </div>
                 </div>`).join('')}
             </div>`).join('')}
-          ${!sorts.length ? `<div style="color:var(--text-dim);font-size:0.82rem;font-style:italic;padding:0.5rem 0;">Aucun sort enregistré.</div>` : ''}
+          ${!spells.length ? `<div style="color:var(--text-dim);font-size:0.82rem;font-style:italic;padding:0.5rem 0;">No spells recorded.</div>` : ''}
         </div>
       </div>`;
     })() : _drawerSection === 'perso' ? `
@@ -2555,14 +2554,15 @@ function renderDrawerBody() {
         </div>`).join('')}
       </div>
     </div>` : ''}
-    ${(c.sorts||[]).length ? `
+    ${(c.spells||[]).length ? `
     <div class="ds-section">
-      <div class="ds-section-title">✨ Sorts</div>
+      <div class="ds-section-title">✨ Spells <span style="font-size:0.72rem;color:var(--text-dim);font-weight:400;">(${(c.spells||[]).length})</span></div>
       <div class="ds-list">
-        ${(c.sorts||[]).map(s => `<div class="ds-list-item">
+        ${(c.spells||[]).map(s => `<div class="ds-list-item">
           <span class="ds-list-name">${esc(s.name||'—')}</span>
-          ${s.niveau!==undefined?`<span class="ds-list-badge">Niv.${s.niveau}</span>`:''}
-          ${s.ecole?`<span class="ds-list-badge">${esc(s.ecole)}</span>`:''}
+          ${s.level!==undefined&&s.level!=='0'?`<span class="ds-list-badge">Lvl.${s.level}</span>`:''}
+          ${!s.level||s.level==='0'?`<span class="ds-list-badge">Cantrip</span>`:''}
+          ${s.conc?`<span class="ds-list-badge">C</span>`:''}
         </div>`).join('')}
       </div>
     </div>` : ''}
