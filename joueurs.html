@@ -2369,12 +2369,12 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
       <!-- Tabs wrapped in scrollable zone so they never push actions off-screen -->
       <div class="vb-tabs">
         <button class="tab-btn active" data-tab="personnage">Character</button>
-        <button class="tab-btn" data-tab="identite">Identité</button>
+        <button class="tab-btn" data-tab="identite">Identity</button>
         <button class="tab-btn" data-tab="inventaire">Inventory</button>
         <button class="tab-btn" data-tab="notes">Notes</button>
         <button class="tab-btn" data-tab="parametres">Settings</button>
         <button class="tab-btn" data-tab="aide">Reference</button>
-        <button class="tab-btn" data-tab="familiers">Familiers</button>
+        <button class="tab-btn" data-tab="familiers">Familiars</button>
         <button class="tab-btn" data-tab="admin" id="tab-admin-btn" style="display:none;color:var(--danger);">👁 Admin</button>
       </div>
       <!-- Hidden player info (kept for JS) -->
@@ -2485,8 +2485,8 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
           <div class="ability-grid" id="ability-grid" style="margin-top:14px;"></div>
           <!-- Quick note -->
           <div id="hero-note-wrap">
-            <div id="hero-note-label">Notes rapides</div>
-            <textarea id="hero-note" data-f="heroNote" placeholder="Observations, objectifs, rappels…" rows="3"></textarea>
+            <div id="hero-note-label">Quick Notes</div>
+            <textarea id="hero-note" data-f="heroNote" placeholder="Observations, goals, reminders…" rows="3"></textarea>
           </div>
         </div>
 
@@ -2530,7 +2530,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
                 <input type="number" class="field-input field-input-sm" data-f="pvMax" value="0" min="0" id="inp-pvMax">
               </div>
               <div class="vb-hp-inp-group">
-                <label class="field-label">Actuel</label>
+                <label class="field-label">Current</label>
                 <input type="number" class="field-input field-input-sm" data-f="pvActuel" value="0" id="inp-pvActuel">
               </div>
               <div class="vb-hp-inp-group">
@@ -2649,7 +2649,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
           <div class="save-skill-grid">
             <div id="saves-col"></div>
             <div>
-              <label class="jat-toggle" id="jat-label" title="Barde niv.2+ : ajoute la moitié du bonus de maîtrise aux compétences sans maîtrise">
+              <label class="jat-toggle" id="jat-label" title="Bard level 2+: adds half proficiency bonus to skills without proficiency">
                 <input type="checkbox" id="jat-check">
                 Jack of All Trades
               </label>
@@ -2670,37 +2670,37 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
         <div class="layout-col" data-col="1">
           <div class="layout-col-label">Col centre</div>
 
-        <!-- Attaques -->
+        <!-- Attacks -->
 
         <div class="sheet-section" data-sec="attaques">
           <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
-            <span>Attaques</span>
-            <button class="btn btn-sm btn-gold" id="btn-add-attack">+ Ajouter</button>
+            <span>Attacks</span>
+            <button class="btn btn-sm btn-gold" id="btn-add-attack">+ Add</button>
           </div>
           <table class="attack-table">
             <thead><tr>
-              <th style="width:28%">Nom</th>
-              <th style="width:12%" title="Bonus d'attaque — clic pour lancer">Toucher</th>
-              <th style="width:20%">Dégâts</th>
+              <th style="width:28%">Name</th>
+              <th style="width:12%" title="Attack bonus — click to roll">To Hit</th>
+              <th style="width:20%">Damage</th>
               <th style="width:14%">Type</th>
               <th style="width:10%">Stat</th>
-              <th style="width:8%" title="Maîtrise">Maît.</th>
+              <th style="width:8%" title="Proficiency">Prof.</th>
               <th style="width:8%"></th>
             </tr></thead>
             <tbody id="attack-tbody"></tbody>
           </table>
         </div>
 
-        <!-- Modificateurs actifs -->
+        <!-- Active Modifiers -->
         <div class="sheet-section" data-sec="mods">
           <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
-            <span>Modificateurs actifs</span>
-            <button class="btn btn-sm btn-gold" id="btn-add-mod">+ Ajouter</button>
+            <span>Active Modifiers</span>
+            <button class="btn btn-sm btn-gold" id="btn-add-mod">+ Add</button>
           </div>
           <div style="display:grid;grid-template-columns:20px 1fr 120px 56px 28px;gap:0.35rem;margin-bottom:0.2rem;">
             <span></span>
-            <span style="font-size:0.65rem;color:#555;text-transform:uppercase;letter-spacing:0.04em;">Nom / Source</span>
-            <span style="font-size:0.65rem;color:#555;text-transform:uppercase;letter-spacing:0.04em;">Cible</span>
+            <span style="font-size:0.65rem;color:#555;text-transform:uppercase;letter-spacing:0.04em;">Name / Source</span>
+            <span style="font-size:0.65rem;color:#555;text-transform:uppercase;letter-spacing:0.04em;">Target</span>
             <span style="font-size:0.65rem;color:#555;text-transform:uppercase;letter-spacing:0.04em;text-align:center;">Bonus</span>
             <span></span>
           </div>
@@ -2723,12 +2723,12 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
           <div id="cf-body"></div>
         </div>
 
-        <!-- Ressources de classe -->
+        <!-- Class Resources -->
 
         <div class="sheet-section" data-sec="ressources">
           <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
-            <span>Ressources</span>
-            <button class="btn btn-sm btn-gold" id="btn-add-resource">+ Ajouter</button>
+            <span>Resources</span>
+            <button class="btn btn-sm btn-gold" id="btn-add-resource">+ Add</button>
           </div>
           <div class="res-grid" id="resource-grid"></div>
           <div class="rest-btns">
@@ -2758,16 +2758,16 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
 
         <!-- Sorts: moved to bottom row -->
 
-        <!-- Traits & capacités -->
+        <!-- Features & Traits -->
 
         <div class="sheet-section" data-sec="features">
           <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
-            <span>Traits &amp; Capacités</span>
-            <button class="btn btn-sm btn-gold" id="btn-add-feature">+ Ajouter</button>
+            <span>Features &amp; Traits</span>
+            <button class="btn btn-sm btn-gold" id="btn-add-feature">+ Add</button>
           </div>
           <table class="exp-table">
             <thead><tr>
-              <th>Nom</th>
+              <th>Name</th>
               <th style="width:100px;">Source</th>
               <th style="width:32px;"></th>
               <th style="width:28px;"></th>
@@ -2797,11 +2797,11 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
           </div>
           <div class="sheet-grid" style="margin-bottom:0.75rem;">
             <div class="field-group">
-              <label class="field-label">Classe de sort</label>
-              <input type="text" class="field-input" data-f="classeSort" placeholder="ex. Magicien">
+              <label class="field-label">Spellcasting Class</label>
+              <input type="text" class="field-input" data-f="classeSort" placeholder="e.g. Wizard">
             </div>
             <div class="field-group">
-              <label class="field-label">Caractéristique</label>
+              <label class="field-label">Ability</label>
               <select class="field-input" data-f="caractSort">
                 <option value="">—</option>
                 <option value="FOR">STR</option><option value="DEX">DEX</option><option value="CON">CON</option>
@@ -2809,11 +2809,11 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
               </select>
             </div>
             <div class="combat-field">
-              <label class="field-label">Save DD</label>
+              <label class="field-label">Spell Save DC</label>
               <div class="field-input field-input-sm" id="sort-dd" style="padding:0.4rem;text-align:center;">—</div>
             </div>
             <div class="combat-field">
-              <label class="field-label">Bonus attaque</label>
+              <label class="field-label">Attack Bonus</label>
               <div class="field-input field-input-sm" id="sort-atk" style="padding:0.4rem;text-align:center;">—</div>
             </div>
           </div>
@@ -2827,14 +2827,14 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
               <button class="btn btn-sm" id="btn-open-compendium-spell" style="background:rgba(201,169,110,0.1);border:1px solid var(--gold-dark);color:var(--gold);margin-right:0.4rem;">⊕ Compendium</button>
               <button class="btn btn-sm btn-gold" id="btn-add-spell">+ Ajouter</button>
             </div>
-            <input type="search" id="spell-filter" class="field-input" placeholder="Filtrer sorts…" style="width:100%;margin-bottom:0.4rem;padding:0.3rem 0.5rem;font-size:0.78rem;">
+            <input type="search" id="spell-filter" class="field-input" placeholder="Filter spells…" style="width:100%;margin-bottom:0.4rem;padding:0.3rem 0.5rem;font-size:0.78rem;">
             <table class="exp-table spell-table">
               <thead><tr>
-                <th style="width:44px;">Niv.</th>
-                <th>Nom du sort</th>
-                <th style="width:70px;">Dégât</th>
+                <th style="width:44px;">Lvl.</th>
+                <th>Spell Name</th>
+                <th style="width:70px;">Damage</th>
                 <th style="width:80px;">Type</th>
-                <th style="width:60px;">Portée</th>
+                <th style="width:60px;">Range</th>
                 <th style="width:70px;">Action</th>
                 <th style="width:28px;" title="Concentration">◉</th>
                 <th style="width:28px;"></th>
@@ -2850,15 +2850,15 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
 
     </div><!-- /tab-personnage -->
 
-    <!-- ── Onglet Identité ── -->
+    <!-- ── Identity Tab ── -->
     <div class="tab-panel" id="tab-identite">
       <div class="vb-identite-wrap">
         <div class="sheet-section" data-sec="identite" style="max-width:640px;">
-          <div class="sheet-section-title">Identité</div>
+          <div class="sheet-section-title">Identity</div>
           <div class="sheet-grid">
             <div class="field-group" style="grid-column:span 2;">
-              <label class="field-label">Nom du personnage</label>
-              <input type="text" class="field-input" data-f="characterName" placeholder="Nom du héros">
+              <label class="field-label">Character Name</label>
+              <input type="text" class="field-input" data-f="characterName" placeholder="Your hero's name">
             </div>
             <div class="field-group">
               <label class="field-label">Espèce (Species)</label>
@@ -2879,27 +2879,27 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
               <input type="text" class="field-input" data-f="background" placeholder="ex. Acolyte…">
             </div>
             <div class="field-group">
-              <label class="field-label">Alignement</label>
+              <label class="field-label">Alignment</label>
               <select class="field-input" data-f="alignement">
                 <option value="">—</option>
-                <option>Loyal Bon</option><option>Neutre Bon</option><option>Chaotique Bon</option>
-                <option>Loyal Neutre</option><option>Neutre</option><option>Chaotique Neutre</option>
-                <option>Loyal Mauvais</option><option>Neutre Mauvais</option><option>Chaotique Mauvais</option>
+                <option>Lawful Good</option><option>Neutral Good</option><option>Chaotic Good</option>
+                <option>Lawful Neutral</option><option>True Neutral</option><option>Chaotic Neutral</option>
+                <option>Lawful Evil</option><option>Neutral Evil</option><option>Chaotic Evil</option>
               </select>
             </div>
             <div class="field-group">
-              <label class="field-label">Points d'XP</label>
+              <label class="field-label">Experience Points</label>
               <input type="number" class="field-input" data-f="xp" min="0" value="0">
             </div>
           </div>
           <div class="mait-grid" style="margin-top:0.75rem;">
             <div class="field-group">
               <label class="field-label">Proficiencies (armor, weapons, tools)</label>
-              <textarea class="field-input" data-f="maitrises" rows="3" placeholder="ex. Armures légères, épées, outils de forgeron…"></textarea>
+              <textarea class="field-input" data-f="maitrises" rows="3" placeholder="e.g. Light armor, swords, smith's tools…"></textarea>
             </div>
             <div class="field-group">
-              <label class="field-label">Langues</label>
-              <textarea class="field-input" data-f="langues" rows="3" placeholder="ex. Commun, Elfique, Draconique…"></textarea>
+              <label class="field-label">Languages</label>
+              <textarea class="field-input" data-f="langues" rows="3" placeholder="e.g. Common, Elvish, Draconic…"></textarea>
             </div>
           </div>
           <div style="margin-top:0.75rem;display:flex;align-items:center;gap:0.5rem;">
@@ -2907,66 +2907,66 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
               <input type="checkbox" data-f="inspiration" style="accent-color:var(--gold-dark);width:15px;height:15px;">
               Inspiration
             </label>
-            <span style="margin-left:1rem;font-size:0.82rem;color:#888;">Bonus de maîtrise : <strong id="prof-bonus" style="color:var(--gold);">+2</strong></span>
+            <span style="margin-left:1rem;font-size:0.82rem;color:#888;">Proficiency Bonus: <strong id="prof-bonus" style="color:var(--gold);">+2</strong></span>
           </div>
         </div>
       </div>
 
-      <!-- Personnalité déplacée ici depuis l'onglet Personnage -->
+      <!-- Personality section -->
       <div class="sheet-section" data-sec="perso" style="max-width:640px;margin-top:1rem;">
-        <div class="sheet-section-title">Personnalité</div>
+        <div class="sheet-section-title">Personality</div>
         <div class="sheet-grid-2">
           <div class="field-group">
-            <label class="field-label">Traits de personnalité</label>
+            <label class="field-label">Personality Traits</label>
             <textarea class="field-input" data-f="traits" rows="3"></textarea>
           </div>
           <div class="field-group">
-            <label class="field-label">Idéaux</label>
+            <label class="field-label">Ideals</label>
             <textarea class="field-input" data-f="ideaux" rows="3"></textarea>
           </div>
           <div class="field-group">
-            <label class="field-label">Liens</label>
+            <label class="field-label">Bonds</label>
             <textarea class="field-input" data-f="liens" rows="3"></textarea>
           </div>
           <div class="field-group">
-            <label class="field-label">Défauts</label>
+            <label class="field-label">Flaws</label>
             <textarea class="field-input" data-f="defauts" rows="3"></textarea>
           </div>
         </div>
         <div class="field-group" style="margin-top:0.75rem;">
-          <label class="field-label">Apparence physique</label>
+          <label class="field-label">Physical Appearance</label>
           <textarea class="field-input" data-f="apparence" rows="2"></textarea>
         </div>
         <div class="field-group" style="margin-top:0.75rem;">
-          <label class="field-label">Histoire &amp; Contexte</label>
+          <label class="field-label">History &amp; Background</label>
           <textarea class="field-input" data-f="historique" rows="4"></textarea>
         </div>
       </div>
     </div><!-- /tab-identite -->
 
-    <!-- ── Onglet Inventaire ── -->
+    <!-- ── Inventory Tab ── -->
     <div class="tab-panel" id="tab-inventaire">
       <div class="sheet-section">
-        <div class="sheet-section-title">Objets</div>
+        <div class="sheet-section-title">Items</div>
         <div class="inv-cat-tabs" id="inv-cat-tabs">
-          <button class="inv-cat-tab active" data-cat="">Tout <span class="inv-cat-badge" id="icat-badge-all"></span></button>
-          <button class="inv-cat-tab" data-cat="arme">⚔ Armes</button>
-          <button class="inv-cat-tab" data-cat="armure">🛡 Armures</button>
-          <button class="inv-cat-tab" data-cat="consommable">⚗ Consommables</button>
-          <button class="inv-cat-tab" data-cat="magique">✦ Magiques</button>
-          <button class="inv-cat-tab" data-cat="equipement">🎒 Équipement</button>
+          <button class="inv-cat-tab active" data-cat="">All <span class="inv-cat-badge" id="icat-badge-all"></span></button>
+          <button class="inv-cat-tab" data-cat="arme">⚔ Weapons</button>
+          <button class="inv-cat-tab" data-cat="armure">🛡 Armor</button>
+          <button class="inv-cat-tab" data-cat="consommable">⚗ Consumables</button>
+          <button class="inv-cat-tab" data-cat="magique">✦ Magical</button>
+          <button class="inv-cat-tab" data-cat="equipement">🎒 Equipment</button>
         </div>
         <div class="inv-controls">
-          <input type="text" class="field-input" id="inv-search" placeholder="Rechercher un objet…" style="flex:1;min-width:120px;">
+          <input type="text" class="field-input" id="inv-search" placeholder="Search items…" style="flex:1;min-width:120px;">
           <button class="btn btn-sm" id="btn-open-compendium-item" style="background:rgba(201,169,110,0.1);border:1px solid var(--gold-dark);color:var(--gold);">⊕ Compendium</button>
           <button class="btn btn-sm btn-gold" id="btn-add-item">+ Ajouter</button>
         </div>
         <table class="inv-table">
           <thead><tr>
-            <th style="width:10%">Qté</th>
-            <th style="width:28%">Nom</th>
+            <th style="width:10%">Qty</th>
+            <th style="width:28%">Name</th>
             <th style="width:32%">Description</th>
-            <th style="width:18%">Catégorie</th>
+            <th style="width:18%">Category</th>
             <th style="width:12%"></th>
           </tr></thead>
           <tbody id="inv-tbody"></tbody>
@@ -2977,34 +2977,34 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
           <div class="attunement-slots" id="attunement-slots">
             <div class="attunement-slot">
               <input type="checkbox" class="attunement-slot-check" data-at="0">
-              <input type="text" class="attunement-slot-inp" data-at="0" placeholder="Objet magique 1…">
-              <span class="attunement-slot-label" id="at-label-0">libre</span>
+              <input type="text" class="attunement-slot-inp" data-at="0" placeholder="Magic item 1…">
+              <span class="attunement-slot-label" id="at-label-0">free</span>
             </div>
             <div class="attunement-slot">
               <input type="checkbox" class="attunement-slot-check" data-at="1">
-              <input type="text" class="attunement-slot-inp" data-at="1" placeholder="Objet magique 2…">
-              <span class="attunement-slot-label" id="at-label-1">libre</span>
+              <input type="text" class="attunement-slot-inp" data-at="1" placeholder="Magic item 2…">
+              <span class="attunement-slot-label" id="at-label-1">free</span>
             </div>
             <div class="attunement-slot">
               <input type="checkbox" class="attunement-slot-check" data-at="2">
-              <input type="text" class="attunement-slot-inp" data-at="2" placeholder="Objet magique 3…">
-              <span class="attunement-slot-label" id="at-label-2">libre</span>
+              <input type="text" class="attunement-slot-inp" data-at="2" placeholder="Magic item 3…">
+              <span class="attunement-slot-label" id="at-label-2">free</span>
             </div>
           </div>
         </div>
       </div>
       <div class="sheet-section">
-        <div class="sheet-section-title">Rations &amp; Eau</div>
+        <div class="sheet-section-title">Rations &amp; Water</div>
         <div class="ration-tracker" id="ration-tracker"></div>
       </div>
       <div class="sheet-section">
-        <div class="sheet-section-title">Monnaie</div>
+        <div class="sheet-section-title">Currency</div>
         <div class="currency-grid">
           <div class="currency-item"><div class="currency-label">PP</div><input type="number" class="field-input" data-currency="pp" min="0" value="0"></div>
-          <div class="currency-item"><div class="currency-label">PO</div><input type="number" class="field-input" data-currency="gp" min="0" value="0"></div>
-          <div class="currency-item"><div class="currency-label">PE</div><input type="number" class="field-input" data-currency="ep" min="0" value="0"></div>
-          <div class="currency-item"><div class="currency-label">PA</div><input type="number" class="field-input" data-currency="sp" min="0" value="0"></div>
-          <div class="currency-item"><div class="currency-label">PC</div><input type="number" class="field-input" data-currency="cp" min="0" value="0"></div>
+          <div class="currency-item"><div class="currency-label">GP</div><input type="number" class="field-input" data-currency="gp" min="0" value="0"></div>
+          <div class="currency-item"><div class="currency-label">EP</div><input type="number" class="field-input" data-currency="ep" min="0" value="0"></div>
+          <div class="currency-item"><div class="currency-label">SP</div><input type="number" class="field-input" data-currency="sp" min="0" value="0"></div>
+          <div class="currency-item"><div class="currency-label">CP</div><input type="number" class="field-input" data-currency="cp" min="0" value="0"></div>
         </div>
       </div>
     </div><!-- /tab-inventaire -->
@@ -3027,7 +3027,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
             <button class="notes-del-page-btn" id="btn-del-note-page" title="Supprimer cette page">🗑</button>
           </div>
           <textarea class="notes-editor" id="notes-editor" placeholder="Tes notes de session, quêtes, PNJ importants…"></textarea>
-          <div style="font-size:0.72rem;color:#555;text-align:right;margin-top:0.3rem;font-style:italic;">Sauvegarde automatique</div>
+          <div style="font-size:0.72rem;color:#555;text-align:right;margin-top:0.3rem;font-style:italic;">Autosave</div>
         </div>
       </div>
 
@@ -3079,7 +3079,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
               <!-- Actions -->
               <button class="canvas-tool-btn" id="ctool-undo" title="Annuler (Ctrl+Z)">↩</button>
               <button class="canvas-tool-btn" id="ctool-clear" title="Effacer la page" style="color:var(--danger);border-color:#3a1a1a;">✕</button>
-              <div style="margin-left:auto;font-size:0.62rem;color:#444;font-style:italic;">Sauvegardé localement</div>
+              <div style="margin-left:auto;font-size:0.62rem;color:#444;font-style:italic;">Saved locally</div>
             </div>
             <div class="canvas-scroll-wrap" id="canvas-scroll-wrap">
               <canvas id="handnote-canvas"></canvas>
@@ -3472,12 +3472,12 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
 
   <!-- ══ Barre de navigation mobile (bas) ══ -->
   <nav id="mobile-bottom-nav" aria-label="Navigation">
-    <button class="mbn-btn active" data-tab="personnage"><span class="mbn-icon">⚔</span><span class="mbn-label">Perso</span></button>
-    <button class="mbn-btn" data-tab="identite"><span class="mbn-icon">👤</span><span class="mbn-label">Identité</span></button>
-    <button class="mbn-btn" data-tab="inventaire"><span class="mbn-icon">🎒</span><span class="mbn-label">Sac</span></button>
+    <button class="mbn-btn active" data-tab="personnage"><span class="mbn-icon">⚔</span><span class="mbn-label">Char.</span></button>
+    <button class="mbn-btn" data-tab="identite"><span class="mbn-icon">👤</span><span class="mbn-label">Identity</span></button>
+    <button class="mbn-btn" data-tab="inventaire"><span class="mbn-icon">🎒</span><span class="mbn-label">Bag</span></button>
     <button class="mbn-btn" data-tab="notes"><span class="mbn-icon">✏</span><span class="mbn-label">Notes</span></button>
-    <button class="mbn-btn" data-tab="parametres"><span class="mbn-icon">⚙</span><span class="mbn-label">Config</span></button>
-    <button class="mbn-btn" data-tab="familiers"><span class="mbn-icon">🐾</span><span class="mbn-label">Familiers</span></button>
+    <button class="mbn-btn" data-tab="parametres"><span class="mbn-icon">⚙</span><span class="mbn-label">Settings</span></button>
+    <button class="mbn-btn" data-tab="familiers"><span class="mbn-icon">🐾</span><span class="mbn-label">Familiars</span></button>
   </nav>
 
   <!-- ══ VUE FICHE PARTAGÉE (lecture seule) ══ -->
@@ -5593,7 +5593,7 @@ function renderCharSelector() {
     item.innerHTML = `
       <div class="char-sel-item-avatar">${c.avatarPng ? `<img src="${c.avatarPng}" style="width:22px;height:22px;border-radius:50%;object-fit:cover;">` : (c.avatar || '⚔')}</div>
       <div class="char-sel-item-info">
-        <div class="char-sel-item-name">${c.characterName || 'Sans nom'}</div>
+        <div class="char-sel-item-name">${c.characterName || 'Unnamed'}</div>
         <div class="char-sel-item-sub">${classStr}</div>
       </div>
       ${isActive ? '<span style="color:var(--gold);font-size:0.7rem;">✦</span>' : ''}
@@ -5657,7 +5657,7 @@ function renderCharCards() {
     card.innerHTML = `
       <button class="char-card-del" data-del-char="${id}" title="Supprimer">✕</button>
       <div class="char-card-avatar">${c.avatarPng ? `<img src="${c.avatarPng}" alt="avatar">` : (c.avatar || playerData.avatar || '⚔')}</div>
-      <div class="char-card-name">${c.characterName || 'Sans nom'}</div>
+      <div class="char-card-name">${c.characterName || 'Unnamed'}</div>
       <div class="char-card-sub">${getClasses(c).filter(cl=>cl.classe).map(cl=>cl.classe+' '+cl.niveau).join(' / ') || '—'}</div>
       ${c.species ? `<div class="char-card-species">${c.species}</div>` : ''}
       ${hpHtml}
@@ -5943,7 +5943,7 @@ function renderHero() {
     factsEl.innerHTML = facts.map(([k, v]) =>
       `<div class="vb-fact"><div class="vb-fact-label">${k}</div><div class="vb-fact-val">${v}</div></div>`
     ).join('') + `<div class="vb-fact" style="flex:2;">
-      <div class="vb-xp-bar-wrap" title="${xpCur.toLocaleString()} / ${xpNext.toLocaleString()} XP (${xpPct}% vers niv. ${Math.min(20,(lv||1)+1)})">
+      <div class="vb-xp-bar-wrap" title="${xpCur.toLocaleString()} / ${xpNext.toLocaleString()} XP (${xpPct}% to level ${Math.min(20,(lv||1)+1)})">
         <div class="vb-xp-label">XP ${xpCur.toLocaleString()}</div>
         <div class="vb-xp-bar-track"><div class="vb-xp-bar-fill" style="width:${xpPct}%"></div></div>
       </div>
@@ -6101,19 +6101,19 @@ function getMod(cible) {
 }
 
 const MOD_TARGETS = [
-  { v:'ac',      l:'CA' },
-  { v:'atk',     l:'Toutes attaques' },
+  { v:'ac',      l:'AC' },
+  { v:'atk',     l:'All Attacks' },
   { v:'init',    l:'Initiative' },
-  { v:'all_sv',  l:'Tous jets de save.' },
-  { v:'sv_for',  l:'Save FOR' },   { v:'sv_dex',  l:'Save DEX' },
+  { v:'all_sv',  l:'All Saves' },
+  { v:'sv_for',  l:'Save STR' },   { v:'sv_dex',  l:'Save DEX' },
   { v:'sv_con',  l:'Save CON' },   { v:'sv_int',  l:'Save INT' },
-  { v:'sv_sag',  l:'Save SAG' },   { v:'sv_cha',  l:'Save CHA' },
-  { v:'all_sk',  l:'Toutes compétences' },
-  { v:'for',     l:'FOR (stat)' }, { v:'dex',     l:'DEX (stat)' },
+  { v:'sv_sag',  l:'Save WIS' },   { v:'sv_cha',  l:'Save CHA' },
+  { v:'all_sk',  l:'All Skills' },
+  { v:'for',     l:'STR (stat)' }, { v:'dex',     l:'DEX (stat)' },
   { v:'con',     l:'CON (stat)' }, { v:'int',     l:'INT (stat)' },
-  { v:'sag',     l:'SAG (stat)' }, { v:'cha',     l:'CHA (stat)' },
-  { v:'sort_dc', l:'DD de sort' }, { v:'sort_atk',l:'Atk. de sort' },
-  { v:'autre',   l:'Autre / Notes' },
+  { v:'sag',     l:'WIS (stat)' }, { v:'cha',     l:'CHA (stat)' },
+  { v:'sort_dc', l:'Spell DC' },   { v:'sort_atk',l:'Spell Atk.' },
+  { v:'autre',   l:'Other / Notes' },
 ];
 
 function renderMods() {
@@ -6129,13 +6129,13 @@ function renderMods() {
     const row = document.createElement('div');
     row.className = 'mod-row' + (m.on ? '' : ' off');
     row.innerHTML = `
-      <input type="checkbox" class="mod-toggle" data-mi="${i}" ${m.on ? 'checked' : ''} title="Activer/désactiver">
-      <input type="text" class="mod-name-input" data-mi="${i}" data-mk="name" value="${m.name||''}" placeholder="Ex: Épée +1, Bénédiction…">
+      <input type="checkbox" class="mod-toggle" data-mi="${i}" ${m.on ? 'checked' : ''} title="Enable/disable">
+      <input type="text" class="mod-name-input" data-mi="${i}" data-mk="name" value="${m.name||''}" placeholder="e.g. Sword +1, Bless…">
       <select class="mod-target-select" data-mi="${i}" data-mk="cible">
         ${MOD_TARGETS.map(t => `<option value="${t.v}"${m.cible===t.v?' selected':''}>${t.l}</option>`).join('')}
       </select>
       <input type="number" class="mod-val-input" data-mi="${i}" data-mk="val" value="${m.val||0}" placeholder="+0">
-      <button class="btn-mod-del" data-mi="${i}" title="Supprimer">✕</button>`;
+      <button class="btn-mod-del" data-mi="${i}" title="Delete">✕</button>`;
     list.appendChild(row);
   });
 
@@ -6168,7 +6168,7 @@ function renderSaves() {
     const val  = mod(abilScore(sv.attr)) + (prof ? bonus : 0) + modBonus;
     const row  = document.createElement('div');
     row.className = 'sv-row';
-    row.innerHTML = `<div class="prof-dot ${prof ? 'on' : ''}" data-sv="${sv.key}" role="button" tabindex="0" title="Proficiency" aria-label="Maîtrise ${sv.label}"></div><span class="sv-val roll-trigger" data-roll-label="${sv.label} Save" data-roll-bonus="${val}" title="Lancer d20 + ${val}">${val >= 0 ? '+' : ''}${val}</span><span>${sv.label}</span>`;
+    row.innerHTML = `<div class="prof-dot ${prof ? 'on' : ''}" data-sv="${sv.key}" role="button" tabindex="0" title="Proficiency" aria-label="Proficiency ${sv.label}"></div><span class="sv-val roll-trigger" data-roll-label="${sv.label} Save" data-roll-bonus="${val}" title="Lancer d20 + ${val}">${val >= 0 ? '+' : ''}${val}</span><span>${sv.label}</span>`;
     frag.appendChild(row);
   });
   col.innerHTML = '';
@@ -6209,7 +6209,7 @@ function renderSkills() {
   const frag = document.createDocumentFragment();
   const hdr = document.createElement('div');
   hdr.style.cssText = 'font-size:0.7rem;text-transform:uppercase;color:#666;letter-spacing:0.05em;margin-bottom:0.35rem;';
-  hdr.innerHTML = 'Compétences <span style="font-size:0.6rem;color:#444;font-style:italic;">(clic=maîtrise, 2×=expertise)</span>';
+  hdr.innerHTML = 'Skills <span style="font-size:0.6rem;color:#444;font-style:italic;">(click=proficiency, 2×=expertise)</span>';
   frag.appendChild(hdr);
   [...SKILLS].sort((a,b) => a.label.localeCompare(b.label)).forEach(sk => {
     if (filterQ && !sk.label.toLowerCase().includes(filterQ) && !sk.attr.includes(filterQ)) return;
@@ -6221,7 +6221,7 @@ function renderSkills() {
     const title = profLevel === 2 ? 'Expertise (double proficiency)' : profLevel === 1 ? 'Proficiency' : 'Not proficient';
     const row = document.createElement('div');
     row.className = 'sk-row';
-    row.innerHTML = `<div class="prof-dot ${dotClass}" data-sk="${sk.key}" role="button" tabindex="0" title="${title}" aria-label="Maîtrise ${sk.label}"></div><span class="sk-val roll-trigger" data-roll-label="${sk.label}" data-roll-bonus="${val}" title="Lancer d20 + ${val}">${val >= 0 ? '+' : ''}${val}</span><span>${sk.label} <span style="color:#555;font-size:0.72rem;">(${sk.attr.toUpperCase()})</span></span>`;
+    row.innerHTML = `<div class="prof-dot ${dotClass}" data-sk="${sk.key}" role="button" tabindex="0" title="${title}" aria-label="Proficiency ${sk.label}"></div><span class="sk-val roll-trigger" data-roll-label="${sk.label}" data-roll-bonus="${val}" title="Lancer d20 + ${val}">${val >= 0 ? '+' : ''}${val}</span><span>${sk.label} <span style="color:#555;font-size:0.72rem;">(${sk.attr.toUpperCase()})</span></span>`;
     frag.appendChild(row);
   });
   col.innerHTML = '';
@@ -6276,13 +6276,13 @@ function renderSpellSlots() {
     const total = parseInt(c.emplacementsSort?.[lvl]) || 0;
     const used  = parseInt(c.emplacementsUtilises?.[lvl]) || 0;
     const circles = Array.from({length: total}, (_,i) =>
-      `<div class="spell-slot-circle${i < used ? ' used' : ''}" data-slvl="${lvl}" data-sidx="${i}" role="button" tabindex="0" aria-label="Emplacement niv.${lvl} ${i+1}"></div>`
+      `<div class="spell-slot-circle${i < used ? ' used' : ''}" data-slvl="${lvl}" data-sidx="${i}" role="button" tabindex="0" aria-label="Spell slot level ${lvl} ${i+1}"></div>`
     ).join('');
     const row = document.createElement('div');
     row.className = 'spell-slot-row';
     row.innerHTML = `
-      <span class="spell-slot-level">Niv.${lvl}</span>
-      <input class="spell-slot-total-inp" type="number" data-slot="${lvl}" value="${total}" min="0" max="9" title="Total emplacements">
+      <span class="spell-slot-level">Lvl.${lvl}</span>
+      <input class="spell-slot-total-inp" type="number" data-slot="${lvl}" value="${total}" min="0" max="9" title="Total slots">
       <div class="spell-slot-circles" data-circles="${lvl}">${circles}</div>
     `;
     wrap.appendChild(row);
@@ -6331,13 +6331,13 @@ function calcAtkBonus(atk) {
     const v = el ? el.textContent : '—';
     return { val: v, tip: 'Modificateur de sort', num: parseInt(v) || 0 };
   }
-  const abilLabels = {for:'FOR',dex:'DEX',int:'INT',sag:'SAG',cha:'CHA'};
+  const abilLabels = {for:'STR',dex:'DEX',int:'INT',sag:'WIS',cha:'CHA'};
   const globalAtk = getMod('atk');
   if (abilLabels[t]) {
     const m = mod(abilScore(t));
     const total = m + (atk.prof ? profBonus : 0) + globalAtk;
     const sign = total >= 0 ? '+' : '';
-    const tip = `${abilLabels[t]} ${m >= 0 ? '+' : ''}${m}` + (atk.prof ? ` + Maît. +${profBonus}` : '') + (globalAtk ? ` + Mod. ${globalAtk >= 0 ? '+' : ''}${globalAtk}` : '') + ` = ${sign}${total}`;
+    const tip = `${abilLabels[t]} ${m >= 0 ? '+' : ''}${m}` + (atk.prof ? ` + Prof. +${profBonus}` : '') + (globalAtk ? ` + Mod. ${globalAtk >= 0 ? '+' : ''}${globalAtk}` : '') + ` = ${sign}${total}`;
     return { val: sign + total, tip, num: total };
   }
   const v = atk.bonus || '—';
@@ -6357,7 +6357,7 @@ function renderAttacks() {
   attacks.forEach((atk, i) => {
     const ab = calcAtkBonus(atk);
     const dmgLine = [atk.degats, atk.typeDegat].filter(Boolean).join(' ') || '—';
-    const statSelOpts = [['','—'],['for','FOR'],['dex','DEX'],['int','INT'],['sag','SAG'],['cha','CHA'],['sort','Sort']].map(([val, lbl]) =>
+    const statSelOpts = [['','—'],['for','STR'],['dex','DEX'],['int','INT'],['sag','WIS'],['cha','CHA'],['sort','Spell']].map(([val, lbl]) =>
       `<option value="${val}"${(atk.atkType||'') === val ? ' selected' : ''}>${lbl}</option>`
     ).join('');
     const dmgDiceBtn = atk.degats ? `<button class="atk-dice-btn" data-atk="${i}" title="Lancer ${atk.degats}">🎲</button>` : '';
@@ -6366,36 +6366,36 @@ function renderAttacks() {
       tr.innerHTML = `<td colspan="7" style="padding:0;border:none;">
         <div class="atk-card">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-            <div style="flex:1;"><span class="atk-card-lbl">Nom</span><input class="atk-inp" data-atk="${i}" data-ak="name" value="${esc(atk.name||'')}" placeholder="Nom de l'arme"></div>
-            ${(atk.name||atk.degats) ? `<div style="text-align:right;font-size:0.72rem;color:#aaa;line-height:1.3;margin-top:10px;"><span class="roll-trigger" style="color:var(--gold);font-family:'Cinzel',serif;" data-roll-label="${esc(atk.name||'Attaque')} – Attaque" data-roll-bonus="${ab.num}" title="${ab.tip}">${ab.val}</span> toucher<br><span style="color:#ccc;">${dmgLine}</span></div>` : ''}
+            <div style="flex:1;"><span class="atk-card-lbl">Name</span><input class="atk-inp" data-atk="${i}" data-ak="name" value="${esc(atk.name||'')}" placeholder="Weapon name"></div>
+            ${(atk.name||atk.degats) ? `<div style="text-align:right;font-size:0.72rem;color:#aaa;line-height:1.3;margin-top:10px;"><span class="roll-trigger" style="color:var(--gold);font-family:'Cinzel',serif;" data-roll-label="${esc(atk.name||'Attack')} – Attack" data-roll-bonus="${ab.num}" title="${ab.tip}">${ab.val}</span> to hit<br><span style="color:#ccc;">${dmgLine}</span></div>` : ''}
           </div>
           <div class="atk-card-row">
-            <div><span class="atk-card-lbl">Dégâts</span>
+            <div><span class="atk-card-lbl">Damage</span>
               <div class="atk-dmg-wrap">
                 <input class="atk-inp" data-atk="${i}" data-ak="degats" value="${esc(atk.degats||'')}" placeholder="1d8+3">
                 ${dmgDiceBtn}
               </div>
             </div>
-            <div><span class="atk-card-lbl">Type</span><input class="atk-inp" data-atk="${i}" data-ak="typeDegat" value="${esc(atk.typeDegat||'')}" placeholder="tranchant"></div>
+            <div><span class="atk-card-lbl">Type</span><input class="atk-inp" data-atk="${i}" data-ak="typeDegat" value="${esc(atk.typeDegat||'')}" placeholder="slashing"></div>
           </div>
           <div class="atk-card-bottom">
             <div><span class="atk-card-lbl">Stat</span><select class="atk-inp" data-atk="${i}" data-ak="atkType">${statSelOpts}</select></div>
             <label style="display:flex;align-items:center;gap:5px;font-size:0.78rem;color:#aaa;margin-top:10px;cursor:pointer;">
-              <input type="checkbox" data-atk="${i}" data-ak="prof" ${atk.prof ? 'checked' : ''} style="accent-color:var(--gold-dark);width:16px;height:16px;">Maît.
+              <input type="checkbox" data-atk="${i}" data-ak="prof" ${atk.prof ? 'checked' : ''} style="accent-color:var(--gold-dark);width:16px;height:16px;">Prof.
             </label>
-            <div class="atk-bonus-cell roll-trigger" data-roll-label="${esc(atk.name||'Attaque')} – Attaque" data-roll-bonus="${ab.num}" title="${ab.tip}" style="margin-top:10px;margin-left:auto;">${ab.val}</div>
+            <div class="atk-bonus-cell roll-trigger" data-roll-label="${esc(atk.name||'Attack')} – Attack" data-roll-bonus="${ab.num}" title="${ab.tip}" style="margin-top:10px;margin-left:auto;">${ab.val}</div>
             <button class="atk-del" data-del="${i}" title="Supprimer" style="margin-top:10px;">✕</button>
           </div>
         </div>
       </td>`;
     } else {
       tr.innerHTML = `
-        <td><input class="atk-inp" data-atk="${i}" data-ak="name" value="${esc(atk.name||'')}" placeholder="Nom de l'arme"></td>
-        <td class="atk-bonus-cell roll-trigger" data-roll-label="${esc(atk.name||'Attaque')} – Attaque" data-roll-bonus="${ab.num}" title="${ab.tip}">${ab.val}</td>
+        <td><input class="atk-inp" data-atk="${i}" data-ak="name" value="${esc(atk.name||'')}" placeholder="Weapon name"></td>
+        <td class="atk-bonus-cell roll-trigger" data-roll-label="${esc(atk.name||'Attack')} – Attack" data-roll-bonus="${ab.num}" title="${ab.tip}">${ab.val}</td>
         <td><div class="atk-dmg-wrap"><input class="atk-inp" data-atk="${i}" data-ak="degats" value="${esc(atk.degats||'')}" placeholder="1d8+3" style="font-size:0.75rem;">${dmgDiceBtn}</div></td>
-        <td><input class="atk-inp" data-atk="${i}" data-ak="typeDegat" value="${esc(atk.typeDegat||'')}" placeholder="tranchant" style="font-size:0.75rem;"></td>
+        <td><input class="atk-inp" data-atk="${i}" data-ak="typeDegat" value="${esc(atk.typeDegat||'')}" placeholder="slashing" style="font-size:0.75rem;"></td>
         <td><select class="atk-inp" data-atk="${i}" data-ak="atkType" style="padding:0.18rem 0.2rem;font-size:0.74rem;">${statSelOpts}</select></td>
-        <td style="text-align:center;"><input type="checkbox" data-atk="${i}" data-ak="prof" ${atk.prof ? 'checked' : ''} style="accent-color:var(--gold-dark);width:14px;height:14px;cursor:pointer;" title="Maîtrise"></td>
+        <td style="text-align:center;"><input type="checkbox" data-atk="${i}" data-ak="prof" ${atk.prof ? 'checked' : ''} style="accent-color:var(--gold-dark);width:14px;height:14px;cursor:pointer;" title="Proficiency"></td>
         <td><button class="atk-del" data-del="${i}" title="Supprimer">✕</button></td>
       `;
     }
@@ -6749,19 +6749,19 @@ function renderResources() {
 
 /* ── Conditions ── */
 const CONDITION_DESC = {
-  Blinded:       'Ne peut pas voir. Échoue les jets nécessitant la vue. Attaques contre lui avec avantage, ses attaques avec désavantage.',
-  Charmed:       'Ne peut pas attaquer la source du charme. La source a avantage sur les jets de Charisme avec lui.',
-  Deafened:      'Ne peut pas entendre. Échoue automatiquement les jets nécessitant l\'ouïe.',
-  Frightened:    'Désavantage aux jets d\'attaque et de caractéristique quand la source est en vue. Ne peut pas s\'approcher.',
-  Grappled:      'Vitesse réduite à 0. Se termine si la créature qui agrippe est neutralisée ou s\'éloigne.',
-  Incapacitated: 'Ne peut pas entreprendre d\'actions ni de réactions.',
-  Invisible:     'Impossible à voir sans magie. Considéré fortement obscurci. Attaques avec avantage, attaqué avec désavantage.',
-  Poisoned:      'Désavantage aux jets d\'attaque et aux jets de caractéristique.',
-  Prone:         'Seul mouvement possible : se relever (coûte la moitié de la vitesse). Attaques avec désavantage ; attaqué avec avantage à ≤1,5m, désavantage au-delà.',
-  Restrained:    'Vitesse 0. Désavantage aux jets d\'attaque et aux jets de DEX. Attaqué avec avantage.',
-  Stunned:       'Neutralisé, ne peut pas bouger, parle seulement lentement. Échoue jets FOR et DEX. Attaqué avec avantage.',
-  Unconscious:   'Neutralisé, ne peut pas bouger ni parler. Inconscient des alentours. Tombe à terre. Échoue jets FOR et DEX. Attaqué avec avantage. Les coups à ≤1,5m sont des coups critiques.',
-  Concentrating: 'Maintient un sort de concentration. Tout dégât exige un jet de constitution (DD 10 ou ½ dégâts).',
+  Blinded:       'Cannot see. Fails checks requiring sight. Attack rolls against it have advantage; its attacks have disadvantage.',
+  Charmed:       'Cannot attack the charmer. The charmer has advantage on Charisma checks against it.',
+  Deafened:      'Cannot hear. Automatically fails checks requiring hearing.',
+  Frightened:    'Disadvantage on attack rolls and ability checks while the source is in sight. Cannot move closer to the source.',
+  Grappled:      'Speed reduced to 0. Ends if the grappler is incapacitated or moves out of reach.',
+  Incapacitated: 'Cannot take actions or reactions.',
+  Invisible:     'Cannot be seen without magic. Considered heavily obscured. Attacks have advantage; attacks against it have disadvantage.',
+  Poisoned:      'Disadvantage on attack rolls and ability checks.',
+  Prone:         'Only movement: stand up (costs half speed). Attacks have disadvantage; attacker within 5 ft has advantage, beyond 5 ft has disadvantage.',
+  Restrained:    'Speed 0. Disadvantage on attack rolls and DEX saves. Attacks against it have advantage.',
+  Stunned:       'Incapacitated, cannot move, can only speak haltingly. Fails STR and DEX saves. Attacks against it have advantage.',
+  Unconscious:   'Incapacitated, cannot move or speak. Unaware of surroundings. Drops prone. Fails STR and DEX saves. Attacks against it have advantage. Hits within 5 ft are critical hits.',
+  Concentrating: 'Maintaining a concentration spell. Any damage requires a CON save (DC 10 or half damage taken).',
 };
 function renderConditions() {
   const grid = document.getElementById('conditions-grid');
@@ -7122,31 +7122,31 @@ function openDdbModal(parsed) {
     : `${m.classe || '—'}${m.subClass ? ' ('+m.subClass+')' : ''} niv. ${m.level}`;
   // Preview avec calculs détaillés
   document.getElementById('ddb-preview').innerHTML = [
-    ['Personnage',     m.name || '—'],
-    ['Classe',         classLine],
-    ['Niveau total',   m.level],
-    ['CA calculée',    m.ac],
+    ['Character',      m.name || '—'],
+    ['Class',          classLine],
+    ['Total level',    m.level],
+    ['Calculated AC',  m.ac],
     ['Initiative',     (m.initiative >= 0 ? '+' : '') + m.initiative],
-    ['Vitesse',        m.speed + ' ft'],
-    ['PV max',         m.pvMax],
-    ['Dés de vie',     m.deVie],
-    ['Sorts',          m.spells],
-    ['Objets',         m.items],
-    ['Attaques',       m.attacks],
-    ['Capacités',      m.features],
-    ['Compétences ✓',  m.skills],
-    ['Sauvegardes ✓',  m.saves],
+    ['Speed',          m.speed + ' ft'],
+    ['Max HP',         m.pvMax],
+    ['Hit Dice',       m.deVie],
+    ['Spells',         m.spells],
+    ['Items',          m.items],
+    ['Attacks',        m.attacks],
+    ['Features',       m.features],
+    ['Skills ✓',       m.skills],
+    ['Saves ✓',        m.saves],
   ].map(([l,v]) => `<div class="ddb-preview-row"><span class="ddb-preview-label">${l}</span><span class="ddb-preview-val">${v}</span></div>`).join('');
   // Tags : noter ce qui est préservé
   const tags = [
-    ['Ability Scores','ok'], ['PV & Dés de vie','ok'], ['Compétences & Sauvegardes','ok'],
+    ['Ability Scores','ok'], ['HP & Hit Dice','ok'], ['Skills & Saves','ok'],
     ['Spell Slots' + (m.warlock ? ' + Pact' : ''),'ok'], ['Spell List','ok'],
-    ['Inventory','ok'], ['Monnaie','ok'], ['Personnalité & Histoire','ok'],
-    ['CA (avec armure magique)','ok'], ['Initiative auto','ok'],
-    ['Notes & ressources préservées','ok'],
+    ['Inventory','ok'], ['Currency','ok'], ['Personality & Backstory','ok'],
+    ['AC (with magic armor)','ok'], ['Auto initiative','ok'],
+    ['Notes & resources preserved','ok'],
   ];
   document.getElementById('ddb-import-items').innerHTML =
-    '<div style="margin-bottom:0.4rem;font-size:0.7rem;color:#666;">Contenu importé / préservé :</div>' +
+    '<div style="margin-bottom:0.4rem;font-size:0.7rem;color:#666;">Imported / preserved content:</div>' +
     tags.map(([t,c]) => `<span class="${c}">${t}</span>`).join('');
   document.getElementById('ddb-error').style.display = 'none';
   overlay.classList.add('open');
@@ -7801,9 +7801,9 @@ function openAdminEdit(username, data) {
 function renderAdminCharBar() {
   const bar  = document.getElementById('admin-char-bar');
   const chars = adminEditData.characters || {};
-  let html = '<label style="font-size:0.78rem;color:#888;">Personnage :</label><select id="admin-char-select" class="field-input" style="max-width:220px;">';
+  let html = '<label style="font-size:0.78rem;color:#888;">Character:</label><select id="admin-char-select" class="field-input" style="max-width:220px;">';
   Object.entries(chars).forEach(([id, slot]) => {
-    html += `<option value="${id}" ${id === adminEditCharId ? 'selected' : ''}>${slot.name || 'Sans nom'}</option>`;
+    html += `<option value="${id}" ${id === adminEditCharId ? 'selected' : ''}>${slot.name || 'Unnamed'}</option>`;
   });
   html += '</select>';
   bar.innerHTML = html;
@@ -7825,32 +7825,32 @@ function renderAdminModalTab() {
 
   if (adminActiveTab === 'fiche') {
     body.innerHTML = `
-      <!-- Identité -->
+      <!-- Identity -->
       <div class="sheet-section">
-        <div class="sheet-section-title">Identité</div>
+        <div class="sheet-section-title">Identity</div>
         <div class="sheet-grid">
           <div class="field-group" style="grid-column:span 2;">
-            <label class="field-label">Nom du personnage</label>
+            <label class="field-label">Character Name</label>
             <input type="text" class="field-input" id="ae-characterName" value="${esc(c.characterName)}">
           </div>
           <div class="field-group">
-            <label class="field-label">Espèce</label>
+            <label class="field-label">Species</label>
             <input type="text" class="field-input" id="ae-species" value="${esc(c.species)}">
           </div>
           <div class="field-group">
-            <label class="field-label">Classe</label>
+            <label class="field-label">Class</label>
             <select class="field-input" id="ae-classe">
-              <option value="">— Choisir —</option>
+              <option value="">— Choose —</option>
               ${['Artificer','Barbarian','Bard','Cleric','Druid','Fighter','Monk','Paladin','Ranger','Rogue','Sorcerer','Warlock','Wizard']
                 .map(cl => `<option ${c.classe === cl ? 'selected' : ''}>${cl}</option>`).join('')}
             </select>
           </div>
           <div class="field-group">
-            <label class="field-label">Sous-classe</label>
+            <label class="field-label">Subclass</label>
             <input type="text" class="field-input" id="ae-sousClasse" value="${esc(c.sousClasse)}">
           </div>
           <div class="field-group">
-            <label class="field-label">Niveau</label>
+            <label class="field-label">Level</label>
             <input type="number" class="field-input" id="ae-niveau" value="${c.niveau||1}" min="1" max="20">
           </div>
           <div class="field-group">
@@ -7858,9 +7858,9 @@ function renderAdminModalTab() {
             <input type="text" class="field-input" id="ae-background" value="${esc(c.background)}">
           </div>
           <div class="field-group">
-            <label class="field-label">Alignement</label>
+            <label class="field-label">Alignment</label>
             <select class="field-input" id="ae-alignement">
-              ${['','Loyal Bon','Neutre Bon','Chaotique Bon','Loyal Neutre','Neutre','Chaotique Neutre','Loyal Mauvais','Neutre Mauvais','Chaotique Mauvais']
+              ${['','Lawful Good','Neutral Good','Chaotic Good','Lawful Neutral','True Neutral','Chaotic Neutral','Lawful Evil','Neutral Evil','Chaotic Evil']
                 .map(a => `<option ${c.alignement === a ? 'selected' : ''}>${a}</option>`).join('')}
             </select>
           </div>
@@ -7895,58 +7895,58 @@ function renderAdminModalTab() {
       <div class="sheet-section">
         <div class="sheet-section-title">Combat</div>
         <div class="combat-grid">
-          <div class="combat-field"><label class="field-label">CA</label><input type="number" class="field-input field-input-sm" id="ae-ca" value="${c.ca||10}"></div>
+          <div class="combat-field"><label class="field-label">AC</label><input type="number" class="field-input field-input-sm" id="ae-ca" value="${c.ca||10}"></div>
           <div class="combat-field"><label class="field-label">Initiative</label><input type="number" class="field-input field-input-sm" id="ae-initiative" value="${c.initiative||0}"></div>
           <div class="combat-field"><label class="field-label">Speed</label><input type="number" class="field-input field-input-sm" id="ae-vitesse" value="${c.vitesse||30}" step="5"></div>
           <div class="combat-field"><label class="field-label">Max HP</label><input type="number" class="field-input field-input-sm" id="ae-pvMax" value="${c.pvMax||0}" min="0"></div>
           <div class="combat-field"><label class="field-label">Current HP</label><input type="number" class="field-input field-input-sm" id="ae-pvActuel" value="${c.pvActuel||0}"></div>
           <div class="combat-field"><label class="field-label">Temp HP</label><input type="number" class="field-input field-input-sm" id="ae-pvTemp" value="${c.pvTemp||0}" min="0"></div>
           <div class="combat-field">
-            <label class="field-label">Dé de Vie</label>
+            <label class="field-label">Hit Die</label>
             <select class="field-input field-input-md" id="ae-deVie">
               ${['1d6','1d8','1d10','1d12'].map(d => `<option ${c.deVie===d?'selected':''}>${d}</option>`).join('')}
             </select>
           </div>
-          <div class="combat-field"><label class="field-label">Nb Dés</label><input type="number" class="field-input field-input-sm" id="ae-nbDeVie" value="${c.nbDeVie||1}" min="0"></div>
+          <div class="combat-field"><label class="field-label"># Dice</label><input type="number" class="field-input field-input-sm" id="ae-nbDeVie" value="${c.nbDeVie||1}" min="0"></div>
         </div>
       </div>
 
-      <!-- Sorts -->
+      <!-- Spells -->
       <div class="sheet-section">
         <div class="sheet-section-title">Spells</div>
         <div class="sheet-grid">
           <div class="field-group">
-            <label class="field-label">Classe de sort</label>
+            <label class="field-label">Spellcasting Class</label>
             <input type="text" class="field-input" id="ae-classeSort" value="${esc(c.classeSort)}">
           </div>
           <div class="field-group">
-            <label class="field-label">Caractéristique</label>
+            <label class="field-label">Ability</label>
             <select class="field-input" id="ae-caractSort">
-              ${['','FOR','DEX','CON','INT','SAG','CHA'].map(s => `<option ${c.caractSort===s?'selected':''}>${s}</option>`).join('')}
+              ${[['','—'],['FOR','STR'],['DEX','DEX'],['CON','CON'],['INT','INT'],['SAG','WIS'],['CHA','CHA']].map(([val,lbl]) => `<option value="${val}" ${c.caractSort===val?'selected':''}>${lbl}</option>`).join('')}
             </select>
           </div>
         </div>
       </div>
 
-      <!-- Personnalité -->
+      <!-- Personality -->
       <div class="sheet-section">
-        <div class="sheet-section-title">Personnalité</div>
+        <div class="sheet-section-title">Personality</div>
         <div class="sheet-grid-2">
-          <div class="field-group"><label class="field-label">Traits</label><textarea class="field-input" id="ae-traits" rows="3">${esc(c.traits)}</textarea></div>
-          <div class="field-group"><label class="field-label">Idéaux</label><textarea class="field-input" id="ae-ideaux" rows="3">${esc(c.ideaux)}</textarea></div>
-          <div class="field-group"><label class="field-label">Liens</label><textarea class="field-input" id="ae-liens" rows="3">${esc(c.liens)}</textarea></div>
-          <div class="field-group"><label class="field-label">Défauts</label><textarea class="field-input" id="ae-defauts" rows="3">${esc(c.defauts)}</textarea></div>
+          <div class="field-group"><label class="field-label">Personality Traits</label><textarea class="field-input" id="ae-traits" rows="3">${esc(c.traits)}</textarea></div>
+          <div class="field-group"><label class="field-label">Ideals</label><textarea class="field-input" id="ae-ideaux" rows="3">${esc(c.ideaux)}</textarea></div>
+          <div class="field-group"><label class="field-label">Bonds</label><textarea class="field-input" id="ae-liens" rows="3">${esc(c.liens)}</textarea></div>
+          <div class="field-group"><label class="field-label">Flaws</label><textarea class="field-input" id="ae-defauts" rows="3">${esc(c.defauts)}</textarea></div>
         </div>
-        <div class="field-group" style="margin-top:0.75rem;"><label class="field-label">Apparence</label><textarea class="field-input" id="ae-apparence" rows="2">${esc(c.apparence)}</textarea></div>
-        <div class="field-group" style="margin-top:0.75rem;"><label class="field-label">Historique</label><textarea class="field-input" id="ae-historique" rows="3">${esc(c.historique)}</textarea></div>
+        <div class="field-group" style="margin-top:0.75rem;"><label class="field-label">Appearance</label><textarea class="field-input" id="ae-apparence" rows="2">${esc(c.apparence)}</textarea></div>
+        <div class="field-group" style="margin-top:0.75rem;"><label class="field-label">History</label><textarea class="field-input" id="ae-historique" rows="3">${esc(c.historique)}</textarea></div>
       </div>
 
-      <!-- Maîtrises & Langues -->
+      <!-- Proficiencies & Languages -->
       <div class="sheet-section">
         <div class="sheet-section-title">Proficiencies &amp; Languages</div>
         <div class="sheet-grid-2">
-          <div class="field-group"><label class="field-label">Proficiencies</label><textarea class="field-input" id="ae-maitrises" rows="3" placeholder="ex. Armures légères, épées…">${esc(c.maitrises)}</textarea></div>
-          <div class="field-group"><label class="field-label">Langues</label><textarea class="field-input" id="ae-langues" rows="3" placeholder="ex. Commun, Elfique…">${esc(c.langues)}</textarea></div>
+          <div class="field-group"><label class="field-label">Proficiencies</label><textarea class="field-input" id="ae-maitrises" rows="3" placeholder="e.g. Light armor, swords…">${esc(c.maitrises)}</textarea></div>
+          <div class="field-group"><label class="field-label">Languages</label><textarea class="field-input" id="ae-langues" rows="3" placeholder="e.g. Common, Elvish…">${esc(c.langues)}</textarea></div>
         </div>
       </div>
 
@@ -8057,18 +8057,18 @@ function renderAdminModalTab() {
         <div style="overflow-x:auto;">
           <table class="inv-table" style="min-width:500px;">
             <thead><tr>
-              <th style="width:8%">Niv.</th>
-              <th style="width:28%">Nom</th>
-              <th style="width:12%">Dégât</th>
+              <th style="width:8%">Lvl.</th>
+              <th style="width:28%">Name</th>
+              <th style="width:12%">Damage</th>
               <th style="width:14%">Type</th>
-              <th style="width:12%">Portée</th>
+              <th style="width:12%">Range</th>
               <th style="width:14%">Action</th>
               <th style="width:12%"></th>
             </tr></thead>
             <tbody id="ae-spell-tbody">${spellRows}</tbody>
           </table>
         </div>
-        ${spells.length === 0 ? '<p style="color:#555;font-style:italic;font-size:0.82rem;margin-top:0.5rem;">Aucun sort enregistré par ce joueur.</p>' : ''}
+        ${spells.length === 0 ? '<p style="color:#555;font-style:italic;font-size:0.82rem;margin-top:0.5rem;">No spells recorded for this player.</p>' : ''}
       </div>
     `;
 
@@ -8091,29 +8091,29 @@ function renderAdminModalTab() {
     const itemRows = items.map((item, i) => `
       <tr>
         <td><input class="inv-inp ae-item" style="width:55px;text-align:center;" data-item="${i}" data-ik="qty" type="number" value="${item.qty||1}" min="0"></td>
-        <td><input class="inv-inp ae-item" data-item="${i}" data-ik="name" value="${esc(item.name)}" placeholder="Nom"></td>
+        <td><input class="inv-inp ae-item" data-item="${i}" data-ik="name" value="${esc(item.name)}" placeholder="Name"></td>
         <td><input class="inv-inp ae-item" data-item="${i}" data-ik="notes" value="${esc(item.notes)}" placeholder="Description"></td>
-        <td><button class="atk-del ae-del-item" data-del-item="${i}" title="Supprimer">✕</button></td>
+        <td><button class="atk-del ae-del-item" data-del-item="${i}" title="Delete">✕</button></td>
       </tr>
     `).join('');
 
     body.innerHTML = `
       <div class="sheet-section">
         <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
-          <span>Objets</span>
-          <button class="btn btn-sm btn-gold" id="ae-add-item">+ Ajouter</button>
+          <span>Items</span>
+          <button class="btn btn-sm btn-gold" id="ae-add-item">+ Add</button>
         </div>
         <table class="inv-table">
-          <thead><tr><th style="width:12%">Qté</th><th style="width:35%">Nom</th><th style="width:38%">Description</th><th style="width:15%"></th></tr></thead>
+          <thead><tr><th style="width:12%">Qty</th><th style="width:35%">Name</th><th style="width:38%">Description</th><th style="width:15%"></th></tr></thead>
           <tbody id="ae-inv-tbody">${itemRows}</tbody>
         </table>
       </div>
       <div class="sheet-section">
-        <div class="sheet-section-title">Monnaie</div>
+        <div class="sheet-section-title">Currency</div>
         <div class="currency-grid">
           ${['pp','gp','ep','sp','cp'].map((k,i) => `
             <div class="currency-item">
-              <div class="currency-label">${['PP','PO','PE','PA','PC'][i]}</div>
+              <div class="currency-label">${['PP','GP','EP','SP','CP'][i]}</div>
               <input type="number" class="field-input ae-currency" data-cur="${k}" value="${cur[k]||0}" min="0">
             </div>
           `).join('')}
@@ -8214,7 +8214,7 @@ async function adminSaveEdit() {
     });
 
     // Mettre à jour le nom du slot
-    slot.name = c.characterName || 'Sans nom';
+    slot.name = c.characterName || 'Unnamed';
 
   } else if (adminActiveTab === 'competences') {
     // Jets de sauvegarde
@@ -8284,16 +8284,16 @@ async function adminSaveEdit() {
    ════════════════════════════════════════════════════════════ */
 
 const SECTION_KEYS = {
-  'Identité':'identite','Class Features':'cf','Caractéristiques':'caracteristiques',
-  'Sauvegardes':'saves','Compétences passives':'passives','Combat':'combat',
-  'Ressources':'ressources','Conditions':'conditions','Attaques':'attaques',
-  'Sorts':'sorts','Traits':'features','Personnalité':'perso'
+  'Identity':'identite','Class Features':'cf','Ability Scores':'caracteristiques',
+  'Saving Throws':'saves','Passive Skills':'passives','Combat':'combat',
+  'Resources':'ressources','Conditions':'conditions','Attacks':'attaques',
+  'Spells':'sorts','Traits':'features','Personality':'perso'
 };
 const SECTION_LABELS = {
-  cf:'Class Features', caracteristiques:'Caractéristiques',
-  saves:'Sauvegardes', passives:'Comp. passives',
-  ressources:'Ressources', conditions:'Conditions', attaques:'Attaques',
-  sorts:'Sorts', features:'Traits & Capacités', perso:'Personnalité'
+  cf:'Class Features', caracteristiques:'Ability Scores',
+  saves:'Saving Throws', passives:'Passive Skills',
+  ressources:'Resources', conditions:'Conditions', attaques:'Attacks',
+  sorts:'Spells', features:'Traits & Features', perso:'Personality'
 };
 const DEFAULT_LAYOUT = {
   columns:[
@@ -8716,7 +8716,7 @@ async function initViewMode() {
 function renderViewSheet(el, pd, c, slot, username) {
   const esc = s => (s||'').toString().replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const scores = c.scores || {};
-  const ABILITY_NAMES = ['FOR','DEX','CON','INT','SAG','CHA'];
+  const ABILITY_NAMES = ['STR','DEX','CON','INT','WIS','CHA'];
   const ABILITY_KEYS  = ['STR','DEX','CON','INT','WIS','CHA'];
   function mod(score) { return Math.floor(((parseInt(score)||10)-10)/2); }
   function fmtMod(m)  { return (m>=0?'+':'')+m; }
@@ -8736,12 +8736,12 @@ function renderViewSheet(el, pd, c, slot, username) {
     </div>`;
   }).join('');
   const SKILLS_DATA = [
-    {name:'Acrobaties',key:'DEX'},{name:'Arcanes',key:'INT'},{name:'Athlétisme',key:'STR'},
-    {name:'Discrétion',key:'DEX'},{name:'Dressage',key:'WIS'},{name:'Escamotage',key:'DEX'},
-    {name:'Histoire',key:'INT'},{name:'Intimidation',key:'CHA'},{name:'Investigation',key:'INT'},
-    {name:'Médecine',key:'WIS'},{name:'Nature',key:'INT'},{name:'Perception',key:'WIS'},
-    {name:'Perspicacité',key:'WIS'},{name:'Persuasion',key:'CHA'},{name:'Religion',key:'INT'},
-    {name:'Représentation',key:'CHA'},{name:'Survie',key:'WIS'},{name:'Tromperie',key:'CHA'},
+    {name:'Acrobatics',key:'DEX'},{name:'Arcana',key:'INT'},{name:'Athletics',key:'STR'},
+    {name:'Stealth',key:'DEX'},{name:'Animal Handling',key:'WIS'},{name:'Sleight of Hand',key:'DEX'},
+    {name:'History',key:'INT'},{name:'Intimidation',key:'CHA'},{name:'Investigation',key:'INT'},
+    {name:'Medicine',key:'WIS'},{name:'Nature',key:'INT'},{name:'Perception',key:'WIS'},
+    {name:'Insight',key:'WIS'},{name:'Persuasion',key:'CHA'},{name:'Religion',key:'INT'},
+    {name:'Performance',key:'CHA'},{name:'Survival',key:'WIS'},{name:'Deception',key:'CHA'},
   ];
   const pb = parseInt(c.bonusMaitrise)||2;
   const saves = c.savingThrows||{};
@@ -8760,17 +8760,17 @@ function renderViewSheet(el, pd, c, slot, username) {
     <div class="view-header">
       ${avatarHtml}
       <div>
-        <div class="view-char-name">${esc(c.characterName||'Sans nom')}</div>
+        <div class="view-char-name">${esc(c.characterName||'Unnamed')}</div>
         <div class="view-char-sub">${esc(classes)}${c.species?' · '+esc(c.species):''}</div>
         <div class="view-char-sub" style="margin-top:0.15rem;">${esc(pd.username||username||'')}</div>
       </div>
     </div>
     <div class="view-section">
-      <div class="view-section-title">Points de Vie</div>
+      <div class="view-section-title">Hit Points</div>
       <div class="view-combat-grid">
-        <div class="view-combat-item"><div class="view-combat-label">PV Actuels</div><div class="view-combat-val" style="color:${hpColor}">${pvCur}</div></div>
-        <div class="view-combat-item"><div class="view-combat-label">PV Max</div><div class="view-combat-val">${pvMax}</div></div>
-        <div class="view-combat-item"><div class="view-combat-label">PV Temp</div><div class="view-combat-val" style="color:var(--info,#5a9fd4)">${parseInt(c.pvTemp)||0}</div></div>
+        <div class="view-combat-item"><div class="view-combat-label">Current HP</div><div class="view-combat-val" style="color:${hpColor}">${pvCur}</div></div>
+        <div class="view-combat-item"><div class="view-combat-label">Max HP</div><div class="view-combat-val">${pvMax}</div></div>
+        <div class="view-combat-item"><div class="view-combat-label">Temp HP</div><div class="view-combat-val" style="color:var(--info,#5a9fd4)">${parseInt(c.pvTemp)||0}</div></div>
       </div>
       <div class="view-hp-bar"><div class="view-hp-fill" style="width:${hpPct}%;background:${hpColor}"></div></div>
       ${conditions?`<div style="margin-top:0.55rem;display:flex;flex-wrap:wrap;gap:0.3rem;">${conditions}</div>`:''}
@@ -8778,20 +8778,20 @@ function renderViewSheet(el, pd, c, slot, username) {
     <div class="view-section">
       <div class="view-section-title">Combat</div>
       <div class="view-combat-grid">
-        <div class="view-combat-item"><div class="view-combat-label">CA</div><div class="view-combat-val">${parseInt(c.ca)||10}</div></div>
+        <div class="view-combat-item"><div class="view-combat-label">AC</div><div class="view-combat-val">${parseInt(c.ca)||10}</div></div>
         <div class="view-combat-item"><div class="view-combat-label">Initiative</div><div class="view-combat-val">${fmtMod(parseInt(c.initiative)||mod(parseInt(scores.DEX)||10))}</div></div>
-        <div class="view-combat-item"><div class="view-combat-label">Vitesse</div><div class="view-combat-val">${esc(c.vitesse||'30 ft')}</div></div>
+        <div class="view-combat-item"><div class="view-combat-label">Speed</div><div class="view-combat-val">${esc(c.vitesse||'30 ft')}</div></div>
       </div>
     </div>
     <div class="view-section">
-      <div class="view-section-title">Caractéristiques</div>
+      <div class="view-section-title">Ability Scores</div>
       <div class="view-stats">${statsHtml}</div>
     </div>
     <div class="view-section">
-      <div class="view-section-title">Compétences</div>
+      <div class="view-section-title">Skills</div>
       <div class="view-skills-grid">${skillsHtml}</div>
     </div>
-    <div class="view-refresh-note">Mise à jour auto toutes les 30s · ${now}</div>`;
+    <div class="view-refresh-note">Auto-refresh every 30s · ${now}</div>`;
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -8818,7 +8818,7 @@ function escHtml(s) {
 /* ── Helpers room ── */
 function _roomName(room) {
   if (!room) return '';
-  if (room.id === 'general') return 'Général';
+  if (room.id === 'general') return 'General';
   if (room.type === 'private') {
     const other = (room.members || []).find(m => m !== currentUser);
     return other || room.id;
@@ -9342,9 +9342,9 @@ function esc(val) {
 
 /* ── Barre d'onglets de sections (mobile/tablette ≤ 1024px) ── */
 const SEC_LABELS = {
-  saves: 'Compét.', attaques: 'Attaques', cf: 'Classe',
-  ressources: 'Ressources', conditions: 'Conditions',
-  features: 'Traits', sorts: 'Sorts', mods: 'Modif.'
+  saves: 'Skills', attaques: 'Attacks', cf: 'Class',
+  ressources: 'Resources', conditions: 'Conditions',
+  features: 'Features', sorts: 'Spells', mods: 'Mods'
 };
 
 function buildSecTabBar() {
@@ -9533,7 +9533,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       else if (el.type === 'number') C()[el.dataset.f] = parseFloat(el.value) || 0;
       else C()[el.dataset.f] = el.value;
 
-      if (el.dataset.f === 'characterName') { activeSlot().name = el.value || 'Sans nom'; renderCharCards(); }
+      if (el.dataset.f === 'characterName') { activeSlot().name = el.value || 'Unnamed'; renderCharCards(); }
       if (el.dataset.f === 'niveau') { syncClassesToLegacy(C()); updateProfBonus(); renderSaves(); renderSkills(); renderPassiveSkills(); renderClassFeatures(); renderMulticlasses(); }
       if (el.dataset.f === 'classe') { autoFillClass(el.value); updateCharSummary(); renderCharCards(); }
       if (['for','dex','con','int','sag','cha'].includes(el.dataset.f)) { updateModifier(el.dataset.f); debouncedStats(() => { renderSaves(); renderSkills(); renderPassiveSkills(); updateSpellCalcs(); renderAttacks(); }); }
@@ -9559,7 +9559,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           const nb = calcAtkBonus(atk);
           bonusCell.textContent = nb.val;
           bonusCell.dataset.rollBonus = nb.num;
-          bonusCell.dataset.rollLabel = esc(atk.name || 'Attaque') + ' – Attaque';
+          bonusCell.dataset.rollLabel = esc(atk.name || 'Attack') + ' – Attack';
           bonusCell.title = nb.tip;
         }
         triggerSave();
@@ -9659,7 +9659,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const atk = (C().attaques || [])[parseInt(diceBtn.dataset.atk)];
       if (!atk?.degats) return;
       const res = rollDiceExpr(atk.degats);
-      showDiceRoll((atk.name || 'Dégâts') + ' · ' + atk.degats, 0);
+      showDiceRoll((atk.name || 'Damage') + ' · ' + atk.degats, 0);
       document.getElementById('dice-d20').textContent = res.total;
       document.getElementById('dice-d20').className = 'dice-toast-d20';
       document.getElementById('dice-total').textContent = res.detail !== String(res.total) ? res.detail : '';
@@ -10619,7 +10619,7 @@ document.getElementById('tab-identite')?.addEventListener('input', e => {
     if (el.type === 'checkbox') C()[el.dataset.f] = el.checked;
     else if (el.type === 'number') C()[el.dataset.f] = parseFloat(el.value) || 0;
     else C()[el.dataset.f] = el.value;
-    if (el.dataset.f === 'characterName') { activeSlot().name = el.value || 'Sans nom'; renderCharCards(); renderHero(); }
+    if (el.dataset.f === 'characterName') { activeSlot().name = el.value || 'Unnamed'; renderCharCards(); renderHero(); }
     if (el.dataset.f === 'species' || el.dataset.f === 'xp') renderHero();
     updateCharSummary();
     triggerSave();
@@ -10823,7 +10823,7 @@ document.addEventListener('dblclick', e => {
   e.preventDefault();
   const res = rollDiceExpr(expr);
   const nameEl = el.closest('tr')?.querySelector('[data-ak="name"],[data-sk="name"]');
-  const name = nameEl?.value || 'Dégâts';
+  const name = nameEl?.value || 'Damage';
   showDiceRoll(name + ' · ' + expr, 0);
   document.getElementById('dice-d20').textContent = res.total;
   document.getElementById('dice-d20').className = 'dice-toast-d20';
