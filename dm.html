@@ -193,6 +193,89 @@ input,select{font-family:inherit;color-scheme:dark;}
 #btn-create-monster{width:100%;background:linear-gradient(135deg,#c03030 0%,#902020 100%);color:#fff;border:1px solid rgba(217,64,64,0.4);border-radius:5px;padding:0.38rem;font-size:0.75rem;font-family:'Cinzel',serif;letter-spacing:0.04em;transition:all 0.15s;box-shadow:0 2px 8px rgba(0,0,0,0.3);}
 #btn-create-monster:hover{background:linear-gradient(135deg,#d04040 0%,#a03030 100%);}
 
+/* Monster templates */
+#monster-templates{display:flex;flex-wrap:wrap;gap:0.28rem;margin-bottom:0.55rem;}
+.m-tpl{
+  background:rgba(217,64,64,0.06);border:1px solid rgba(217,64,64,0.18);
+  color:var(--text-dim);font-size:0.67rem;padding:0.18rem 0.45rem;
+  border-radius:4px;cursor:pointer;transition:all 0.1s;white-space:nowrap;
+}
+.m-tpl:hover{background:var(--danger-dim);border-color:var(--danger-bright);color:var(--danger);}
+.m-tpl.active{background:var(--danger-dim);border-color:var(--danger-bright);color:#fff;}
+
+/* ── Inline name edit ── */
+.panel-name-input{
+  background:none;border:none;border-bottom:1px solid var(--gold-dim);
+  color:var(--gold);font-family:'Cinzel',serif;font-size:0.85rem;
+  letter-spacing:0.03em;width:100%;padding:0;cursor:text;outline:none;
+}
+.panel-name-input:focus{border-bottom-color:var(--gold);background:rgba(232,201,106,0.06);}
+
+/* ── Friendly NPC sidebar ── */
+#friendly-section{border-top:1px solid var(--border-bright);padding:0.6rem 0.8rem 0.55rem;}
+#friendly-section-title{
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:0.7rem;letter-spacing:0.09em;text-transform:uppercase;
+  color:var(--text-dim);margin-bottom:0.45rem;cursor:default;
+}
+#btn-add-friendly{
+  background:rgba(50,130,200,0.15);border:1px solid rgba(70,150,220,0.3);
+  color:#5aaddd;font-size:0.65rem;border-radius:4px;padding:0.18rem 0.5rem;
+  cursor:pointer;transition:all 0.15s;
+}
+#btn-add-friendly:hover{background:rgba(50,130,200,0.28);border-color:#5aaddd;}
+#friendly-list{display:flex;flex-direction:column;gap:0.2rem;margin-bottom:0.4rem;}
+.friendly-sidebar-entry{
+  display:flex;align-items:center;gap:0.5rem;font-size:0.77rem;color:var(--text-dim);
+  padding:0.22rem 0.4rem;border-radius:4px;cursor:pointer;
+  border-left:2px solid transparent;transition:all 0.12s;
+}
+.friendly-sidebar-entry:hover{background:rgba(50,130,200,0.12);color:var(--text);border-left-color:#5aaddd;}
+.friendly-sidebar-entry.open{background:rgba(50,130,200,0.15);color:#7ac8ee;border-left-color:#5aaddd;}
+.friendly-sidebar-entry .f-dot{width:6px;height:6px;border-radius:50%;background:#5aaddd;opacity:0.4;flex-shrink:0;}
+.friendly-sidebar-entry.open .f-dot{opacity:1;box-shadow:0 0 5px rgba(90,173,221,0.5);}
+
+#friendly-form{display:none;background:rgba(50,130,200,0.06);border:1px solid rgba(70,150,220,0.2);border-radius:var(--radius);padding:0.75rem;margin-top:0.4rem;}
+#friendly-form.open{display:block;}
+#btn-create-friendly{width:100%;background:linear-gradient(135deg,#2472a4 0%,#185075 100%);color:#fff;border:1px solid rgba(70,150,220,0.4);border-radius:5px;padding:0.38rem;font-size:0.75rem;font-family:'Cinzel',serif;letter-spacing:0.04em;transition:all 0.15s;box-shadow:0 2px 8px rgba(0,0,0,0.3);}
+#btn-create-friendly:hover{background:linear-gradient(135deg,#2f8acc 0%,#1e6090 100%);}
+#friendly-templates{display:flex;flex-wrap:wrap;gap:0.28rem;margin-bottom:0.55rem;}
+.f-tpl{
+  background:rgba(50,130,200,0.06);border:1px solid rgba(70,150,220,0.18);
+  color:var(--text-dim);font-size:0.67rem;padding:0.18rem 0.45rem;
+  border-radius:4px;cursor:pointer;transition:all 0.1s;white-space:nowrap;
+}
+.f-tpl:hover{background:rgba(50,130,200,0.15);border-color:#5aaddd;color:#5aaddd;}
+
+/* ── Friendly panels ── */
+.friendly-section-header .panels-section-label{color:#5aaddd;}
+.combat-panel.friendly-panel{border-color:rgba(50,130,200,0.25);}
+.combat-panel.friendly-panel:hover{border-color:rgba(50,130,200,0.55);box-shadow:0 6px 28px rgba(0,0,0,0.6),0 0 16px rgba(50,130,200,0.08);}
+.combat-panel.friendly-panel .panel-header{background:linear-gradient(135deg,rgba(15,45,80,0.8) 0%,rgba(10,30,55,0.6) 100%);}
+
+/* ── References sidebar section ── */
+#ref-section{border-top:1px solid var(--border-bright);padding:0.6rem 0.8rem 0.55rem;}
+#ref-section-header{
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:0.7rem;letter-spacing:0.09em;text-transform:uppercase;
+  color:var(--text-dim);cursor:pointer;user-select:none;
+}
+#ref-section-header:hover{color:var(--gold);}
+#ref-chevron{font-size:0.5rem;transition:transform 0.2s;}
+#ref-section.collapsed #ref-chevron{transform:rotate(-90deg);}
+#ref-section.collapsed #ref-body{display:none;}
+#ref-body{margin-top:0.5rem;}
+.ref-cond-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.3rem;}
+.ref-cond-card{
+  background:rgba(255,255,255,0.025);border:1px solid var(--border);
+  border-radius:4px;padding:0.3rem 0.45rem;cursor:pointer;transition:all 0.12s;
+}
+.ref-cond-card:hover{background:rgba(232,201,106,0.06);border-color:var(--gold-dim);}
+.ref-cond-card.expanded{grid-column:span 2;background:rgba(232,201,106,0.05);border-color:var(--gold-dim);}
+.ref-cond-name{font-size:0.7rem;font-weight:600;color:var(--gold);margin-bottom:0.15rem;}
+.ref-cond-desc{font-size:0.65rem;color:var(--text-dim);line-height:1.35;display:none;}
+.ref-cond-card.expanded .ref-cond-desc{display:block;}
+
 /* sep */
 .sep-label{font-size:0.6rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);padding:0.45rem 1rem 0.15rem;}
 .loading{color:var(--text-dim);font-size:0.82rem;font-style:italic;padding:1rem 1rem;}
@@ -662,6 +745,25 @@ body.focus-mode #dm-main{width:100%;}
 #monster-panels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:0.9rem;}
 body.compact #player-panels-grid,body.compact #monster-panels-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.6rem;}
 
+/* ── Party HP bar ── */
+#party-bar{display:flex;flex-wrap:wrap;gap:0.45rem;padding-bottom:0.9rem;}
+#party-bar:empty{display:none;padding:0;}
+.pbar-chip{
+  background:var(--bg-card);border:1px solid var(--border-bright);border-radius:6px;
+  padding:0.35rem 0.6rem;cursor:pointer;display:flex;align-items:center;gap:0.45rem;
+  transition:all 0.15s;flex:1;min-width:110px;max-width:190px;
+}
+.pbar-chip:hover{border-color:var(--border-gold);background:var(--gold-glow);}
+.pbar-chip.pbar-open{border-color:rgba(232,201,106,0.35);background:rgba(232,201,106,0.05);}
+.pbar-avatar{font-size:0.95rem;width:18px;text-align:center;flex-shrink:0;line-height:1;}
+.pbar-info{flex:1;min-width:0;}
+.pbar-name{font-size:0.62rem;font-family:'Cinzel',serif;color:var(--text-mid);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:0.02em;}
+.pbar-hprow{display:flex;align-items:baseline;gap:3px;margin-top:1px;}
+.pbar-hp{font-size:0.78rem;font-weight:700;color:var(--text);}
+.pbar-hpmax{font-size:0.62rem;color:var(--text-dim);}
+.pbar-bar{height:3px;background:rgba(0,0,0,0.45);border-radius:2px;overflow:hidden;margin-top:4px;}
+.pbar-fill{height:100%;border-radius:2px;transition:width 0.4s,background 0.4s;}
+
 /* Empty state */
 #empty-state{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -1049,21 +1151,55 @@ body.sidebar-open #sidebar-backdrop{display:block;}
       <!-- Monsters -->
       <div id="monster-section">
         <div id="monster-section-title">
-          <span>PNJ / Monstres</span>
-          <button id="btn-add-monster">+ Nouveau</button>
+          <span>NPCs / Monsters</span>
+          <button id="btn-add-monster">+ New</button>
         </div>
         <div id="monster-list"></div>
         <div id="monster-form">
           <div class="m-form-row">
-            <input class="m-inp" id="mf-name" placeholder="Nom" autocomplete="off">
+            <input class="m-inp" id="mf-name" placeholder="Name" autocomplete="off">
             <input class="m-inp m-inp-sm" id="mf-avatar" placeholder="🐉" maxlength="2">
           </div>
           <div class="m-form-row">
             <input class="m-inp" id="mf-hp" placeholder="HP max" type="number" min="1">
-            <input class="m-inp m-inp-sm" id="mf-ac" placeholder="CA" type="number" min="0">
+            <input class="m-inp m-inp-sm" id="mf-ac" placeholder="AC" type="number" min="0">
             <input class="m-inp m-inp-sm" id="mf-init" placeholder="Init" type="number">
           </div>
-          <button id="btn-create-monster">Créer</button>
+          <div id="monster-templates"></div>
+          <button id="btn-create-monster">Create</button>
+        </div>
+      </div>
+
+      <!-- Friendly NPCs -->
+      <div id="friendly-section">
+        <div id="friendly-section-title">
+          <span>🤝 Friendly NPCs</span>
+          <button id="btn-add-friendly">+ New</button>
+        </div>
+        <div id="friendly-list"></div>
+        <div id="friendly-form">
+          <div class="m-form-row">
+            <input class="m-inp" id="ff-name" placeholder="Name" autocomplete="off">
+            <input class="m-inp m-inp-sm" id="ff-avatar" placeholder="😊" maxlength="2">
+          </div>
+          <div class="m-form-row">
+            <input class="m-inp" id="ff-hp" placeholder="HP max" type="number" min="1">
+            <input class="m-inp m-inp-sm" id="ff-ac" placeholder="AC" type="number" min="0">
+            <input class="m-inp m-inp-sm" id="ff-init" placeholder="Init" type="number">
+          </div>
+          <div id="friendly-templates"></div>
+          <button id="btn-create-friendly">Create</button>
+        </div>
+      </div>
+
+      <!-- References -->
+      <div id="ref-section" class="collapsed">
+        <div id="ref-section-header">
+          <span>📖 References</span>
+          <span id="ref-chevron">▼</span>
+        </div>
+        <div id="ref-body">
+          <div class="ref-cond-grid" id="ref-cond-grid"></div>
         </div>
       </div>
     </div>
@@ -1087,6 +1223,7 @@ body.sidebar-open #sidebar-backdrop{display:block;}
 
       <!-- Panels -->
       <div id="panels-area">
+        <div id="party-bar"></div>
         <div id="empty-state">
           <div class="empty-icon">⚔</div>
           <p>Sélectionne un personnage dans la barre latérale<br>pour ouvrir un panneau de combat.</p>
@@ -1102,10 +1239,18 @@ body.sidebar-open #sidebar-backdrop{display:block;}
         <div id="monster-panels-section" style="display:none;">
           <div class="panels-section-header monster-section-header">
             <span class="panels-section-icon">💀</span>
-            <span class="panels-section-label">PNJ &amp; Monstres</span>
+            <span class="panels-section-label">NPCs &amp; Monsters</span>
             <span class="panels-section-count" id="monster-panels-count"></span>
           </div>
           <div id="monster-panels-grid"></div>
+        </div>
+        <div id="friendly-panels-section" style="display:none;">
+          <div class="panels-section-header friendly-section-header">
+            <span class="panels-section-icon">🤝</span>
+            <span class="panels-section-label">Friendly NPCs</span>
+            <span class="panels-section-count" id="friendly-panels-count"></span>
+          </div>
+          <div id="friendly-panels-grid"></div>
         </div>
       </div>
     </div>
@@ -1143,13 +1288,34 @@ const ALL_CONDITIONS = [
 /* ══════════════════════════════════════════
    State
 ══════════════════════════════════════════ */
+const CONDITION_DESC = {
+  'Blinded':       'Can't see. Auto-fail checks requiring sight. Attacks against: adv. Own attacks: dis.',
+  'Charmed':       'Can't attack the charmer. Charmer has adv. on social checks vs. this creature.',
+  'Deafened':      'Can't hear. Auto-fail checks requiring hearing.',
+  'Frightened':    'Dis. on checks/attacks while source of fear is in sight. Can't move closer.',
+  'Grappled':      'Speed 0. Ends if grappler is incapacitated or creature is moved out of reach.',
+  'Incapacitated': 'Can't take actions or reactions.',
+  'Invisible':     'Can't be seen. Attacks against: dis. Own attacks: adv. Still detectable by noise.',
+  'Paralyzed':     'Incapacitated. Can't move or speak. Auto-fail STR/DEX saves. Hits are critical.',
+  'Petrified':     'Transformed into stone. Incapacitated, can't move or speak. Resist all damage.',
+  'Poisoned':      'Dis. on attack rolls and ability checks.',
+  'Prone':         'Only crawl (half speed). Dis. on attacks. Melee hits: adv. Ranged hits: dis.',
+  'Restrained':    'Speed 0. Attacks against: adv. Own attacks: dis. Dis. on DEX saves.',
+  'Stunned':       'Incapacitated. Can't move. Only faltering speech. Auto-fail STR/DEX saves.',
+  'Unconscious':   'Incapacitated. Falls prone. Auto-fail STR/DEX saves. Hits within 5 ft: critical.',
+  'Concentrating': 'Maintaining a spell. Damaged → CON save (DC 10 or half damage). No two at once.',
+  'Exhaustion':    'Level 1–5 cumulative penalties; level 6 = death. Removed by long rest.',
+};
+
 let currentUser    = null;
 let allPlayers     = [];
-let openPanels     = {};       // key → {type:'player'|'monster', username?, charId?, monsterId?}
+let openPanels     = {};       // key → {type:'player'|'monster'|'friendly', username?, charId?, monsterId?}
 let _panelExpanded = new Set();  // keys of panels with details open
 let expandedPlayers= new Set();
 let localMonsters  = {};       // id → {id,name,avatar,hpMax,hp,ac,initiative,conditions}
+let localFriendlies= {};       // id → {id,name,avatar,hpMax,hp,ac,initiative,conditions}
 let monsterCounter = 0;
+let friendlyCounter= 0;
 let pollTimer      = null;
 let saveTimers     = {};
 let compactMode    = false;
@@ -1173,6 +1339,8 @@ function saveDmState() {
     localStorage.setItem(DM_STATE_KEY, JSON.stringify({
       localMonsters,
       monsterCounter,
+      localFriendlies,
+      friendlyCounter,
       openPanels,
       expandedPlayers: [...expandedPlayers],
       compactMode,
@@ -1188,6 +1356,8 @@ function restoreDmState() {
     const s = JSON.parse(raw);
     if (s.localMonsters)   localMonsters   = s.localMonsters;
     if (s.monsterCounter != null) monsterCounter = s.monsterCounter;
+    if (s.localFriendlies) localFriendlies  = s.localFriendlies;
+    if (s.friendlyCounter != null) friendlyCounter = s.friendlyCounter;
     if (s.expandedPlayers) expandedPlayers = new Set(s.expandedPlayers);
     if (typeof s.compactMode === 'boolean') {
       compactMode = s.compactMode;
@@ -1198,17 +1368,17 @@ function restoreDmState() {
       Object.assign(initState, s.initState);
       document.getElementById('init-bar').className = initState.open ? 'open' : 'collapsed';
       document.getElementById('btn-init-open')?.classList.toggle('active', initState.open);
-      document.getElementById('init-round-label').textContent = 'Tour ' + (initState.round || 1);
+      document.getElementById('init-round-label').textContent = 'Round ' + (initState.round || 1);
     }
-    // Re-ouvrir les panels
+    // Re-open panels
     if (s.openPanels) {
       for (const key of Object.keys(s.openPanels)) {
         openPanels[key] = s.openPanels[key];
-        const type = key.startsWith('m::') ? 'monster' : 'player';
+        const type = key.startsWith('m::') ? 'monster' : key.startsWith('f::') ? 'friendly' : 'player';
         if (document.getElementById('panel-' + key)) continue;
-        const gridId = type === 'monster' ? 'monster-panels-grid' : 'player-panels-grid';
+        const gridId = type === 'monster' ? 'monster-panels-grid' : type === 'friendly' ? 'friendly-panels-grid' : 'player-panels-grid';
         const el = document.createElement('div');
-        el.className = 'combat-panel' + (type === 'monster' ? ' monster-panel' : '');
+        el.className = 'combat-panel' + (type === 'monster' ? ' monster-panel' : type === 'friendly' ? ' friendly-panel' : '');
         el.id = 'panel-' + key;
         document.getElementById(gridId).appendChild(el);
         updatePanel(key);
@@ -1217,6 +1387,7 @@ function restoreDmState() {
     }
     renderSidebar();
     renderMonsterSidebar();
+    renderFriendlySidebar();
     renderInitChips();
   } catch(e) {}
 }
@@ -1368,7 +1539,52 @@ document.getElementById('btn-compact').addEventListener('click', () => {
 ══════════════════════════════════════════ */
 document.getElementById('player-search').addEventListener('input', renderSidebar);
 
+function renderPartyBar() {
+  const bar = document.getElementById('party-bar');
+  if (!bar) return;
+  const players = allPlayers.filter(p => p.username !== ADMIN_USER);
+  if (!players.length) { bar.innerHTML = ''; return; }
+  bar.innerHTML = players.map(player => {
+    const data    = player.data || {};
+    const activeId= data.activeCharId;
+    const slot    = activeId ? data.characters?.[activeId] : null;
+    const c       = slot?.character || {};
+    const pvAct   = parseInt(c.pvActuel) || 0;
+    const pvMax   = parseInt(c.pvMax)    || 0;
+    const pct     = pvMax > 0 ? Math.max(0, Math.min(100, pvAct/pvMax*100)) : 0;
+    const dead    = pvAct <= 0 && pvMax > 0;
+    const avatar  = data.avatar || '⚔';
+    const charName= slot?.name || player.username;
+    const key     = activeId ? 'p::' + player.username + '::' + activeId : '';
+    const isOpen  = key && !!openPanels[key];
+    return `<div class="pbar-chip${isOpen?' pbar-open':''}" data-pbar-key="${esc(key)}">
+      <span class="pbar-avatar">${esc(avatar)}</span>
+      <div class="pbar-info">
+        <div class="pbar-name">${esc(charName)}</div>
+        <div class="pbar-hprow">
+          <span class="pbar-hp" style="${dead?'color:var(--danger);':''}">${pvAct}</span>
+          <span class="pbar-hpmax">/ ${pvMax||'—'}</span>
+          ${pvAct <= 0 && pvMax > 0 ? '<span style="font-size:0.7rem;margin-left:2px;">💀</span>' : ''}
+        </div>
+        ${pvMax > 0 ? `<div class="pbar-bar"><div class="pbar-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+  bar.querySelectorAll('[data-pbar-key]').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const key = chip.dataset.pbarKey;
+      if (!key) return;
+      if (openPanels[key]) {
+        document.getElementById('panel-' + key)?.scrollIntoView({ behavior:'smooth', block:'nearest' });
+      } else {
+        openPanel(key);
+      }
+    });
+  });
+}
+
 function renderSidebar() {
+  renderPartyBar();
   const q = document.getElementById('player-search').value.trim().toLowerCase();
   const list = document.getElementById('player-list');
   const filtered = allPlayers.filter(p => p.username !== ADMIN_USER && p.username.includes(q));
@@ -1434,6 +1650,54 @@ function renderSidebar() {
 /* ══════════════════════════════════════════
    Sidebar — Monsters
 ══════════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   Monster Templates
+══════════════════════════════════════════ */
+const MONSTER_TEMPLATES = [
+  {name:'Goblin',       avatar:'👺', hp:7,   ac:15, init:2 },
+  {name:'Hobgoblin',    avatar:'🪖', hp:11,  ac:18, init:1 },
+  {name:'Kobold',       avatar:'🦎', hp:5,   ac:12, init:2 },
+  {name:'Orc',          avatar:'🪓', hp:15,  ac:13, init:0 },
+  {name:'Bugbear',      avatar:'🐻', hp:27,  ac:16, init:2 },
+  {name:'Gnoll',        avatar:'🐾', hp:22,  ac:15, init:1 },
+  {name:'Skeleton',     avatar:'💀', hp:13,  ac:13, init:2 },
+  {name:'Zombie',       avatar:'🧟', hp:22,  ac:8,  init:-2},
+  {name:'Wight',        avatar:'👻', hp:45,  ac:14, init:2 },
+  {name:'Wolf',         avatar:'🐺', hp:11,  ac:13, init:2 },
+  {name:'Dire Wolf',    avatar:'🦴', hp:37,  ac:14, init:2 },
+  {name:'Giant Spider', avatar:'🕷', hp:26,  ac:14, init:3 },
+  {name:'Bandit',       avatar:'🗡', hp:11,  ac:12, init:1 },
+  {name:'Guard',        avatar:'🛡', hp:11,  ac:16, init:0 },
+  {name:'Cultist',      avatar:'🧿', hp:9,   ac:12, init:1 },
+  {name:'Ogre',         avatar:'👹', hp:59,  ac:11, init:-1},
+  {name:'Troll',        avatar:'🧌', hp:84,  ac:15, init:2 },
+  {name:'Vampire Spawn',avatar:'🧛', hp:82,  ac:15, init:4 },
+  {name:'Young Dragon', avatar:'🐉', hp:178, ac:18, init:2 },
+  {name:'Beholder',     avatar:'👁', hp:180, ac:18, init:2 },
+];
+
+(function initMonsterTemplates() {
+  const container = document.getElementById('monster-templates');
+  if (!container) return;
+  container.innerHTML = MONSTER_TEMPLATES.map(t =>
+    `<button class="m-tpl" data-tpl="${esc(t.name)}">${t.avatar} ${esc(t.name)}</button>`
+  ).join('');
+  container.addEventListener('click', e => {
+    const btn = e.target.closest('.m-tpl');
+    if (!btn) return;
+    const tpl = MONSTER_TEMPLATES.find(t => t.name === btn.dataset.tpl);
+    if (!tpl) return;
+    document.getElementById('mf-name').value  = tpl.name;
+    document.getElementById('mf-avatar').value = tpl.avatar;
+    document.getElementById('mf-hp').value    = tpl.hp;
+    document.getElementById('mf-ac').value    = tpl.ac;
+    document.getElementById('mf-init').value  = tpl.init;
+    container.querySelectorAll('.m-tpl').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('mf-name').focus();
+  });
+})();
+
 document.getElementById('btn-add-monster').addEventListener('click', () => {
   const f = document.getElementById('monster-form');
   f.classList.toggle('open');
@@ -1442,6 +1706,66 @@ document.getElementById('btn-add-monster').addEventListener('click', () => {
 
 document.getElementById('btn-create-monster').addEventListener('click', createMonster);
 document.getElementById('mf-hp').addEventListener('keydown', e => { if(e.key==='Enter') createMonster(); });
+
+/* ── Friendly NPC form ── */
+document.getElementById('btn-add-friendly').addEventListener('click', () => {
+  const f = document.getElementById('friendly-form');
+  f.classList.toggle('open');
+  if (f.classList.contains('open')) document.getElementById('ff-name').focus();
+});
+document.getElementById('btn-create-friendly').addEventListener('click', createFriendly);
+document.getElementById('ff-hp').addEventListener('keydown', e => { if(e.key==='Enter') createFriendly(); });
+
+function createFriendly() {
+  const name  = document.getElementById('ff-name').value.trim();
+  const hp    = parseInt(document.getElementById('ff-hp').value) || 10;
+  const ac    = parseInt(document.getElementById('ff-ac').value) || 10;
+  const init  = parseInt(document.getElementById('ff-init').value) || 0;
+  const avatar= document.getElementById('ff-avatar').value.trim() || '😊';
+  if (!name) { document.getElementById('ff-name').focus(); return; }
+
+  const id = 'friendly-' + (++friendlyCounter);
+  localFriendlies[id] = { id, name, avatar, hpMax:hp, hp, ac, initiative:init, conditions:[] };
+
+  ['ff-name','ff-hp','ff-ac','ff-init','ff-avatar'].forEach(i => { document.getElementById(i).value = ''; });
+  document.getElementById('friendly-form').classList.remove('open');
+
+  renderFriendlySidebar();
+  openPanel('f::' + id);
+  const initVal = Math.floor(Math.random() * 20) + 1 + (parseInt(init) || 0);
+  initState.combatants.push({ id: 'f::' + id, label: name, avatar, type: 'friendly', initVal, hp, hpMax: hp, delayed: false });
+  initState.combatants.sort((a, b) => b.initVal - a.initVal);
+  if (!initState.open) {
+    initState.open = true;
+    document.getElementById('init-bar').className = 'open';
+    document.getElementById('btn-init-open').classList.add('active');
+  }
+  renderInitChips();
+  saveDmState();
+}
+
+/* ── References section ── */
+(function initReferences() {
+  const header = document.getElementById('ref-section-header');
+  const section = document.getElementById('ref-section');
+  header?.addEventListener('click', () => section.classList.toggle('collapsed'));
+
+  const grid = document.getElementById('ref-cond-grid');
+  if (!grid) return;
+  grid.innerHTML = ALL_CONDITIONS.map(cond => `
+    <div class="ref-cond-card" data-ref-cond="${esc(cond)}">
+      <div class="ref-cond-name">${esc(cond)}</div>
+      <div class="ref-cond-desc">${esc(CONDITION_DESC[cond] || '')}</div>
+    </div>
+  `).join('');
+  grid.querySelectorAll('.ref-cond-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const wasExpanded = card.classList.contains('expanded');
+      grid.querySelectorAll('.ref-cond-card').forEach(c => c.classList.remove('expanded'));
+      if (!wasExpanded) card.classList.add('expanded');
+    });
+  });
+})();
 
 function createMonster() {
   const name  = document.getElementById('mf-name').value.trim();
@@ -1499,20 +1823,20 @@ function togglePanel(key) {
 }
 
 function openPanel(key) {
-  const type = key.startsWith('m::') ? 'monster' : 'player';
+  const type = key.startsWith('m::') ? 'monster' : key.startsWith('f::') ? 'friendly' : 'player';
   openPanels[key] = { type, key };
-  const gridId = type === 'monster' ? 'monster-panels-grid' : 'player-panels-grid';
+  const gridId = type === 'monster' ? 'monster-panels-grid' : type === 'friendly' ? 'friendly-panels-grid' : 'player-panels-grid';
   const grid = document.getElementById(gridId);
   const el   = document.createElement('div');
-  el.className = 'combat-panel' + (type === 'monster' ? ' monster-panel' : '');
+  el.className = 'combat-panel' + (type === 'monster' ? ' monster-panel' : type === 'friendly' ? ' friendly-panel' : '');
   el.id = 'panel-' + key;
   grid.appendChild(el);
   updatePanel(key);
   renderSidebar();
   renderMonsterSidebar();
+  renderFriendlySidebar();
   updateEmptyState();
   saveDmState();
-  // Sur tablette, fermer la sidebar pour voir le panneau
   if (window.innerWidth <= 1024) closeSidebar();
 }
 
@@ -1521,19 +1845,23 @@ function closePanel(key) {
   document.getElementById('panel-' + key)?.remove();
   renderSidebar();
   renderMonsterSidebar();
+  renderFriendlySidebar();
   updateEmptyState();
   saveDmState();
 }
 
 function updateEmptyState() {
   const keys = Object.keys(openPanels);
-  const playerKeys  = keys.filter(k => !k.startsWith('m::'));
-  const monsterKeys = keys.filter(k =>  k.startsWith('m::'));
+  const playerKeys   = keys.filter(k => !k.startsWith('m::') && !k.startsWith('f::'));
+  const monsterKeys  = keys.filter(k => k.startsWith('m::'));
+  const friendlyKeys = keys.filter(k => k.startsWith('f::'));
   document.getElementById('empty-state').style.display = keys.length ? 'none' : '';
-  document.getElementById('player-panels-section').style.display  = playerKeys.length  ? '' : 'none';
-  document.getElementById('monster-panels-section').style.display = monsterKeys.length ? '' : 'none';
-  document.getElementById('player-panels-count').textContent  = playerKeys.length  || '';
-  document.getElementById('monster-panels-count').textContent = monsterKeys.length || '';
+  document.getElementById('player-panels-section').style.display   = playerKeys.length   ? '' : 'none';
+  document.getElementById('monster-panels-section').style.display  = monsterKeys.length  ? '' : 'none';
+  document.getElementById('friendly-panels-section').style.display = friendlyKeys.length ? '' : 'none';
+  document.getElementById('player-panels-count').textContent   = playerKeys.length   || '';
+  document.getElementById('monster-panels-count').textContent  = monsterKeys.length  || '';
+  document.getElementById('friendly-panels-count').textContent = friendlyKeys.length || '';
 }
 
 function refreshOpenPanels() {
@@ -1546,8 +1874,9 @@ function refreshOpenPanels() {
 function updatePanel(key) {
   const panel = document.getElementById('panel-' + key);
   if (!panel) return;
-  if (key.startsWith('m::')) renderMonsterPanel(panel, key);
-  else renderPlayerPanel(panel, key);
+  if (key.startsWith('m::'))      renderMonsterPanel(panel, key);
+  else if (key.startsWith('f::')) renderFriendlyPanel(panel, key);
+  else                            renderPlayerPanel(panel, key);
 }
 
 /* ── Player panel ── */
@@ -1831,12 +2160,12 @@ function renderMonsterPanel(panel, key) {
     <div class="panel-header">
       <span class="panel-avatar">${m.avatar}</span>
       <div class="panel-title">
-        <div class="panel-char-name">${esc(m.name)}</div>
-        <div class="panel-char-sub" style="color:rgba(192,57,43,0.7);">PNJ / Monstre</div>
+        <input class="panel-name-input" data-rename-monster="${esc(id)}" value="${esc(m.name)}" title="Double-click to rename">
+        <div class="panel-char-sub" style="color:rgba(192,57,43,0.7);">NPC / Monster</div>
       </div>
       <div class="panel-acts">
-        <button class="pact" data-clone="${esc(key)}" title="Dupliquer">⎘</button>
-        <button class="pact danger" data-close="${esc(key)}" title="Supprimer">🗑</button>
+        <button class="pact" data-clone="${esc(key)}" title="Duplicate">⎘</button>
+        <button class="pact danger" data-close="${esc(key)}" title="Delete">🗑</button>
       </div>
     </div>
     <div class="panel-hp">
@@ -1962,6 +2291,200 @@ function renderMonsterPanel(panel, key) {
       saveDmState();
     });
   });
+
+  // Rename inline
+  const nameInp = panel.querySelector('[data-rename-monster]');
+  if (nameInp) {
+    nameInp.addEventListener('change', () => {
+      const newName = nameInp.value.trim() || m.name;
+      m.name = newName;
+      nameInp.value = newName;
+      renderMonsterSidebar();
+      // Update initiative bar label
+      const initC = initState.combatants.find(c => c.id === key);
+      if (initC) { initC.label = newName; renderInitChips(); }
+      saveDmState();
+    });
+  }
+}
+
+/* ══════════════════════════════════════════
+   Friendly NPCs — Render & Logic
+══════════════════════════════════════════ */
+function renderFriendlySidebar() {
+  const list = document.getElementById('friendly-list');
+  const ids  = Object.keys(localFriendlies);
+  list.innerHTML = ids.map(id => {
+    const f   = localFriendlies[id];
+    const key = 'f::' + id;
+    const isOpen = !!openPanels[key];
+    return `<div class="friendly-sidebar-entry${isOpen?' open':''}" data-fkey="${esc(key)}">
+      <span class="f-dot"></span>
+      <span>${f.avatar} ${esc(f.name)}</span>
+      <span style="margin-left:auto;font-size:0.68rem;">${f.hp}/${f.hpMax}</span>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('[data-fkey]').forEach(el => {
+    el.addEventListener('click', () => togglePanel(el.dataset.fkey));
+  });
+}
+
+function renderFriendlyPanel(panel, key) {
+  const id = key.replace('f::', '');
+  const f  = localFriendlies[id];
+  if (!f) { panel.remove(); delete openPanels[key]; updateEmptyState(); return; }
+
+  const pct  = f.hpMax > 0 ? Math.max(0, Math.min(100, f.hp / f.hpMax * 100)) : 0;
+  const dead = f.hp <= 0 && f.hpMax > 0;
+
+  panel.innerHTML = `
+    <div class="panel-header">
+      <span class="panel-avatar">${f.avatar}</span>
+      <div class="panel-title">
+        <input class="panel-name-input" data-rename-friendly="${esc(id)}" value="${esc(f.name)}" title="Edit to rename">
+        <div class="panel-char-sub" style="color:rgba(50,130,200,0.8);">Friendly NPC</div>
+      </div>
+      <div class="panel-acts">
+        <button class="pact" data-clone-friendly="${esc(key)}" title="Duplicate">⎘</button>
+        <button class="pact danger" data-close-friendly="${esc(key)}" title="Delete">🗑</button>
+      </div>
+    </div>
+    <div class="panel-hp">
+      <div class="hp-bar-wrap"><div class="hp-bar-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>
+      <div class="hp-row">
+        <span class="hp-num" style="color:${dead?'var(--danger)':'var(--text)'};">${f.hp}</span>
+        <span class="hp-max">/ ${f.hpMax} HP</span>
+        ${dead ? `<span style="color:var(--danger);font-size:0.72rem;margin-left:auto;">💀 Down</span>` : ''}
+      </div>
+      <div class="hp-controls">
+        <button class="hp-qbtn m" data-delta="-10">−10</button>
+        <button class="hp-qbtn m" data-delta="-5">−5</button>
+        <button class="hp-qbtn m" data-delta="-1">−1</button>
+        <input type="number" class="hp-inp" placeholder="±HP" id="hpinp-${esc(key)}">
+        <button class="hp-qbtn p" data-delta="+1">+1</button>
+        <button class="hp-qbtn p" data-delta="+5">+5</button>
+        <button class="hp-apply" data-apply-friendly="${esc(key)}">✓</button>
+      </div>
+    </div>
+    <div class="panel-stats">
+      <div class="stat-cell"><div class="stat-val">${f.ac}</div><div class="stat-lbl">AC</div></div>
+      <div class="stat-cell"><div class="stat-val">${fmtInit(f.initiative)}</div><div class="stat-lbl">Init.</div></div>
+      <div class="stat-cell">
+        <input type="number" class="hp-inp" id="maxhp-${esc(key)}" value="${f.hpMax}" style="width:55px;margin:0 auto;" title="HP Max">
+        <div class="stat-lbl">HP Max</div>
+      </div>
+    </div>
+    <div class="panel-cond">
+      <div class="sec-label">Conditions</div>
+      <div class="cond-badges">
+        ${f.conditions.map(cond =>
+          `<span class="cond-badge" data-rm-fcond="${esc(cond)}">${esc(cond)} <span class="cond-x">✕</span></span>`
+        ).join('')}
+        <div class="cond-picker">
+          <button class="cond-add-btn">+ Condition</button>
+          <div class="cond-menu" id="cmenu-${esc(key)}">
+            ${ALL_CONDITIONS.filter(co => !f.conditions.includes(co)).map(co =>
+              `<div class="cond-opt" data-add-fcond="${esc(co)}">${esc(co)}</div>`
+            ).join('')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  // Clone
+  panel.querySelector('[data-clone-friendly]')?.addEventListener('click', () => {
+    const newId = 'friendly-' + (++friendlyCounter);
+    localFriendlies[newId] = { ...f, id: newId, hp: f.hpMax, conditions: [] };
+    renderFriendlySidebar();
+    openPanel('f::' + newId);
+    const initVal = Math.floor(Math.random() * 20) + 1 + (parseInt(f.initiative)||0);
+    initState.combatants.push({ id: 'f::' + newId, label: f.name, avatar: f.avatar, type: 'friendly', initVal, hp: f.hpMax, hpMax: f.hpMax, delayed: false });
+    initState.combatants.sort((a, b) => b.initVal - a.initVal);
+    renderInitChips();
+    saveDmState();
+  });
+
+  // Delete
+  panel.querySelector('[data-close-friendly]')?.addEventListener('click', () => {
+    delete localFriendlies[id];
+    closePanel(key);
+    renderFriendlySidebar();
+    removeInitCombatant(key);
+    saveDmState();
+  });
+
+  // HP quick buttons
+  panel.querySelectorAll('.hp-qbtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      f.hp = Math.max(0, Math.min(f.hpMax, f.hp + parseInt(btn.dataset.delta)));
+      updatePanel(key);
+      renderFriendlySidebar();
+      renderInitChips();
+      saveDmState();
+    });
+  });
+
+  // HP apply
+  panel.querySelector('[data-apply-friendly]')?.addEventListener('click', () => {
+    const inp = document.getElementById('hpinp-' + key);
+    const v   = parseInt(inp?.value);
+    if (!isNaN(v) && v !== 0) {
+      f.hp = Math.max(0, Math.min(f.hpMax, f.hp + v));
+      if (inp) inp.value = '';
+      updatePanel(key);
+      renderFriendlySidebar();
+      renderInitChips();
+      saveDmState();
+    }
+  });
+  panel.querySelector('.hp-inp')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') panel.querySelector('[data-apply-friendly]')?.click();
+  });
+
+  // HP Max
+  const maxInp = document.getElementById('maxhp-' + key);
+  if (maxInp) {
+    maxInp.addEventListener('change', () => {
+      const v = Math.max(1, parseInt(maxInp.value) || 1);
+      f.hpMax = v; f.hp = Math.min(f.hp, v);
+      updatePanel(key); saveDmState();
+    });
+  }
+
+  // Conditions
+  panel.querySelectorAll('[data-rm-fcond]').forEach(el => {
+    el.addEventListener('click', () => {
+      f.conditions = f.conditions.filter(x => x !== el.dataset.rmFcond);
+      updatePanel(key); saveDmState();
+    });
+  });
+  panel.querySelectorAll('.cond-add-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation(); closeAllMenus();
+      document.getElementById('cmenu-' + key)?.classList.add('open');
+    });
+  });
+  panel.querySelectorAll('[data-add-fcond]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      document.getElementById('cmenu-' + key)?.classList.remove('open');
+      if (!f.conditions.includes(el.dataset.addFcond)) f.conditions.push(el.dataset.addFcond);
+      updatePanel(key); saveDmState();
+    });
+  });
+
+  // Rename
+  const nameInp = panel.querySelector('[data-rename-friendly]');
+  if (nameInp) {
+    nameInp.addEventListener('change', () => {
+      const newName = nameInp.value.trim() || f.name;
+      f.name = newName; nameInp.value = newName;
+      renderFriendlySidebar();
+      const initC = initState.combatants.find(c => c.id === key);
+      if (initC) { initC.label = newName; renderInitChips(); }
+      saveDmState();
+    });
+  }
 }
 
 /* ══════════════════════════════════════════
@@ -2110,6 +2633,17 @@ function buildInitCombatants(roll = false) {
     });
   });
 
+  // Friendly NPCs with open panels
+  Object.values(localFriendlies).forEach(f => {
+    const key = 'f::' + f.id;
+    if (!openPanels[key]) return;
+    const initVal = roll ? Math.floor(Math.random() * 20) + 1 + (parseInt(f.initiative)||0) : (parseInt(f.initiative)||0);
+    initState.combatants.push({
+      id: key, label: f.name, avatar: f.avatar, type: 'friendly',
+      initVal, hp: f.hp, hpMax: f.hpMax
+    });
+  });
+
   // Sort descending
   initState.combatants.sort((a, b) => b.initVal - a.initVal);
   if (initState.currentIdx >= initState.combatants.length) initState.currentIdx = 0;
@@ -2127,9 +2661,12 @@ function renderInitChips() {
       const data  = allPlayers.find(p => p.username === parts[1])?.data;
       const c     = data?.characters?.[parts[2]]?.character;
       if (c) { ct.hp = parseInt(c.pvActuel)||0; ct.hpMax = parseInt(c.pvMax)||0; }
-    } else {
+    } else if (ct.id.startsWith('m::')) {
       const m = localMonsters[ct.id.replace('m::','')];
       if (m) { ct.hp = m.hp; ct.hpMax = m.hpMax; }
+    } else if (ct.id.startsWith('f::')) {
+      const f = localFriendlies[ct.id.replace('f::','')];
+      if (f) { ct.hp = f.hp; ct.hpMax = f.hpMax; }
     }
   });
 

@@ -436,7 +436,7 @@
     /* Ressource entièrement épuisée */
     .res-card.depleted .res-card-name-inp { color:var(--danger); opacity:0.85; }
     .res-card.depleted .res-pips { opacity:0.65; }
-    .res-card.depleted .res-max-row::after { content:' — Épuisé'; font-size:0.6rem; color:var(--danger); margin-left:0.3rem; text-transform:uppercase; letter-spacing:0.04em; }
+    .res-card.depleted .res-max-row::after { content:' — Depleted'; font-size:0.6rem; color:var(--danger); margin-left:0.3rem; text-transform:uppercase; letter-spacing:0.04em; }
     .res-max-row { display:flex; align-items:center; gap:0.4rem; margin-top:0.15rem; }
     .res-max-label { font-size:0.62rem; color:#555; text-transform:uppercase; letter-spacing:.04em; }
     .res-reset-badge { font-size:0.6rem; color:#555; text-transform:uppercase; letter-spacing:0.04em; }
@@ -2309,46 +2309,46 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
       <div class="auth-box">
         <div class="auth-emblem">⚔</div>
         <div class="auth-title">Espace Joueurs</div>
-        <div class="auth-subtitle">Accède à ta fiche de personnage</div>
+        <div class="auth-subtitle">Access your character sheet</div>
         <div class="auth-error" id="auth-error"></div>
 
         <!-- Connexion -->
         <div id="mode-login">
-          <div class="auth-mode-title">Connexion</div>
+          <div class="auth-mode-title">Sign In</div>
           <div class="auth-field">
-            <label class="auth-label" for="login-user">Pseudo</label>
-            <input type="text" class="auth-input" id="login-user" placeholder="Ton pseudo" autocorrect="off" autocapitalize="none">
+            <label class="auth-label" for="login-user">Username</label>
+            <input type="text" class="auth-input" id="login-user" placeholder="Your username" autocorrect="off" autocapitalize="none">
           </div>
           <div class="auth-field">
-            <label class="auth-label" for="login-pass">Mot de passe</label>
+            <label class="auth-label" for="login-pass">Password</label>
             <input type="password" class="auth-input" id="login-pass" placeholder="••••••••">
           </div>
-          <button class="auth-btn" id="btn-login">Se connecter</button>
+          <button class="auth-btn" id="btn-login">Sign in</button>
           <div class="auth-switch">
-            Pas encore de compte ?
-            <button class="auth-switch-btn" id="btn-go-register">Créer un compte</button>
+            No account yet?
+            <button class="auth-switch-btn" id="btn-go-register">Create an account</button>
           </div>
         </div>
 
-        <!-- Inscription -->
+        <!-- Register -->
         <div id="mode-register" class="j-hidden">
-          <div class="auth-mode-title">Créer un compte</div>
+          <div class="auth-mode-title">Create an account</div>
           <div class="auth-field">
-            <label class="auth-label" for="reg-user">Pseudo</label>
-            <input type="text" class="auth-input" id="reg-user" placeholder="Choisis un pseudo unique" autocorrect="off" autocapitalize="none">
+            <label class="auth-label" for="reg-user">Username</label>
+            <input type="text" class="auth-input" id="reg-user" placeholder="Choose a unique username" autocorrect="off" autocapitalize="none">
           </div>
           <div class="auth-field">
-            <label class="auth-label" for="reg-pass">Mot de passe</label>
-            <input type="password" class="auth-input" id="reg-pass" placeholder="Au moins 6 caractères">
+            <label class="auth-label" for="reg-pass">Password</label>
+            <input type="password" class="auth-input" id="reg-pass" placeholder="At least 6 characters">
           </div>
           <div class="auth-field">
-            <label class="auth-label" for="reg-pass2">Confirmer le mot de passe</label>
-            <input type="password" class="auth-input" id="reg-pass2" placeholder="Répète le mot de passe">
+            <label class="auth-label" for="reg-pass2">Confirm password</label>
+            <input type="password" class="auth-input" id="reg-pass2" placeholder="Repeat your password">
           </div>
-          <button class="auth-btn" id="btn-register">Créer le compte</button>
+          <button class="auth-btn" id="btn-register">Create account</button>
           <div class="auth-switch">
-            Déjà un compte ?
-            <button class="auth-switch-btn" id="btn-go-login">Se connecter</button>
+            Already have an account?
+            <button class="auth-switch-btn" id="btn-go-login">Sign in</button>
           </div>
         </div>
       </div>
@@ -2395,20 +2395,20 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
       </div>
       <!-- Actions -->
       <div class="dash-actions">
-        <span class="conn-indicator" id="conn-indicator" title="État de la connexion au cloud">…</span>
+        <span class="conn-indicator" id="conn-indicator" title="Cloud connection status">…</span>
         <span class="save-badge" id="save-badge"></span>
         <button class="inspiration-btn" id="btn-inspiration" title="Inspiration (avantage sur un jet)">✦</button>
-        <button class="btn btn-sm btn-gold" id="btn-new-char" title="Nouveau personnage" onclick="openNewCharModal()" style="font-size:1rem;padding:0 0.55rem;line-height:1;">+</button>
-        <button class="btn btn-sm" id="btn-layout-edit" title="Réorganiser les sections">⠿</button>
-        <button class="btn btn-sm" id="btn-read-mode" title="Mode Lecture — verrouille la fiche">🔒</button>
-        <button class="btn btn-sm" id="dice-tray-btn" title="Lanceur de dés">⚄</button>
-        <button class="btn btn-sm btn-danger" id="btn-logout">Déconnexion</button>
+        <button class="btn btn-sm btn-gold" id="btn-new-char" title="New character" onclick="openNewCharModal()" style="font-size:1rem;padding:0 0.55rem;line-height:1;">+</button>
+        <button class="btn btn-sm" id="btn-layout-edit" title="Rearrange sections">⠿</button>
+        <button class="btn btn-sm" id="btn-read-mode" title="Read Mode — lock the sheet">🔒</button>
+        <button class="btn btn-sm" id="dice-tray-btn" title="Dice Roller">⚄</button>
+        <button class="btn btn-sm btn-danger" id="btn-logout">Log out</button>
       </div>
     </div>
 
     <!-- Dice tray panel -->
     <div id="dice-tray">
-      <div class="dice-tray-title">Lanceur de dés</div>
+      <div class="dice-tray-title">Dice Roller</div>
       <div class="dice-tray-row">
         <button class="dice-btn" data-sides="4">d4</button>
         <button class="dice-btn" data-sides="6">d6</button>
@@ -2424,7 +2424,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
       <div class="dice-roll-mode">
         <button class="drm-btn adv"  id="drm-adv"  title="Avantage — 2d20 garder le plus haut">ADV</button>
         <button class="drm-btn norm active" id="drm-norm" title="Normal">NORM</button>
-        <button class="drm-btn dis"  id="drm-dis"  title="Désavantage — 2d20 garder le plus bas">DIS</button>
+        <button class="drm-btn dis"  id="drm-dis"  title="Disadvantage — 2d20 keep lowest">DIS</button>
       </div>
     </div>
 
@@ -2557,7 +2557,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
             </div>
             <!-- HP change rapide : ⚔ [val] ✚ -->
             <div class="hp-quick">
-              <button class="vb-btn-dmg vb-btn-quick" onclick="document.getElementById('btn-apply-dmg').click()" title="Appliquer dégâts">⚔</button>
+              <button class="vb-btn-dmg vb-btn-quick" onclick="document.getElementById('btn-apply-dmg').click()" title="Apply damage">⚔</button>
               <input type="number" class="hp-quick-input" id="hp-quick-val" min="0" placeholder="0">
               <button class="vb-btn-heal vb-btn-quick" onclick="document.getElementById('btn-apply-heal').click()" title="Appliquer soin">✚</button>
             </div>
@@ -2638,8 +2638,8 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
     <div class="tab-panel active" id="tab-personnage">
 
       <div id="layout-toolbar" class="layout-toolbar">
-        <span>✦ Glisse les titres pour réorganiser · ↔ pour changer de colonne/zone</span>
-        <button class="btn btn-sm" id="btn-reset-layout" style="margin-left:auto;">↺ Défaut</button>
+        <span>✦ Drag titles to rearrange · ↔ to change column/zone</span>
+        <button class="btn btn-sm" id="btn-reset-layout" style="margin-left:auto;">↺ Reset</button>
       </div>
 
       <div class="layout-wrapper" id="layout-wrapper">
@@ -2833,7 +2833,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
                 <span class="spell-prep-counter" id="spell-prep-counter">—</span>
               </div>
               <button class="btn btn-sm" id="btn-open-compendium-spell" style="background:rgba(201,169,110,0.1);border:1px solid var(--gold-dark);color:var(--gold);margin-right:0.4rem;">⊕ Compendium</button>
-              <button class="btn btn-sm btn-gold" id="btn-add-spell">+ Ajouter</button>
+              <button class="btn btn-sm btn-gold" id="btn-add-spell">+ Add</button>
             </div>
             <input type="search" id="spell-filter" class="field-input" placeholder="Filter spells…" style="width:100%;margin-bottom:0.4rem;padding:0.3rem 0.5rem;font-size:0.78rem;">
             <table class="exp-table spell-table">
@@ -2869,7 +2869,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
               <input type="text" class="field-input" data-f="characterName" placeholder="Your hero's name">
             </div>
             <div class="field-group">
-              <label class="field-label">Espèce (Species)</label>
+              <label class="field-label">Species</label>
               <input type="text" class="field-input" data-f="species" placeholder="ex. Humain, Elfe…">
             </div>
             <div class="field-group" style="grid-column:span 2;">
@@ -2967,7 +2967,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
         <div class="inv-controls">
           <input type="text" class="field-input" id="inv-search" placeholder="Search items…" style="flex:1;min-width:120px;">
           <button class="btn btn-sm" id="btn-open-compendium-item" style="background:rgba(201,169,110,0.1);border:1px solid var(--gold-dark);color:var(--gold);">⊕ Compendium</button>
-          <button class="btn btn-sm btn-gold" id="btn-add-item">+ Ajouter</button>
+          <button class="btn btn-sm btn-gold" id="btn-add-item">+ Add</button>
         </div>
         <table class="inv-table">
           <thead><tr>
@@ -3031,10 +3031,10 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
         <!-- Éditeur -->
         <div class="notes-editor-wrap">
           <div class="notes-page-title-row">
-            <input class="notes-page-title-input" id="notes-page-title" placeholder="Nom de la page…" />
-            <button class="notes-del-page-btn" id="btn-del-note-page" title="Supprimer cette page">🗑</button>
+            <input class="notes-page-title-input" id="notes-page-title" placeholder="Page name…" />
+            <button class="notes-del-page-btn" id="btn-del-note-page" title="Delete this page">🗑</button>
           </div>
-          <textarea class="notes-editor" id="notes-editor" placeholder="Tes notes de session, quêtes, PNJ importants…"></textarea>
+          <textarea class="notes-editor" id="notes-editor" placeholder="Your session notes, quests, key NPCs…"></textarea>
           <div style="font-size:0.72rem;color:#555;text-align:right;margin-top:0.3rem;font-style:italic;">Autosave</div>
         </div>
       </div>
@@ -3052,9 +3052,9 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
           <!-- Zone de dessin -->
           <div class="canvas-main">
             <div class="canvas-page-title-row">
-              <input class="notes-page-title-input" id="canvas-page-title" placeholder="Nom de la page…" />
-              <button class="canvas-tool-btn" id="ctool-download" title="Télécharger en PNG">⤓ PNG</button>
-              <button class="notes-del-page-btn" id="btn-del-canvas-page" title="Supprimer cette page">🗑</button>
+              <input class="notes-page-title-input" id="canvas-page-title" placeholder="Page name…" />
+              <button class="canvas-tool-btn" id="ctool-download" title="Download as PNG">⤓ PNG</button>
+              <button class="notes-del-page-btn" id="btn-del-canvas-page" title="Delete this page">🗑</button>
             </div>
             <div class="canvas-toolbar">
               <!-- Outils -->
@@ -3068,31 +3068,31 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
               <div class="canvas-size-btn active" id="csize-s" data-size="2" title="Fin" style="border-color:var(--gold-dark);">
                 <svg viewBox="0 0 20 20" width="8" height="8"><circle cx="10" cy="10" r="3" fill="currentColor"/></svg>
               </div>
-              <div class="canvas-size-btn" id="csize-m" data-size="5" title="Moyen">
+              <div class="canvas-size-btn" id="csize-m" data-size="5" title="Medium">
                 <svg viewBox="0 0 20 20" width="12" height="12"><circle cx="10" cy="10" r="5" fill="currentColor"/></svg>
               </div>
-              <div class="canvas-size-btn" id="csize-l" data-size="10" title="Épais">
+              <div class="canvas-size-btn" id="csize-l" data-size="10" title="Thick">
                 <svg viewBox="0 0 20 20" width="16" height="16"><circle cx="10" cy="10" r="8" fill="currentColor"/></svg>
               </div>
               <div class="canvas-tool-sep"></div>
-              <!-- Couleurs -->
-              <div class="ink-dot active" data-ink="#1a1212" style="background:#1a1212;" title="Noir encre"></div>
-              <div class="ink-dot" data-ink="#8b1a1a" style="background:#8b1a1a;" title="Rouge"></div>
-              <div class="ink-dot" data-ink="#1a2a8a" style="background:#1a2a8a;" title="Bleu"></div>
-              <div class="ink-dot" data-ink="#1a5a2a" style="background:#1a5a2a;" title="Vert"></div>
-              <div class="ink-dot" data-ink="#6a3a00" style="background:#6a3a00;" title="Sépia"></div>
-              <div class="ink-dot" data-ink="#7a007a" style="background:#7a007a;" title="Violet"></div>
-              <input type="color" id="ink-custom" value="#1a1212" title="Couleur personnalisée" style="width:24px;height:24px;border-radius:50%;border:2px solid #3a2810;background:none;cursor:pointer;padding:1px;">
+              <!-- Colors -->
+              <div class="ink-dot active" data-ink="#1a1212" style="background:#1a1212;" title="Ink black"></div>
+              <div class="ink-dot" data-ink="#8b1a1a" style="background:#8b1a1a;" title="Red"></div>
+              <div class="ink-dot" data-ink="#1a2a8a" style="background:#1a2a8a;" title="Blue"></div>
+              <div class="ink-dot" data-ink="#1a5a2a" style="background:#1a5a2a;" title="Green"></div>
+              <div class="ink-dot" data-ink="#6a3a00" style="background:#6a3a00;" title="Sepia"></div>
+              <div class="ink-dot" data-ink="#7a007a" style="background:#7a007a;" title="Purple"></div>
+              <input type="color" id="ink-custom" value="#1a1212" title="Custom color" style="width:24px;height:24px;border-radius:50%;border:2px solid #3a2810;background:none;cursor:pointer;padding:1px;">
               <div class="canvas-tool-sep"></div>
               <!-- Actions -->
-              <button class="canvas-tool-btn" id="ctool-undo" title="Annuler (Ctrl+Z)">↩</button>
-              <button class="canvas-tool-btn" id="ctool-clear" title="Effacer la page" style="color:var(--danger);border-color:#3a1a1a;">✕</button>
+              <button class="canvas-tool-btn" id="ctool-undo" title="Undo (Ctrl+Z)">↩</button>
+              <button class="canvas-tool-btn" id="ctool-clear" title="Clear page" style="color:var(--danger);border-color:#3a1a1a;">✕</button>
               <div style="margin-left:auto;font-size:0.62rem;color:#444;font-style:italic;">Saved locally</div>
             </div>
             <div class="canvas-scroll-wrap" id="canvas-scroll-wrap">
               <canvas id="handnote-canvas"></canvas>
               <div id="canvas-text-input-wrap" style="display:none;position:absolute;">
-                <input id="canvas-text-input" type="text" placeholder="Taper + Entrée…" autocomplete="off">
+                <input id="canvas-text-input" type="text" placeholder="Type + Enter…" autocomplete="off">
               </div>
             </div>
           </div>
@@ -3105,38 +3105,38 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
       <div class="settings-section">
         <h3>Profil</h3>
         <div class="settings-row">
-          <div class="settings-label">Icône du personnage<div class="settings-desc">Spécifique à chaque personnage</div></div>
+          <div class="settings-label">Character icon<div class="settings-desc">Per character</div></div>
           <div>
             <div class="avatar-grid" id="avatar-picker"></div>
             <div class="av-png-upload">
-              <label class="btn btn-sm" style="cursor:pointer;" title="Uploader une image PNG/JPG">🖼 Portrait PNG
+              <label class="btn btn-sm" style="cursor:pointer;" title="Upload a PNG/JPG image">🖼 Portrait PNG
                 <input type="file" id="avatar-png-input" accept="image/*" style="display:none;">
               </label>
               <img id="av-png-preview" class="av-png-preview" alt="portrait">
-              <button id="av-png-clear" class="av-png-clear" style="display:none;">✕ Retirer</button>
+              <button id="av-png-clear" class="av-png-clear" style="display:none;">✕ Remove</button>
             </div>
           </div>
         </div>
       </div>
       <div class="settings-section">
-        <h3>Couleur de thème</h3>
+        <h3>Theme Color</h3>
         <div class="settings-row">
-          <div class="settings-label">Préréglages<div class="settings-desc">Couleur principale de ta fiche</div></div>
+          <div class="settings-label">Presets<div class="settings-desc">Main color of your sheet</div></div>
           <div>
             <div class="theme-swatches" id="theme-swatches"></div>
-            <div class="theme-swatch-label" id="theme-label">Or (défaut)</div>
+            <div class="theme-swatch-label" id="theme-label">Gold (default)</div>
           </div>
         </div>
         <div class="settings-row" style="margin-top:0.5rem;">
-          <div class="settings-label">Couleur personnalisée<div class="settings-desc">Teinte sur mesure (hex)</div></div>
+          <div class="settings-label">Custom color<div class="settings-desc">Custom hue (hex)</div></div>
           <div class="color-picker-wrap">
-            <input type="color" class="color-inp" id="custom-color-inp" value="#c9a227" title="Choisir une couleur">
+            <input type="color" class="color-inp" id="custom-color-inp" value="#c9a227" title="Pick a color">
             <input type="text"  class="color-inp-hex" id="custom-color-hex" value="#c9a227" maxlength="7" placeholder="#c9a227">
-            <button class="btn btn-sm btn-gold" id="btn-apply-custom-color">Appliquer</button>
+            <button class="btn btn-sm btn-gold" id="btn-apply-custom-color">Apply</button>
           </div>
         </div>
         <div class="settings-row" style="margin-top:0.5rem;">
-          <div class="settings-label">Taille du texte<div class="settings-desc">Ajuster la lisibilité</div></div>
+          <div class="settings-label">Text size<div class="settings-desc">Adjust readability</div></div>
           <div style="display:flex;align-items:center;gap:0.65rem;">
             <span style="font-size:0.72rem;color:#666;">A</span>
             <input type="range" class="font-size-slider" id="font-size-slider" min="85" max="115" value="100" step="5">
@@ -3146,66 +3146,66 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
         </div>
         <div class="settings-row" style="margin-top:0.5rem;align-items:flex-start;flex-direction:column;gap:0.5rem;">
           <div style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;user-select:none;" id="palette-toggle">
-            <span style="font-size:0.82rem;color:#bbb;">Couleurs avancées</span>
+            <span style="font-size:0.82rem;color:#bbb;">Advanced colors</span>
             <span id="palette-toggle-icon" style="font-size:0.7rem;color:#666;">▼</span>
           </div>
           <div id="palette-advanced" style="display:none;width:100%;">
             <div class="palette-grid">
               <div class="palette-row">
-                <label class="palette-label">Panneaux</label>
-                <input type="color" class="color-inp palette-inp" id="pal-panel" value="#221a0e" title="Couleur des panneaux et cartes">
+                <label class="palette-label">Panels</label>
+                <input type="color" class="color-inp palette-inp" id="pal-panel" value="#221a0e" title="Panel and card color">
                 <input type="text" class="color-inp-hex palette-hex" id="pal-panel-hex" value="#221a0e" maxlength="7">
               </div>
               <div class="palette-row">
-                <label class="palette-label">Champs</label>
-                <input type="color" class="color-inp palette-inp" id="pal-input" value="#110d07" title="Fond des champs de texte">
+                <label class="palette-label">Fields</label>
+                <input type="color" class="color-inp palette-inp" id="pal-input" value="#110d07" title="Text field background">
                 <input type="text" class="color-inp-hex palette-hex" id="pal-input-hex" value="#110d07" maxlength="7">
               </div>
               <div class="palette-row">
-                <label class="palette-label">Bordures</label>
-                <input type="color" class="color-inp palette-inp" id="pal-border" value="#4a3510" title="Couleur des bordures">
+                <label class="palette-label">Borders</label>
+                <input type="color" class="color-inp palette-inp" id="pal-border" value="#4a3510" title="Border color">
                 <input type="text" class="color-inp-hex palette-hex" id="pal-border-hex" value="#4a3510" maxlength="7">
               </div>
               <div class="palette-row">
-                <label class="palette-label">Texte</label>
-                <input type="color" class="color-inp palette-inp" id="pal-text" value="#e2cfa0" title="Couleur du texte principal">
+                <label class="palette-label">Text</label>
+                <input type="color" class="color-inp palette-inp" id="pal-text" value="#e2cfa0" title="Main text color">
                 <input type="text" class="color-inp-hex palette-hex" id="pal-text-hex" value="#e2cfa0" maxlength="7">
               </div>
             </div>
             <div style="display:flex;gap:0.5rem;margin-top:0.6rem;flex-wrap:wrap;">
-              <button class="btn btn-sm btn-gold" id="btn-apply-palette">Appliquer</button>
-              <button class="btn btn-sm" id="btn-reset-palette">Réinitialiser</button>
+              <button class="btn btn-sm btn-gold" id="btn-apply-palette">Apply</button>
+              <button class="btn btn-sm" id="btn-reset-palette">Reset</button>
             </div>
           </div>
         </div>
       </div>
       <div class="settings-section">
-        <h3>Image de fond<div style="font-size:0.72rem;font-weight:400;color:#888;font-family:sans-serif;margin-top:0.15rem;">Spécifique à chaque personnage</div></h3>
+        <h3>Background Image<div style="font-size:0.72rem;font-weight:400;color:#888;font-family:sans-serif;margin-top:0.15rem;">Per character</div></h3>
         <div class="settings-row">
-          <div class="settings-label">Image de fond<div class="settings-desc">Apparaît derrière ta fiche avec un voile sombre</div></div>
+          <div class="settings-label">Character background<div class="settings-desc">Appears behind your sheet with a dark overlay</div></div>
           <div class="bg-upload-row">
-            <label class="btn btn-sm" style="cursor:pointer;">🖼 Choisir une image
+            <label class="btn btn-sm" style="cursor:pointer;">🖼 Choose image
               <input type="file" id="bg-img-input" accept="image/*" style="display:none;">
             </label>
-            <img id="bg-preview" class="bg-preview" alt="fond">
-            <button id="bg-clear-btn" class="bg-clear-btn">✕ Retirer</button>
+            <img id="bg-preview" class="bg-preview" alt="background">
+            <button id="bg-clear-btn" class="bg-clear-btn">✕ Remove</button>
           </div>
         </div>
       </div>
       <div class="settings-section">
-        <h3>Fond de page<div style="font-size:0.72rem;font-weight:400;color:#888;font-family:sans-serif;margin-top:0.15rem;">Commun à tous les personnages</div></h3>
+        <h3>Page Background<div style="font-size:0.72rem;font-weight:400;color:#888;font-family:sans-serif;margin-top:0.15rem;">Shared across all characters</div></h3>
         <div class="settings-row">
-          <div class="settings-label">Image de fond global<div class="settings-desc">Remplace le fond uni de toute la page</div></div>
+          <div class="settings-label">Global background<div class="settings-desc">Replaces the solid background of the whole page</div></div>
           <div class="bg-upload-row">
-            <label class="btn btn-sm" style="cursor:pointer;">🌄 Choisir une image
+            <label class="btn btn-sm" style="cursor:pointer;">🌄 Choose image
               <input type="file" id="page-bg-input" accept="image/*" style="display:none;">
             </label>
-            <img id="page-bg-preview" class="bg-preview" alt="fond page">
-            <button id="page-bg-clear-btn" class="bg-clear-btn">✕ Retirer</button>
+            <img id="page-bg-preview" class="bg-preview" alt="page background">
+            <button id="page-bg-clear-btn" class="bg-clear-btn">✕ Remove</button>
           </div>
         </div>
         <div class="settings-row" id="page-bg-opacity-row" style="display:none;">
-          <div class="settings-label">Opacité du voile<div class="settings-desc">Plus élevé = image plus visible</div></div>
+          <div class="settings-label">Overlay opacity<div class="settings-desc">Higher = image more visible</div></div>
           <div class="page-bg-opacity-row">
             <input type="range" id="page-bg-opacity" min="10" max="90" value="55" step="5">
             <span id="page-bg-opacity-lbl">55%</span>
@@ -3213,40 +3213,40 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
         </div>
       </div>
       <div class="settings-section">
-        <h3>Mise en page</h3>
+        <h3>Layout</h3>
         <div class="settings-row" style="align-items:flex-start;">
-          <div class="settings-label">Sections visibles<div class="settings-desc">Masquer les sections inutilisées</div></div>
+          <div class="settings-label">Visible sections<div class="settings-desc">Hide unused sections</div></div>
           <div id="section-visibility-grid" style="display:flex;flex-wrap:wrap;gap:0.4rem;max-width:380px;"></div>
         </div>
       </div>
       <div class="settings-section">
-        <h3>Mot de passe</h3>
+        <h3>Password</h3>
         <div class="settings-row">
-          <div class="settings-label">Nouveau mot de passe<div class="settings-desc">Au moins 6 caractères</div></div>
+          <div class="settings-label">New password<div class="settings-desc">At least 6 characters</div></div>
           <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
-            <input type="password" class="field-input" id="new-pwd" placeholder="Nouveau mot de passe" style="width:200px;">
-            <button class="btn btn-sm btn-gold" id="btn-change-pwd">Changer</button>
+            <input type="password" class="field-input" id="new-pwd" placeholder="New password" style="width:200px;">
+            <button class="btn btn-sm btn-gold" id="btn-change-pwd">Change</button>
           </div>
         </div>
         <div class="pwd-msg" id="pwd-msg"></div>
       </div>
       <div class="settings-section">
-        <h3>Partage</h3>
+        <h3>Sharing</h3>
         <div class="settings-row">
-          <div class="settings-label">Fiche en lecture seule<div class="settings-desc">Un lien public pour afficher ta fiche sans connexion</div></div>
-          <button class="btn btn-sm btn-gold" id="btn-share-sheet">🔗 Copier le lien</button>
+          <div class="settings-label">Read-only sheet<div class="settings-desc">A public link to view your sheet without logging in</div></div>
+          <button class="btn btn-sm btn-gold" id="btn-share-sheet">🔗 Copy link</button>
         </div>
         <div id="share-link-display" style="display:none;margin-top:0.5rem;font-size:0.75rem;color:#888;word-break:break-all;padding:0.4rem 0.6rem;background:var(--j-input,#0d0d14);border-radius:5px;border:1px solid var(--j-border-col,#2a2a3a);"></div>
       </div>
       <div class="settings-section">
-        <h3>Sauvegarde</h3>
+        <h3>Data</h3>
         <div class="settings-row">
-          <div class="settings-label">Exporter ma fiche<div class="settings-desc">Télécharge un fichier JSON de sauvegarde</div></div>
-          <button class="btn btn-sm btn-gold" id="btn-export">⬇ Exporter</button>
+          <div class="settings-label">Export my sheet<div class="settings-desc">Downloads a JSON backup file</div></div>
+          <button class="btn btn-sm btn-gold" id="btn-export">⬇ Export</button>
         </div>
         <div class="settings-row">
-          <div class="settings-label">Importer une fiche<div class="settings-desc">Restaure depuis un fichier JSON exporté</div></div>
-          <label class="btn btn-sm" style="cursor:pointer;">⬆ Importer<input type="file" id="btn-import" accept=".json" style="display:none;"></label>
+          <div class="settings-label">Import a sheet<div class="settings-desc">Restore from an exported JSON file</div></div>
+          <label class="btn btn-sm" style="cursor:pointer;">⬆ Import<input type="file" id="btn-import" accept=".json" style="display:none;"></label>
         </div>
       </div>
       <div class="settings-section">
@@ -3258,49 +3258,49 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
 
         <!-- Méthode 1 : URL / ID -->
         <div class="ddb-method">
-          <div class="ddb-method-label">① URL ou ID du personnage</div>
+          <div class="ddb-method-label">① Character URL or ID</div>
           <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
             <input type="text" class="field-input" id="ddb-url-input"
-              placeholder="https://www.dndbeyond.com/characters/12345678 ou juste 12345678"
+              placeholder="https://www.dndbeyond.com/characters/12345678 or just 12345678"
               style="flex:1;min-width:240px;">
-            <button class="btn btn-sm btn-gold" id="ddb-fetch-btn">⤓ Récupérer</button>
+            <button class="btn btn-sm btn-gold" id="ddb-fetch-btn">⤓ Fetch</button>
           </div>
           <div class="ddb-method-hint">
-            ⚠ Si la récupération échoue (CORS), copie l'ID et utilise la méthode ②.
+            ⚠ If fetch fails (CORS), copy the ID and use method ②.
           </div>
         </div>
 
-        <div class="ddb-or">— ou —</div>
+        <div class="ddb-or">— or —</div>
 
-        <!-- Méthode 2 : drop / fichier / paste -->
+        <!-- Method 2 : drop / file / paste -->
         <div class="ddb-dropzone" id="ddb-dropzone">
           <div class="ddb-dropzone-icon">⚔</div>
-          <div class="ddb-dropzone-title">Glisser le fichier .json ici</div>
-          <div class="ddb-dropzone-sub">ou</div>
+          <div class="ddb-dropzone-title">Drop .json file here</div>
+          <div class="ddb-dropzone-sub">or</div>
           <label class="btn btn-sm btn-gold" style="cursor:pointer;">
-            📂 Sélectionner un fichier
+            📂 Select a file
             <input type="file" id="ddb-import-file" accept=".json,application/json" style="display:none;">
           </label>
         </div>
 
-        <div class="ddb-or">— ou —</div>
+        <div class="ddb-or">— or —</div>
 
-        <!-- Méthode 3 : paste -->
+        <!-- Method 3 : paste -->
         <div class="ddb-method">
-          <div class="ddb-method-label">③ Coller le JSON</div>
+          <div class="ddb-method-label">③ Paste JSON</div>
           <textarea id="ddb-paste-area" class="field-input" rows="3"
             placeholder='{"data":{"name":"...","stats":[...],...}}' style="font-family:monospace;font-size:0.72rem;"></textarea>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.4rem;flex-wrap:wrap;gap:0.5rem;">
-            <span class="ddb-method-hint" style="margin:0;">Astuce : ouvre l'URL <code style="color:var(--gold-dark);">character-service.dndbeyond.com/character/v5/character/ID</code>, copie tout, colle ici.</span>
-            <button class="btn btn-sm btn-gold" id="ddb-paste-btn">✓ Importer le JSON collé</button>
+            <span class="ddb-method-hint" style="margin:0;">Tip: open <code style="color:var(--gold-dark);">character-service.dndbeyond.com/character/v5/character/ID</code>, copy all, paste here.</span>
+            <button class="btn btn-sm btn-gold" id="ddb-paste-btn">✓ Import pasted JSON</button>
           </div>
         </div>
       </div>
       <div class="settings-section">
-        <h3>Compte</h3>
+        <h3>Account</h3>
         <div class="settings-row">
-          <div class="settings-label">Réinitialiser ce personnage<div class="settings-desc">Efface la fiche du personnage actif (le compte reste)</div></div>
-          <button class="btn btn-sm btn-danger" id="btn-reset-char">🗑 Réinitialiser</button>
+          <div class="settings-label">Reset this character<div class="settings-desc">Clears the active character sheet (account stays)</div></div>
+          <button class="btn btn-sm btn-danger" id="btn-reset-char">🗑 Reset</button>
         </div>
       </div>
     </div><!-- /tab-parametres -->
@@ -3458,10 +3458,10 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
       <div class="fam-toolbar">
         <span class="fam-toolbar-title">⟡ Familiers &amp; Compagnons</span>
         <button class="btn btn-sm" id="btn-open-compendium-monster" style="background:rgba(201,169,110,0.1);border:1px solid var(--gold-dark);color:var(--gold);">⊕ Compendium</button>
-        <button class="btn btn-sm btn-gold" id="btn-add-familiar">+ Ajouter</button>
+        <button class="btn btn-sm btn-gold" id="btn-add-familiar">+ Add</button>
       </div>
       <div class="fam-cards-wrap" id="fam-cards-wrap">
-        <div class="fam-empty">Aucun familier. Cliquez sur <em>+ Ajouter</em> pour créer une fiche ou importez depuis le compendium.</div>
+        <div class="fam-empty">No companions. Click <em>+ Add</em> to create a sheet or import from the compendium.</div>
       </div>
     </div>
 
@@ -3511,8 +3511,8 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
         <span>Messages</span>
       </div>
       <div class="chat-header-actions">
-        <button class="chat-new-btn" id="chat-new-btn" title="Nouvelle conversation">＋</button>
-        <button class="chat-close" id="chat-close" title="Fermer">✕</button>
+        <button class="chat-new-btn" id="chat-new-btn" title="New conversation">＋</button>
+        <button class="chat-close" id="chat-close" title="Close">✕</button>
       </div>
     </div>
     <div class="chat-error-bar" id="chat-error-bar">⚠ Impossible de joindre le serveur</div>
@@ -3522,18 +3522,18 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
   <div id="chat-view-msgs">
     <div class="chat-header">
       <div class="chat-header-left">
-        <button class="chat-back-btn" id="chat-back-btn" title="Retour">‹</button>
-        <span id="chat-room-title">Général</span>
+        <button class="chat-back-btn" id="chat-back-btn" title="Back">‹</button>
+        <span id="chat-room-title">General</span>
       </div>
       <div class="chat-header-actions">
-        <button class="chat-close" id="chat-close-2" title="Fermer">✕</button>
+        <button class="chat-close" id="chat-close-2" title="Close">✕</button>
       </div>
     </div>
     <div class="chat-messages" id="chat-messages" style="position:relative;"></div>
-    <button id="chat-scroll-btn" title="Défiler en bas">↓</button>
+    <button id="chat-scroll-btn" title="Scroll to bottom">↓</button>
     <div class="chat-footer">
       <div class="chat-input-row">
-        <input type="text" class="chat-input" id="chat-input" placeholder="Message… (Entrée)" maxlength="400" autocomplete="off">
+        <input type="text" class="chat-input" id="chat-input" placeholder="Message… (Enter)" maxlength="400" autocomplete="off">
         <button class="chat-send" id="chat-send" title="Envoyer">↑</button>
       </div>
     </div>
@@ -3542,9 +3542,9 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
 <!-- Modal : nouvelle conversation -->
 <div id="chat-new-modal">
   <div class="chat-new-box">
-    <div class="chat-new-title">Nouvelle conversation</div>
+    <div class="chat-new-title">New conversation</div>
     <div class="chat-new-tabs">
-      <button class="chat-new-tab active" data-ntab="private">Privé</button>
+      <button class="chat-new-tab active" data-ntab="private">Private</button>
       <button class="chat-new-tab" data-ntab="group">Groupe</button>
     </div>
     <div class="chat-new-section active" id="chat-ntab-private">
@@ -3555,8 +3555,8 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
       <div class="chat-player-list" id="chat-group-players"></div>
     </div>
     <div class="chat-new-actions">
-      <button class="chat-new-cancel" id="chat-new-cancel">Annuler</button>
-      <button class="chat-new-confirm" id="chat-new-confirm">Créer</button>
+      <button class="chat-new-cancel" id="chat-new-cancel">Cancel</button>
+      <button class="chat-new-confirm" id="chat-new-confirm">Create</button>
     </div>
   </div>
 </div>
@@ -3570,7 +3570,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
     <div id="admin-char-bar" style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap;"></div>
     <!-- Tabs -->
     <div class="modal-tabs">
-      <button class="modal-tab-btn active" data-mtab="fiche">⚔ Fiche</button>
+      <button class="modal-tab-btn active" data-mtab="fiche">⚔ Sheet</button>
       <button class="modal-tab-btn" data-mtab="competences">🎯 Skills</button>
       <button class="modal-tab-btn" data-mtab="sorts">✨ Spells</button>
       <button class="modal-tab-btn" data-mtab="inventaire">🎒 Inventory</button>
@@ -3580,8 +3580,8 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
     <div id="modal-body"></div>
     <!-- Actions -->
     <div style="display:flex;gap:0.75rem;justify-content:flex-end;margin-top:1.25rem;border-top:1px solid var(--j-border-col,#4a3510);padding-top:1rem;">
-      <button class="btn btn-danger" id="btn-admin-cancel">Annuler</button>
-      <button class="btn btn-gold" id="btn-admin-save">💾 Sauvegarder</button>
+      <button class="btn btn-danger" id="btn-admin-cancel">Cancel</button>
+      <button class="btn btn-gold" id="btn-admin-save">💾 Save</button>
     </div>
   </div>
 </div>
@@ -5032,7 +5032,7 @@ function emptyCharacter() {
     heroNote:''
   };
 }
-function emptyNotesPages() { return [{ name: 'Notes de session', content: '' }]; }
+function emptyNotesPages() { return [{ name: 'Session Notes', content: '' }]; }
 function emptyCharSlot(name) {
   return { name, character: emptyCharacter(), inventory: { items:[], currency:{pp:0,gp:0,ep:0,sp:0,cp:0} }, notes: emptyNotesPages() };
 }
@@ -5056,7 +5056,7 @@ function getNotePages() {
   if (!slot) return [];
   // Compatibilité ascendante : convertir l'ancien format string en tableau
   if (typeof slot.notes === 'string') {
-    slot.notes = slot.notes ? [{ name: 'Notes de session', content: slot.notes }] : emptyNotesPages();
+    slot.notes = slot.notes ? [{ name: 'Session Notes', content: slot.notes }] : emptyNotesPages();
   }
   if (!Array.isArray(slot.notes) || slot.notes.length === 0) slot.notes = emptyNotesPages();
   return slot.notes;
@@ -5144,7 +5144,7 @@ function triggerSave() {
     try {
       await sbUpdateData(currentUser, playerData);
       _lastSaveAt = Date.now();
-      badge.textContent = 'Sauvegardé ✓'; badge.className = 'save-badge ok';
+      badge.textContent = 'Saved ✓'; badge.className = 'save-badge ok';
       updateConnIndicator('online');
       setTimeout(() => { badge.textContent = ''; badge.className = 'save-badge'; }, 2500);
     } catch(e) {
@@ -5476,9 +5476,9 @@ async function doLogin() {
   btn.disabled = true; btn.innerHTML = '<span class="auth-spinner"></span> Connexion…';
   try {
     const row = await sbGetPlayer(username);
-    if (!row) { showAuthError("Pseudo introuvable. Crée un compte d'abord."); return; }
+    if (!row) { showAuthError("Username not found. Create an account first."); return; }
     const hash = await hashPwd(password);
-    if (hash !== row.password_hash) { showAuthError('Mot de passe incorrect.'); return; }
+    if (hash !== row.password_hash) { showAuthError('Incorrect password.'); return; }
     saveSession(username);
     currentUser = username;
     playerData = row.data;
@@ -5486,7 +5486,7 @@ async function doLogin() {
   } catch(e) {
     showAuthError('Erreur : ' + e.message);
   } finally {
-    btn.disabled = false; btn.textContent = 'Se connecter';
+    btn.disabled = false; btn.textContent = 'Sign in';
   }
 }
 
@@ -5497,10 +5497,10 @@ async function doRegister() {
   const password2 = document.getElementById('reg-pass2').value;
   clearAuthError();
   if (!username) { showAuthError('Entre un pseudo.'); return; }
-  if (username.length < 2) { showAuthError('Le pseudo doit faire au moins 2 caractères.'); return; }
-  if (!/^[a-z0-9_-]+$/.test(username)) { showAuthError('Pseudo : lettres, chiffres, _ et - seulement.'); return; }
-  if (password.length < 6) { showAuthError('Mot de passe : au moins 6 caractères.'); return; }
-  if (password !== password2) { showAuthError('Les mots de passe ne correspondent pas.'); return; }
+  if (username.length < 2) { showAuthError('Username must be at least 2 characters.'); return; }
+  if (!/^[a-z0-9_-]+$/.test(username)) { showAuthError('Username: letters, digits, _ and - only.'); return; }
+  if (password.length < 6) { showAuthError('Password: at least 6 characters.'); return; }
+  if (password !== password2) { showAuthError('Passwords do not match.'); return; }
   const btn = document.getElementById('btn-register');
   btn.disabled = true; btn.innerHTML = '<span class="auth-spinner"></span> Création…';
   try {
@@ -5516,7 +5516,7 @@ async function doRegister() {
   } catch(e) {
     showAuthError('Erreur : ' + e.message);
   } finally {
-    btn.disabled = false; btn.textContent = 'Créer le compte';
+    btn.disabled = false; btn.textContent = 'Create account';
   }
 }
 
@@ -5622,7 +5622,7 @@ function renderCharSelector() {
   // Bouton Nouveau
   const addItem = document.createElement('div');
   addItem.className = 'char-sel-add';
-  addItem.innerHTML = '<span style="font-size:1rem;font-weight:700;">+</span> Nouveau personnage';
+  addItem.innerHTML = '<span style="font-size:1rem;font-weight:700;">+</span> New character';
   addItem.addEventListener('click', () => { closeCharSelector(); openNewCharModal(); });
   dd.appendChild(addItem);
 }
@@ -5663,7 +5663,7 @@ function renderCharCards() {
 
     const subClasse = c.sousClasse ? ' — ' + c.sousClasse : '';
     card.innerHTML = `
-      <button class="char-card-del" data-del-char="${id}" title="Supprimer">✕</button>
+      <button class="char-card-del" data-del-char="${id}" title="Delete">✕</button>
       <div class="char-card-avatar">${c.avatarPng ? `<img src="${c.avatarPng}" alt="avatar">` : (c.avatar || playerData.avatar || '⚔')}</div>
       <div class="char-card-name">${c.characterName || 'Unnamed'}</div>
       <div class="char-card-sub">${getClasses(c).filter(cl=>cl.classe).map(cl=>cl.classe+' '+cl.niveau).join(' / ') || '—'}</div>
@@ -5686,11 +5686,11 @@ function renderCharCards() {
   // Bouton + Nouveau personnage
   const addCard = document.createElement('div');
   addCard.className = 'char-card char-card-add';
-  addCard.title = 'Créer un nouveau personnage';
+  addCard.title = 'Create a new character';
   addCard.setAttribute('role', 'button');
   addCard.setAttribute('tabindex', '0');
-  addCard.setAttribute('aria-label', 'Créer un nouveau personnage');
-  addCard.innerHTML = '<div class="char-card-add-icon">+</div><div class="char-card-add-label">Nouveau</div>';
+  addCard.setAttribute('aria-label', 'Create a new character');
+  addCard.innerHTML = '<div class="char-card-add-icon">+</div><div class="char-card-add-label">New</div>';
   addCard.addEventListener('click', () => openNewCharModal());
   grid.appendChild(addCard);
 
@@ -5702,7 +5702,7 @@ function renderCharCards() {
       if (Object.keys(chars).length <= 1) { alert('Tu dois garder au moins un personnage.'); return; }
       const id = btn.dataset.delChar;
       const slot = chars[id];
-      if (!confirm('Supprimer "' + (slot?.name || 'ce personnage') + '" ? Irréversible.')) return;
+      if (!confirm('Delete "' + (slot?.name || 'this character') + '"? This cannot be undone.')) return;
       delete playerData.characters[id];
       if (playerData.activeCharId === id) playerData.activeCharId = Object.keys(playerData.characters)[0];
       renderCharCards();
@@ -6006,7 +6006,7 @@ function renderHero() {
     const succ = parseInt(c.mortSucces)  || 0;
     const fail = parseInt(c.mortEchecs) || 0;
     const pip = (type, i, on) =>
-      `<span class="vb-death-pip ${on}" data-type="${type}" data-idx="${i}" role="button" tabindex="0" title="${type==='success'?'Succès':'Échec'} ${i+1}"></span>`;
+      `<span class="vb-death-pip ${on}" data-type="${type}" data-idx="${i}" role="button" tabindex="0" title="${type==='success'?'Success':'Failure'} ${i+1}"></span>`;
     pipsEl.innerHTML =
       [0,1,2].map(i => pip('success', i, i < succ ? 'success-on' : '')).join('') +
       '<span style="display:inline-block;width:8px;pointer-events:none;"></span>' +
@@ -6391,7 +6391,7 @@ function renderAttacks() {
               <input type="checkbox" data-atk="${i}" data-ak="prof" ${atk.prof ? 'checked' : ''} style="accent-color:var(--gold-dark);width:16px;height:16px;">Prof.
             </label>
             <div class="atk-bonus-cell roll-trigger" data-roll-label="${esc(atk.name||'Attack')} – Attack" data-roll-bonus="${ab.num}" title="${ab.tip}" style="margin-top:10px;margin-left:auto;">${ab.val}</div>
-            <button class="atk-del" data-del="${i}" title="Supprimer" style="margin-top:10px;">✕</button>
+            <button class="atk-del" data-del="${i}" title="Delete" style="margin-top:10px;">✕</button>
           </div>
         </div>
       </td>`;
@@ -6403,7 +6403,7 @@ function renderAttacks() {
         <td><input class="atk-inp" data-atk="${i}" data-ak="typeDegat" value="${esc(atk.typeDegat||'')}" placeholder="slashing" style="font-size:0.75rem;"></td>
         <td><select class="atk-inp" data-atk="${i}" data-ak="atkType" style="padding:0.18rem 0.2rem;font-size:0.74rem;">${statSelOpts}</select></td>
         <td style="text-align:center;"><input type="checkbox" data-atk="${i}" data-ak="prof" ${atk.prof ? 'checked' : ''} style="accent-color:var(--gold-dark);width:14px;height:14px;cursor:pointer;" title="Proficiency"></td>
-        <td><button class="atk-del" data-del="${i}" title="Supprimer">✕</button></td>
+        <td><button class="atk-del" data-del="${i}" title="Delete">✕</button></td>
       `;
     }
     tbody.appendChild(tr);
@@ -6471,7 +6471,7 @@ function addCanvasPage() {
 }
 function deleteCanvasPage() {
   if (canvasPages.length <= 1) return;
-  if (!confirm('Supprimer cette page ?')) return;
+  if (!confirm('Delete this page?')) return;
   canvasPages.splice(currentCanvasPageId, 1);
   if (currentCanvasPageId >= canvasPages.length) currentCanvasPageId = canvasPages.length - 1;
   canvasState.history = [];
@@ -6748,7 +6748,7 @@ function renderResources() {
         ${resetLabel ? `<span class="res-reset-badge">${resetLabel}</span>` : ''}
       </div>
       ${maxVal > 0 ? `<div class="res-pips" data-ri="${i}">${pips}</div>` : ''}
-      <button class="res-del" data-del-res="${i}" title="Supprimer">✕</button>
+      <button class="res-del" data-del-res="${i}" title="Delete">✕</button>
     `;
     grid.appendChild(card);
   });
@@ -7218,7 +7218,7 @@ function showUndoToast(name) {
   if (!toast) {
     toast = document.createElement('div');
     toast.id = 'undo-toast';
-    toast.innerHTML = `<span id="undo-toast-msg"></span><button id="undo-toast-btn">↺ Annuler l'import</button><span class="undo-countdown" id="undo-countdown">15s</span>`;
+    toast.innerHTML = `<span id="undo-toast-msg"></span><button id="undo-toast-btn">↺ Undo import</button><span class="undo-countdown" id="undo-countdown">15s</span>`;
     document.body.appendChild(toast);
     document.getElementById('undo-toast-btn')?.addEventListener('click', undoDdbImport);
   }
@@ -7358,10 +7358,10 @@ function renderCustomFeatures() {
     const tr = document.createElement('tr');
     tr.className = 'exp-row';
     tr.innerHTML = `
-      <td><input class="atk-inp" data-feat="${i}" data-fk="name"   value="${esc(f.name||'')}"   placeholder="Nom de la capacité"></td>
+      <td><input class="atk-inp" data-feat="${i}" data-fk="name"   value="${esc(f.name||'')}"   placeholder="Ability name"></td>
       <td><input class="atk-inp" data-feat="${i}" data-fk="source" value="${esc(f.source||'')}" placeholder="Source" style="font-size:0.75rem;"></td>
       <td style="text-align:center;"><button class="exp-toggle${f._open?' open':''}" data-feat-toggle="${i}" title="Description">▾</button></td>
-      <td><button class="atk-del" data-del-feat="${i}" title="Supprimer">✕</button></td>
+      <td><button class="atk-del" data-del-feat="${i}" title="Delete">✕</button></td>
     `;
     tbody.appendChild(tr);
     if (f._open) {
@@ -7411,7 +7411,7 @@ function renderSpells() {
       const isConc = !!s.conc;
       const tr = document.createElement('tr');
       tr.className = 'exp-row';
-      tr.innerHTML = `<td style="text-align:center;"><input class="atk-inp" data-spell="${i}" data-sk="level" value="${esc(s.level||'0')}" placeholder="0" style="width:38px;text-align:center;font-size:0.78rem;"></td><td><input class="atk-inp" data-spell="${i}" data-sk="name" value="${esc(s.name||'')}" placeholder="Nom du sort"></td><td><input class="atk-inp" data-spell="${i}" data-sk="degat" value="${esc(s.degat||'')}" placeholder="2d6" style="font-size:0.75rem;"></td><td><input class="atk-inp" data-spell="${i}" data-sk="typeDegat" value="${esc(s.typeDegat||'')}" placeholder="feu…" style="font-size:0.75rem;"></td><td><input class="atk-inp" data-spell="${i}" data-sk="portee" value="${esc(s.portee||'')}" placeholder="18m" style="font-size:0.75rem;"></td><td><input class="atk-inp" data-spell="${i}" data-sk="action" value="${esc(s.action||'')}" placeholder="Action" style="font-size:0.75rem;"></td><td style="text-align:center;"><button class="spell-conc-btn${isConc?' active':''}" data-conc-spell="${i}" title="Concentrer sur ce sort">◉</button></td><td style="text-align:center;"><button class="exp-toggle${s._open?' open':''}" data-spell-toggle="${i}" title="Description">▾</button></td><td><button class="atk-del" data-del-spell="${i}" title="Supprimer">✕</button></td>`;
+      tr.innerHTML = `<td style="text-align:center;"><input class="atk-inp" data-spell="${i}" data-sk="level" value="${esc(s.level||'0')}" placeholder="0" style="width:38px;text-align:center;font-size:0.78rem;"></td><td><input class="atk-inp" data-spell="${i}" data-sk="name" value="${esc(s.name||'')}" placeholder="Nom du sort"></td><td><input class="atk-inp" data-spell="${i}" data-sk="degat" value="${esc(s.degat||'')}" placeholder="2d6" style="font-size:0.75rem;"></td><td><input class="atk-inp" data-spell="${i}" data-sk="typeDegat" value="${esc(s.typeDegat||'')}" placeholder="feu…" style="font-size:0.75rem;"></td><td><input class="atk-inp" data-spell="${i}" data-sk="portee" value="${esc(s.portee||'')}" placeholder="18m" style="font-size:0.75rem;"></td><td><input class="atk-inp" data-spell="${i}" data-sk="action" value="${esc(s.action||'')}" placeholder="Action" style="font-size:0.75rem;"></td><td style="text-align:center;"><button class="spell-conc-btn${isConc?' active':''}" data-conc-spell="${i}" title="Concentrer sur ce sort">◉</button></td><td style="text-align:center;"><button class="exp-toggle${s._open?' open':''}" data-spell-toggle="${i}" title="Description">▾</button></td><td><button class="atk-del" data-del-spell="${i}" title="Delete">✕</button></td>`;
       frag.appendChild(tr);
       if (s._open) {
         const dr = document.createElement('tr');
@@ -7458,7 +7458,7 @@ function renderRationTracker() {
       <div class="ration-counter">
         <button class="ration-btn" data-ration-adj="food" data-d="-1" title="Retirer une ration">−</button>
         <input type="number" class="ration-val" id="ration-food-val" value="${r.food}" min="0" max="99">
-        <button class="ration-btn" data-ration-adj="food" data-d="1" title="Ajouter une ration">+</button>
+        <button class="ration-btn" data-ration-adj="food" data-d="1" title="Add a ration">+</button>
       </div>
       <span class="ration-warn ${wf.cls}">${wf.txt}</span>
       ${r.joursPriveFood > 0 ? `<span class="ration-depriv danger">⚠ ${r.joursPriveFood}j sans nourriture</span>` : ''}
@@ -7469,14 +7469,14 @@ function renderRationTracker() {
       <div class="ration-counter">
         <button class="ration-btn" data-ration-adj="water" data-d="-1" title="Retirer un jour d'eau">−</button>
         <input type="number" class="ration-val" id="ration-water-val" value="${r.water}" min="0" max="99">
-        <button class="ration-btn" data-ration-adj="water" data-d="1" title="Ajouter un jour d'eau">+</button>
+        <button class="ration-btn" data-ration-adj="water" data-d="1" title="Add a day of water">+</button>
       </div>
       <span class="ration-warn ${ww.cls}">${ww.txt}</span>
       ${r.joursPriveWater > 0 ? `<span class="ration-depriv danger">⚠ ${r.joursPriveWater}j sans eau</span>` : ''}
     </div>
     <div class="ration-actions">
-      <button class="btn btn-sm ration-day-btn" id="btn-ration-day" title="Consomme 1 ration et 1 jour d'eau. Met à jour la privation si manque.">🌙 Fin de journée</button>
-      <button class="btn btn-sm" id="btn-ration-rest" title="Remet la privation à zéro (repos long avec nourriture et eau)">☀ Repos complet</button>
+      <button class="btn btn-sm ration-day-btn" id="btn-ration-day" title="Consume 1 ration and 1 day of water. Updates deprivation if lacking.">🌙 Fin de journée</button>
+      <button class="btn btn-sm" id="btn-ration-rest" title="Reset deprivation to zero (long rest with food and water)">☀ Repos complet</button>
     </div>`;
 
   // +/- buttons
@@ -7546,7 +7546,7 @@ function renderInventory() {
       <td><input class="inv-inp" data-item="${i}" data-ik="name"  value="${item.name||''}"  placeholder="Nom de l'objet"></td>
       <td><input class="inv-inp" data-item="${i}" data-ik="notes" value="${item.notes||''}" placeholder="Description"></td>
       <td><select class="inv-inp" style="padding:0.18rem 0.25rem;font-size:0.74rem;" data-item="${i}" data-ik="cat">${selOpts}</select></td>
-      <td><button class="atk-del" data-del-item="${i}" title="Supprimer">✕</button></td>
+      <td><button class="atk-del" data-del-item="${i}" title="Delete">✕</button></td>
     `;
     tbody.appendChild(tr);
   });
@@ -7684,7 +7684,7 @@ async function renderAdminPanel() {
   refreshBar.className = 'mj-refresh-bar';
   const now = new Date().toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
   refreshBar.innerHTML = `
-    <span class="mj-last-refresh">Actualisé à ${now}</span>
+    <span class="mj-last-refresh">Updated at ${now}</span>
     <button class="btn btn-sm" id="btn-admin-refresh-inner">↺ Actualiser</button>
     <label style="display:flex;align-items:center;gap:0.35rem;font-size:0.72rem;color:#666;cursor:pointer;">
       <input type="checkbox" id="mj-auto-refresh" style="accent-color:var(--gold-dark);">
@@ -7740,11 +7740,11 @@ async function renderAdminPanel() {
 
       // Badges d'état
       let badgesHtml = '';
-      if (isDead)       badgesHtml += `<span class="mj-badge mj-badge-dead">💀 À terre</span>`;
+      if (isDead)       badgesHtml += `<span class="mj-badge mj-badge-dead">💀 Down</span>`;
       if (pct < 25 && !isDead) badgesHtml += `<span class="mj-badge mj-badge-low">⚠ PV bas</span>`;
       if (isConc)       badgesHtml += `<span class="mj-badge mj-badge-conc">◉ Conc.</span>`;
       if (hasInsp)      badgesHtml += `<span class="mj-badge mj-badge-insp">✦ Insp.</span>`;
-      if (exhaustion)   badgesHtml += `<span class="mj-badge mj-badge-cond">Épuis. ${exhaustion}</span>`;
+      if (exhaustion)   badgesHtml += `<span class="mj-badge mj-badge-cond">Exhaust. ${exhaustion}</span>`;
       activeCondsNoConc.forEach(c => { badgesHtml += `<span class="mj-badge mj-badge-cond">${c}</span>`; });
 
       const classLine = getClasses(activeChar).filter(cl=>cl.classe).map(cl=>`${cl.classe} ${cl.niveau}`).join(' / ') || '—';
@@ -7769,7 +7769,7 @@ async function renderAdminPanel() {
         ${pvMax > 0 ? `<div class="mj-hp-bar"><div class="mj-hp-fill" style="width:${pct}%;background:${hpColor};"></div></div>` : ''}
         ${badgesHtml ? `<div class="mj-badges">${badgesHtml}</div>` : ''}
         ${slotsHtml ? `<div class="mj-slots-row">${slotsHtml}</div>` : ''}
-        <button class="mj-edit-btn">✏ Éditer la fiche</button>
+        <button class="mj-edit-btn">✏ Edit sheet</button>
       `;
       card.querySelector('.mj-edit-btn').addEventListener('click', () => openAdminEdit(row.username, data));
       mjGrid.appendChild(card);
@@ -7972,8 +7972,8 @@ function renderAdminModalTab() {
 
       <!-- Ressources -->
       <div class="sheet-section">
-        <div class="sheet-section-title">Ressources de classe</div>
-        <div style="font-size:0.8rem;color:#888;font-style:italic;margin-bottom:0.5rem;">Valeurs actuelles (les maximums sont calculés automatiquement selon la classe et le niveau)</div>
+        <div class="sheet-section-title">Class Resources</div>
+        <div style="font-size:0.8rem;color:#888;font-style:italic;margin-bottom:0.5rem;">Current values (maximums are automatically calculated based on class and level)</div>
         <div id="ae-resources-wrap" style="display:flex;flex-wrap:wrap;gap:0.75rem;">
           ${(c.resources||[]).map((r,i) => `
             <div style="background:#140f08;border:1px solid #4a3510;border-radius:6px;padding:0.5rem 0.75rem;min-width:120px;">
@@ -7984,39 +7984,39 @@ function renderAdminModalTab() {
                 <span style="color:#888;font-size:0.82rem;">${r.max||0}</span>
               </div>
             </div>
-          `).join('') || '<span style="color:#555;font-size:0.82rem;">Aucune ressource (dépend de la classe/niveau)</span>'}
+          `).join('') || '<span style="color:#555;font-size:0.82rem;">No resources (depends on class/level)</span>'}
         </div>
       </div>
     `;
 
   } else if (adminActiveTab === 'competences') {
     const SKILLS_LIST = [
-      { key:'acrobaties',   label:'Acrobaties',   stat:'DEX' },
-      { key:'animaux',      label:'Dressage',      stat:'SAG' },
-      { key:'arcanes',      label:'Arcanes',       stat:'INT' },
-      { key:'athletisme',   label:'Athlétisme',    stat:'FOR' },
-      { key:'discret',      label:'Discrétion',    stat:'DEX' },
-      { key:'duperie',      label:'Duperie',       stat:'CHA' },
-      { key:'histoire',     label:'Histoire',      stat:'INT' },
+      { key:'acrobaties',   label:'Acrobatics',    stat:'DEX' },
+      { key:'animaux',      label:'Animal Handling',stat:'WIS' },
+      { key:'arcanes',      label:'Arcana',        stat:'INT' },
+      { key:'athletisme',   label:'Athletics',     stat:'STR' },
+      { key:'discret',      label:'Stealth',       stat:'DEX' },
+      { key:'duperie',      label:'Deception',     stat:'CHA' },
+      { key:'histoire',     label:'History',       stat:'INT' },
       { key:'intimidation', label:'Intimidation',  stat:'CHA' },
       { key:'investigation',label:'Investigation', stat:'INT' },
-      { key:'medecine',     label:'Médecine',      stat:'SAG' },
+      { key:'medecine',     label:'Medicine',      stat:'WIS' },
       { key:'nature',       label:'Nature',        stat:'INT' },
-      { key:'perception',   label:'Perception',    stat:'SAG' },
+      { key:'perception',   label:'Perception',    stat:'WIS' },
       { key:'performance',  label:'Performance',   stat:'CHA' },
       { key:'persuasion',   label:'Persuasion',    stat:'CHA' },
-      { key:'prestidig',    label:'Prestidigitation', stat:'DEX' },
+      { key:'prestidig',    label:'Sleight of Hand',stat:'DEX' },
       { key:'religion',     label:'Religion',      stat:'INT' },
-      { key:'perspicacite', label:'Perspicacité',  stat:'SAG' },
-      { key:'survie',       label:'Survie',        stat:'SAG' },
+      { key:'perspicacite', label:'Insight',       stat:'WIS' },
+      { key:'survie',       label:'Survival',      stat:'WIS' },
     ];
     const SAVES = ['for','dex','con','int','sag','cha'];
-    const SAVE_LABELS = { for:'Force', dex:'Dextérité', con:'Constitution', int:'Intelligence', sag:'Sagesse', cha:'Charisme' };
+    const SAVE_LABELS = { for:'Strength', dex:'Dexterity', con:'Constitution', int:'Intelligence', sag:'Wisdom', cha:'Charisma' };
 
     body.innerHTML = `
       <!-- Jets de sauvegarde -->
       <div class="sheet-section">
-        <div class="sheet-section-title">Jets de sauvegarde</div>
+        <div class="sheet-section-title">Saving Throws</div>
         <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
           ${SAVES.map(s => `
             <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;color:#bbb;cursor:pointer;background:#140f08;border:1px solid #4a3510;border-radius:6px;padding:0.3rem 0.65rem;">
@@ -8028,7 +8028,7 @@ function renderAdminModalTab() {
       </div>
       <!-- Compétences -->
       <div class="sheet-section">
-        <div class="sheet-section-title">Compétences</div>
+        <div class="sheet-section-title">Skills</div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.4rem;">
           ${SKILLS_LIST.map(sk => `
             <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;color:#bbb;cursor:pointer;padding:0.25rem 0.35rem;border-radius:5px;background:rgba(255,255,255,0.02);">
@@ -8051,15 +8051,15 @@ function renderAdminModalTab() {
         <td><input class="inv-inp ae-spell" data-si="${i}" data-sk="typeDegat" value="${esc(sp.typeDegat)}" style="width:70px;"></td>
         <td><input class="inv-inp ae-spell" data-si="${i}" data-sk="portee" value="${esc(sp.portee)}" style="width:70px;"></td>
         <td style="color:#888;font-size:0.8rem;">${esc(sp.action||'Action')}</td>
-        <td><button class="atk-del ae-del-spell" data-del-spell="${i}" title="Supprimer">✕</button></td>
+        <td><button class="atk-del ae-del-spell" data-del-spell="${i}" title="Delete">✕</button></td>
       </tr>
     `).join('');
 
     body.innerHTML = `
       <div class="sheet-section">
         <div class="sheet-section-title" style="display:flex;justify-content:space-between;align-items:center;">
-          <span>Sorts (${spells.length})</span>
-          <button class="btn btn-sm btn-gold" id="ae-add-spell">+ Ajouter</button>
+          <span>Spells (${spells.length})</span>
+          <button class="btn btn-sm btn-gold" id="ae-add-spell">+ Add</button>
         </div>
         <div style="overflow-x:auto;">
           <table class="inv-table" style="min-width:500px;">
@@ -8146,8 +8146,8 @@ function renderAdminModalTab() {
   } else if (adminActiveTab === 'notes') {
     // Normaliser le format (compatibilité ascendante)
     let pages = slot.notes;
-    if (typeof pages === 'string') pages = pages ? [{ name: 'Notes de session', content: pages }] : [{ name: 'Notes de session', content: '' }];
-    if (!Array.isArray(pages) || pages.length === 0) pages = [{ name: 'Notes de session', content: '' }];
+    if (typeof pages === 'string') pages = pages ? [{ name: 'Session Notes', content: pages }] : [{ name: 'Session Notes', content: '' }];
+    if (!Array.isArray(pages) || pages.length === 0) pages = [{ name: 'Session Notes', content: '' }];
     const pagesHtml = pages.map((page, i) => `
       <div style="margin-bottom:1.2rem;">
         <div style="font-size:0.75rem;color:var(--gold);font-family:'Cinzel',serif;letter-spacing:0.06em;margin-bottom:0.4rem;padding-bottom:0.3rem;border-bottom:1px solid #4a3510;">${esc(page.name || `Page ${i + 1}`)}</div>
@@ -8156,7 +8156,7 @@ function renderAdminModalTab() {
     `).join('');
     body.innerHTML = `
       <div class="sheet-section">
-        <div class="sheet-section-title">Notes du joueur (éditables par le MJ)</div>
+        <div class="sheet-section-title">Player Notes (editable by DM)</div>
         ${pagesHtml}
       </div>
     `;
@@ -8260,8 +8260,8 @@ async function adminSaveEdit() {
 
   } else if (adminActiveTab === 'notes') {
     let pages = slot.notes;
-    if (typeof pages === 'string') pages = pages ? [{ name: 'Notes de session', content: pages }] : [{ name: 'Notes de session', content: '' }];
-    if (!Array.isArray(pages) || pages.length === 0) pages = [{ name: 'Notes de session', content: '' }];
+    if (typeof pages === 'string') pages = pages ? [{ name: 'Session Notes', content: pages }] : [{ name: 'Session Notes', content: '' }];
+    if (!Array.isArray(pages) || pages.length === 0) pages = [{ name: 'Session Notes', content: '' }];
     document.querySelectorAll('.ae-notes-page').forEach(ta => {
       const i = parseInt(ta.dataset.pageIdx);
       if (!isNaN(i) && pages[i]) pages[i].content = ta.value;
@@ -8273,16 +8273,16 @@ async function adminSaveEdit() {
   btn.disabled = true; btn.textContent = 'Sauvegarde…';
   try {
     await sbUpdateData(adminEditUser, adminEditData);
-    btn.textContent = '✓ Sauvegardé';
+    btn.textContent = '✓ Saved';
     btn.style.background = 'var(--success)';
     setTimeout(() => {
       document.getElementById('admin-modal').classList.remove('open');
-      btn.disabled = false; btn.textContent = '💾 Sauvegarder'; btn.style.background = '';
+      btn.disabled = false; btn.textContent = '💾 Save'; btn.style.background = '';
       renderAdminPanel();
     }, 1200);
   } catch(e) {
-    btn.disabled = false; btn.textContent = '💾 Sauvegarder'; btn.style.background = '';
-    alert('Erreur lors de la sauvegarde : ' + e.message);
+    btn.disabled = false; btn.textContent = '💾 Save'; btn.style.background = '';
+    alert('Save error: ' + e.message);
   }
 }
 
@@ -8898,7 +8898,7 @@ async function chatDelete(id) {
 
 async function loadRooms() {
   // Toujours inclure 'general'
-  if (!_rooms['general']) _rooms['general'] = { id:'general', name:'Général', type:'general', members:[], unread:0, lastId:0 };
+  if (!_rooms['general']) _rooms['general'] = { id:'general', name:'General', type:'general', members:[], unread:0, lastId:0 };
   // Charger les rooms depuis la DB où l'utilisateur est membre
   try {
     const r = await sbFetch(`${ROOMS_TABLE}?members=cs.{"${currentUser}"}&order=created_at.desc`);
@@ -10065,11 +10065,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btn-change-pwd').addEventListener('click', async () => {
     const pwd = document.getElementById('new-pwd').value;
     const msg = document.getElementById('pwd-msg');
-    if (pwd.length < 6) { msg.textContent = 'Mot de passe trop court (6 car. min).'; msg.style.color='var(--danger)'; msg.style.display='block'; return; }
+    if (pwd.length < 6) { msg.textContent = 'Password too short (6 char. min).'; msg.style.color='var(--danger)'; msg.style.display='block'; return; }
     try {
       const hash = await hashPwd(pwd);
       await sbUpdatePassword(currentUser, hash);
-      msg.textContent = 'Mot de passe changé ✓'; msg.style.color='var(--success)'; msg.style.display='block';
+      msg.textContent = 'Password changed ✓'; msg.style.color='var(--success)'; msg.style.display='block';
       document.getElementById('new-pwd').value = '';
       setTimeout(() => { msg.style.display='none'; }, 3000);
     } catch(e) {
@@ -10093,8 +10093,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     reader.onload = async ev => {
       try {
         const imported = JSON.parse(ev.target.result);
-        if (!imported.characters) throw new Error('Format de fichier invalide.');
-        if (!confirm('Importer cette fiche ? Tes données actuelles seront remplacées.')) return;
+        if (!imported.characters) throw new Error('Invalid file format.');
+        if (!confirm('Import this sheet? Your current data will be replaced.')) return;
         playerData = imported;
         await sbUpdateData(currentUser, playerData);
         renderDashboard();
@@ -10270,7 +10270,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const disp = document.getElementById('share-link-display');
     if (disp) { disp.textContent = url; disp.style.display = 'block'; }
     const btn = document.getElementById('btn-share-sheet');
-    if (btn) { btn.textContent = '✓ Copié !'; setTimeout(() => { btn.textContent = '🔗 Copier le lien'; }, 2500); }
+    if (btn) { btn.textContent = '✓ Copied!'; setTimeout(() => { btn.textContent = '🔗 Copy link'; }, 2500); }
   });
 
   /* ── Chat ── */
@@ -10718,19 +10718,35 @@ document.addEventListener('keydown', e => {
 
 /* ── 7. Swipe entre onglets (mobile) ── */
 (function () {
-  let startX = 0, startY = 0;
+  let startX = 0, startY = 0, locked = null; // locked: null | 'h' | 'v'
   const area = document.getElementById('screen-dashboard');
   if (!area) return;
+
   area.addEventListener('touchstart', e => {
     startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
+    locked = null;
   }, { passive: true });
+
+  // non-passive : on peut appeler preventDefault() pour bloquer le scroll natif
+  area.addEventListener('touchmove', e => {
+    if (locked === 'v') return;
+    const dx = Math.abs(e.touches[0].clientX - startX);
+    const dy = Math.abs(e.touches[0].clientY - startY);
+    if (locked === null) {
+      if (dx < 8 && dy < 8) return;          // pas encore assez de mouvement
+      locked = dx > dy ? 'h' : 'v';
+    }
+    if (locked === 'h') e.preventDefault();   // bloque scroll + swipe-pages du browser
+  }, { passive: false });
+
   area.addEventListener('touchend', e => {
+    if (locked !== 'h') return;
     const dx = e.changedTouches[0].clientX - startX;
     const dy = e.changedTouches[0].clientY - startY;
     if (Math.abs(dy) > Math.abs(dx) || Math.abs(dx) < 55) return;
     const btns = [...document.querySelectorAll('.tab-btn')];
-    const cur = btns.findIndex(b => b.classList.contains('active'));
+    const cur  = btns.findIndex(b => b.classList.contains('active'));
     const next = dx < 0 ? cur + 1 : cur - 1;
     if (btns[next]) btns[next].click();
   }, { passive: true });
@@ -10748,7 +10764,7 @@ document.getElementById('btn-read-mode')?.addEventListener('click', () => {
 
 /* ── 9. Debounce stats heavy render (already wired via debouncedStats in main handler) ── */
 
-/* ── 10. Lanceur de dés — clic sur modificateurs/compétences/jets ── */
+/* ── 10. Dice Roller — clic sur modificateurs/compétences/jets ── */
 (function () {
   // Inject toast DOM
   const t = document.createElement('div');
@@ -11018,16 +11034,16 @@ document.addEventListener('keydown', e => {
     <!-- ── Modal Nouveau Personnage ── -->
     <div class="new-char-modal-overlay" id="new-char-modal-overlay">
       <div class="new-char-modal">
-        <h3>✦ Nouveau personnage</h3>
+        <h3>✦ New character</h3>
         <div class="auth-field">
-          <label class="auth-label" for="new-char-name">Nom du personnage</label>
-          <input type="text" class="auth-input" id="new-char-name" placeholder="Nom du héros…" maxlength="40" autocomplete="off">
+          <label class="auth-label" for="new-char-name">Character name</label>
+          <input type="text" class="auth-input" id="new-char-name" placeholder="Hero's name…" maxlength="40" autocomplete="off">
         </div>
         <div class="field-label" style="margin:0.5rem 0 0.4rem;">Avatar</div>
         <div class="new-char-avatar-grid" id="new-char-avatar-grid"></div>
         <div class="new-char-btn-row">
-          <button class="btn btn-sm" id="new-char-cancel">Annuler</button>
-          <button class="btn btn-sm btn-gold" id="new-char-confirm">✦ Créer</button>
+          <button class="btn btn-sm" id="new-char-cancel">Cancel</button>
+          <button class="btn btn-sm btn-gold" id="new-char-confirm">✦ Create</button>
         </div>
       </div>
     </div>
@@ -11035,19 +11051,19 @@ document.addEventListener('keydown', e => {
     <!-- ── Modal Repos Court ── -->
     <div class="sr-modal-overlay" id="sr-modal-overlay">
       <div class="sr-modal">
-        <h3>☽ Repos Court</h3>
-        <div class="sr-hp-display">PV : <strong id="sr-hp-cur">0</strong> / <strong id="sr-hp-max">0</strong></div>
+        <h3>☽ Short Rest</h3>
+        <div class="sr-hp-display">HP : <strong id="sr-hp-cur">0</strong> / <strong id="sr-hp-max">0</strong></div>
         <div class="sr-dice-info">
-          <span>Dé de Vie</span>
+          <span>Hit Die</span>
           <div class="sr-dice-badge" id="sr-dice-badge">1d8</div>
-          <span>Restants : <strong id="sr-dice-left">0</strong></span>
+          <span>Remaining: <strong id="sr-dice-left">0</strong></span>
         </div>
         <div class="sr-roll-result" id="sr-roll-result">—</div>
         <div class="sr-total" id="sr-total"></div>
         <div class="sr-btn-row">
-          <button class="btn btn-sm" id="sr-btn-roll" style="border-color:#3a6060;color:#7ababa;">🎲 Lancer 1 dé</button>
-          <button class="btn btn-sm btn-gold" id="sr-btn-apply" disabled>✚ Appliquer</button>
-          <button class="btn btn-sm" id="sr-btn-cancel" style="color:#888;">Annuler</button>
+          <button class="btn btn-sm" id="sr-btn-roll" style="border-color:#3a6060;color:#7ababa;">🎲 Roll 1 die</button>
+          <button class="btn btn-sm btn-gold" id="sr-btn-apply" disabled>✚ Apply</button>
+          <button class="btn btn-sm" id="sr-btn-cancel" style="color:#888;">Cancel</button>
         </div>
       </div>
     </div>
@@ -11055,15 +11071,15 @@ document.addEventListener('keydown', e => {
     <!-- ── Modal Import D&D Beyond ── -->
     <div class="ddb-modal-overlay" id="ddb-modal-overlay">
       <div class="ddb-modal">
-        <h3>⚔ Importer depuis D&D Beyond</h3>
-        <div class="ddb-modal-sub">Vérifie les informations détectées avant d'appliquer</div>
+        <h3>⚔ Import from D&D Beyond</h3>
+        <div class="ddb-modal-sub">Review the detected information before applying</div>
         <div id="ddb-error" class="ddb-error" style="display:none;"></div>
         <div class="ddb-preview" id="ddb-preview"></div>
         <div class="ddb-import-items" id="ddb-import-items"></div>
-        <div style="font-size:0.72rem;color:#555;margin-bottom:0.85rem;">⚠ L'import remplacera le personnage actif. L'inventaire et les notes sont préservés puis complétés.</div>
+        <div style="font-size:0.72rem;color:#555;margin-bottom:0.85rem;">⚠ The import will replace the active character. Inventory and notes are preserved and merged.</div>
         <div class="ddb-btn-row">
-          <button class="btn btn-sm" id="ddb-btn-cancel" style="color:#888;">Annuler</button>
-          <button class="btn btn-sm btn-gold" id="ddb-btn-apply">⚔ Appliquer l'import</button>
+          <button class="btn btn-sm" id="ddb-btn-cancel" style="color:#888;">Cancel</button>
+          <button class="btn btn-sm btn-gold" id="ddb-btn-apply">⚔ Apply import</button>
         </div>
       </div>
     </div>
@@ -11132,15 +11148,15 @@ function renderFamiliars() {
           data-fi="${fi}" data-fk="traits" data-ei="${ti}" data-ek="name" value="${t.name||''}">
         <textarea class="fam-entry-desc" rows="2" placeholder="Description…"
           data-fi="${fi}" data-fk="traits" data-ei="${ti}" data-ek="desc">${t.desc||''}</textarea>
-        <button class="btn-fam-del-entry" data-fi="${fi}" data-fk="traits" data-ei="${ti}" title="Supprimer">✕</button>
+        <button class="btn-fam-del-entry" data-fi="${fi}" data-fk="traits" data-ei="${ti}" title="Delete">✕</button>
       </div>`).join('');
     const actionsHtml = (fam.actions||[]).map((a,ai) => `
       <div class="fam-entry">
         <input class="fam-entry-name" type="text" placeholder="Nom…"
           data-fi="${fi}" data-fk="actions" data-ei="${ai}" data-ek="name" value="${a.name||''}">
-        <textarea class="fam-entry-desc" rows="2" placeholder="Description + dégâts…"
+        <textarea class="fam-entry-desc" rows="2" placeholder="Description + damage…"
           data-fi="${fi}" data-fk="actions" data-ei="${ai}" data-ek="desc">${a.desc||''}</textarea>
-        <button class="btn-fam-del-entry" data-fi="${fi}" data-fk="actions" data-ei="${ai}" title="Supprimer">✕</button>
+        <button class="btn-fam-del-entry" data-fi="${fi}" data-fk="actions" data-ei="${ai}" title="Delete">✕</button>
       </div>`).join('');
     const bonusHtml = (fam.bonusActions||[]).map((a,ai) => `
       <div class="fam-entry">
@@ -11148,7 +11164,7 @@ function renderFamiliars() {
           data-fi="${fi}" data-fk="bonusActions" data-ei="${ai}" data-ek="name" value="${a.name||''}">
         <textarea class="fam-entry-desc" rows="2" placeholder="Description…"
           data-fi="${fi}" data-fk="bonusActions" data-ei="${ai}" data-ek="desc">${a.desc||''}</textarea>
-        <button class="btn-fam-del-entry" data-fi="${fi}" data-fk="bonusActions" data-ei="${ai}" title="Supprimer">✕</button>
+        <button class="btn-fam-del-entry" data-fi="${fi}" data-fk="bonusActions" data-ei="${ai}" title="Delete">✕</button>
       </div>`).join('');
     const reactionsHtml = (fam.reactions||[]).map((a,ai) => `
       <div class="fam-entry">
@@ -11156,12 +11172,12 @@ function renderFamiliars() {
           data-fi="${fi}" data-fk="reactions" data-ei="${ai}" data-ek="name" value="${a.name||''}">
         <textarea class="fam-entry-desc" rows="2" placeholder="Description…"
           data-fi="${fi}" data-fk="reactions" data-ei="${ai}" data-ek="desc">${a.desc||''}</textarea>
-        <button class="btn-fam-del-entry" data-fi="${fi}" data-fk="reactions" data-ei="${ai}" title="Supprimer">✕</button>
+        <button class="btn-fam-del-entry" data-fi="${fi}" data-fk="reactions" data-ei="${ai}" title="Delete">✕</button>
       </div>`).join('');
 
     card.innerHTML = `
       <div class="familiar-card-head" data-fi="${fi}">
-        <button class="fam-collapse-btn" data-fi="${fi}" title="Réduire">▾</button>
+        <button class="fam-collapse-btn" data-fi="${fi}" title="Collapse">▾</button>
         <div class="fam-head-name">${fam.name||'—'}</div>
         <div class="fam-head-type">${fam.size||''} ${fam.type||''}</div>
         <div class="fam-head-hp">♥ ${fam.pvActuel}/${fam.pvMax}</div>
@@ -11176,7 +11192,7 @@ function renderFamiliars() {
               ${['Très petite','Petite','Moyenne','Grande','Très grande','Gigantesque'].map(s =>
                 `<option${fam.size===s?' selected':''}>${s}</option>`).join('')}
             </select>
-            <input class="fam-inline-input" type="text" placeholder="Type (Bête, Fée…)"
+            <input class="fam-inline-input" type="text" placeholder="Type (Beast, Fey…)"
               data-fi="${fi}" data-fk="type" value="${fam.type||''}" style="flex:1;min-width:80px;">
             <input class="fam-inline-input" type="text" placeholder="Alignement"
               data-fi="${fi}" data-fk="alignment" value="${fam.alignment||''}" style="flex:1;min-width:80px;">
@@ -11223,60 +11239,60 @@ function renderFamiliars() {
               data-fi="${fi}" data-fk="savesNote" value="${fam.savesNote||''}">
           </div>
           <div style="display:flex;gap:0.4rem;align-items:center;margin-bottom:0.25rem;">
-            <span style="flex-shrink:0;">Compétences :</span>
-            <input class="fam-props-input" type="text" placeholder="ex: Perception +3"
+            <span style="flex-shrink:0;">Skills:</span>
+            <input class="fam-props-input" type="text" placeholder="e.g. Perception +3"
               data-fi="${fi}" data-fk="skillsNote" value="${fam.skillsNote||''}">
           </div>
           <div style="display:flex;gap:0.4rem;align-items:center;margin-bottom:0.25rem;">
-            <span style="flex-shrink:0;">Résistances :</span>
-            <input class="fam-props-input" type="text" placeholder="ex: feu, froid"
+            <span style="flex-shrink:0;">Resistances:</span>
+            <input class="fam-props-input" type="text" placeholder="e.g. fire, cold"
               data-fi="${fi}" data-fk="resistances" value="${fam.resistances||''}">
           </div>
           <div style="display:flex;gap:0.4rem;align-items:center;margin-bottom:0.25rem;">
-            <span style="flex-shrink:0;">Immunités :</span>
-            <input class="fam-props-input" type="text" placeholder="ex: poison, charme"
+            <span style="flex-shrink:0;">Immunities:</span>
+            <input class="fam-props-input" type="text" placeholder="e.g. poison, charm"
               data-fi="${fi}" data-fk="immunities" value="${fam.immunities||''}">
           </div>
           <div style="display:flex;gap:0.4rem;align-items:center;margin-bottom:0.25rem;">
-            <span style="flex-shrink:0;">Sens :</span>
-            <input class="fam-props-input" type="text" placeholder="Vision nocturne 60 ft., Perception passive 12"
+            <span style="flex-shrink:0;">Senses:</span>
+            <input class="fam-props-input" type="text" placeholder="Darkvision 60 ft., Passive Perception 12"
               data-fi="${fi}" data-fk="senses" value="${fam.senses||''}">
           </div>
           <div style="display:flex;gap:0.4rem;align-items:center;">
-            <span style="flex-shrink:0;">Langues :</span>
+            <span style="flex-shrink:0;">Languages:</span>
             <input class="fam-props-input" type="text" placeholder="—"
               data-fi="${fi}" data-fk="languages" value="${fam.languages||''}">
-            <span style="flex-shrink:0;margin-left:0.5rem;">FC :</span>
+            <span style="flex-shrink:0;margin-left:0.5rem;">CR:</span>
             <input class="fam-props-input" type="text" placeholder="0"
               data-fi="${fi}" data-fk="cr" value="${fam.cr||'0'}" style="max-width:50px;">
           </div>
         </div>
         <hr class="fam-divider">
         <div class="fam-section-title">Traits
-          <button class="btn-fam-add-entry" data-fi="${fi}" data-fk="traits">+ Ajouter</button>
+          <button class="btn-fam-add-entry" data-fi="${fi}" data-fk="traits">+ Add</button>
         </div>
         <div id="fam-traits-${fi}">${traitsHtml}</div>
         <div class="fam-section-title">Actions
-          <button class="btn-fam-add-entry" data-fi="${fi}" data-fk="actions">+ Ajouter</button>
+          <button class="btn-fam-add-entry" data-fi="${fi}" data-fk="actions">+ Add</button>
         </div>
         <div id="fam-actions-${fi}">${actionsHtml}</div>
         ${(fam.bonusActions?.length || 0) > 0 ? `
-        <div class="fam-section-title">Actions bonus
-          <button class="btn-fam-add-entry" data-fi="${fi}" data-fk="bonusActions">+ Ajouter</button>
+        <div class="fam-section-title">Bonus Actions
+          <button class="btn-fam-add-entry" data-fi="${fi}" data-fk="bonusActions">+ Add</button>
         </div>
         <div id="fam-bonusActions-${fi}">${bonusHtml}</div>` : `
         <div class="fam-section-title" style="color:#555;font-size:0.7rem;cursor:default;">
-          <span>Actions bonus</span>
-          <button class="btn-fam-add-entry" data-fi="${fi}" data-fk="bonusActions">+ Ajouter</button>
+          <span>Bonus Actions</span>
+          <button class="btn-fam-add-entry" data-fi="${fi}" data-fk="bonusActions">+ Add</button>
         </div>`}
         ${(fam.reactions?.length || 0) > 0 ? `
-        <div class="fam-section-title">Réactions
-          <button class="btn-fam-add-entry" data-fi="${fi}" data-fk="reactions">+ Ajouter</button>
+        <div class="fam-section-title">Reactions
+          <button class="btn-fam-add-entry" data-fi="${fi}" data-fk="reactions">+ Add</button>
         </div>
         <div id="fam-reactions-${fi}">${reactionsHtml}</div>` : `
         <div class="fam-section-title" style="color:#555;font-size:0.7rem;cursor:default;">
-          <span>Réactions</span>
-          <button class="btn-fam-add-entry" data-fi="${fi}" data-fk="reactions">+ Ajouter</button>
+          <span>Reactions</span>
+          <button class="btn-fam-add-entry" data-fi="${fi}" data-fk="reactions">+ Add</button>
         </div>`}
         <hr class="fam-divider">
         <div class="fam-section-title" style="margin-bottom:0.2rem;">Notes</div>
@@ -11459,7 +11475,7 @@ function renderFamiliars() {
       _cache[tab] = _allItems;
       _render();
     } catch (e) {
-      list().innerHTML = '<div class="comp-empty">Impossible de charger le compendium. Vérifiez votre connexion.</div>';
+      list().innerHTML = '<div class="comp-empty">Unable to load the compendium. Check your connection.</div>';
     }
   }
 
@@ -11488,7 +11504,7 @@ function renderFamiliars() {
     }
 
     if (!items.length) {
-      list().innerHTML = '<div class="comp-empty">Aucun résultat.</div>';
+      list().innerHTML = '<div class="comp-empty">No results.</div>';
       return;
     }
 
@@ -11507,7 +11523,7 @@ function renderFamiliars() {
           <div class="comp-level-badge">${lvl}</div>
           <div class="comp-item-info">
             <div class="comp-item-name">${item.name}</div>
-            <div class="comp-item-meta">${school}${conc} · ${castTime} · Portée: ${range}</div>
+            <div class="comp-item-meta">${school}${conc} · ${castTime} · Range: ${range}</div>
             <div class="comp-item-desc">${desc}</div>
           </div>
           <button class="btn-comp-add" data-comp-type="spell" data-comp-idx="${_allItems.indexOf(item)}">+ Ajouter</button>`;
@@ -11626,7 +11642,7 @@ function renderFamiliars() {
         const r = await fetch(API + btn.dataset.compUrl);
         const data = await r.json();
         _addMonsterAsFamiliar(data);
-        btn.textContent = '✓ Importé';
+        btn.textContent = '✓ Imported';
         setTimeout(() => { btn.textContent = '⊕ Importer'; btn.disabled = false; }, 2000);
         /* show a brief meta preview */
         const metaEl = btn.closest('.comp-item')?.querySelector('.comp-item-meta');
@@ -11642,7 +11658,7 @@ function renderFamiliars() {
     if (!item) return;
     if (type === 'spell') _addSpell(item);
     else _addItem(item);
-    btn.textContent = '✓ Ajouté';
+    btn.textContent = '✓ Added';
     btn.disabled = true;
     setTimeout(() => { btn.textContent = '+ Ajouter'; btn.disabled = false; }, 1800);
   });
@@ -11724,11 +11740,11 @@ function startRealtime(username) {
   <div id="compendium-modal">
     <div id="compendium-modal-head">
       <h2>⚔ Compendium D&D 5e</h2>
-      <button id="btn-compendium-close" title="Fermer">✕</button>
+      <button id="btn-compendium-close" title="Close">✕</button>
     </div>
     <div class="comp-tabs" role="tablist">
       <button class="comp-tab-btn active" data-comp-tab="spells" role="tab">Sorts</button>
-      <button class="comp-tab-btn" data-comp-tab="equipment" role="tab">Équipements</button>
+      <button class="comp-tab-btn" data-comp-tab="equipment" role="tab">Equipment</button>
       <button class="comp-tab-btn" data-comp-tab="monsters" role="tab">Monstres</button>
     </div>
     <div class="comp-filters">
