@@ -6036,9 +6036,8 @@ function fillFields() {
   const c = C();
   document.querySelectorAll('[data-f]').forEach(el => {
     const f = el.dataset.f;
-    if (!(f in c)) return;
     if (el.type === 'checkbox') el.checked = !!c[f];
-    else el.value = c[f] ?? '';
+    else if (c[f] !== undefined) el.value = c[f];
   });
   updateSpellCalcs();
 }
@@ -10611,20 +10610,20 @@ function showSaveFlash() {
   }
 })();
 
-/* ── 3. Fix : délégation input pour #tab-identite ── */
-document.getElementById('tab-identite')?.addEventListener('input', e => {
-  if (!playerData) return;
-  const el = e.target;
-  if (el.dataset.f && el.dataset.f in C()) {
-    if (el.type === 'checkbox') C()[el.dataset.f] = el.checked;
-    else if (el.type === 'number') C()[el.dataset.f] = parseFloat(el.value) || 0;
-    else C()[el.dataset.f] = el.value;
-    if (el.dataset.f === 'characterName') { activeSlot().name = el.value || 'Unnamed'; renderCharCards(); renderHero(); }
-    if (el.dataset.f === 'species' || el.dataset.f === 'xp') renderHero();
-    updateCharSummary();
-    triggerSave();
-  }
-});
+/* ── 3. Fix : délégation input/change pour #tab-identite ── */
+function _handleIdentiteField(el) {
+  if (!playerData || !el.dataset.f) return;
+  const f = el.dataset.f;
+  if (el.type === 'checkbox') C()[f] = el.checked;
+  else if (el.type === 'number') C()[f] = parseFloat(el.value) || 0;
+  else C()[f] = el.value;
+  if (f === 'characterName') { activeSlot().name = el.value || 'Unnamed'; renderCharCards(); renderHero(); }
+  if (f === 'species' || f === 'xp') renderHero();
+  updateCharSummary();
+  triggerSave();
+}
+document.getElementById('tab-identite')?.addEventListener('input',  e => { if (e.target.dataset.f) _handleIdentiteField(e.target); });
+document.getElementById('tab-identite')?.addEventListener('change', e => { if (e.target.dataset.f) _handleIdentiteField(e.target); });
 
 /* ── 4. Fix : délégation input pour #vb-hero (outside tabs) ── */
 document.getElementById('vb-hero')?.addEventListener('input', e => {
