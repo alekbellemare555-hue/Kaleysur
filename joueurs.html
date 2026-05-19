@@ -2158,6 +2158,43 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
 .comp-se-apply:disabled { opacity: 0.4; cursor: default; }
 .comp-se-note { font-size: 0.72rem; color: #666; font-style: italic; }
 
+/* ── Compendium Invocations ── */
+.comp-summons-toggle {
+  font-size: 0.78rem; padding: 0.3rem 0.75rem; border-radius: 4px;
+  border: 1px solid var(--j-border-col, #4a3510); background: none;
+  color: #888; cursor: pointer; transition: all 0.15s; white-space: nowrap; display: none;
+}
+.comp-summons-toggle:hover { border-color: var(--gold-dark, #8a6e1a); color: var(--gold, #c9a96e); }
+.comp-summons-toggle.active { border-color: var(--gold, #c9a96e); background: rgba(201,169,110,0.15); color: var(--gold, #c9a96e); }
+#comp-summons-list { overflow-y: auto; flex: 1; padding: 0.4rem 0.75rem 1rem; }
+.summon-group { margin-bottom: 0.9rem; }
+.summon-group-hd {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.3rem 0; border-bottom: 1px solid rgba(201,169,110,0.2); margin-bottom: 0.4rem;
+}
+.summon-group-lvl {
+  font-size: 0.65rem; font-weight: 700; padding: 0.1rem 0.35rem; border-radius: 3px;
+  background: rgba(201,169,110,0.15); color: var(--gold, #c9a96e);
+  border: 1px solid rgba(201,169,110,0.3); flex-shrink: 0;
+}
+.summon-group-name { font-family:'Cinzel',serif; font-size:0.78rem; color:var(--j-text,#e2cfa0); font-weight:600; flex:1; }
+.summon-group-note { font-size:0.67rem; color:#666; font-style:italic; }
+.summon-chips { display:flex; flex-wrap:wrap; gap:0.35rem; }
+.summon-chip {
+  display:flex; align-items:center; gap:0.3rem; padding:0.22rem 0.6rem;
+  border:1px solid var(--j-border-col, #2a2a3a); border-radius:20px;
+  background: var(--bg-card, #1a1009); font-size:0.75rem; color:var(--j-text,#e2cfa0);
+  cursor:pointer; transition: all 0.13s; white-space:nowrap;
+}
+.summon-chip:hover { border-color:var(--gold-dark,#8a6e1a); background:rgba(201,169,110,0.1); color:var(--gold,#c9a96e); }
+.summon-chip.importing { opacity:0.5; pointer-events:none; }
+.summon-chip.done { border-color:var(--gold,#c9a96e); background:rgba(201,169,110,0.18); color:var(--gold,#c9a96e); }
+.summon-chip-icon { font-size:0.8rem; }
+.summon-spirit-badge {
+  font-size:0.58rem; padding:0.05rem 0.25rem; border-radius:2px;
+  background:rgba(90,150,230,0.15); color:#7ab0ee; border:1px solid rgba(90,150,230,0.3);
+}
+
 /* ── Worn Armor ── */
 .worn-armor-card {
   background: var(--bg-secondary, #1a1009); border-radius: 6px;
@@ -12266,7 +12303,9 @@ function renderFamiliars() {
     document.getElementById('comp-filter-cat').style.display   = _activeTab === 'equipment' ? '' : 'none';
     document.getElementById('comp-filter-cr').style.display    = _activeTab === 'monsters'  ? '' : 'none';
     document.getElementById('btn-startequip').style.display    = _activeTab === 'equipment' ? '' : 'none';
+    document.getElementById('btn-comp-summons').style.display  = _activeTab === 'monsters'  ? '' : 'none';
     if (_activeTab !== 'equipment') { document.getElementById('comp-startequip-panel').classList.remove('open'); document.getElementById('btn-startequip').classList.remove('open'); }
+    if (_activeTab !== 'monsters') _toggleSummons(false);
     document.getElementById('comp-search').value = '';
     document.getElementById('comp-filter-level').value = '';
     document.getElementById('comp-filter-class').value = '';
@@ -12620,7 +12659,9 @@ function renderFamiliars() {
       document.getElementById('comp-filter-cat').style.display = _activeTab === 'equipment' ? '' : 'none';
       document.getElementById('comp-filter-cr').style.display = _activeTab === 'monsters' ? '' : 'none';
       document.getElementById('btn-startequip').style.display = _activeTab === 'equipment' ? '' : 'none';
+      document.getElementById('btn-comp-summons').style.display = _activeTab === 'monsters' ? '' : 'none';
       if (_activeTab !== 'equipment') { document.getElementById('comp-startequip-panel').classList.remove('open'); document.getElementById('btn-startequip').classList.remove('open'); }
+      if (_activeTab !== 'monsters') _toggleSummons(false);
       document.getElementById('comp-search').value = '';
       document.getElementById('comp-filter-level').value = '';
       document.getElementById('comp-filter-class').value = '';
@@ -12629,6 +12670,8 @@ function renderFamiliars() {
       if (_cache[_activeTab]) { _allItems = _cache[_activeTab]; _render(); }
       else _loadTab(_activeTab);
     }
+    /* bouton invocations */
+    if (e.target.closest('#btn-comp-summons')) { _toggleSummons(); return; }
     /* boutons d'ouverture */
     if (e.target.id === 'btn-open-compendium-spell') openCompendium('spells');
     if (e.target.id === 'btn-open-compendium-item') openCompendium('equipment');
@@ -12645,6 +12688,270 @@ function renderFamiliars() {
 
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && overlay()?.classList.contains('open')) _closeCompendium();
+  });
+
+  /* ── Invocations / Summon Creatures ── */
+  let _summonsMode = false;
+
+  // k = clé Open5e/dnd5eapi, n = nom affiché
+  // spirit = objet stat-block inline pour les esprits scalants
+  const SUMMON_SPELLS = [
+    { spell:'Find Familiar', level:1, icon:'🐱',
+      creatures:[
+        {n:'Bat',k:'bat'},{n:'Cat',k:'cat'},{n:'Crab',k:'crab'},{n:'Frog',k:'frog'},
+        {n:'Hawk',k:'hawk'},{n:'Lizard',k:'lizard'},{n:'Octopus',k:'octopus'},{n:'Owl',k:'owl'},
+        {n:'Poisonous Snake',k:'poisonous-snake'},{n:'Rat',k:'rat'},{n:'Raven',k:'raven'},
+        {n:'Sea Horse',k:'sea-horse'},{n:'Spider',k:'spider'},{n:'Weasel',k:'weasel'},
+      ]
+    },
+    { spell:'Find Steed', level:2, icon:'🐴',
+      creatures:[
+        {n:'Elk',k:'elk'},{n:'Giant Eagle',k:'giant-eagle'},{n:'Giant Wolf Spider',k:'giant-wolf-spider'},
+        {n:'Mastiff',k:'mastiff'},{n:'Pony',k:'pony'},{n:'Warhorse',k:'warhorse'},
+      ]
+    },
+    { spell:'Find Greater Steed', level:4, icon:'🦅',
+      creatures:[
+        {n:'Griffon',k:'griffon'},{n:'Hippogriff',k:'hippogriff'},{n:'Pegasus',k:'pegasus'},
+        {n:'Peryton',k:'peryton'},{n:'Dire Wolf',k:'dire-wolf'},{n:'Rhinoceros',k:'rhinoceros'},
+        {n:'Saber-Toothed Tiger',k:'saber-toothed-tiger'},
+      ]
+    },
+    { spell:'Conjure Animals', level:3, icon:'🐺', note:'CR 2 ou moins — exemples',
+      creatures:[
+        {n:'Black Bear',k:'black-bear'},{n:'Brown Bear',k:'brown-bear'},{n:'Dire Wolf',k:'dire-wolf'},
+        {n:'Giant Eagle',k:'giant-eagle'},{n:'Giant Owl',k:'giant-owl'},
+        {n:'Giant Wolf Spider',k:'giant-wolf-spider'},{n:'Panther',k:'panther'},
+        {n:'Reef Shark',k:'reef-shark'},{n:'Wolf',k:'wolf'},
+        {n:'Allosaurus',k:'allosaurus'},{n:'Giant Constrictor Snake',k:'giant-constrictor-snake'},
+      ]
+    },
+    { spell:'Conjure Elemental', level:5, icon:'🌀',
+      creatures:[
+        {n:'Air Elemental',k:'air-elemental'},{n:'Earth Elemental',k:'earth-elemental'},
+        {n:'Fire Elemental',k:'fire-elemental'},{n:'Water Elemental',k:'water-elemental'},
+      ]
+    },
+    { spell:'Conjure Fey', level:6, icon:'🧚', note:'CR 6 ou moins',
+      creatures:[
+        {n:'Green Hag',k:'green-hag'},{n:'Night Hag',k:'night-hag'},
+        {n:'Dryad',k:'dryad'},{n:'Pixie',k:'pixie'},{n:'Sprite',k:'sprite'},
+      ]
+    },
+    { spell:'Animate Dead', level:3, icon:'💀',
+      creatures:[{n:'Skeleton',k:'skeleton'},{n:'Zombie',k:'zombie'}]
+    },
+    { spell:'Create Undead', level:6, icon:'🦴',
+      creatures:[
+        {n:'Ghoul',k:'ghoul'},{n:'Ghast',k:'ghast'},{n:'Wight',k:'wight'},{n:'Mummy',k:'mummy'},
+      ]
+    },
+    { spell:'Infernal Calling', level:5, icon:'😈',
+      creatures:[
+        {n:'Barbed Devil',k:'barbed-devil'},{n:'Bearded Devil',k:'bearded-devil'},
+        {n:'Bone Devil',k:'bone-devil'},{n:'Chain Devil',k:'chain-devil'},
+        {n:'Erinyes',k:'erinyes'},{n:'Horned Devil',k:'horned-devil'},
+        {n:'Ice Devil',k:'ice-devil'},{n:'Imp',k:'imp'},{n:'Spined Devil',k:'spined-devil'},
+      ]
+    },
+    // ── Esprits scalants (Tasha's / PHB 2024) ──
+    { spell:'Summon Beast', level:2, icon:'🦁', note:'CA / PV scalent avec le slot',
+      creatures:[
+        { n:'Esprit Bestial — Terre', spirit:{name:'Esprit Bestial (Terre)',type:'Beast',size:'Small',
+            ac:11,acNote:'11 + niv. sort',hp:20,hpNote:'20 + 5 par niv. au-dessus du 2e',
+            speed:'30 ft., burrow 30 ft.',str:18,dex:11,con:16,int:4,wis:14,cha:5,
+            cr:'2',languages:'—',senses:'Darkvision 60 ft.',
+            traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot utilisé · PV = 20 + 5 × (slot − 2)'}],
+            actions:[{name:'Force of the Beast',desc:'Attaque de corps à corps : bonus = +4 + niv. sort. Portée 5 ft. Dégâts : 1d8 + 4 + niv. sort contondants/perforants.'}]
+          }
+        },
+        { n:'Esprit Bestial — Air', spirit:{name:'Esprit Bestial (Air)',type:'Beast',size:'Small',
+            ac:11,acNote:'11 + niv. sort',hp:20,hpNote:'20 + 5 par niv. au-dessus du 2e',
+            speed:'30 ft., fly 60 ft.',str:18,dex:11,con:16,int:4,wis:14,cha:5,
+            cr:'2',languages:'—',senses:'Darkvision 60 ft.',
+            traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 20 + 5 × (slot − 2)'}],
+            actions:[{name:'Maul',desc:'Attaque de corps à corps : +4 + niv. sort au toucher. 1d6 + 4 + niv. sort tranchants.'}]
+          }
+        },
+        { n:'Esprit Bestial — Eau', spirit:{name:'Esprit Bestial (Eau)',type:'Beast',size:'Small',
+            ac:11,acNote:'11 + niv. sort',hp:20,hpNote:'20 + 5 par niv. au-dessus du 2e',
+            speed:'30 ft., swim 30 ft.',str:18,dex:11,con:16,int:4,wis:14,cha:5,
+            cr:'2',languages:'—',senses:'Darkvision 60 ft., Blindsight 30 ft.',
+            traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 20 + 5 × (slot − 2)'}],
+            actions:[{name:'Bite',desc:'Attaque de corps à corps : +4 + niv. sort au toucher. 1d6 + 4 + niv. sort perforants.'}]
+          }
+        },
+      ]
+    },
+    { spell:'Summon Fey', level:3, icon:'✨', note:'CA / PV scalent avec le slot',
+      creatures:[
+        { n:'Esprit Féerique — Furibond', spirit:{name:'Esprit Féerique (Furibond)',type:'Fey',size:'Small',
+            ac:12,acNote:'12 + niv. sort',hp:30,hpNote:'30 + 10 par niv. au-dessus du 3e',
+            speed:'40 ft.',str:13,dex:16,con:14,int:14,wis:11,cha:16,cr:'3',
+            languages:'Sylvain + langues du lanceur',senses:'Darkvision 60 ft.',
+            traits:[{name:'Scaling',desc:'CA = 12 + niv. du slot · PV = 30 + 10 × (slot − 3)'}],
+            actions:[{name:'Multiattack',desc:'2 attaques Tranchant Féerique.'},{name:'Tranchant Féerique',desc:'+3 + niv. sort au toucher. 1d6 + 3 + niv. sort tranchants + 1d6 psychiques.'}]
+          }
+        },
+        { n:'Esprit Féerique — Enjoué', spirit:{name:'Esprit Féerique (Enjoué)',type:'Fey',size:'Small',
+            ac:12,acNote:'12 + niv. sort',hp:30,hpNote:'30 + 10 par niv. au-dessus du 3e',
+            speed:'40 ft.',str:13,dex:16,con:14,int:14,wis:11,cha:16,cr:'3',
+            languages:'Sylvain + langues du lanceur',senses:'Darkvision 60 ft.',
+            traits:[{name:'Scaling',desc:'CA = 12 + niv. du slot · PV = 30 + 10 × (slot − 3)'}],
+            actions:[{name:'Multiattack',desc:'2 attaques Tranchant Féerique.'},{name:'Tranchant Féerique',desc:'+3 + niv. sort au toucher. 1d6 + 3 + niv. sort tranchants.'}]
+          }
+        },
+        { n:'Esprit Féerique — Rusé', spirit:{name:'Esprit Féerique (Rusé)',type:'Fey',size:'Small',
+            ac:12,acNote:'12 + niv. sort',hp:30,hpNote:'30 + 10 par niv. au-dessus du 3e',
+            speed:'40 ft.',str:13,dex:16,con:14,int:14,wis:11,cha:16,cr:'3',
+            languages:'Sylvain + langues du lanceur',senses:'Darkvision 60 ft.',
+            traits:[{name:'Scaling',desc:'CA = 12 + niv. du slot · PV = 30 + 10 × (slot − 3)'}],
+            actions:[{name:'Tranchant Féerique',desc:'+3 + niv. sort au toucher. 1d6 + 3 + niv. sort tranchants.'}]
+          }
+        },
+      ]
+    },
+    { spell:'Summon Shadowspawn', level:3, icon:'👁', note:'CA / PV scalent avec le slot',
+      creatures:[
+        { n:'Esprit des Ombres — Fureur',   spirit:{name:'Esprit des Ombres (Fureur)',type:'Undead',size:'Medium',ac:11,acNote:'11 + niv. sort',hp:35,hpNote:'35 + 10 par niv. au-dessus du 3e',speed:'40 ft.',str:13,dex:16,con:15,int:4,wis:10,cha:16,cr:'3',languages:'—',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 35 + 10 × (slot − 3)'}],actions:[{name:'Multiattack',desc:'2 attaques Griffes des Ombres.'},{name:'Griffes des Ombres',desc:'+3 + niv. sort au toucher. 1d8 + 3 + niv. sort nécrotiques.'}]} },
+        { n:'Esprit des Ombres — Désespoir',spirit:{name:'Esprit des Ombres (Désespoir)',type:'Undead',size:'Medium',ac:11,acNote:'11 + niv. sort',hp:35,hpNote:'35 + 10 par niv. au-dessus du 3e',speed:'40 ft.',str:13,dex:16,con:15,int:4,wis:10,cha:16,cr:'3',languages:'—',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 35 + 10 × (slot − 3)'}],actions:[{name:'Griffes des Ombres',desc:'+3 + niv. sort au toucher. 1d8 + 3 + niv. sort nécrotiques.'}]} },
+        { n:'Esprit des Ombres — Peur',     spirit:{name:'Esprit des Ombres (Peur)',type:'Undead',size:'Medium',ac:11,acNote:'11 + niv. sort',hp:35,hpNote:'35 + 10 par niv. au-dessus du 3e',speed:'40 ft.',str:13,dex:16,con:15,int:4,wis:10,cha:16,cr:'3',languages:'—',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 35 + 10 × (slot − 3)'}],actions:[{name:'Griffes des Ombres',desc:'+3 + niv. sort au toucher. 1d8 + 3 + niv. sort nécrotiques.'}]} },
+      ]
+    },
+    { spell:'Summon Undead', level:3, icon:'💀', note:'CA / PV scalent avec le slot',
+      creatures:[
+        { n:'Esprit Mort-vivant — Fantôme', spirit:{name:'Esprit Mort-vivant (Fantôme)',type:'Undead',size:'Medium',ac:11,acNote:'11 + niv. sort',hp:30,hpNote:'30 + 10 par niv. au-dessus du 3e',speed:'0 ft., fly 40 ft. (hover)',str:6,dex:16,con:15,int:4,wis:10,cha:16,cr:'3',languages:'—',senses:'Darkvision 60 ft.',traits:[{name:'Incorporel',desc:'Peut traverser créatures et objets solides.'},{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 30 + 10 × (slot − 3)'}],actions:[{name:'Attaque Terrifiante',desc:'Attaque de corps à corps : +3 + niv. sort. 1d8 + 3 + niv. sort nécrotiques. Jet SAG DD 11+niv. sort ou effrayé.'}]} },
+        { n:'Esprit Mort-vivant — Putride', spirit:{name:'Esprit Mort-vivant (Putride)',type:'Undead',size:'Medium',ac:11,acNote:'11 + niv. sort',hp:30,hpNote:'30 + 10 par niv. au-dessus du 3e',speed:'30 ft.',str:16,dex:8,con:15,int:4,wis:10,cha:16,cr:'3',languages:'—',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 30 + 10 × (slot − 3)'}],actions:[{name:'Coup Pourrissant',desc:'Attaque de corps à corps : +3 + niv. sort. 1d6 + 3 + niv. sort nécrotiques + empoisonné jusqu\'à fin prochain tour.'}]} },
+        { n:'Esprit Mort-vivant — Squelette',spirit:{name:'Esprit Mort-vivant (Squelette)',type:'Undead',size:'Medium',ac:11,acNote:'11 + niv. sort',hp:30,hpNote:'30 + 10 par niv. au-dessus du 3e',speed:'30 ft.',str:16,dex:16,con:15,int:4,wis:10,cha:16,cr:'3',languages:'—',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 30 + 10 × (slot − 3)'}],actions:[{name:'Épées',desc:'2 attaques : +3 + niv. sort. 1d6 + 3 + niv. sort tranchants chacune.'}]} },
+      ]
+    },
+    { spell:'Summon Elemental', level:4, icon:'🌊', note:'CA / PV scalent avec le slot',
+      creatures:[
+        { n:'Esprit Élém. — Air',  spirit:{name:'Esprit Élémentaire (Air)',type:'Elemental',size:'Large',ac:11,acNote:'11 + niv. sort',hp:50,hpNote:'50 + 10 par niv. au-dessus du 4e',speed:'30 ft., fly 40 ft.',str:18,dex:15,con:17,int:8,wis:10,cha:10,cr:'4',languages:'Aérien + langues du lanceur',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 50 + 10 × (slot − 4)'}],actions:[{name:'Slam',desc:'+6 + niv. sort au toucher. 1d10 + 4 + niv. sort contondants + 1d6 tonnerre.'}]} },
+        { n:'Esprit Élém. — Terre',spirit:{name:'Esprit Élémentaire (Terre)',type:'Elemental',size:'Large',ac:17,acNote:'17 (armure naturelle)',hp:50,hpNote:'50 + 10 par niv. au-dessus du 4e',speed:'30 ft., burrow 30 ft.',str:20,dex:8,con:18,int:8,wis:10,cha:5,cr:'4',languages:'Terreux + langues du lanceur',senses:'Darkvision 60 ft., Tremorsense 60 ft.',traits:[{name:'Scaling',desc:'CA fixe 17 · PV = 50 + 10 × (slot − 4)'}],actions:[{name:'Slam',desc:'+7 + niv. sort au toucher. 2d6 + 5 + niv. sort contondants.'}]} },
+        { n:'Esprit Élém. — Feu',  spirit:{name:'Esprit Élémentaire (Feu)',type:'Elemental',size:'Large',ac:11,acNote:'11 + niv. sort',hp:50,hpNote:'50 + 10 par niv. au-dessus du 4e',speed:'40 ft.',str:18,dex:15,con:17,int:6,wis:10,cha:7,cr:'4',languages:'Ignan + langues du lanceur',senses:'Darkvision 60 ft.',traits:[{name:'Illumination',desc:'Lumière vive 30 ft., lumière faible 30 ft. supplémentaires.'},{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 50 + 10 × (slot − 4)'}],actions:[{name:'Slam',desc:'+6 + niv. sort au toucher. 1d10 + 4 + niv. sort contondants + 1d6 feu.'}]} },
+        { n:'Esprit Élém. — Eau',  spirit:{name:'Esprit Élémentaire (Eau)',type:'Elemental',size:'Large',ac:11,acNote:'11 + niv. sort',hp:50,hpNote:'50 + 10 par niv. au-dessus du 4e',speed:'30 ft., swim 40 ft.',str:18,dex:14,con:17,int:8,wis:10,cha:3,cr:'4',languages:'Aquan + langues du lanceur',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 50 + 10 × (slot − 4)'}],actions:[{name:'Slam',desc:'+6 + niv. sort au toucher. 2d6 + 4 + niv. sort contondants.'}]} },
+      ]
+    },
+    { spell:'Summon Aberration', level:4, icon:'🐙', note:'CA / PV scalent avec le slot',
+      creatures:[
+        { n:'Esprit Aberrant — Beholder',   spirit:{name:'Esprit Aberrant (Beholder)',type:'Aberration',size:'Medium',ac:11,acNote:'11 + niv. sort',hp:40,hpNote:'40 + 10 par niv. au-dessus du 4e',speed:'0 ft., fly 30 ft. (hover)',str:16,dex:10,con:15,int:16,wis:10,cha:6,cr:'4',languages:'Profond + langues du lanceur',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 40 + 10 × (slot − 4)'}],actions:[{name:'Rayon Oculaire',desc:'Attaque de sort à distance : +5 + niv. sort au toucher. Portée 150 ft. 1d8 + 3 + niv. sort psychiques.'}]} },
+        { n:'Esprit Aberrant — Slaad',      spirit:{name:'Esprit Aberrant (Slaad)',type:'Aberration',size:'Medium',ac:11,acNote:'11 + niv. sort',hp:40,hpNote:'40 + 10 par niv. au-dessus du 4e',speed:'30 ft.',str:17,dex:10,con:16,int:6,wis:12,cha:7,cr:'4',languages:'Slaadi + langues du lanceur',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 40 + 10 × (slot − 4)'}],actions:[{name:'Griffes',desc:'+5 + niv. sort au toucher. 1d6 + 3 + niv. sort tranchants.'}]} },
+        { n:'Esprit Aberrant — Star Spawn', spirit:{name:'Esprit Aberrant (Star Spawn)',type:'Aberration',size:'Medium',ac:11,acNote:'11 + niv. sort',hp:40,hpNote:'40 + 10 par niv. au-dessus du 4e',speed:'30 ft.',str:16,dex:10,con:15,int:16,wis:10,cha:8,cr:'4',languages:'Profond + langues du lanceur',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 40 + 10 × (slot − 4)'}],actions:[{name:'Pseudopode',desc:'+5 + niv. sort au toucher. 1d8 + 3 + niv. sort contondants.'}]} },
+      ]
+    },
+    { spell:'Summon Construct', level:4, icon:'⚙️', note:'CA / PV scalent avec le slot',
+      creatures:[
+        { n:'Esprit Construit — Argile', spirit:{name:'Esprit Construit (Argile)',type:'Construct',size:'Medium',ac:13,acNote:'13 + niv. sort',hp:40,hpNote:'40 + 10 par niv. au-dessus du 4e',speed:'30 ft.',str:18,dex:7,con:18,int:6,wis:10,cha:3,cr:'4',languages:'—',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 13 + niv. du slot · PV = 40 + 10 × (slot − 4)'}],actions:[{name:'Coup',desc:'+6 + niv. sort au toucher. 1d8 + 4 + niv. sort contondants.'}]} },
+        { n:'Esprit Construit — Métal',  spirit:{name:'Esprit Construit (Métal)',type:'Construct',size:'Medium',ac:13,acNote:'13 + niv. sort',hp:40,hpNote:'40 + 10 par niv. au-dessus du 4e',speed:'30 ft.',str:19,dex:9,con:18,int:6,wis:10,cha:5,cr:'4',languages:'—',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 13 + niv. du slot · PV = 40 + 10 × (slot − 4)'}],actions:[{name:'Coup de lame',desc:'+6 + niv. sort au toucher. 1d6 + 4 + niv. sort tranchants.'}]} },
+        { n:'Esprit Construit — Pierre', spirit:{name:'Esprit Construit (Pierre)',type:'Construct',size:'Medium',ac:13,acNote:'13 + niv. sort',hp:40,hpNote:'40 + 10 par niv. au-dessus du 4e',speed:'30 ft.',str:19,dex:7,con:18,int:6,wis:10,cha:3,cr:'4',languages:'—',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 13 + niv. du slot · PV = 40 + 10 × (slot − 4)'}],actions:[{name:'Coup de pierre',desc:'+6 + niv. sort au toucher. 1d8 + 4 + niv. sort contondants.'}]} },
+      ]
+    },
+  ];
+
+  function _renderSummons() {
+    const el = document.getElementById('comp-summons-list');
+    if (!el) return;
+    const frag = document.createDocumentFragment();
+    SUMMON_SPELLS.forEach((grp, gi) => {
+      const div = document.createElement('div');
+      div.className = 'summon-group';
+      const noteHtml = grp.note ? `<span class="summon-group-note">${grp.note}</span>` : '';
+      const chipsHtml = grp.creatures.map((c, ci) => {
+        const spiritBadge = c.spirit ? '<span class="summon-spirit-badge">esprit</span>' : '';
+        return `<button class="summon-chip" data-sg="${gi}" data-sc="${ci}" title="${c.n}">
+          <span class="summon-chip-icon">${grp.icon}</span>${c.n}${spiritBadge}
+        </button>`;
+      }).join('');
+      div.innerHTML = `
+        <div class="summon-group-hd">
+          <span class="summon-group-lvl">Niv.${grp.level}</span>
+          <span class="summon-group-name">${grp.spell}</span>
+          ${noteHtml}
+        </div>
+        <div class="summon-chips">${chipsHtml}</div>`;
+      frag.appendChild(div);
+    });
+    el.innerHTML = '';
+    el.appendChild(frag);
+  }
+
+  function _toggleSummons(force) {
+    _summonsMode = force !== undefined ? force : !_summonsMode;
+    const btn     = document.getElementById('btn-comp-summons');
+    const listEl  = document.getElementById('comp-summons-list');
+    const mainEl  = document.getElementById('compendium-list');
+    if (btn) btn.classList.toggle('active', _summonsMode);
+    if (_summonsMode) {
+      if (mainEl) mainEl.style.display = 'none';
+      if (listEl) { listEl.style.display = ''; _renderSummons(); }
+    } else {
+      if (mainEl) mainEl.style.display = '';
+      if (listEl) listEl.style.display = 'none';
+      _loadTab('monsters');
+    }
+  }
+
+  // Import d'un esprit scalant inline
+  function _addSpiritAsFamiliar(s) {
+    if (!playerData) return;
+    const c = C();
+    if (!c.familiars) c.familiars = [];
+    const toList = arr => (arr||[]).map(x => ({name:x.name||'',desc:x.desc||''}));
+    c.familiars.push({
+      name: s.name, type: s.type, size: s.size, alignment: 'Neutre',
+      ac: s.ac, acNote: s.acNote || '',
+      pvMax: s.hp, pvActuel: s.hp, speed: s.speed,
+      for: s.str||10, dex: s.dex||10, con: s.con||10, int: s.int||10, sag: s.wis||10, cha: s.cha||10,
+      savesNote:'', skillsNote:'', vulnerabilities:'', resistances:'', immunities:'',
+      senses: s.senses||'', languages: s.languages||'—', cr: s.cr||'?',
+      traits: toList(s.traits), actions: toList(s.actions),
+      bonusActions:[], reactions:[],
+      notes: `⚠️ ${s.acNote||''} · ${s.hpNote||''}`, _collapsed: false,
+    });
+    if (typeof _tabDirty !== 'undefined') _tabDirty.familiers = true;
+    renderFamiliars(); triggerSave();
+    document.querySelector('.tab-btn[data-tab="familiers"]')?.click();
+  }
+
+  // Listener : clic sur un chip d'invocation
+  document.addEventListener('click', async e => {
+    const chip = e.target.closest('.summon-chip');
+    if (!chip) return;
+    const gi = parseInt(chip.dataset.sg);
+    const ci = parseInt(chip.dataset.sc);
+    const grp = SUMMON_SPELLS[gi];
+    if (!grp) return;
+    const creature = grp.creatures[ci];
+    if (!creature) return;
+
+    chip.classList.add('importing');
+    chip.textContent = '…';
+
+    try {
+      if (creature.spirit) {
+        // Stat block inline
+        _addSpiritAsFamiliar(creature.spirit);
+        chip.classList.remove('importing');
+        chip.classList.add('done');
+        chip.textContent = '✓ ' + creature.n;
+        setTimeout(() => { chip.classList.remove('done'); chip.innerHTML = `<span class="summon-chip-icon">${grp.icon}</span>${creature.n}<span class="summon-spirit-badge">esprit</span>`; }, 2500);
+      } else {
+        // Fetch depuis Open5e
+        const r = await fetch(`${O5E}/v2/creatures/${creature.k}/`);
+        if (!r.ok) throw new Error();
+        const data = await r.json();
+        _addMonsterAsFamiliar(data);
+        chip.classList.remove('importing');
+        chip.classList.add('done');
+        chip.textContent = '✓ ' + creature.n;
+        setTimeout(() => { chip.classList.remove('done'); chip.innerHTML = `<span class="summon-chip-icon">${grp.icon}</span>${creature.n}`; }, 2500);
+      }
+    } catch {
+      chip.classList.remove('importing');
+      chip.textContent = '✗ Erreur';
+      setTimeout(() => { chip.innerHTML = `<span class="summon-chip-icon">${grp.icon}</span>${creature.n}`; }, 2000);
+    }
   });
 
   /* ── Équipement de départ 2024 (PHB) ── */
@@ -12877,8 +13184,10 @@ function startRealtime(username) {
         <option value="Magic Items">Objets magiques</option>
       </select>
       <button class="comp-startequip-btn" id="btn-startequip">⚔️ Équipement de départ</button>
+      <button class="comp-summons-toggle" id="btn-comp-summons">📜 Invocations</button>
     </div>
     <div id="comp-startequip-panel"></div>
+    <div id="comp-summons-list" style="display:none;"></div>
     <div id="compendium-list"><div class="comp-loading">Chargement…</div></div>
   </div>
 </div>
