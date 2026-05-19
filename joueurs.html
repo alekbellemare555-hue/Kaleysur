@@ -12397,21 +12397,92 @@ function renderFamiliars() {
   /* ── Ajouter un sort (schéma wikidot local) ── */
   function _addSpell(item) {
     if (!playerData) return;
-    const lvl      = item.level != null ? String(item.level) : '';
     const desc     = item.desc || '';
-    const range    = item.range || '';
-    const castTime = item.castingTime || 'Action';
+    const lvl      = item.level != null ? String(item.level) : '';
     const conc     = !!(item.concentration);
-    const spell = { level:lvl, name:item.name, degat:'', typeDegat:'', portee:range, action:castTime, conc, desc, _open:false, prepared:true };
+    const ritual   = !!(item.ritual);
+
+    // Auto-détection des dégâts depuis la description
+    const DMG_TYPES = 'acid|bludgeoning|cold|fire|force|lightning|necrotic|piercing|poison|psychic|radiant|slashing|thunder';
+    const dmgMatch  = desc.match(new RegExp(`(\\d+d\\d+(?:\\s*[+\\-]\\s*\\d+)?)\\s+(${DMG_TYPES})`, 'i'));
+    const degat     = dmgMatch ? dmgMatch[1].replace(/\s+/g, '') : '';
+    const typeDegat = dmgMatch ? dmgMatch[2].charAt(0).toUpperCase() + dmgMatch[2].slice(1).toLowerCase() : '';
+
+    // Construire une description complète avec le stat-block du sort
+    const statBlock = [
+      item.school ? `École : ${item.school}` : '',
+      item.components ? `Composantes : ${item.components}${item.material ? ` (${item.material})` : ''}` : '',
+      item.duration ? `Durée : ${item.duration}` : '',
+      item.classes?.length ? `Classes : ${item.classes.join(', ')}` : '',
+    ].filter(Boolean).join('\n');
+
+    const fullDesc = statBlock ? `${statBlock}\n\n${desc}` : desc;
+
+    const spell = {
+      level:    lvl,
+      name:     item.name,
+      degat,
+      typeDegat,
+      portee:   item.range || '',
+      action:   [item.castingTime || 'Action', ritual ? '(Ritual)' : ''].filter(Boolean).join(' '),
+      conc,
+      desc:     fullDesc,
+      _open:    false,
+      prepared: true,
+    };
     if (!C().spells) C().spells = [];
     C().spells.push(spell);
     renderSpells(); triggerSave();
   }
 
+  /* ── Ajouter un item (schéma dnd5eapi) ── */
   function _addItem(item) {
     if (!playerData) return;
-    const notes = item.cost ? `${item.cost.quantity} ${item.cost.unit}` : '';
-    INV().items.push({ qty:1, name:item.name, notes });
+
+    // Catégorie automatique
+    const catName = item.equipment_category?.name || '';
+    const CAT_MAP = { Weapon:'arme', Armor:'armure', 'Wondrous Items':'magique', 'Magic Items':'magique' };
+    const cat = CAT_MAP[catName] || 'equipement';
+
+    // Notes enrichies
+    const parts = [];
+
+    // Arme : dégâts + propriétés
+    if (item.damage?.damage_dice) {
+      parts.push(`${item.damage.damage_dice} ${item.damage.damage_type?.name || ''}`);
+    }
+    if (item.two_handed_damage?.damage_dice) {
+      parts.push(`(2H: ${item.two_handed_damage.damage_dice} ${item.two_handed_damage.damage_type?.name || ''})`);
+    }
+    if (item.properties?.length) {
+      parts.push(item.properties.map(p => p.name).join(', '));
+    }
+    if (item.range?.normal) {
+      parts.push(`Portée ${item.range.normal}/${item.range.long || item.range.normal} ft`);
+    }
+
+    // Armure : CA + contraintes
+    if (item.armor_class) {
+      let acStr = `CA ${item.armor_class.base}`;
+      if (item.armor_class.dex_bonus) {
+        acStr += item.armor_class.max_bonus ? ` + DEX (max +${item.armor_class.max_bonus})` : ' + DEX';
+      }
+      parts.push(acStr);
+    }
+    if (item.str_minimum)         parts.push(`Force min. ${item.str_minimum}`);
+    if (item.stealth_disadvantage) parts.push('Discrétion désavantage');
+
+    // Poids + coût
+    if (item.weight) parts.push(`${item.weight} lb`);
+    if (item.cost)   parts.push(`${item.cost.quantity} ${item.cost.unit}`);
+
+    // Description (première phrase)
+    if (item.desc?.length) {
+      const txt = Array.isArray(item.desc) ? item.desc[0] : item.desc;
+      if (txt) parts.push(txt.length > 100 ? txt.slice(0, 100) + '…' : txt);
+    }
+
+    INV().items.push({ qty: 1, name: item.name, cat, notes: parts.join(' · ') });
     renderInventory(); triggerSave();
   }
 
