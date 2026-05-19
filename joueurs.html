@@ -12273,6 +12273,7 @@ function renderFamiliars() {
   let _activeTab = 'spells';
   let _allItems  = [];
   let _searchTimer = null;
+  let _catMap    = {}; // item.index → category name (chargé dynamiquement)
 
   const overlay = () => document.getElementById('compendium-overlay');
   const list    = () => document.getElementById('compendium-list');
@@ -12302,21 +12303,46 @@ function renderFamiliars() {
     document.getElementById('comp-filter-class').style.display = _activeTab === 'spells'    ? '' : 'none';
     document.getElementById('comp-filter-cat').style.display   = _activeTab === 'equipment' ? '' : 'none';
     document.getElementById('comp-filter-cr').style.display    = _activeTab === 'monsters'  ? '' : 'none';
-    document.getElementById('btn-startequip').style.display    = _activeTab === 'equipment' ? '' : 'none';
-    document.getElementById('btn-comp-summons').style.display  = _activeTab === 'monsters'  ? '' : 'none';
+    document.getElementById('btn-startequip').style.display           = _activeTab === 'equipment' ? '' : 'none';
+    document.getElementById('comp-filter-startequip').style.display   = _activeTab === 'equipment' ? '' : 'none';
+    document.getElementById('btn-comp-summons').style.display         = _activeTab === 'monsters'  ? '' : 'none';
     if (_activeTab !== 'equipment') { document.getElementById('comp-startequip-panel').classList.remove('open'); document.getElementById('btn-startequip').classList.remove('open'); }
     if (_activeTab !== 'monsters') _toggleSummons(false);
     document.getElementById('comp-search').value = '';
     document.getElementById('comp-filter-level').value = '';
     document.getElementById('comp-filter-class').value = '';
     document.getElementById('comp-filter-cat').value   = '';
+    document.getElementById('comp-filter-startequip').value = '';
     _loadTab(_activeTab);
   };
 
   function _closeCompendium() { overlay().classList.remove('open'); }
 
+  /* ── Traductions catégories équipement ── */
+  const CAT_FR = {
+    'Adventuring Gear':'Équipement aventure', 'Armor':'Armures', 'Weapon':'Armes',
+    'Tools':'Outils', 'Mounts and Vehicles':'Montures', 'Trade Goods':'Marchandises',
+    'Wondrous Items':'Objets merveilleux', 'Magic Items':'Objets magiques',
+    'Tack, Harness, and Drawn Vehicles':'Harnachement',
+    'Mounts and Other Animals':'Animaux & Montures',
+  };
+
+  function _populateCatFilter() {
+    const cats = [...new Set(Object.values(_catMap))].sort();
+    const sel = document.getElementById('comp-filter-cat');
+    if (!sel) return;
+    const prev = sel.value;
+    sel.innerHTML = '<option value="">Toute catégorie</option>' +
+      cats.map(c => `<option value="${c}">${CAT_FR[c] || c}</option>`).join('');
+    if (cats.includes(prev)) sel.value = prev;
+  }
+
   async function _loadTab(tab) {
-    if (_cache[tab]) { _allItems = _cache[tab]; _render(); return; }
+    if (_cache[tab]) {
+      _allItems = _cache[tab];
+      if (tab === 'equipment') _populateCatFilter();
+      _render(); return;
+    }
     list().innerHTML = '<div class="comp-loading">Chargement 2024…</div>';
     try {
       if (tab === 'spells') {
@@ -12325,9 +12351,24 @@ function renderFamiliars() {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         _allItems = await r.json();
       } else if (tab === 'equipment') {
-        const r = await fetch(`${D5E}/api/equipment`);
-        const d = await r.json();
-        _allItems = d.results || [];
+        // Charger la liste d'items + les catégories en parallèle
+        const [listData, catListData] = await Promise.all([
+          fetch(`${D5E}/api/equipment`).then(r => r.json()),
+          fetch(`${D5E}/api/equipment-categories`).then(r => r.json()),
+        ]);
+        _allItems = listData.results || [];
+        // Fetch les 8 catégories pour construire la map index→catégorie
+        const catRefs = catListData.results || [];
+        const catDetails = await Promise.allSettled(
+          catRefs.map(c => fetch(`${D5E}${c.url}`).then(r => r.json()))
+        );
+        _catMap = {};
+        catDetails.forEach(res => {
+          if (res.status !== 'fulfilled' || !res.value) return;
+          const cat = res.value;
+          (cat.equipment || []).forEach(item => { _catMap[item.index] = cat.name; });
+        });
+        _populateCatFilter();
       } else {
         _allItems = await _fetchAll(`${O5E}/v2/creatures/?document__key__in=${DOC}&limit=300`);
       }
@@ -12342,8 +12383,9 @@ function renderFamiliars() {
     const query       = (document.getElementById('comp-search')?.value || '').toLowerCase().trim();
     const levelFilter = document.getElementById('comp-filter-level')?.value;
     const classFilter = document.getElementById('comp-filter-class')?.value;
-    const catFilter   = document.getElementById('comp-filter-cat')?.value.toLowerCase();
+    const catFilter   = document.getElementById('comp-filter-cat')?.value;
     const crFilter    = document.getElementById('comp-filter-cr')?.value;
+    const seFilter    = document.getElementById('comp-filter-startequip')?.value;
 
     let items = _allItems;
     if (query) items = items.filter(i => (i.name || '').toLowerCase().includes(query));
@@ -12354,7 +12396,13 @@ function renderFamiliars() {
       items = items.filter(i => (i.classes || []).includes(classFilter));
     }
     if (_activeTab === 'equipment' && catFilter) {
-      items = items.filter(i => (i.equipment_category?.name || '').toLowerCase().includes(catFilter));
+      items = items.filter(i => (_catMap[i.index] || i.equipment_category?.name || '') === catFilter);
+    }
+    if (_activeTab === 'equipment' && seFilter) {
+      const opts = STARTING_EQUIP[seFilter] || [];
+      const names = new Set();
+      opts.forEach(opt => opt.items.forEach(it => names.add(it.name.toLowerCase())));
+      items = items.filter(i => names.has((i.name || '').toLowerCase()));
     }
     if (_activeTab === 'monsters' && crFilter !== '' && crFilter !== undefined) {
       items = items.filter(i => {
@@ -12400,7 +12448,8 @@ function renderFamiliars() {
           <button class="btn-comp-add" data-comp-type="spell" data-comp-idx="${_allItems.indexOf(item)}">+ Add</button>`;
 
       } else if (_activeTab === 'equipment') {
-        const cat    = item.equipment_category?.name || '';
+        const catRaw = item.equipment_category?.name || _catMap[item.index] || '';
+        const cat    = CAT_FR[catRaw] || catRaw;
         const cost   = item.cost ? `${item.cost.quantity} ${item.cost.unit}` : '';
         const weight = item.weight ? `${item.weight} lb` : '';
         div.innerHTML = `
@@ -12631,11 +12680,37 @@ function renderFamiliars() {
     const idx  = parseInt(btn.dataset.compIdx);
     const item = _allItems[idx];
     if (!item) return;
-    if (type === 'spell') _addSpell(item);
-    else _addItem(item);
-    btn.textContent = '✓ Added';
-    btn.disabled = true;
-    setTimeout(() => { btn.textContent = '+ Add'; btn.disabled = false; }, 1800);
+    if (type === 'spell') {
+      _addSpell(item);
+      btn.textContent = '✓ Added'; btn.disabled = true;
+      setTimeout(() => { btn.textContent = '+ Add'; btn.disabled = false; }, 1800);
+    } else {
+      // Si l'item n'a pas encore ses données complètes, les fetcher d'abord
+      if (!item.equipment_category && item.index) {
+        btn.textContent = '…'; btn.disabled = true;
+        try {
+          const full = await fetch(`${D5E}/api/equipment/${item.index}`).then(r => r.json());
+          _allItems[idx] = full;           // Mise en cache de l'item complet
+          _cache.equipment = _allItems;
+          _addItem(full);
+          // Mettre à jour la ligne affichée
+          const metaEl = btn.closest('.comp-item')?.querySelector('.comp-item-meta');
+          if (metaEl) {
+            const cr = full.equipment_category?.name || _catMap[full.index] || '';
+            const crf = CAT_FR[cr] || cr;
+            const co = full.cost ? `${full.cost.quantity} ${full.cost.unit}` : '';
+            const w  = full.weight ? `${full.weight} lb` : '';
+            metaEl.textContent = [crf, co, w].filter(Boolean).join(' · ');
+          }
+        } catch { _addItem(item); }
+        btn.textContent = '✓ Added'; btn.disabled = true;
+        setTimeout(() => { btn.textContent = '+ Add'; btn.disabled = false; }, 1800);
+      } else {
+        _addItem(item);
+        btn.textContent = '✓ Added'; btn.disabled = true;
+        setTimeout(() => { btn.textContent = '+ Add'; btn.disabled = false; }, 1800);
+      }
+    }
   });
 
   function _debouncedRender() {
@@ -12658,8 +12733,9 @@ function renderFamiliars() {
       document.getElementById('comp-filter-class').style.display = _activeTab === 'spells' ? '' : 'none';
       document.getElementById('comp-filter-cat').style.display = _activeTab === 'equipment' ? '' : 'none';
       document.getElementById('comp-filter-cr').style.display = _activeTab === 'monsters' ? '' : 'none';
-      document.getElementById('btn-startequip').style.display = _activeTab === 'equipment' ? '' : 'none';
-      document.getElementById('btn-comp-summons').style.display = _activeTab === 'monsters' ? '' : 'none';
+      document.getElementById('btn-startequip').style.display           = _activeTab === 'equipment' ? '' : 'none';
+      document.getElementById('comp-filter-startequip').style.display   = _activeTab === 'equipment' ? '' : 'none';
+      document.getElementById('btn-comp-summons').style.display         = _activeTab === 'monsters'  ? '' : 'none';
       if (_activeTab !== 'equipment') { document.getElementById('comp-startequip-panel').classList.remove('open'); document.getElementById('btn-startequip').classList.remove('open'); }
       if (_activeTab !== 'monsters') _toggleSummons(false);
       document.getElementById('comp-search').value = '';
@@ -12667,6 +12743,7 @@ function renderFamiliars() {
       document.getElementById('comp-filter-class').value = '';
       document.getElementById('comp-filter-cat').value = '';
       document.getElementById('comp-filter-cr').value = '';
+      document.getElementById('comp-filter-startequip').value = '';
       if (_cache[_activeTab]) { _allItems = _cache[_activeTab]; _render(); }
       else _loadTab(_activeTab);
     }
@@ -12682,7 +12759,7 @@ function renderFamiliars() {
   });
 
   document.addEventListener('change', e => {
-    const ids = ['comp-filter-level', 'comp-filter-class', 'comp-filter-cat', 'comp-filter-cr'];
+    const ids = ['comp-filter-level', 'comp-filter-class', 'comp-filter-cat', 'comp-filter-cr', 'comp-filter-startequip'];
     if (ids.includes(e.target.id)) _render();
   });
 
@@ -13175,13 +13252,21 @@ function startRealtime(username) {
       </select>
       <select class="comp-filter-select" id="comp-filter-cat" title="Filtrer par catégorie" style="display:none;">
         <option value="">Toute catégorie</option>
-        <option value="Adventuring Gear">Équipement</option>
-        <option value="Weapon">Armes</option>
-        <option value="Armor">Armures</option>
-        <option value="Tools">Outils</option>
-        <option value="Mounts and Vehicles">Montures</option>
-        <option value="Trade Goods">Marchandises</option>
-        <option value="Magic Items">Objets magiques</option>
+      </select>
+      <select class="comp-filter-select" id="comp-filter-startequip" title="Équipement de départ par classe" style="display:none;">
+        <option value="">Toutes les classes</option>
+        <option value="Barbarian">⚔️ Barbare</option>
+        <option value="Bard">🎵 Barde</option>
+        <option value="Cleric">✝️ Clerc</option>
+        <option value="Druid">🌿 Druide</option>
+        <option value="Fighter">🛡 Guerrier</option>
+        <option value="Monk">🥋 Moine</option>
+        <option value="Paladin">⚜️ Paladin</option>
+        <option value="Ranger">🏹 Rôdeur</option>
+        <option value="Rogue">🗡 Roublard</option>
+        <option value="Sorcerer">🔮 Ensorceleur</option>
+        <option value="Warlock">👁 Occultiste</option>
+        <option value="Wizard">📚 Magicien</option>
       </select>
       <button class="comp-startequip-btn" id="btn-startequip">⚔️ Équipement de départ</button>
       <button class="comp-summons-toggle" id="btn-comp-summons">📜 Invocations</button>
