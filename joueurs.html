@@ -144,6 +144,16 @@
     .spell-conc-btn { background:none; border:1px solid var(--j-border-col,#2a2a3a); border-radius:4px; color:#555; cursor:pointer; font-size:0.78rem; padding:0.15rem 0.35rem; transition:all var(--transition); line-height:1; }
     .spell-conc-btn:hover { border-color:#a070e0; color:#a070e0; }
     .spell-conc-btn.active { border-color:#a070e0; background:rgba(160,112,224,0.18); color:#c090f8; box-shadow:0 0 6px rgba(160,112,224,0.3); }
+    /* ── Spell prepared button ── */
+    .spell-prep-btn { background:none; border:1px solid var(--j-border-col,#2a2a3a); border-radius:4px; color:#444; cursor:pointer; font-size:0.75rem; padding:0.12rem 0.3rem; transition:all var(--transition); line-height:1; }
+    .spell-prep-btn:hover { border-color:var(--gold-dark); color:var(--gold-dark); }
+    .spell-prep-btn.prepared { border-color:var(--gold-dark); background:rgba(201,169,110,0.15); color:var(--gold); }
+    .exp-row.spell-unprepared td { opacity:0.38; }
+    .exp-row.spell-unprepared:hover td { opacity:0.7; transition:opacity 0.15s; }
+    .exp-row.spell-unprepared td:first-child { opacity:1; }
+    .btn-prep-filter { font-size:0.72rem; padding:0.2rem 0.55rem; border-radius:4px; border:1px solid var(--j-border-col,#2a2a3a); background:none; color:#666; cursor:pointer; transition:all var(--transition); white-space:nowrap; }
+    .btn-prep-filter:hover { border-color:var(--gold-dark); color:var(--gold-dark); }
+    .btn-prep-filter.active { border-color:var(--gold-dark); background:rgba(201,169,110,0.12); color:var(--gold); }
     /* ── Spell prep counter ── */
     .spell-prep-counter { font-size:0.75rem; padding:0.15rem 0.55rem; border-radius:5px; background:var(--j-input,#0d0d14); border:1px solid var(--j-border-col,#2a2a3a); color:#888; font-family:'Cinzel',serif; }
     .spell-prep-counter.ok  { border-color:#3a6a3a; color:#8aba8a; }
@@ -2959,9 +2969,13 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
               <button class="btn btn-sm" id="btn-open-compendium-spell" style="background:rgba(201,169,110,0.1);border:1px solid var(--gold-dark);color:var(--gold);margin-right:0.4rem;">⊕ Compendium</button>
               <button class="btn btn-sm btn-gold" id="btn-add-spell">+ Add</button>
             </div>
-            <input type="search" id="spell-filter" class="field-input" placeholder="Filter spells…" style="width:100%;margin-bottom:0.4rem;padding:0.3rem 0.5rem;font-size:0.78rem;">
+            <div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:0.4rem;">
+              <input type="search" id="spell-filter" class="field-input" placeholder="Filter spells…" style="flex:1;padding:0.3rem 0.5rem;font-size:0.78rem;">
+              <button class="btn-prep-filter" id="btn-spell-prep-filter" title="Show prepared spells only">★ Prepared only</button>
+            </div>
             <table class="exp-table spell-table">
               <thead><tr>
+                <th style="width:22px;" title="Prepared">★</th>
                 <th style="width:44px;">Lvl.</th>
                 <th>Spell Name</th>
                 <th style="width:70px;">Damage</th>
@@ -6449,14 +6463,15 @@ function updateSpellCalcs() {
   document.getElementById('sort-atk').textContent = (bonus + m + atkMod >= 0 ? '+' : '') + (bonus + m + atkMod);
   const dcEl = document.getElementById('vb-hero-dc');
   if (dcEl) dcEl.textContent = 8 + bonus + m + dcMod;
-  // Spell prep counter (leveled spells only, not cantrips)
+  // Spell prep counter (only prepared leveled spells, not cantrips)
   if (prepEl) {
     const spells = c.spells || [];
-    const leveled = spells.filter(s => s.level && s.level !== '0' && s.level !== 0);
+    const leveled  = spells.filter(s => s.level && s.level !== '0' && s.level !== 0);
+    const prepared = leveled.filter(s => s.prepared !== false);
     const primaryLvl = getClasses(c)[0]?.niveau || totalLvl;
     const maxPrep = Math.max(1, parseInt(primaryLvl) + m);
-    prepEl.textContent = `${leveled.length} / ${maxPrep}`;
-    prepEl.className = 'spell-prep-counter' + (leveled.length > maxPrep ? ' over' : leveled.length > 0 ? ' ok' : '');
+    prepEl.textContent = `${prepared.length} / ${maxPrep}`;
+    prepEl.className = 'spell-prep-counter' + (prepared.length > maxPrep ? ' over' : prepared.length > 0 ? ' ok' : '');
   }
 }
 
@@ -7160,6 +7175,7 @@ function parseDnDBeyondJSON(raw) {
       name: def.name, level: String(def.level??0), degat:'', typeDegat:'',
       portee: def.range||'', action: actTime>1?`${actTime} ${action}`:action,
       desc: stripHtml(def.description||def.snippet||''), _open:false, conc:!!(def.concentration),
+      prepared: true,
     });
   });
   spells.sort((a,b) => parseInt(a.level)-parseInt(b.level));
@@ -7835,9 +7851,15 @@ function renderLvlupTab() {
 function renderSpells() {
   const tbody = document.getElementById('spell-tbody');
   if (!tbody) return;
+
+  // Sync filter button state
+  const filterBtn = document.getElementById('btn-spell-prep-filter');
+  if (filterBtn) filterBtn.classList.toggle('active', _spellPrepFilter);
+
   const frag = document.createDocumentFragment();
   const spells = C().spells || [];
   const filterQ = (document.getElementById('spell-filter')?.value || '').toLowerCase().trim();
+
   // Group by level
   const groups = {};
   spells.forEach((s, i) => {
@@ -7846,35 +7868,68 @@ function renderSpells() {
     groups[lvl].push({ s, i });
   });
   const ORDER = ['cantrip','1','2','3','4','5','6','7','8','9'];
-  // Also add any levels that exist but aren't in ORDER
   Object.keys(groups).forEach(k => { if (!ORDER.includes(k)) ORDER.push(k); });
+
   ORDER.forEach(lvl => {
     const allEntries = groups[lvl];
     if (!allEntries || !allEntries.length) return;
-    const entries = filterQ
+    const isCantrip = lvl === 'cantrip';
+
+    // Apply text filter
+    let entries = filterQ
       ? allEntries.filter(({ s }) =>
           (s.name || '').toLowerCase().includes(filterQ) ||
           (s.typeDegat || '').toLowerCase().includes(filterQ) ||
           (s.action || '').toLowerCase().includes(filterQ) ||
           (s.desc || '').toLowerCase().includes(filterQ))
       : allEntries;
+
+    // Apply prepared filter (cantrips always show; leveled: hide unprepared)
+    if (_spellPrepFilter && !isCantrip) {
+      entries = entries.filter(({ s }) => s.prepared !== false);
+    }
+
     if (!entries.length) return;
-    // Level header row
+
+    const preparedCount = isCantrip ? null : entries.filter(({ s }) => s.prepared !== false).length;
+
+    // Level header
     const hdr = document.createElement('tr');
     hdr.className = 'spell-lvl-header';
-    const lvlLabel = lvl === 'cantrip' ? '✧ Cantrips' : `✦ Niveau ${lvl}`;
-    hdr.innerHTML = `<td colspan="8">${lvlLabel}<span class="spell-lvl-count">${entries.length} sort${entries.length > 1 ? 's' : ''}</span></td>`;
+    const lvlLabel = isCantrip ? '✧ Cantrips' : `✦ Level ${lvl}`;
+    const countLabel = isCantrip
+      ? `${entries.length}`
+      : (_spellPrepFilter ? `${entries.length}` : `${preparedCount}/${entries.length} prepared`);
+    hdr.innerHTML = `<td colspan="10">${lvlLabel}<span class="spell-lvl-count">${countLabel}</span></td>`;
     frag.appendChild(hdr);
+
     entries.forEach(({ s, i }) => {
-      const isConc = !!s.conc;
+      const isConc    = !!s.conc;
+      const isPrepared = isCantrip || s.prepared !== false;
       const tr = document.createElement('tr');
-      tr.className = 'exp-row';
-      tr.innerHTML = `<td style="text-align:center;"><input class="atk-inp" data-spell="${i}" data-sk="level" value="${esc(s.level||'0')}" placeholder="0" style="width:38px;text-align:center;font-size:0.78rem;"></td><td><input class="atk-inp" data-spell="${i}" data-sk="name" value="${esc(s.name||'')}" placeholder="Nom du sort"></td><td><input class="atk-inp" data-spell="${i}" data-sk="degat" value="${esc(s.degat||'')}" placeholder="2d6" style="font-size:0.75rem;"></td><td><input class="atk-inp" data-spell="${i}" data-sk="typeDegat" value="${esc(s.typeDegat||'')}" placeholder="feu…" style="font-size:0.75rem;"></td><td><input class="atk-inp" data-spell="${i}" data-sk="portee" value="${esc(s.portee||'')}" placeholder="18m" style="font-size:0.75rem;"></td><td><input class="atk-inp" data-spell="${i}" data-sk="action" value="${esc(s.action||'')}" placeholder="Action" style="font-size:0.75rem;"></td><td style="text-align:center;"><button class="spell-conc-btn${isConc?' active':''}" data-conc-spell="${i}" title="Concentrer sur ce sort">◉</button></td><td style="text-align:center;"><button class="exp-toggle${s._open?' open':''}" data-spell-toggle="${i}" title="Description">▾</button></td><td><button class="atk-del" data-del-spell="${i}" title="Delete">✕</button></td>`;
+      tr.className = 'exp-row' + (!isPrepared && !isCantrip ? ' spell-unprepared' : '');
+
+      // Prepared toggle cell
+      const prepCell = isCantrip
+        ? `<td style="text-align:center;"><span style="color:#555;font-size:0.7rem;" title="Cantrips are always available">✦</span></td>`
+        : `<td style="text-align:center;"><button class="spell-prep-btn${isPrepared?' prepared':''}" data-prep-spell="${i}" title="${isPrepared?'Prepared — click to unprepare':'Not prepared — click to prepare'}">${isPrepared?'★':'☆'}</button></td>`;
+
+      tr.innerHTML = prepCell
+        + `<td style="text-align:center;"><input class="atk-inp" data-spell="${i}" data-sk="level" value="${esc(s.level||'0')}" placeholder="0" style="width:38px;text-align:center;font-size:0.78rem;"></td>`
+        + `<td><input class="atk-inp" data-spell="${i}" data-sk="name" value="${esc(s.name||'')}" placeholder="Spell name"></td>`
+        + `<td><input class="atk-inp" data-spell="${i}" data-sk="degat" value="${esc(s.degat||'')}" placeholder="2d6" style="font-size:0.75rem;"></td>`
+        + `<td><input class="atk-inp" data-spell="${i}" data-sk="typeDegat" value="${esc(s.typeDegat||'')}" placeholder="fire…" style="font-size:0.75rem;"></td>`
+        + `<td><input class="atk-inp" data-spell="${i}" data-sk="portee" value="${esc(s.portee||'')}" placeholder="30ft" style="font-size:0.75rem;"></td>`
+        + `<td><input class="atk-inp" data-spell="${i}" data-sk="action" value="${esc(s.action||'')}" placeholder="Action" style="font-size:0.75rem;"></td>`
+        + `<td style="text-align:center;"><button class="spell-conc-btn${isConc?' active':''}" data-conc-spell="${i}" title="Concentration">◉</button></td>`
+        + `<td style="text-align:center;"><button class="exp-toggle${s._open?' open':''}" data-spell-toggle="${i}" title="Description">▾</button></td>`
+        + `<td><button class="atk-del" data-del-spell="${i}" title="Delete">✕</button></td>`;
       frag.appendChild(tr);
+
       if (s._open) {
         const dr = document.createElement('tr');
         dr.className = 'exp-desc-row';
-        dr.innerHTML = `<td colspan="9"><textarea class="exp-desc-area" data-spell="${i}" data-sk="desc" placeholder="Description, composantes, concentration…">${esc(s.desc||'')}</textarea></td>`;
+        dr.innerHTML = `<td colspan="10"><textarea class="exp-desc-area" data-spell="${i}" data-sk="desc" placeholder="Description, components, duration…">${esc(s.desc||'')}</textarea></td>`;
         frag.appendChild(dr);
       }
     });
@@ -7976,6 +8031,9 @@ function renderRationTracker() {
     triggerSave(); renderRationTracker();
   });
 }
+
+/* ── Spell prepared filter ── */
+let _spellPrepFilter = false;
 
 /* ── Inventaire ── */
 let _invActiveCat = '';
@@ -10391,7 +10449,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btn-add-spell').addEventListener('click', () => {
     if (!playerData) return;
     C().spells = C().spells || [];
-    C().spells.push({ level:'', name:'', degat:'', typeDegat:'', portee:'', action:'Action', desc:'', _open:false });
+    C().spells.push({ level:'', name:'', degat:'', typeDegat:'', portee:'', action:'Action', desc:'', _open:false, prepared:true });
     renderSpells(); triggerSave();
   });
   document.getElementById('spell-tbody').addEventListener('click', e => {
@@ -10405,6 +10463,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       const si = parseInt(togBtn.dataset.spellToggle);
       C().spells[si]._open = !C().spells[si]._open;
       renderSpells(); return;
+    }
+    // Prepared toggle
+    const prepBtn = e.target.closest('[data-prep-spell]');
+    if (prepBtn) {
+      const idx = parseInt(prepBtn.dataset.prepSpell);
+      const sp = C().spells[idx];
+      if (sp) sp.prepared = sp.prepared === false ? true : false;
+      renderSpells(); updateSpellCalcs(); triggerSave(); return;
     }
     // Concentration button
     const concBtn = e.target.closest('[data-conc-spell]');
@@ -11287,6 +11353,10 @@ document.getElementById('skill-filter')?.addEventListener('input', () => { if (p
 
 /* ── 13b. Spell search filter ── */
 document.getElementById('spell-filter')?.addEventListener('input', () => { if (playerData) renderSpells(); });
+document.getElementById('btn-spell-prep-filter')?.addEventListener('click', () => {
+  _spellPrepFilter = !_spellPrepFilter;
+  if (playerData) renderSpells();
+});
 
 /* ── 13. Scroll haut au changement d'onglet (sauf identité qui a son propre scroll) ── */
 (function () {
@@ -11881,211 +11951,255 @@ function renderFamiliars() {
   });
 })();
 
-/* ── Compendium D&D 5e ── */
+/* ── Compendium D&D 2024 (wikidot local + dnd5eapi fallback) ── */
 (function () {
-  const API = 'https://www.dnd5eapi.co';
+  const O5E  = 'https://api.open5e.com';
+  const D5E  = 'https://www.dnd5eapi.co';
+  const DOC  = 'srd-2024';
   const _cache = {};
   let _activeTab = 'spells';
-  let _allItems = [];
+  let _allItems  = [];
   let _searchTimer = null;
 
   const overlay = () => document.getElementById('compendium-overlay');
-  const list = () => document.getElementById('compendium-list');
+  const list    = () => document.getElementById('compendium-list');
+
+  /* ── Follow pagination (used only for monsters & equipment) ── */
+  async function _fetchAll(firstUrl) {
+    const acc = [];
+    let next = firstUrl;
+    while (next) {
+      const r = await fetch(next);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const d = await r.json();
+      acc.push(...(d.results || []));
+      next = d.next || null;
+      if (acc.length > 3000) break;
+    }
+    return acc;
+  }
 
   window.openCompendium = function (tab) {
     _activeTab = tab || 'spells';
-    const ov = overlay();
-    ov.classList.add('open');
+    overlay().classList.add('open');
     document.querySelectorAll('.comp-tab-btn').forEach(b =>
       b.classList.toggle('active', b.dataset.compTab === _activeTab)
     );
-    document.getElementById('comp-filter-level').style.display = _activeTab === 'spells' ? '' : 'none';
-    document.getElementById('comp-filter-cat').style.display = _activeTab === 'equipment' ? '' : 'none';
-    document.getElementById('comp-filter-cr').style.display = _activeTab === 'monsters' ? '' : 'none';
+    document.getElementById('comp-filter-level').style.display = _activeTab === 'spells'    ? '' : 'none';
+    document.getElementById('comp-filter-cat').style.display   = _activeTab === 'equipment' ? '' : 'none';
+    document.getElementById('comp-filter-cr').style.display    = _activeTab === 'monsters'  ? '' : 'none';
     document.getElementById('comp-search').value = '';
     document.getElementById('comp-filter-level').value = '';
-    document.getElementById('comp-filter-cat').value = '';
+    document.getElementById('comp-filter-cat').value   = '';
     _loadTab(_activeTab);
   };
 
-  function _closeCompendium() {
-    overlay().classList.remove('open');
-  }
+  function _closeCompendium() { overlay().classList.remove('open'); }
 
   async function _loadTab(tab) {
     if (_cache[tab]) { _allItems = _cache[tab]; _render(); return; }
-    list().innerHTML = '<div class="comp-loading">Chargement…</div>';
+    list().innerHTML = '<div class="comp-loading">Chargement 2024…</div>';
     try {
-      const endpoint = tab === 'spells' ? '/api/spells' : tab === 'equipment' ? '/api/equipment' : '/api/monsters';
-      const r = await fetch(API + endpoint);
-      const data = await r.json();
-      const entries = data.results || [];
       if (tab === 'spells') {
-        const detailed = await Promise.allSettled(
-          entries.map(e => fetch(API + e.url).then(r => r.json()))
-        );
-        _allItems = detailed
-          .filter(r => r.status === 'fulfilled')
-          .map(r => r.value);
+        // Sorts 2024 — fichier local extrait depuis dnd2024.wikidot.com
+        const r = await fetch('spells-2024.json');
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        _allItems = await r.json();
+      } else if (tab === 'equipment') {
+        const r = await fetch(`${D5E}/api/equipment`);
+        const d = await r.json();
+        _allItems = d.results || [];
       } else {
-        _allItems = entries;
+        _allItems = await _fetchAll(`${O5E}/v2/creatures/?document__key__in=${DOC}&limit=300`);
       }
       _cache[tab] = _allItems;
       _render();
-    } catch (e) {
-      list().innerHTML = '<div class="comp-empty">Unable to load the compendium. Check your connection.</div>';
+    } catch(e) {
+      list().innerHTML = '<div class="comp-empty">Impossible de charger le compendium. Vérifiez votre connexion.</div>';
     }
   }
 
   function _render() {
-    const query = (document.getElementById('comp-search')?.value || '').toLowerCase().trim();
+    const query       = (document.getElementById('comp-search')?.value || '').toLowerCase().trim();
     const levelFilter = document.getElementById('comp-filter-level')?.value;
-    const catFilter = document.getElementById('comp-filter-cat')?.value.toLowerCase();
-    const crFilter = document.getElementById('comp-filter-cr')?.value;
+    const catFilter   = document.getElementById('comp-filter-cat')?.value.toLowerCase();
+    const crFilter    = document.getElementById('comp-filter-cr')?.value;
 
     let items = _allItems;
-    if (query) items = items.filter(i => (i.name || i.index || '').toLowerCase().includes(query));
+    if (query) items = items.filter(i => (i.name || '').toLowerCase().includes(query));
     if (_activeTab === 'spells' && levelFilter !== '') {
       items = items.filter(i => String(i.level) === levelFilter);
     }
     if (_activeTab === 'equipment' && catFilter) {
-      items = items.filter(i =>
-        (i.equipment_category?.name || '').toLowerCase().includes(catFilter.toLowerCase())
-      );
+      items = items.filter(i => (i.equipment_category?.name || '').toLowerCase().includes(catFilter));
     }
-    if (_activeTab === 'monsters' && crFilter !== '') {
+    if (_activeTab === 'monsters' && crFilter !== '' && crFilter !== undefined) {
       items = items.filter(i => {
-        const name = i.name || i.index || '';
-        if (crFilter === '6') return true; // "FC 6+" — can't filter without fetching details on list-only data
-        return name.toLowerCase().includes(query);
+        const cr = parseFloat(i.challenge_rating ?? i.cr ?? 99);
+        if (crFilter === '0')  return cr === 0;
+        if (crFilter === '1')  return cr >= 0.125 && cr <= 1;
+        if (crFilter === '5')  return cr >= 2 && cr <= 5;
+        if (crFilter === '10') return cr >= 6 && cr <= 10;
+        if (crFilter === '20') return cr >= 11 && cr <= 20;
+        if (crFilter === '21') return cr > 20;
+        return true;
       });
     }
 
-    if (!items.length) {
-      list().innerHTML = '<div class="comp-empty">No results.</div>';
-      return;
-    }
+    if (!items.length) { list().innerHTML = '<div class="comp-empty">Aucun résultat.</div>'; return; }
 
     const frag = document.createDocumentFragment();
-    items.slice(0, 80).forEach(item => {
+    items.slice(0, 100).forEach(item => {
       const div = document.createElement('div');
       div.className = 'comp-item';
+
       if (_activeTab === 'spells') {
-        const lvl = item.level === 0 ? 'C' : item.level;
-        const school = item.school?.name || '';
-        const castTime = item.casting_time || '';
-        const range = item.range || '';
-        const conc = item.concentration ? ' · Conc.' : '';
-        const desc = (Array.isArray(item.desc) ? item.desc[0] : item.desc) || '';
+        // Schéma wikidot local : level(number), school(string), classes(string[]),
+        // castingTime, range, components, material, duration, concentration, ritual, desc
+        const lvl      = item.level === 0 ? 'C' : item.level;
+        const school   = item.school || '';
+        const castTime = item.castingTime || '';
+        const range    = item.range || '';
+        const conc     = item.concentration ? ' · Conc.' : '';
+        const ritual   = item.ritual ? ' · Ritual' : '';
+        const classes  = (item.classes || []).join(', ');
+        const mat      = item.material ? ` (${item.material})` : '';
+        // Première phrase de la desc pour l'aperçu
+        const preview  = (item.desc || '').split('\n')[0];
         div.innerHTML = `
           <div class="comp-level-badge">${lvl}</div>
           <div class="comp-item-info">
             <div class="comp-item-name">${item.name}</div>
-            <div class="comp-item-meta">${school}${conc} · ${castTime} · Range: ${range}</div>
-            <div class="comp-item-desc">${desc}</div>
+            <div class="comp-item-meta">${school}${conc}${ritual} · ${castTime} · ${range} · ${item.components||''}${mat}</div>
+            <div class="comp-item-meta" style="color:#888;font-size:0.7rem;">${classes}</div>
+            <div class="comp-item-desc">${preview}</div>
           </div>
-          <button class="btn-comp-add" data-comp-type="spell" data-comp-idx="${_allItems.indexOf(item)}">+ Ajouter</button>`;
+          <button class="btn-comp-add" data-comp-type="spell" data-comp-idx="${_allItems.indexOf(item)}">+ Add</button>`;
+
       } else if (_activeTab === 'equipment') {
-        const cat = item.equipment_category?.name || '';
-        const cost = item.cost ? `${item.cost.quantity} ${item.cost.unit}` : '';
-        const weight = item.weight ? `${item.weight} lbs` : '';
-        const meta = [cat, cost, weight].filter(Boolean).join(' · ');
+        const cat    = item.equipment_category?.name || '';
+        const cost   = item.cost ? `${item.cost.quantity} ${item.cost.unit}` : '';
+        const weight = item.weight ? `${item.weight} lb` : '';
         div.innerHTML = `
           <div class="comp-item-info">
             <div class="comp-item-name">${item.name}</div>
-            <div class="comp-item-meta">${meta}</div>
+            <div class="comp-item-meta">${[cat, cost, weight].filter(Boolean).join(' · ')}</div>
           </div>
-          <button class="btn-comp-add" data-comp-type="item" data-comp-idx="${_allItems.indexOf(item)}">+ Ajouter</button>`;
+          <button class="btn-comp-add" data-comp-type="item" data-comp-idx="${_allItems.indexOf(item)}">+ Add</button>`;
+
       } else {
-        /* monsters — list only has name+url, fetch details on import */
+        const crDisplay = item.challenge_rating ?? item.cr ?? '?';
+        const typeStr   = [item.creature_type?.name || item.type, item.subtype].filter(Boolean).join(', ');
+        const hpDisplay = item.hit_points ? `· ${item.hit_points} HP` : '';
         div.innerHTML = `
           <div class="comp-item-info">
             <div class="comp-item-name">${item.name}</div>
-            <div class="comp-item-meta comp-item-desc" id="comp-mon-meta-${item.index}">Cliquez pour importer</div>
+            <div class="comp-item-meta">CR ${crDisplay} ${hpDisplay} · ${typeStr || 'Creature'}</div>
           </div>
-          <button class="btn-comp-add" data-comp-type="monster" data-comp-url="${item.url}" data-comp-name="${item.name}">⊕ Importer</button>`;
+          <button class="btn-comp-add" data-comp-type="monster" data-comp-key="${item.key||''}" data-comp-idx="${_allItems.indexOf(item)}" data-comp-name="${item.name}">⊕ Import</button>`;
       }
       frag.appendChild(div);
     });
     list().innerHTML = '';
     list().appendChild(frag);
-    if (items.length > 80) {
+    if (items.length > 100) {
       const more = document.createElement('div');
       more.className = 'comp-empty';
-      more.textContent = `… ${items.length - 80} résultats supplémentaires. Affinez votre recherche.`;
+      more.textContent = `… ${items.length - 100} résultats supplémentaires — affinez la recherche.`;
       list().appendChild(more);
     }
   }
 
+  /* ── Ajouter un sort (schéma wikidot local) ── */
   function _addSpell(item) {
     if (!playerData) return;
-    const lvl = item.level != null ? String(item.level) : '';
-    const desc = (Array.isArray(item.desc) ? item.desc.join(' ') : item.desc) || '';
-    const dmg = item.damage?.damage_dice || '';
-    const dmgType = item.damage?.damage_type?.name || '';
-    const range = item.range || '';
-    const castTime = item.casting_time || 'Action';
-    const conc = item.concentration || false;
-    const spell = { level: lvl, name: item.name, degat: dmg, typeDegat: dmgType, portee: range, action: castTime, conc, desc, _open: false };
+    const lvl      = item.level != null ? String(item.level) : '';
+    const desc     = item.desc || '';
+    const range    = item.range || '';
+    const castTime = item.castingTime || 'Action';
+    const conc     = !!(item.concentration);
+    const spell = { level:lvl, name:item.name, degat:'', typeDegat:'', portee:range, action:castTime, conc, desc, _open:false, prepared:true };
     if (!C().spells) C().spells = [];
     C().spells.push(spell);
-    renderSpells();
-    triggerSave();
+    renderSpells(); triggerSave();
   }
 
   function _addItem(item) {
     if (!playerData) return;
     const notes = item.cost ? `${item.cost.quantity} ${item.cost.unit}` : '';
-    INV().items.push({ qty: 1, name: item.name, notes });
-    renderInventory();
-    triggerSave();
+    INV().items.push({ qty:1, name:item.name, notes });
+    renderInventory(); triggerSave();
   }
 
+  /* ── Add monster as familiar (handles both Open5e v2 and dnd5eapi v1 schemas) ── */
   function _addMonsterAsFamiliar(data) {
     if (!playerData) return;
     const c = C();
     if (!c.familiars) c.familiars = [];
-    const sizeMap = { Tiny:'Très petite', Small:'Petite', Medium:'Moyenne', Large:'Grande', Huge:'Très grande', Gargantuan:'Gigantesque' };
-    const typeStr = [data.type, data.subtype].filter(Boolean).join(', ');
-    const traits = (data.special_abilities||[]).map(t => ({ name: t.name||'', desc: t.desc||'' }));
-    const actions = (data.actions||[]).map(a => ({ name: a.name||'', desc: a.desc||'' }));
-    const bonusActions = (data.bonus_actions||[]).map(a => ({ name: a.name||'', desc: a.desc||'' }));
-    const reactions = (data.reactions||[]).map(a => ({ name: a.name||'', desc: a.desc||'' }));
-    const speeds = data.speed ? Object.entries(data.speed).map(([k,v]) => k === 'walk' ? v : `${k} ${v}`).join(', ') : '';
-    const acVal = data.armor_class?.[0]?.value || 10;
-    const acNote = data.armor_class?.[0]?.type || '';
-    const senses = Object.entries(data.senses||{}).map(([k,v]) => `${k.replace(/_/g,' ')} ${v}`).join(', ');
+    const sizeMap = { Tiny:'Tiny', Small:'Small', Medium:'Medium', Large:'Large', Huge:'Huge', Gargantuan:'Gargantuan' };
+    const typeStr = [data.creature_type?.name || data.type, data.subtype].filter(Boolean).join(', ');
+
+    // AC: v2 may return a number, v1 returns [{value, type}]
+    const acVal  = typeof data.armor_class === 'number' ? data.armor_class
+                 : data.armor_class?.[0]?.value ?? 10;
+    const acNote = typeof data.armor_class === 'number' ? (data.armor_desc || '')
+                 : data.armor_class?.[0]?.type ?? '';
+
+    // Speed: both use {walk, fly, swim, ...} with "X ft." string values
+    const speeds = data.speed
+      ? Object.entries(data.speed)
+          .filter(([,v]) => v && v !== '0 ft.')
+          .map(([k,v]) => k === 'walk' ? v : `${k} ${v}`)
+          .join(', ')
+      : '';
+
+    // Senses: v2 may be a string "Darkvision 60 ft., Passive Perception 12"
+    const senses = typeof data.senses === 'string' ? data.senses
+                 : Object.entries(data.senses||{}).map(([k,v])=>`${k.replace(/_/g,' ')} ${v}`).join(', ');
+
+    // Saving throws / skills: v2 uses direct objects {str: "+4"}, v1 uses proficiencies array
+    let savesNote = '', skillsNote = '';
+    if (data.saving_throws && typeof data.saving_throws === 'object' && !Array.isArray(data.saving_throws)) {
+      const map = { str:'STR', dex:'DEX', con:'CON', int:'INT', wis:'WIS', cha:'CHA' };
+      savesNote = Object.entries(data.saving_throws).map(([k,v]) => `${map[k]||k} ${v}`).join(', ');
+    } else {
+      savesNote = (data.proficiencies||[]).filter(p=>p.proficiency?.index?.startsWith('saving-throw'))
+        .map(p=>`${p.proficiency.name?.replace('Saving Throw: ','')} +${p.value}`).join(', ');
+    }
+    if (data.skills && typeof data.skills === 'object' && !Array.isArray(data.skills)) {
+      skillsNote = Object.entries(data.skills).map(([k,v])=>`${k} ${v}`).join(', ');
+    } else {
+      skillsNote = (data.proficiencies||[]).filter(p=>p.proficiency?.index?.startsWith('skill-'))
+        .map(p=>`${p.proficiency.name?.replace('Skill: ','')} +${p.value}`).join(', ');
+    }
+
+    const toList = arr => (arr||[]).map(x => ({ name: x.name||'', desc: x.desc||'' }));
+
     const fam = {
-      name: data.name || 'Monstre',
-      type: typeStr || 'Bête',
-      size: sizeMap[data.size] || data.size || 'Moyenne',
-      alignment: data.alignment || 'Non aligné',
+      name: data.name || 'Creature',
+      type: typeStr || 'Beast',
+      size: sizeMap[data.size] || data.size || 'Medium',
+      alignment: data.alignment || 'Unaligned',
       ac: acVal, acNote,
-      pvMax: data.hit_points || 4,
-      pvActuel: data.hit_points || 4,
+      pvMax: data.hit_points || 4, pvActuel: data.hit_points || 4,
       speed: speeds,
       for: data.strength||10, dex: data.dexterity||10, con: data.constitution||10,
       int: data.intelligence||10, sag: data.wisdom||10, cha: data.charisma||10,
-      savesNote: (data.proficiencies||[]).filter(p => p.proficiency?.index?.startsWith('saving-throw'))
-        .map(p => `${p.proficiency.name?.replace('Saving Throw: ','')} +${p.value}`).join(', '),
-      skillsNote: (data.proficiencies||[]).filter(p => p.proficiency?.index?.startsWith('skill-'))
-        .map(p => `${p.proficiency.name?.replace('Skill: ','')} +${p.value}`).join(', '),
+      savesNote, skillsNote,
       vulnerabilities: (data.damage_vulnerabilities||[]).join(', '),
-      resistances: (data.damage_resistances||[]).join(', '),
-      immunities: (data.damage_immunities||[]).join(', '),
+      resistances:     (data.damage_resistances||[]).join(', '),
+      immunities:      (data.damage_immunities||[]).join(', '),
       senses, languages: data.languages || '—',
-      cr: String(data.challenge_rating ?? '0'),
-      traits, actions, bonusActions, reactions, notes: '', _collapsed: false
+      cr: String(data.challenge_rating ?? data.cr ?? '0'),
+      traits: toList(data.special_abilities), actions: toList(data.actions),
+      bonusActions: toList(data.bonus_actions), reactions: toList(data.reactions),
+      notes: '', _collapsed: false
     };
     c.familiars.push(fam);
-    /* mark tab dirty so next visit re-renders */
     if (typeof _tabDirty !== 'undefined') _tabDirty.familiers = true;
-    renderFamiliars();
-    triggerSave();
-    /* switch to familiers tab if dashboard is active */
+    renderFamiliars(); triggerSave();
     if (document.getElementById('screen-dashboard')?.classList.contains('active')) {
-      const switchFn = document.querySelector('.tab-btn[data-tab="familiers"]');
-      switchFn?.click();
+      document.querySelector('.tab-btn[data-tab="familiers"]')?.click();
     }
   }
 
@@ -12093,32 +12207,41 @@ function renderFamiliars() {
     const btn = e.target.closest('.btn-comp-add');
     if (!btn) return;
     const type = btn.dataset.compType;
+
     if (type === 'monster') {
-      btn.textContent = '…';
-      btn.disabled = true;
+      btn.textContent = '…'; btn.disabled = true;
       try {
-        const r = await fetch(API + btn.dataset.compUrl);
-        const data = await r.json();
+        // Try using already-cached full data first (v2 list may have full stats)
+        const cachedIdx = parseInt(btn.dataset.compIdx);
+        const cached = isNaN(cachedIdx) ? null : _allItems[cachedIdx];
+        let data = (cached && cached.hit_points) ? cached : null;
+        if (!data) {
+          // Fetch individual creature
+          const key = btn.dataset.compKey;
+          const url = key ? `${O5E}/v2/creatures/${key}/` : null;
+          if (!url) throw new Error('No key');
+          const r = await fetch(url);
+          data = await r.json();
+        }
         _addMonsterAsFamiliar(data);
         btn.textContent = '✓ Imported';
-        setTimeout(() => { btn.textContent = '⊕ Importer'; btn.disabled = false; }, 2000);
-        /* show a brief meta preview */
         const metaEl = btn.closest('.comp-item')?.querySelector('.comp-item-meta');
-        if (metaEl) metaEl.textContent = `CA ${data.armor_class?.[0]?.value||'?'} · PV ${data.hit_points||'?'} · FC ${data.challenge_rating??'?'}`;
+        if (metaEl) metaEl.textContent = `CR ${data.challenge_rating??data.cr??'?'} · AC ${data.armor_class?.[0]?.value??data.armor_class??'?'} · ${data.hit_points??'?'} HP`;
+        setTimeout(() => { btn.textContent = '⊕ Import'; btn.disabled = false; }, 2000);
       } catch {
-        btn.textContent = 'Erreur';
-        setTimeout(() => { btn.textContent = '⊕ Importer'; btn.disabled = false; }, 2000);
+        btn.textContent = 'Error';
+        setTimeout(() => { btn.textContent = '⊕ Import'; btn.disabled = false; }, 2000);
       }
       return;
     }
-    const idx = parseInt(btn.dataset.compIdx);
+    const idx  = parseInt(btn.dataset.compIdx);
     const item = _allItems[idx];
     if (!item) return;
     if (type === 'spell') _addSpell(item);
     else _addItem(item);
     btn.textContent = '✓ Added';
     btn.disabled = true;
-    setTimeout(() => { btn.textContent = '+ Ajouter'; btn.disabled = false; }, 1800);
+    setTimeout(() => { btn.textContent = '+ Add'; btn.disabled = false; }, 1800);
   });
 
   function _debouncedRender() {

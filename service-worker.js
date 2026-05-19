@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kaleysur-v94';
+const CACHE_NAME = 'kaleysur-v97';
 
 const ASSETS = [
   'index.html',
@@ -12,6 +12,7 @@ const ASSETS = [
   'js/components.js',
   'js/wiki.js',
   'search-index.json',
+  'spells-2024.json',
   'manifest.json',
   'favicon.png',
   'icons/icon-192.png',
