@@ -11986,10 +11986,12 @@ function renderFamiliars() {
       b.classList.toggle('active', b.dataset.compTab === _activeTab)
     );
     document.getElementById('comp-filter-level').style.display = _activeTab === 'spells'    ? '' : 'none';
+    document.getElementById('comp-filter-class').style.display = _activeTab === 'spells'    ? '' : 'none';
     document.getElementById('comp-filter-cat').style.display   = _activeTab === 'equipment' ? '' : 'none';
     document.getElementById('comp-filter-cr').style.display    = _activeTab === 'monsters'  ? '' : 'none';
     document.getElementById('comp-search').value = '';
     document.getElementById('comp-filter-level').value = '';
+    document.getElementById('comp-filter-class').value = '';
     document.getElementById('comp-filter-cat').value   = '';
     _loadTab(_activeTab);
   };
@@ -12022,6 +12024,7 @@ function renderFamiliars() {
   function _render() {
     const query       = (document.getElementById('comp-search')?.value || '').toLowerCase().trim();
     const levelFilter = document.getElementById('comp-filter-level')?.value;
+    const classFilter = document.getElementById('comp-filter-class')?.value;
     const catFilter   = document.getElementById('comp-filter-cat')?.value.toLowerCase();
     const crFilter    = document.getElementById('comp-filter-cr')?.value;
 
@@ -12029,6 +12032,9 @@ function renderFamiliars() {
     if (query) items = items.filter(i => (i.name || '').toLowerCase().includes(query));
     if (_activeTab === 'spells' && levelFilter !== '') {
       items = items.filter(i => String(i.level) === levelFilter);
+    }
+    if (_activeTab === 'spells' && classFilter) {
+      items = items.filter(i => (i.classes || []).includes(classFilter));
     }
     if (_activeTab === 'equipment' && catFilter) {
       items = items.filter(i => (i.equipment_category?.name || '').toLowerCase().includes(catFilter));
@@ -12261,10 +12267,12 @@ function renderFamiliars() {
       _activeTab = compTab.dataset.compTab;
       document.querySelectorAll('.comp-tab-btn').forEach(b => b.classList.toggle('active', b === compTab));
       document.getElementById('comp-filter-level').style.display = _activeTab === 'spells' ? '' : 'none';
+      document.getElementById('comp-filter-class').style.display = _activeTab === 'spells' ? '' : 'none';
       document.getElementById('comp-filter-cat').style.display = _activeTab === 'equipment' ? '' : 'none';
       document.getElementById('comp-filter-cr').style.display = _activeTab === 'monsters' ? '' : 'none';
       document.getElementById('comp-search').value = '';
       document.getElementById('comp-filter-level').value = '';
+      document.getElementById('comp-filter-class').value = '';
       document.getElementById('comp-filter-cat').value = '';
       document.getElementById('comp-filter-cr').value = '';
       if (_cache[_activeTab]) { _allItems = _cache[_activeTab]; _render(); }
@@ -12280,7 +12288,7 @@ function renderFamiliars() {
   });
 
   document.addEventListener('change', e => {
-    const ids = ['comp-filter-level', 'comp-filter-cat', 'comp-filter-cr'];
+    const ids = ['comp-filter-level', 'comp-filter-class', 'comp-filter-cat', 'comp-filter-cr'];
     if (ids.includes(e.target.id)) _render();
   });
 
@@ -12342,6 +12350,18 @@ function startRealtime(username) {
         <option value="7">Niveau 7</option>
         <option value="8">Niveau 8</option>
         <option value="9">Niveau 9</option>
+      </select>
+      <select class="comp-filter-select" id="comp-filter-class" title="Filtrer par classe">
+        <option value="">Toute classe</option>
+        <option value="Artificer">Artificier</option>
+        <option value="Bard">Barde</option>
+        <option value="Cleric">Clerc</option>
+        <option value="Druid">Druide</option>
+        <option value="Paladin">Paladin</option>
+        <option value="Ranger">Rôdeur</option>
+        <option value="Sorcerer">Ensorceleur</option>
+        <option value="Warlock">Occultiste</option>
+        <option value="Wizard">Magicien</option>
       </select>
       <select class="comp-filter-select" id="comp-filter-cr" title="Filtrer par FC" style="display:none;">
         <option value="">Tout FC</option>
