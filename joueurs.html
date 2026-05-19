@@ -12273,7 +12273,6 @@ function renderFamiliars() {
   let _activeTab = 'spells';
   let _allItems  = [];
   let _searchTimer = null;
-  let _catMap    = {}; // item.index → category name (chargé dynamiquement)
 
   const overlay = () => document.getElementById('compendium-overlay');
   const list    = () => document.getElementById('compendium-list');
@@ -12327,8 +12326,13 @@ function renderFamiliars() {
     'Mounts and Other Animals':'Animaux & Montures',
   };
 
+  // Extrait la catégorie d'un item (Open5e v2 : item.category | dnd5eapi : item.equipment_category.name)
+  function _itemCat(item) {
+    return item.category || item.equipment_category?.name || '';
+  }
+
   function _populateCatFilter() {
-    const cats = [...new Set(Object.values(_catMap))].sort();
+    const cats = [...new Set(_allItems.map(_itemCat).filter(Boolean))].sort();
     const sel = document.getElementById('comp-filter-cat');
     if (!sel) return;
     const prev = sel.value;
@@ -12351,23 +12355,8 @@ function renderFamiliars() {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         _allItems = await r.json();
       } else if (tab === 'equipment') {
-        // Charger la liste d'items + les catégories en parallèle
-        const [listData, catListData] = await Promise.all([
-          fetch(`${D5E}/api/equipment`).then(r => r.json()),
-          fetch(`${D5E}/api/equipment-categories`).then(r => r.json()),
-        ]);
-        _allItems = listData.results || [];
-        // Fetch les 8 catégories pour construire la map index→catégorie
-        const catRefs = catListData.results || [];
-        const catDetails = await Promise.allSettled(
-          catRefs.map(c => fetch(`${D5E}${c.url}`).then(r => r.json()))
-        );
-        _catMap = {};
-        catDetails.forEach(res => {
-          if (res.status !== 'fulfilled' || !res.value) return;
-          const cat = res.value;
-          (cat.equipment || []).forEach(item => { _catMap[item.index] = cat.name; });
-        });
+        // Items 2024 — Open5e v2 (même source que les monstres)
+        _allItems = await _fetchAll(`${O5E}/v2/items/?document__key__in=${DOC}&limit=300&ordering=name`);
         _populateCatFilter();
       } else {
         _allItems = await _fetchAll(`${O5E}/v2/creatures/?document__key__in=${DOC}&limit=300`);
@@ -12396,7 +12385,7 @@ function renderFamiliars() {
       items = items.filter(i => (i.classes || []).includes(classFilter));
     }
     if (_activeTab === 'equipment' && catFilter) {
-      items = items.filter(i => (_catMap[i.index] || i.equipment_category?.name || '') === catFilter);
+      items = items.filter(i => _itemCat(i) === catFilter);
     }
     if (_activeTab === 'equipment' && seFilter) {
       const opts = STARTING_EQUIP[seFilter] || [];
@@ -12448,14 +12437,16 @@ function renderFamiliars() {
           <button class="btn-comp-add" data-comp-type="spell" data-comp-idx="${_allItems.indexOf(item)}">+ Add</button>`;
 
       } else if (_activeTab === 'equipment') {
-        const catRaw = item.equipment_category?.name || _catMap[item.index] || '';
-        const cat    = CAT_FR[catRaw] || catRaw;
-        const cost   = item.cost ? `${item.cost.quantity} ${item.cost.unit}` : '';
-        const weight = item.weight ? `${item.weight} lb` : '';
+        const catRaw  = _itemCat(item);
+        const cat     = CAT_FR[catRaw] || catRaw;
+        // cost : Open5e v2 → string "75 gp" | dnd5eapi → {quantity, unit}
+        const costStr = typeof item.cost === 'string' ? item.cost
+                      : item.cost ? `${item.cost.quantity} ${item.cost.unit}` : '';
+        const weight  = item.weight ? `${item.weight} lb` : '';
         div.innerHTML = `
           <div class="comp-item-info">
             <div class="comp-item-name">${item.name}</div>
-            <div class="comp-item-meta">${[cat, cost, weight].filter(Boolean).join(' · ')}</div>
+            <div class="comp-item-meta">${[cat, costStr, weight].filter(Boolean).join(' · ')}</div>
           </div>
           <button class="btn-comp-add" data-comp-type="item" data-comp-idx="${_allItems.indexOf(item)}">+ Add</button>`;
 
@@ -12523,52 +12514,61 @@ function renderFamiliars() {
     renderSpells(); triggerSave();
   }
 
-  /* ── Ajouter un item (schéma dnd5eapi) ── */
+  /* ── Ajouter un item — dual schema (Open5e v2 2024 + dnd5eapi fallback) ── */
   function _addItem(item) {
     if (!playerData) return;
 
-    // Catégorie automatique
-    const catName = item.equipment_category?.name || '';
+    // ── Catégorie ──
+    const catName = _itemCat(item);
     const CAT_MAP = { Weapon:'arme', Armor:'armure', 'Wondrous Items':'magique', 'Magic Items':'magique' };
     const cat = CAT_MAP[catName] || 'equipement';
 
-    // Notes enrichies
     const parts = [];
 
-    // Arme : dégâts + propriétés
-    if (item.damage?.damage_dice) {
-      parts.push(`${item.damage.damage_dice} ${item.damage.damage_type?.name || ''}`);
-    }
-    if (item.two_handed_damage?.damage_dice) {
-      parts.push(`(2H: ${item.two_handed_damage.damage_dice} ${item.two_handed_damage.damage_type?.name || ''})`);
-    }
-    if (item.properties?.length) {
-      parts.push(item.properties.map(p => p.name).join(', '));
-    }
-    if (item.range?.normal) {
-      parts.push(`Portée ${item.range.normal}/${item.range.long || item.range.normal} ft`);
-    }
+    // ── Dégâts (Open5e v2 : damage_dice string | dnd5eapi : damage.damage_dice) ──
+    const dmgDice = item.damage_dice || item.damage?.damage_dice || '';
+    const dmgType = item.damage_type || item.damage?.damage_type?.name || '';
+    if (dmgDice) parts.push(`${dmgDice}${dmgType ? ' ' + dmgType : ''}`.trim());
 
-    // Armure : CA + contraintes
-    if (item.armor_class) {
-      let acStr = `CA ${item.armor_class.base}`;
-      if (item.armor_class.dex_bonus) {
-        acStr += item.armor_class.max_bonus ? ` + DEX (max +${item.armor_class.max_bonus})` : ' + DEX';
-      }
+    const twoHDice = item.two_handed_damage_dice || item.two_handed_damage?.damage_dice || '';
+    const twoHType = item.two_handed_damage_type || item.two_handed_damage?.damage_type?.name || '';
+    if (twoHDice) parts.push(`(2H: ${twoHDice}${twoHType ? ' ' + twoHType : ''})`.trim());
+
+    // ── Propriétés (Open5e v2 : strings | dnd5eapi : [{name}]) ──
+    if (item.properties?.length) {
+      const propNames = item.properties.map(p => typeof p === 'string' ? p : (p.name || '')).filter(Boolean);
+      if (propNames.length) parts.push(propNames.join(', '));
+    }
+    // Open5e v2 weapon mastery 2024
+    if (item.weapon_mastery) parts.push(`Maîtrise : ${item.weapon_mastery}`);
+
+    // ── Portée (Open5e v2 : range_normal | dnd5eapi : range.normal) ──
+    const rNorm = item.range_normal ?? item.range?.normal ?? null;
+    const rLong = item.range_long   ?? item.range?.long   ?? null;
+    if (rNorm) parts.push(`Portée ${rNorm}/${rLong || rNorm} ft`);
+
+    // ── CA armure (Open5e v2 : armor_class number + armor_dex_bonus bool | dnd5eapi : {base, dex_bonus}) ──
+    const acBase  = typeof item.armor_class === 'number' ? item.armor_class : item.armor_class?.base ?? null;
+    if (acBase != null) {
+      const dexBonus = (typeof item.armor_class === 'object' ? item.armor_class.dex_bonus : item.armor_dex_bonus) ?? false;
+      const maxDex   = (typeof item.armor_class === 'object' ? item.armor_class.max_bonus  : item.armor_max_dex)  ?? null;
+      let acStr = `CA ${acBase}`;
+      if (dexBonus) acStr += maxDex ? ` + DEX (max +${maxDex})` : ' + DEX';
       parts.push(acStr);
     }
-    if (item.str_minimum)         parts.push(`Force min. ${item.str_minimum}`);
+    const strMin = item.str_minimum || item.strength_requirement;
+    if (strMin)                    parts.push(`Force min. ${strMin}`);
     if (item.stealth_disadvantage) parts.push('Discrétion désavantage');
 
-    // Poids + coût
+    // ── Poids + coût (Open5e v2 : strings | dnd5eapi : objects) ──
     if (item.weight) parts.push(`${item.weight} lb`);
-    if (item.cost)   parts.push(`${item.cost.quantity} ${item.cost.unit}`);
+    const costStr = typeof item.cost === 'string' ? item.cost
+                  : item.cost ? `${item.cost.quantity} ${item.cost.unit}` : '';
+    if (costStr) parts.push(costStr);
 
-    // Description (première phrase)
-    if (item.desc?.length) {
-      const txt = Array.isArray(item.desc) ? item.desc[0] : item.desc;
-      if (txt) parts.push(txt.length > 100 ? txt.slice(0, 100) + '…' : txt);
-    }
+    // ── Description (première phrase) ──
+    const descRaw = Array.isArray(item.desc) ? item.desc[0] : (item.desc || '');
+    if (descRaw) parts.push(descRaw.length > 100 ? descRaw.slice(0, 100) + '…' : descRaw);
 
     INV().items.push({ qty: 1, name: item.name, cat, notes: parts.join(' · ') });
     renderInventory(); triggerSave();
@@ -12680,37 +12680,11 @@ function renderFamiliars() {
     const idx  = parseInt(btn.dataset.compIdx);
     const item = _allItems[idx];
     if (!item) return;
-    if (type === 'spell') {
-      _addSpell(item);
-      btn.textContent = '✓ Added'; btn.disabled = true;
-      setTimeout(() => { btn.textContent = '+ Add'; btn.disabled = false; }, 1800);
-    } else {
-      // Si l'item n'a pas encore ses données complètes, les fetcher d'abord
-      if (!item.equipment_category && item.index) {
-        btn.textContent = '…'; btn.disabled = true;
-        try {
-          const full = await fetch(`${D5E}/api/equipment/${item.index}`).then(r => r.json());
-          _allItems[idx] = full;           // Mise en cache de l'item complet
-          _cache.equipment = _allItems;
-          _addItem(full);
-          // Mettre à jour la ligne affichée
-          const metaEl = btn.closest('.comp-item')?.querySelector('.comp-item-meta');
-          if (metaEl) {
-            const cr = full.equipment_category?.name || _catMap[full.index] || '';
-            const crf = CAT_FR[cr] || cr;
-            const co = full.cost ? `${full.cost.quantity} ${full.cost.unit}` : '';
-            const w  = full.weight ? `${full.weight} lb` : '';
-            metaEl.textContent = [crf, co, w].filter(Boolean).join(' · ');
-          }
-        } catch { _addItem(item); }
-        btn.textContent = '✓ Added'; btn.disabled = true;
-        setTimeout(() => { btn.textContent = '+ Add'; btn.disabled = false; }, 1800);
-      } else {
-        _addItem(item);
-        btn.textContent = '✓ Added'; btn.disabled = true;
-        setTimeout(() => { btn.textContent = '+ Add'; btn.disabled = false; }, 1800);
-      }
-    }
+    // Open5e v2 retourne les données complètes dans la liste — pas de fetch individuel
+    if (type === 'spell') _addSpell(item);
+    else _addItem(item);
+    btn.textContent = '✓ Added'; btn.disabled = true;
+    setTimeout(() => { btn.textContent = '+ Add'; btn.disabled = false; }, 1800);
   });
 
   function _debouncedRender() {
