@@ -2112,6 +2112,51 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
   background: rgba(201,169,110,0.15); color: var(--gold, #c9a96e);
   border: 1px solid rgba(201,169,110,0.3); flex-shrink: 0; margin-top: 0.1rem;
 }
+/* ── Starting Equipment Panel ── */
+.comp-startequip-btn {
+  font-size: 0.78rem; padding: 0.3rem 0.75rem; border-radius: 4px;
+  border: 1px solid var(--gold-dark, #8a6e1a); background: rgba(201,169,110,0.10);
+  color: var(--gold, #c9a96e); cursor: pointer; transition: background 0.15s;
+  white-space: nowrap; display:none;
+}
+.comp-startequip-btn:hover { background: rgba(201,169,110,0.22); }
+.comp-startequip-btn.open { background: rgba(201,169,110,0.25); border-color: var(--gold, #c9a96e); }
+#comp-startequip-panel {
+  display: none; padding: 0.8rem 1rem 0.9rem;
+  border-bottom: 1px solid var(--j-border-col, #4a3510);
+  background: rgba(0,0,0,0.18);
+}
+#comp-startequip-panel.open { display: block; }
+.comp-se-title {
+  font-family: 'Cinzel', serif; font-size: 0.8rem; color: var(--gold, #c9a96e);
+  margin-bottom: 0.55rem; letter-spacing: 0.04em;
+}
+.comp-se-options { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.comp-se-option {
+  flex: 1; min-width: 190px; border: 1px solid var(--j-border-col, #4a3510);
+  border-radius: 5px; padding: 0.6rem 0.75rem; background: var(--bg-card, #1a1009);
+  cursor: pointer; transition: border-color 0.15s, background 0.15s;
+  user-select: none;
+}
+.comp-se-option:hover { border-color: var(--gold-dark, #8a6e1a); }
+.comp-se-option.selected {
+  border-color: var(--gold, #c9a96e); background: rgba(201,169,110,0.08);
+}
+.comp-se-opt-label {
+  font-weight: 700; font-size: 0.75rem; color: var(--gold, #c9a96e); margin-bottom: 0.3rem;
+}
+.comp-se-opt-items { font-size: 0.72rem; color: #aaa; line-height: 1.6; }
+.comp-se-opt-items span { color: var(--j-text, #e2cfa0); font-weight: 600; }
+.comp-se-footer { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.7rem; }
+.comp-se-apply {
+  padding: 0.32rem 1rem; border-radius: 4px;
+  background: rgba(201,169,110,0.18); border: 1px solid var(--gold-dark, #8a6e1a);
+  color: var(--gold, #c9a96e); font-size: 0.8rem; cursor: pointer;
+  transition: background 0.15s;
+}
+.comp-se-apply:hover { background: rgba(201,169,110,0.35); }
+.comp-se-apply:disabled { opacity: 0.4; cursor: default; }
+.comp-se-note { font-size: 0.72rem; color: #666; font-style: italic; }
 
 /* ── Familiers ── */
 #tab-familiers { padding: 0.5rem 0 2rem; }
@@ -11989,6 +12034,8 @@ function renderFamiliars() {
     document.getElementById('comp-filter-class').style.display = _activeTab === 'spells'    ? '' : 'none';
     document.getElementById('comp-filter-cat').style.display   = _activeTab === 'equipment' ? '' : 'none';
     document.getElementById('comp-filter-cr').style.display    = _activeTab === 'monsters'  ? '' : 'none';
+    document.getElementById('btn-startequip').style.display    = _activeTab === 'equipment' ? '' : 'none';
+    if (_activeTab !== 'equipment') { document.getElementById('comp-startequip-panel').classList.remove('open'); document.getElementById('btn-startequip').classList.remove('open'); }
     document.getElementById('comp-search').value = '';
     document.getElementById('comp-filter-level').value = '';
     document.getElementById('comp-filter-class').value = '';
@@ -12270,6 +12317,8 @@ function renderFamiliars() {
       document.getElementById('comp-filter-class').style.display = _activeTab === 'spells' ? '' : 'none';
       document.getElementById('comp-filter-cat').style.display = _activeTab === 'equipment' ? '' : 'none';
       document.getElementById('comp-filter-cr').style.display = _activeTab === 'monsters' ? '' : 'none';
+      document.getElementById('btn-startequip').style.display = _activeTab === 'equipment' ? '' : 'none';
+      if (_activeTab !== 'equipment') { document.getElementById('comp-startequip-panel').classList.remove('open'); document.getElementById('btn-startequip').classList.remove('open'); }
       document.getElementById('comp-search').value = '';
       document.getElementById('comp-filter-level').value = '';
       document.getElementById('comp-filter-class').value = '';
@@ -12294,6 +12343,150 @@ function renderFamiliars() {
 
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && overlay()?.classList.contains('open')) _closeCompendium();
+  });
+
+  /* ── Équipement de départ 2024 (PHB) ── */
+  const STARTING_EQUIP = {
+    Barbarian: [
+      { label:'Option A', gold:15, items:[{qty:1,name:'Greataxe'},{qty:4,name:'Handaxe'},{qty:1,name:"Explorer's Pack"}] },
+      { label:'Option B — Or uniquement', gold:75, items:[] }
+    ],
+    Bard: [
+      { label:'Option A', gold:19, items:[{qty:1,name:'Leather Armor'},{qty:2,name:'Dagger'},{qty:1,name:'Musical Instrument'},{qty:1,name:"Entertainer's Pack"}] },
+      { label:'Option B — Or uniquement', gold:90, items:[] }
+    ],
+    Cleric: [
+      { label:'Option A', gold:7, items:[{qty:1,name:'Chain Shirt'},{qty:1,name:'Shield'},{qty:1,name:'Mace'},{qty:1,name:'Holy Symbol'},{qty:1,name:"Priest's Pack"}] },
+      { label:'Option B — Or uniquement', gold:110, items:[] }
+    ],
+    Druid: [
+      { label:'Option A', gold:9, items:[{qty:1,name:'Leather Armor'},{qty:1,name:'Shield'},{qty:1,name:'Sickle'},{qty:1,name:'Druidic Focus (Quarterstaff)'},{qty:1,name:"Explorer's Pack"},{qty:1,name:'Herbalism Kit'}] },
+      { label:'Option B — Or uniquement', gold:50, items:[] }
+    ],
+    Fighter: [
+      { label:'Option A', gold:4, items:[{qty:1,name:'Chain Mail'},{qty:1,name:'Greatsword'},{qty:1,name:'Flail'},{qty:8,name:'Javelin'},{qty:1,name:"Dungeoneer's Pack"}] },
+      { label:'Option B', gold:11, items:[{qty:1,name:'Studded Leather Armor'},{qty:1,name:'Scimitar'},{qty:1,name:'Shortsword'},{qty:1,name:'Longbow'},{qty:20,name:'Arrow'},{qty:1,name:'Quiver'},{qty:1,name:"Dungeoneer's Pack"}] },
+      { label:'Option C — Or uniquement', gold:155, items:[] }
+    ],
+    Monk: [
+      { label:'Option A', gold:11, items:[{qty:1,name:'Spear'},{qty:5,name:'Dagger'},{qty:1,name:"Artisan's Tools ou Instrument"},{qty:1,name:"Explorer's Pack"}] },
+      { label:'Option B — Or uniquement', gold:50, items:[] }
+    ],
+    Paladin: [
+      { label:'Option A', gold:9, items:[{qty:1,name:'Chain Mail'},{qty:1,name:'Shield'},{qty:1,name:'Longsword'},{qty:6,name:'Javelin'},{qty:1,name:'Holy Symbol'},{qty:1,name:"Priest's Pack"}] },
+      { label:'Option B — Or uniquement', gold:150, items:[] }
+    ],
+    Ranger: [
+      { label:'Option A', gold:7, items:[{qty:1,name:'Studded Leather Armor'},{qty:1,name:'Scimitar'},{qty:1,name:'Shortsword'},{qty:1,name:'Longbow'},{qty:20,name:'Arrow'},{qty:1,name:'Quiver'},{qty:1,name:'Druidic Focus (sprig of mistletoe)'},{qty:1,name:"Explorer's Pack"}] },
+      { label:'Option B — Or uniquement', gold:150, items:[] }
+    ],
+    Rogue: [
+      { label:'Option A', gold:8, items:[{qty:1,name:'Leather Armor'},{qty:2,name:'Dagger'},{qty:1,name:'Shortsword'},{qty:1,name:'Shortbow'},{qty:20,name:'Arrow'},{qty:1,name:'Quiver'},{qty:1,name:"Thieves' Tools"},{qty:1,name:"Burglar's Pack"}] },
+      { label:'Option B — Or uniquement', gold:100, items:[] }
+    ],
+    Sorcerer: [
+      { label:'Option A', gold:28, items:[{qty:1,name:'Spear'},{qty:2,name:'Dagger'},{qty:1,name:'Arcane Focus (crystal)'},{qty:1,name:"Dungeoneer's Pack"}] },
+      { label:'Option B — Or uniquement', gold:50, items:[] }
+    ],
+    Warlock: [
+      { label:'Option A', gold:15, items:[{qty:1,name:'Leather Armor'},{qty:1,name:'Sickle'},{qty:2,name:'Dagger'},{qty:1,name:'Arcane Focus (orb)'},{qty:1,name:'Book (occult lore)'},{qty:1,name:"Scholar's Pack"}] },
+      { label:'Option B — Or uniquement', gold:100, items:[] }
+    ],
+    Wizard: [
+      { label:'Option A', gold:5, items:[{qty:2,name:'Dagger'},{qty:1,name:'Arcane Focus (Quarterstaff)'},{qty:1,name:'Robe'},{qty:1,name:'Spellbook'},{qty:1,name:"Scholar's Pack"}] },
+      { label:'Option B — Or uniquement', gold:55, items:[] }
+    ]
+  };
+
+  // Normalise le nom de classe vers la clé de STARTING_EQUIP
+  function _matchClass(rawClass) {
+    if (!rawClass) return null;
+    const low = rawClass.toLowerCase().trim();
+    return Object.keys(STARTING_EQUIP).find(k => k.toLowerCase() === low || low.startsWith(k.toLowerCase())) || null;
+  }
+
+  let _seSelectedIdx = 0;
+
+  function _renderStartingEquip() {
+    const panel = document.getElementById('comp-startequip-panel');
+    if (!panel) return;
+    const cls = playerData ? _matchClass(C().classe) : null;
+    const options = cls ? STARTING_EQUIP[cls] : null;
+
+    if (!options) {
+      panel.innerHTML = `<div class="comp-se-title">Équipement de départ 2024</div>
+        <p class="comp-se-note">Classe non reconnue — renseignez votre classe dans l'onglet Personnage pour voir les options.</p>`;
+      return;
+    }
+
+    _seSelectedIdx = Math.min(_seSelectedIdx, options.length - 1);
+
+    const optHtml = options.map((opt, i) => {
+      const itemLines = opt.items.map(it => `<span>${it.qty > 1 ? it.qty + '× ' : ''}${it.name}</span>`).join('<br>');
+      const goldLine = opt.gold ? `<span>${opt.gold} PO</span>` : '';
+      const content = [itemLines, goldLine].filter(Boolean).join('<br>');
+      return `<div class="comp-se-option${i === _seSelectedIdx ? ' selected' : ''}" data-se-opt="${i}">
+        <div class="comp-se-opt-label">${opt.label}</div>
+        <div class="comp-se-opt-items">${content || '<em>Or uniquement</em>'}</div>
+      </div>`;
+    }).join('');
+
+    panel.innerHTML = `
+      <div class="comp-se-title">⚔️ Équipement de départ — ${cls}</div>
+      <div class="comp-se-options">${optHtml}</div>
+      <div class="comp-se-footer">
+        <button class="comp-se-apply" id="btn-se-apply">Appliquer l'option ${options[_seSelectedIdx]?.label?.split(' ')[1] || ''}</button>
+        <span class="comp-se-note">Ajoute les items à l'inventaire et l'or au personnage.</span>
+      </div>`;
+  }
+
+  function _applyStartingEquip() {
+    if (!playerData) return;
+    const cls = _matchClass(C().classe);
+    if (!cls) return;
+    const opt = STARTING_EQUIP[cls]?.[_seSelectedIdx];
+    if (!opt) return;
+
+    // Ajouter les items
+    if (!INV().items) INV().items = [];
+    opt.items.forEach(it => { INV().items.push({ qty: it.qty, name: it.name, notes: 'Équip. départ' }); });
+
+    // Ajouter l'or
+    if (opt.gold) {
+      const current = parseFloat(C().gold) || 0;
+      C().gold = String(Math.round((current + opt.gold) * 100) / 100);
+      const goldEl = document.getElementById('char-gold');
+      if (goldEl) goldEl.value = C().gold;
+    }
+
+    renderInventory();
+    triggerSave();
+
+    const btn = document.getElementById('btn-se-apply');
+    if (btn) { btn.textContent = '✓ Appliqué !'; btn.disabled = true; setTimeout(() => { btn.textContent = `Appliquer l'option ${STARTING_EQUIP[cls][_seSelectedIdx]?.label?.split(' ')[1] || ''}`; btn.disabled = false; }, 2500); }
+  }
+
+  // Toggle du panneau
+  document.addEventListener('click', e => {
+    if (e.target.closest('#btn-startequip')) {
+      const panel = document.getElementById('comp-startequip-panel');
+      const btn   = document.getElementById('btn-startequip');
+      const isOpen = panel.classList.toggle('open');
+      btn.classList.toggle('open', isOpen);
+      if (isOpen) _renderStartingEquip();
+      return;
+    }
+    // Sélection d'une option
+    const optEl = e.target.closest('[data-se-opt]');
+    if (optEl) {
+      _seSelectedIdx = parseInt(optEl.dataset.seOpt);
+      _renderStartingEquip();
+      return;
+    }
+    // Appliquer
+    if (e.target.id === 'btn-se-apply') {
+      _applyStartingEquip();
+    }
   });
 })();
 
@@ -12381,7 +12574,9 @@ function startRealtime(username) {
         <option value="Trade Goods">Marchandises</option>
         <option value="Magic Items">Objets magiques</option>
       </select>
+      <button class="comp-startequip-btn" id="btn-startequip">⚔️ Équipement de départ</button>
     </div>
+    <div id="comp-startequip-panel"></div>
     <div id="compendium-list"><div class="comp-loading">Chargement…</div></div>
   </div>
 </div>
