@@ -2112,6 +2112,79 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
   background: rgba(201,169,110,0.15); color: var(--gold, #c9a96e);
   border: 1px solid rgba(201,169,110,0.3); flex-shrink: 0; margin-top: 0.1rem;
 }
+/* ── Starting Equipment Panel ── */
+.comp-startequip-btn {
+  font-size: 0.78rem; padding: 0.3rem 0.75rem; border-radius: 4px;
+  border: 1px solid var(--gold-dark, #8a6e1a); background: rgba(201,169,110,0.10);
+  color: var(--gold, #c9a96e); cursor: pointer; transition: background 0.15s;
+  white-space: nowrap; display:none;
+}
+.comp-startequip-btn:hover { background: rgba(201,169,110,0.22); }
+.comp-startequip-btn.open { background: rgba(201,169,110,0.25); border-color: var(--gold, #c9a96e); }
+#comp-startequip-panel {
+  display: none; padding: 0.8rem 1rem 0.9rem;
+  border-bottom: 1px solid var(--j-border-col, #4a3510);
+  background: rgba(0,0,0,0.18);
+}
+#comp-startequip-panel.open { display: block; }
+.comp-se-title {
+  font-family: 'Cinzel', serif; font-size: 0.8rem; color: var(--gold, #c9a96e);
+  margin-bottom: 0.55rem; letter-spacing: 0.04em;
+}
+.comp-se-options { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.comp-se-option {
+  flex: 1; min-width: 190px; border: 1px solid var(--j-border-col, #4a3510);
+  border-radius: 5px; padding: 0.6rem 0.75rem; background: var(--bg-card, #1a1009);
+  cursor: pointer; transition: border-color 0.15s, background 0.15s;
+  user-select: none;
+}
+.comp-se-option:hover { border-color: var(--gold-dark, #8a6e1a); }
+.comp-se-option.selected {
+  border-color: var(--gold, #c9a96e); background: rgba(201,169,110,0.08);
+}
+.comp-se-opt-label {
+  font-weight: 700; font-size: 0.75rem; color: var(--gold, #c9a96e); margin-bottom: 0.3rem;
+}
+.comp-se-opt-items { font-size: 0.72rem; color: #aaa; line-height: 1.6; }
+.comp-se-opt-items span { color: var(--j-text, #e2cfa0); font-weight: 600; }
+.comp-se-footer { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.7rem; }
+.comp-se-apply {
+  padding: 0.32rem 1rem; border-radius: 4px;
+  background: rgba(201,169,110,0.18); border: 1px solid var(--gold-dark, #8a6e1a);
+  color: var(--gold, #c9a96e); font-size: 0.8rem; cursor: pointer;
+  transition: background 0.15s;
+}
+.comp-se-apply:hover { background: rgba(201,169,110,0.35); }
+.comp-se-apply:disabled { opacity: 0.4; cursor: default; }
+.comp-se-note { font-size: 0.72rem; color: #666; font-style: italic; }
+
+/* ── Worn Armor ── */
+.worn-armor-card {
+  background: var(--bg-secondary, #1a1009); border-radius: 6px;
+  border: 1px solid var(--j-border-col, #2a2a3a); padding: 0.75rem 0.9rem; margin-bottom: 0.5rem;
+}
+.wa-top-row { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.55rem; }
+.wa-mode-select { flex: 1; min-width: 0; }
+.wa-ac-badge {
+  font-family: 'Cinzel', serif; font-size: 1.15rem; font-weight: 700;
+  color: var(--gold, #c9a96e); background: rgba(201,169,110,0.12);
+  border: 1px solid rgba(201,169,110,0.35); border-radius: 5px;
+  padding: 0.15rem 0.65rem; white-space: nowrap; min-width: 62px; text-align: center;
+}
+.wa-armor-row { display: none; gap: 0.5rem; margin-bottom: 0.45rem; align-items: center; flex-wrap: wrap; }
+.wa-armor-row.visible { display: flex; }
+.wa-preset-select { flex: 1; min-width: 130px; }
+.wa-base-input { width: 62px; text-align: center; }
+.wa-options-row { display: flex; gap: 0.9rem; align-items: center; margin-bottom: 0.45rem; flex-wrap: wrap; }
+.wa-checkbox-label { display: flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; color: var(--j-text, #e2cfa0); cursor: pointer; }
+.wa-checkbox-label input[type="checkbox"] { accent-color: var(--gold, #c9a96e); cursor: pointer; width: 14px; height: 14px; }
+.wa-bonus-label { display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; color: var(--j-text, #e2cfa0); }
+.wa-bonus-input { width: 55px; text-align: center; }
+.wa-formula {
+  font-size: 0.71rem; color: #777; font-style: italic;
+  padding-top: 0.35rem; border-top: 1px solid rgba(74,53,16,0.4); line-height: 1.5;
+}
+.wa-formula strong { color: var(--gold-dark, #8a6e1a); font-style: normal; }
 
 /* ── Familiers ── */
 #tab-familiers { padding: 0.5rem 0 2rem; }
@@ -3092,6 +3165,10 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
 
     <!-- ── Inventory Tab ── -->
     <div class="tab-panel" id="tab-inventaire">
+      <div class="sheet-section" id="section-worn-armor">
+        <div class="sheet-section-title">🛡 Armure portée</div>
+        <div id="worn-armor-card-container"></div>
+      </div>
       <div class="sheet-section">
         <div class="sheet-section-title">Items</div>
         <div class="inv-cat-tabs" id="inv-cat-tabs">
@@ -5164,7 +5241,8 @@ function emptyCharacter() {
     investigation:false, medecine:false, nature:false, perception:false,
     performance:false, persuasion:false, prestidig:false, religion:false,
     survie:false, perspicacite:false,
-    ca:10, initiative:0, vitesse:30, pvMax:0, pvActuel:0, pvTemp:0,
+    ca:10, armorConfig:{ mode:'unarmored', baseAC:10, armorName:'', shield:false, otherBonus:0 },
+    initiative:0, vitesse:30, pvMax:0, pvActuel:0, pvTemp:0,
     deVie:'1d8', nbDeVie:1, mortSucces:0, mortEchecs:0,
     attaques:[], classeSort:'', caractSort:'',
     emplacementsSort:{1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0},
@@ -6006,7 +6084,7 @@ const _TAB_RENDERERS = {
     renderMods();
   },
   identite:   () => { fillFields(); },
-  inventaire: () => { renderInventory(); renderRationTracker(); renderAttunement(); fillCurrency(); },
+  inventaire: () => { renderWornArmor(); renderInventory(); renderRationTracker(); renderAttunement(); fillCurrency(); },
   notes:      () => { renderNotesPages(); loadCurrentNoteInEditor(); },
   parametres: () => { renderSectionVisibility(); },
   aide:       null,
@@ -8037,6 +8115,204 @@ let _spellPrepFilter = false;
 
 /* ── Inventaire ── */
 let _invActiveCat = '';
+/* ── Armure portée / AC Calculator ── */
+const ARMOR_PRESETS = {
+  light:  [
+    { name:'Padded',           baseAC:11 },
+    { name:'Leather',          baseAC:11 },
+    { name:'Studded Leather',  baseAC:12 },
+  ],
+  medium: [
+    { name:'Hide',             baseAC:12 },
+    { name:'Chain Shirt',      baseAC:13 },
+    { name:'Scale Mail',       baseAC:14 },
+    { name:'Breastplate',      baseAC:14 },
+    { name:'Half Plate',       baseAC:15 },
+  ],
+  heavy:  [
+    { name:'Ring Mail',        baseAC:14 },
+    { name:'Chain Mail',       baseAC:16 },
+    { name:'Splint',           baseAC:17 },
+    { name:'Plate',            baseAC:18 },
+  ],
+};
+
+function calcAndSetAC() {
+  if (!playerData) return;
+  const cfg = C().armorConfig || {};
+  const mode = cfg.mode || 'unarmored';
+  const dex  = mod(abilScore('dex'));
+  const con  = mod(abilScore('con'));
+  const wis  = mod(abilScore('sag'));
+
+  let base = 10, formula = '';
+  switch (mode) {
+    case 'light': {
+      const b = cfg.baseAC || 11;
+      base = b + dex;
+      formula = `${b} (${cfg.armorName||'Légère'}) + ${dex>=0?'+':''}${dex} DEX`;
+      break;
+    }
+    case 'medium': {
+      const b = cfg.baseAC || 12;
+      const d = Math.min(dex, 2);
+      base = b + d;
+      formula = `${b} (${cfg.armorName||'Intermédiaire'}) + ${d>=0?'+':''}${d} DEX (max +2)`;
+      break;
+    }
+    case 'heavy':
+      base = cfg.baseAC || 14;
+      formula = `${base} (${cfg.armorName||'Lourde'})`;
+      break;
+    case 'mageArmor':
+      base = 13 + dex;
+      formula = `13 (Mage Armor) + ${dex>=0?'+':''}${dex} DEX`;
+      break;
+    case 'unarmoredBarb':
+      base = 10 + dex + con;
+      formula = `10 + ${dex>=0?'+':''}${dex} DEX + ${con>=0?'+':''}${con} CON`;
+      break;
+    case 'unarmoredMonk':
+      base = 10 + dex + wis;
+      formula = `10 + ${dex>=0?'+':''}${dex} DEX + ${wis>=0?'+':''}${wis} SAG`;
+      break;
+    case 'natural':
+      base = cfg.baseAC || 10;
+      formula = `${base} (Armure naturelle)`;
+      break;
+    case 'custom':
+      base = cfg.baseAC || 10;
+      formula = `${base} (Personnalisé)`;
+      break;
+    default: // unarmored
+      base = 10 + dex;
+      formula = `10 + ${dex>=0?'+':''}${dex} DEX`;
+  }
+
+  const shield = cfg.shield ? 2 : 0;
+  const other  = parseInt(cfg.otherBonus) || 0;
+  if (shield) formula += ` + 2 (Bouclier)`;
+  if (other)  formula += ` + ${other>=0?'+':''}${other} (Bonus)`;
+  base += shield + other;
+
+  C().ca = base;
+  const inpCA = document.getElementById('inp-ca');
+  if (inpCA) inpCA.value = base;
+
+  const badgeEl = document.getElementById('wa-ac-badge');
+  if (badgeEl) badgeEl.textContent = base + ' CA';
+
+  const formulaEl = document.getElementById('wa-formula');
+  if (formulaEl) formulaEl.innerHTML = formula + ' = <strong>' + base + ' CA</strong>';
+
+  // Mise à jour hero bar
+  const heroCA = document.getElementById('vb-hero-ca');
+  if (heroCA) heroCA.textContent = (base + (typeof getMod === 'function' ? (getMod('ac')||0) : 0));
+}
+
+function renderWornArmor() {
+  const container = document.getElementById('worn-armor-card-container');
+  if (!container || !playerData) return;
+  const cfg  = C().armorConfig || (C().armorConfig = { mode:'unarmored', baseAC:10, armorName:'', shield:false, otherBonus:0 });
+  const mode = cfg.mode || 'unarmored';
+  const hasArmor = ['light','medium','heavy','natural','custom'].includes(mode);
+
+  // Build preset options for current armor type
+  let presetOptions = '';
+  if (['light','medium','heavy'].includes(mode)) {
+    presetOptions = ARMOR_PRESETS[mode].map(p =>
+      `<option value="${p.baseAC}|${p.name}"${cfg.armorName===p.name?' selected':''}>${p.name} (CA ${p.baseAC})</option>`
+    ).join('');
+    presetOptions = `<option value="">— Choisir —</option>` + presetOptions;
+  }
+
+  const MODES = [
+    { v:'unarmored',     l:'Sans armure' },
+    { v:'light',         l:'Armure légère' },
+    { v:'medium',        l:'Armure intermédiaire' },
+    { v:'heavy',         l:'Armure lourde' },
+    { v:'mageArmor',     l:'Mage Armor' },
+    { v:'unarmoredBarb', l:'Défense sans armure — Barbare' },
+    { v:'unarmoredMonk', l:'Défense sans armure — Moine' },
+    { v:'natural',       l:'Armure naturelle' },
+    { v:'custom',        l:'Personnalisé' },
+  ];
+  const modeOpts = MODES.map(m => `<option value="${m.v}"${mode===m.v?' selected':''}>${m.l}</option>`).join('');
+
+  const dex = mod(abilScore('dex'));
+  const con = mod(abilScore('con'));
+  const wis = mod(abilScore('sag'));
+  let hint = '';
+  if (mode==='unarmored')     hint = `10 + DEX (${dex>=0?'+':''}${dex})`;
+  else if (mode==='mageArmor') hint = `13 + DEX (${dex>=0?'+':''}${dex})`;
+  else if (mode==='unarmoredBarb') hint = `10 + DEX (${dex>=0?'+':''}${dex}) + CON (${con>=0?'+':''}${con})`;
+  else if (mode==='unarmoredMonk') hint = `10 + DEX (${dex>=0?'+':''}${dex}) + SAG (${wis>=0?'+':''}${wis})`;
+
+  container.innerHTML = `
+  <div class="worn-armor-card">
+    <div class="wa-top-row">
+      <select class="field-input wa-mode-select" id="wa-mode">${modeOpts}</select>
+      <div class="wa-ac-badge" id="wa-ac-badge">— CA</div>
+    </div>
+    ${hasArmor ? `<div class="wa-armor-row visible">
+      ${['light','medium','heavy'].includes(mode) ? `<select class="field-input wa-preset-select" id="wa-preset">${presetOptions}</select>` : ''}
+      <label style="font-size:0.8rem;color:var(--j-text,#e2cfa0);display:flex;align-items:center;gap:0.3rem;">
+        Base CA <input type="number" class="field-input wa-base-input" id="wa-base-ac" value="${cfg.baseAC||10}" min="1" max="30">
+      </label>
+    </div>` : (hint ? `<div style="font-size:0.75rem;color:#888;margin-bottom:0.4rem;font-style:italic;">${hint}</div>` : '')}
+    <div class="wa-options-row">
+      <label class="wa-checkbox-label">
+        <input type="checkbox" id="wa-shield"${cfg.shield?' checked':''}> Bouclier (+2)
+      </label>
+      <label class="wa-bonus-label">
+        Bonus <input type="number" class="field-input wa-bonus-input" id="wa-other-bonus" value="${cfg.otherBonus||0}">
+      </label>
+    </div>
+    <div class="wa-formula" id="wa-formula">—</div>
+  </div>`;
+
+  calcAndSetAC(); // compute and fill badge + formula
+
+  // ── Listeners ──
+  const modeEl   = document.getElementById('wa-mode');
+  const presetEl = document.getElementById('wa-preset');
+  const baseEl   = document.getElementById('wa-base-ac');
+  const shieldEl = document.getElementById('wa-shield');
+  const bonusEl  = document.getElementById('wa-other-bonus');
+
+  function _save() { calcAndSetAC(); triggerSave(); }
+
+  if (modeEl) modeEl.addEventListener('change', () => {
+    cfg.mode = modeEl.value;
+    // Reset armorName / baseAC to defaults when switching type
+    if (modeEl.value === 'light')   { cfg.baseAC = 11; cfg.armorName = ''; }
+    if (modeEl.value === 'medium')  { cfg.baseAC = 12; cfg.armorName = ''; }
+    if (modeEl.value === 'heavy')   { cfg.baseAC = 14; cfg.armorName = ''; }
+    if (modeEl.value === 'mageArmor' || modeEl.value === 'unarmored' || modeEl.value === 'unarmoredBarb' || modeEl.value === 'unarmoredMonk') {
+      cfg.baseAC = 10; cfg.armorName = '';
+    }
+    renderWornArmor(); // full re-render for show/hide logic
+    triggerSave();
+  });
+
+  if (presetEl) presetEl.addEventListener('change', () => {
+    const [ac, name] = presetEl.value.split('|');
+    if (ac) { cfg.baseAC = parseInt(ac); cfg.armorName = name || ''; }
+    if (baseEl) baseEl.value = cfg.baseAC;
+    _save();
+  });
+
+  if (baseEl) baseEl.addEventListener('input', () => {
+    cfg.baseAC = parseInt(baseEl.value) || 10;
+    cfg.armorName = ''; // custom base = no preset name
+    if (presetEl) presetEl.value = '';
+    _save();
+  });
+
+  if (shieldEl) shieldEl.addEventListener('change', () => { cfg.shield = shieldEl.checked; _save(); });
+  if (bonusEl)  bonusEl.addEventListener('input',  () => { cfg.otherBonus = parseInt(bonusEl.value)||0; _save(); });
+}
+
 function renderInventory() {
   const search = (document.getElementById('inv-search')?.value || '').toLowerCase();
   const tbody  = document.getElementById('inv-tbody');
@@ -10087,7 +10363,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (el.dataset.f === 'characterName') { activeSlot().name = el.value || 'Unnamed'; renderCharCards(); }
       if (el.dataset.f === 'niveau') { syncClassesToLegacy(C()); updateProfBonus(); renderSaves(); renderSkills(); renderPassiveSkills(); renderClassFeatures(); renderMulticlasses(); }
       if (el.dataset.f === 'classe') { autoFillClass(el.value); updateCharSummary(); renderCharCards(); }
-      if (['for','dex','con','int','sag','cha'].includes(el.dataset.f)) { updateModifier(el.dataset.f); debouncedStats(() => { renderSaves(); renderSkills(); renderPassiveSkills(); updateSpellCalcs(); renderAttacks(); }); }
+      if (['for','dex','con','int','sag','cha'].includes(el.dataset.f)) { updateModifier(el.dataset.f); debouncedStats(() => { renderSaves(); renderSkills(); renderPassiveSkills(); updateSpellCalcs(); renderAttacks(); if (C().armorConfig?.mode && C().armorConfig.mode !== 'custom') calcAndSetAC(); }); }
       if (el.dataset.f === 'caractSort' || el.dataset.f === 'niveau') updateSpellCalcs();
       if (el.dataset.f === 'pvMax' || el.dataset.f === 'pvActuel') { updateHpBar(); renderCharCards(); }
       updateCharSummary();
@@ -11194,7 +11470,7 @@ document.getElementById('vb-hero')?.addEventListener('input', e => {
   else C()[el.dataset.f] = el.value;
   if (el.dataset.f === 'pvMax' || el.dataset.f === 'pvActuel') { updateHpBar(); renderCharCards(); }
   if (el.dataset.f === 'ca' || el.dataset.f === 'vitesse') renderHero();
-  if (['for','dex','con','int','sag','cha'].includes(el.dataset.f)) { updateModifier(el.dataset.f); debouncedStats(() => { renderSaves(); renderSkills(); renderPassiveSkills(); updateSpellCalcs(); renderAttacks(); }); }
+  if (['for','dex','con','int','sag','cha'].includes(el.dataset.f)) { updateModifier(el.dataset.f); debouncedStats(() => { renderSaves(); renderSkills(); renderPassiveSkills(); updateSpellCalcs(); renderAttacks(); if (C().armorConfig?.mode && C().armorConfig.mode !== 'custom') calcAndSetAC(); }); }
   triggerSave();
 });
 
@@ -11989,6 +12265,8 @@ function renderFamiliars() {
     document.getElementById('comp-filter-class').style.display = _activeTab === 'spells'    ? '' : 'none';
     document.getElementById('comp-filter-cat').style.display   = _activeTab === 'equipment' ? '' : 'none';
     document.getElementById('comp-filter-cr').style.display    = _activeTab === 'monsters'  ? '' : 'none';
+    document.getElementById('btn-startequip').style.display    = _activeTab === 'equipment' ? '' : 'none';
+    if (_activeTab !== 'equipment') { document.getElementById('comp-startequip-panel').classList.remove('open'); document.getElementById('btn-startequip').classList.remove('open'); }
     document.getElementById('comp-search').value = '';
     document.getElementById('comp-filter-level').value = '';
     document.getElementById('comp-filter-class').value = '';
@@ -12270,6 +12548,8 @@ function renderFamiliars() {
       document.getElementById('comp-filter-class').style.display = _activeTab === 'spells' ? '' : 'none';
       document.getElementById('comp-filter-cat').style.display = _activeTab === 'equipment' ? '' : 'none';
       document.getElementById('comp-filter-cr').style.display = _activeTab === 'monsters' ? '' : 'none';
+      document.getElementById('btn-startequip').style.display = _activeTab === 'equipment' ? '' : 'none';
+      if (_activeTab !== 'equipment') { document.getElementById('comp-startequip-panel').classList.remove('open'); document.getElementById('btn-startequip').classList.remove('open'); }
       document.getElementById('comp-search').value = '';
       document.getElementById('comp-filter-level').value = '';
       document.getElementById('comp-filter-class').value = '';
@@ -12294,6 +12574,150 @@ function renderFamiliars() {
 
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && overlay()?.classList.contains('open')) _closeCompendium();
+  });
+
+  /* ── Équipement de départ 2024 (PHB) ── */
+  const STARTING_EQUIP = {
+    Barbarian: [
+      { label:'Option A', gold:15, items:[{qty:1,name:'Greataxe'},{qty:4,name:'Handaxe'},{qty:1,name:"Explorer's Pack"}] },
+      { label:'Option B — Or uniquement', gold:75, items:[] }
+    ],
+    Bard: [
+      { label:'Option A', gold:19, items:[{qty:1,name:'Leather Armor'},{qty:2,name:'Dagger'},{qty:1,name:'Musical Instrument'},{qty:1,name:"Entertainer's Pack"}] },
+      { label:'Option B — Or uniquement', gold:90, items:[] }
+    ],
+    Cleric: [
+      { label:'Option A', gold:7, items:[{qty:1,name:'Chain Shirt'},{qty:1,name:'Shield'},{qty:1,name:'Mace'},{qty:1,name:'Holy Symbol'},{qty:1,name:"Priest's Pack"}] },
+      { label:'Option B — Or uniquement', gold:110, items:[] }
+    ],
+    Druid: [
+      { label:'Option A', gold:9, items:[{qty:1,name:'Leather Armor'},{qty:1,name:'Shield'},{qty:1,name:'Sickle'},{qty:1,name:'Druidic Focus (Quarterstaff)'},{qty:1,name:"Explorer's Pack"},{qty:1,name:'Herbalism Kit'}] },
+      { label:'Option B — Or uniquement', gold:50, items:[] }
+    ],
+    Fighter: [
+      { label:'Option A', gold:4, items:[{qty:1,name:'Chain Mail'},{qty:1,name:'Greatsword'},{qty:1,name:'Flail'},{qty:8,name:'Javelin'},{qty:1,name:"Dungeoneer's Pack"}] },
+      { label:'Option B', gold:11, items:[{qty:1,name:'Studded Leather Armor'},{qty:1,name:'Scimitar'},{qty:1,name:'Shortsword'},{qty:1,name:'Longbow'},{qty:20,name:'Arrow'},{qty:1,name:'Quiver'},{qty:1,name:"Dungeoneer's Pack"}] },
+      { label:'Option C — Or uniquement', gold:155, items:[] }
+    ],
+    Monk: [
+      { label:'Option A', gold:11, items:[{qty:1,name:'Spear'},{qty:5,name:'Dagger'},{qty:1,name:"Artisan's Tools ou Instrument"},{qty:1,name:"Explorer's Pack"}] },
+      { label:'Option B — Or uniquement', gold:50, items:[] }
+    ],
+    Paladin: [
+      { label:'Option A', gold:9, items:[{qty:1,name:'Chain Mail'},{qty:1,name:'Shield'},{qty:1,name:'Longsword'},{qty:6,name:'Javelin'},{qty:1,name:'Holy Symbol'},{qty:1,name:"Priest's Pack"}] },
+      { label:'Option B — Or uniquement', gold:150, items:[] }
+    ],
+    Ranger: [
+      { label:'Option A', gold:7, items:[{qty:1,name:'Studded Leather Armor'},{qty:1,name:'Scimitar'},{qty:1,name:'Shortsword'},{qty:1,name:'Longbow'},{qty:20,name:'Arrow'},{qty:1,name:'Quiver'},{qty:1,name:'Druidic Focus (sprig of mistletoe)'},{qty:1,name:"Explorer's Pack"}] },
+      { label:'Option B — Or uniquement', gold:150, items:[] }
+    ],
+    Rogue: [
+      { label:'Option A', gold:8, items:[{qty:1,name:'Leather Armor'},{qty:2,name:'Dagger'},{qty:1,name:'Shortsword'},{qty:1,name:'Shortbow'},{qty:20,name:'Arrow'},{qty:1,name:'Quiver'},{qty:1,name:"Thieves' Tools"},{qty:1,name:"Burglar's Pack"}] },
+      { label:'Option B — Or uniquement', gold:100, items:[] }
+    ],
+    Sorcerer: [
+      { label:'Option A', gold:28, items:[{qty:1,name:'Spear'},{qty:2,name:'Dagger'},{qty:1,name:'Arcane Focus (crystal)'},{qty:1,name:"Dungeoneer's Pack"}] },
+      { label:'Option B — Or uniquement', gold:50, items:[] }
+    ],
+    Warlock: [
+      { label:'Option A', gold:15, items:[{qty:1,name:'Leather Armor'},{qty:1,name:'Sickle'},{qty:2,name:'Dagger'},{qty:1,name:'Arcane Focus (orb)'},{qty:1,name:'Book (occult lore)'},{qty:1,name:"Scholar's Pack"}] },
+      { label:'Option B — Or uniquement', gold:100, items:[] }
+    ],
+    Wizard: [
+      { label:'Option A', gold:5, items:[{qty:2,name:'Dagger'},{qty:1,name:'Arcane Focus (Quarterstaff)'},{qty:1,name:'Robe'},{qty:1,name:'Spellbook'},{qty:1,name:"Scholar's Pack"}] },
+      { label:'Option B — Or uniquement', gold:55, items:[] }
+    ]
+  };
+
+  // Normalise le nom de classe vers la clé de STARTING_EQUIP
+  function _matchClass(rawClass) {
+    if (!rawClass) return null;
+    const low = rawClass.toLowerCase().trim();
+    return Object.keys(STARTING_EQUIP).find(k => k.toLowerCase() === low || low.startsWith(k.toLowerCase())) || null;
+  }
+
+  let _seSelectedIdx = 0;
+
+  function _renderStartingEquip() {
+    const panel = document.getElementById('comp-startequip-panel');
+    if (!panel) return;
+    const cls = playerData ? _matchClass(C().classe) : null;
+    const options = cls ? STARTING_EQUIP[cls] : null;
+
+    if (!options) {
+      panel.innerHTML = `<div class="comp-se-title">Équipement de départ 2024</div>
+        <p class="comp-se-note">Classe non reconnue — renseignez votre classe dans l'onglet Personnage pour voir les options.</p>`;
+      return;
+    }
+
+    _seSelectedIdx = Math.min(_seSelectedIdx, options.length - 1);
+
+    const optHtml = options.map((opt, i) => {
+      const itemLines = opt.items.map(it => `<span>${it.qty > 1 ? it.qty + '× ' : ''}${it.name}</span>`).join('<br>');
+      const goldLine = opt.gold ? `<span>${opt.gold} PO</span>` : '';
+      const content = [itemLines, goldLine].filter(Boolean).join('<br>');
+      return `<div class="comp-se-option${i === _seSelectedIdx ? ' selected' : ''}" data-se-opt="${i}">
+        <div class="comp-se-opt-label">${opt.label}</div>
+        <div class="comp-se-opt-items">${content || '<em>Or uniquement</em>'}</div>
+      </div>`;
+    }).join('');
+
+    panel.innerHTML = `
+      <div class="comp-se-title">⚔️ Équipement de départ — ${cls}</div>
+      <div class="comp-se-options">${optHtml}</div>
+      <div class="comp-se-footer">
+        <button class="comp-se-apply" id="btn-se-apply">Appliquer l'option ${options[_seSelectedIdx]?.label?.split(' ')[1] || ''}</button>
+        <span class="comp-se-note">Ajoute les items à l'inventaire et l'or au personnage.</span>
+      </div>`;
+  }
+
+  function _applyStartingEquip() {
+    if (!playerData) return;
+    const cls = _matchClass(C().classe);
+    if (!cls) return;
+    const opt = STARTING_EQUIP[cls]?.[_seSelectedIdx];
+    if (!opt) return;
+
+    // Ajouter les items
+    if (!INV().items) INV().items = [];
+    opt.items.forEach(it => { INV().items.push({ qty: it.qty, name: it.name, notes: 'Équip. départ' }); });
+
+    // Ajouter l'or
+    if (opt.gold) {
+      const current = parseFloat(C().gold) || 0;
+      C().gold = String(Math.round((current + opt.gold) * 100) / 100);
+      const goldEl = document.getElementById('char-gold');
+      if (goldEl) goldEl.value = C().gold;
+    }
+
+    renderInventory();
+    triggerSave();
+
+    const btn = document.getElementById('btn-se-apply');
+    if (btn) { btn.textContent = '✓ Appliqué !'; btn.disabled = true; setTimeout(() => { btn.textContent = `Appliquer l'option ${STARTING_EQUIP[cls][_seSelectedIdx]?.label?.split(' ')[1] || ''}`; btn.disabled = false; }, 2500); }
+  }
+
+  // Toggle du panneau
+  document.addEventListener('click', e => {
+    if (e.target.closest('#btn-startequip')) {
+      const panel = document.getElementById('comp-startequip-panel');
+      const btn   = document.getElementById('btn-startequip');
+      const isOpen = panel.classList.toggle('open');
+      btn.classList.toggle('open', isOpen);
+      if (isOpen) _renderStartingEquip();
+      return;
+    }
+    // Sélection d'une option
+    const optEl = e.target.closest('[data-se-opt]');
+    if (optEl) {
+      _seSelectedIdx = parseInt(optEl.dataset.seOpt);
+      _renderStartingEquip();
+      return;
+    }
+    // Appliquer
+    if (e.target.id === 'btn-se-apply') {
+      _applyStartingEquip();
+    }
   });
 })();
 
@@ -12381,7 +12805,9 @@ function startRealtime(username) {
         <option value="Trade Goods">Marchandises</option>
         <option value="Magic Items">Objets magiques</option>
       </select>
+      <button class="comp-startequip-btn" id="btn-startequip">⚔️ Équipement de départ</button>
     </div>
+    <div id="comp-startequip-panel"></div>
     <div id="compendium-list"><div class="comp-loading">Chargement…</div></div>
   </div>
 </div>
