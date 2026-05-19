@@ -11951,10 +11951,10 @@ function renderFamiliars() {
   });
 })();
 
-/* ── Compendium D&D 2024 (Open5e v2 + dnd5eapi fallback) ── */
+/* ── Compendium D&D 2024 (wikidot local + dnd5eapi fallback) ── */
 (function () {
-  const O5E  = 'https://api.open5e.com';           // Open5e — 2024 spells & creatures
-  const D5E  = 'https://www.dnd5eapi.co';           // dnd5eapi  — equipment (unchanged in 2024)
+  const O5E  = 'https://api.open5e.com';
+  const D5E  = 'https://www.dnd5eapi.co';
   const DOC  = 'srd-2024';
   const _cache = {};
   let _activeTab = 'spells';
@@ -11964,7 +11964,7 @@ function renderFamiliars() {
   const overlay = () => document.getElementById('compendium-overlay');
   const list    = () => document.getElementById('compendium-list');
 
-  /* ── Follow pagination until all results collected ── */
+  /* ── Follow pagination (used only for monsters & equipment) ── */
   async function _fetchAll(firstUrl) {
     const acc = [];
     let next = firstUrl;
@@ -11974,7 +11974,7 @@ function renderFamiliars() {
       const d = await r.json();
       acc.push(...(d.results || []));
       next = d.next || null;
-      if (acc.length > 3000) break; // safety cap
+      if (acc.length > 3000) break;
     }
     return acc;
   }
@@ -11998,24 +11998,24 @@ function renderFamiliars() {
 
   async function _loadTab(tab) {
     if (_cache[tab]) { _allItems = _cache[tab]; _render(); return; }
-    list().innerHTML = '<div class="comp-loading">Loading 2024 SRD…</div>';
+    list().innerHTML = '<div class="comp-loading">Chargement 2024…</div>';
     try {
       if (tab === 'spells') {
-        // Open5e v2 — 2024 SRD spells, full data in list response
-        _allItems = await _fetchAll(`${O5E}/v2/spells/?document__key__in=${DOC}&limit=300`);
+        // Sorts 2024 — fichier local extrait depuis dnd2024.wikidot.com
+        const r = await fetch('spells-2024.json');
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        _allItems = await r.json();
       } else if (tab === 'equipment') {
-        // Equipment largely unchanged — keep dnd5eapi 5e SRD data
         const r = await fetch(`${D5E}/api/equipment`);
         const d = await r.json();
         _allItems = d.results || [];
       } else {
-        // Open5e v2 — 2024 SRD creatures (basic list, details fetched on import)
         _allItems = await _fetchAll(`${O5E}/v2/creatures/?document__key__in=${DOC}&limit=300`);
       }
       _cache[tab] = _allItems;
       _render();
     } catch(e) {
-      list().innerHTML = '<div class="comp-empty">Unable to load the compendium. Check your connection.</div>';
+      list().innerHTML = '<div class="comp-empty">Impossible de charger le compendium. Vérifiez votre connexion.</div>';
     }
   }
 
@@ -12046,7 +12046,7 @@ function renderFamiliars() {
       });
     }
 
-    if (!items.length) { list().innerHTML = '<div class="comp-empty">No results.</div>'; return; }
+    if (!items.length) { list().innerHTML = '<div class="comp-empty">Aucun résultat.</div>'; return; }
 
     const frag = document.createDocumentFragment();
     items.slice(0, 100).forEach(item => {
@@ -12054,23 +12054,25 @@ function renderFamiliars() {
       div.className = 'comp-item';
 
       if (_activeTab === 'spells') {
+        // Schéma wikidot local : level(number), school(string), classes(string[]),
+        // castingTime, range, components, material, duration, concentration, ritual, desc
         const lvl      = item.level === 0 ? 'C' : item.level;
-        const school   = item.school?.name || '';
-        const castTime = item.casting_time || '';
-        const range    = item.range || item.range_text || '';
+        const school   = item.school || '';
+        const castTime = item.castingTime || '';
+        const range    = item.range || '';
         const conc     = item.concentration ? ' · Conc.' : '';
         const ritual   = item.ritual ? ' · Ritual' : '';
-        // Open5e v2: desc is a plain string; fall back to array join for old format
-        const desc     = typeof item.desc === 'string' ? item.desc
-                        : Array.isArray(item.desc) ? item.desc[0] : '';
-        // Class list (v2: array of strings; v1: array of {name})
-        const classes  = (item.classes || []).map(c => typeof c === 'string' ? c : c.name).join(', ');
+        const classes  = (item.classes || []).join(', ');
+        const mat      = item.material ? ` (${item.material})` : '';
+        // Première phrase de la desc pour l'aperçu
+        const preview  = (item.desc || '').split('\n')[0];
         div.innerHTML = `
           <div class="comp-level-badge">${lvl}</div>
           <div class="comp-item-info">
             <div class="comp-item-name">${item.name}</div>
-            <div class="comp-item-meta">${school}${conc}${ritual} · ${castTime} · ${range}${classes ? ' · ' + classes : ''}</div>
-            <div class="comp-item-desc">${desc}</div>
+            <div class="comp-item-meta">${school}${conc}${ritual} · ${castTime} · ${range} · ${item.components||''}${mat}</div>
+            <div class="comp-item-meta" style="color:#888;font-size:0.7rem;">${classes}</div>
+            <div class="comp-item-desc">${preview}</div>
           </div>
           <button class="btn-comp-add" data-comp-type="spell" data-comp-idx="${_allItems.indexOf(item)}">+ Add</button>`;
 
@@ -12086,7 +12088,6 @@ function renderFamiliars() {
           <button class="btn-comp-add" data-comp-type="item" data-comp-idx="${_allItems.indexOf(item)}">+ Add</button>`;
 
       } else {
-        // Monsters — full data may be in list; store key for individual fetch if needed
         const crDisplay = item.challenge_rating ?? item.cr ?? '?';
         const typeStr   = [item.creature_type?.name || item.type, item.subtype].filter(Boolean).join(', ');
         const hpDisplay = item.hit_points ? `· ${item.hit_points} HP` : '';
@@ -12104,24 +12105,20 @@ function renderFamiliars() {
     if (items.length > 100) {
       const more = document.createElement('div');
       more.className = 'comp-empty';
-      more.textContent = `… ${items.length - 100} more results — refine your search.`;
+      more.textContent = `… ${items.length - 100} résultats supplémentaires — affinez la recherche.`;
       list().appendChild(more);
     }
   }
 
-  /* ── Add spell (Open5e v2 format) ── */
+  /* ── Ajouter un sort (schéma wikidot local) ── */
   function _addSpell(item) {
     if (!playerData) return;
     const lvl      = item.level != null ? String(item.level) : '';
-    const desc     = typeof item.desc === 'string' ? item.desc
-                   : Array.isArray(item.desc) ? item.desc.join('\n') : '';
-    // v2 doesn't expose a separate damage_dice field at list level — leave blank for manual fill
-    const dmg      = item.damage?.damage_dice || '';
-    const dmgType  = item.damage?.damage_type?.name || '';
-    const range    = item.range || item.range_text || '';
-    const castTime = item.casting_time || 'Action';
+    const desc     = item.desc || '';
+    const range    = item.range || '';
+    const castTime = item.castingTime || 'Action';
     const conc     = !!(item.concentration);
-    const spell = { level:lvl, name:item.name, degat:dmg, typeDegat:dmgType, portee:range, action:castTime, conc, desc, _open:false, prepared:true };
+    const spell = { level:lvl, name:item.name, degat:'', typeDegat:'', portee:range, action:castTime, conc, desc, _open:false, prepared:true };
     if (!C().spells) C().spells = [];
     C().spells.push(spell);
     renderSpells(); triggerSave();
