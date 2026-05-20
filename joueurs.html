@@ -11555,11 +11555,15 @@ document.addEventListener('keydown', e => {
 
 /* ── 7. Swipe entre onglets (mobile) ── */
 (function () {
-  let startX = 0, startY = 0, locked = null; // locked: null | 'h' | 'v'
+  let startX = 0, startY = 0, locked = null; // locked: null | 'h' | 'v' | 'ignore'
   const area = document.getElementById('screen-dashboard');
   if (!area) return;
 
   area.addEventListener('touchstart', e => {
+    // Ne pas intercepter les swipes qui démarrent sur les barres d'onglets scrollables
+    if (e.target.closest('#sec-tab-bar') || e.target.closest('#mobile-bottom-nav')) {
+      locked = 'ignore'; return;
+    }
     startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
     locked = null;
@@ -11567,7 +11571,7 @@ document.addEventListener('keydown', e => {
 
   // non-passive : on peut appeler preventDefault() pour bloquer le scroll natif
   area.addEventListener('touchmove', e => {
-    if (locked === 'v') return;
+    if (locked === 'v' || locked === 'ignore') return;
     const dx = Math.abs(e.touches[0].clientX - startX);
     const dy = Math.abs(e.touches[0].clientY - startY);
     if (locked === null) {
@@ -11582,10 +11586,19 @@ document.addEventListener('keydown', e => {
     const dx = e.changedTouches[0].clientX - startX;
     const dy = e.changedTouches[0].clientY - startY;
     if (Math.abs(dy) > Math.abs(dx) || Math.abs(dx) < 55) return;
-    const btns = [...document.querySelectorAll('.tab-btn')];
-    const cur  = btns.findIndex(b => b.classList.contains('active'));
-    const next = dx < 0 ? cur + 1 : cur - 1;
-    if (btns[next]) btns[next].click();
+    // Sur mobile (≤640px) : swipe navigue entre les petits onglets de section
+    // Sur tablette/desktop : swipe navigue entre les gros onglets principaux
+    if (window.innerWidth <= 640) {
+      const btns = [...document.querySelectorAll('.sec-tab-btn')];
+      const cur  = btns.findIndex(b => b.classList.contains('active'));
+      const next = dx < 0 ? cur + 1 : cur - 1;
+      if (btns[next]) btns[next].click();
+    } else {
+      const btns = [...document.querySelectorAll('.tab-btn')];
+      const cur  = btns.findIndex(b => b.classList.contains('active'));
+      const next = dx < 0 ? cur + 1 : cur - 1;
+      if (btns[next]) btns[next].click();
+    }
   }, { passive: true });
 })();
 
