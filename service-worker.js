@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kaleysur-v109';
+const CACHE_NAME = 'kaleysur-v110';
 
 const ASSETS = [
   'index.html',
@@ -14,7 +14,9 @@ const ASSETS = [
   'search-index.json',
   'spells-2024.json',
   'items-faerun-heroes.json',
+  'items-faerun-adventures.json',
   'monsters-faerun-heroes.json',
+  'monsters-faerun-adventures.json',
   'manifest.json',
   'favicon.png',
   'icons/icon-192.png',
