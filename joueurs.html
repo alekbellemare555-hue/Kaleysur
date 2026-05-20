@@ -2646,6 +2646,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
         <button class="btn btn-sm" id="btn-layout-edit" title="Rearrange sections">⠿</button>
         <button class="btn btn-sm" id="btn-read-mode" title="Read Mode — lock the sheet">🔒</button>
         <button class="btn btn-sm" id="dice-tray-btn" title="Dice Roller">⚄</button>
+        <button class="btn btn-sm" id="btn-install-app" title="Installer l'application" style="display:none;">📲</button>
         <button class="btn btn-sm btn-danger" id="btn-logout">Log out</button>
       </div>
     </div>
@@ -13702,6 +13703,32 @@ function startRealtime(username) {
     <div id="compendium-list"><div class="comp-loading">Chargement…</div></div>
   </div>
 </div>
+
+<script>
+/* ── PWA Install prompt ── */
+(function () {
+  let _installPrompt = null;
+  const btn = document.getElementById('btn-install-app');
+
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    _installPrompt = e;
+    if (btn) btn.style.display = '';   // afficher le bouton
+  });
+
+  window.addEventListener('appinstalled', () => {
+    _installPrompt = null;
+    if (btn) btn.style.display = 'none';
+  });
+
+  btn?.addEventListener('click', async () => {
+    if (!_installPrompt) return;
+    _installPrompt.prompt();
+    const { outcome } = await _installPrompt.userChoice;
+    if (outcome === 'accepted') _installPrompt = null;
+  });
+})();
+</script>
 
 <script>
 if ('serviceWorker' in navigator) {
