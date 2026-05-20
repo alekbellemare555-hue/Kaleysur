@@ -796,6 +796,17 @@ body.compact #player-panels-grid,body.compact #monster-panels-grid{grid-template
   0%,100%{border-color:var(--danger);box-shadow:0 0 24px rgba(217,64,64,0.3);}
   50%{border-color:rgba(217,64,64,0.3);box-shadow:none;}
 }
+/* Compact panel mode (monsters/friendlies default) */
+.combat-panel.panel-compact .panel-body { display: none; }
+.combat-panel.panel-compact { cursor: pointer; }
+.combat-panel.panel-compact:hover .panel-header { background: linear-gradient(135deg,rgba(120,20,12,0.9) 0%,rgba(70,12,10,0.7) 100%); }
+.combat-panel.panel-compact.friendly-panel:hover .panel-header { background: linear-gradient(135deg,rgba(15,55,100,0.9) 0%,rgba(10,35,65,0.7) 100%); }
+.panel-mini-bar { height: 4px; background: rgba(0,0,0,0.5); margin: 0; overflow: hidden; }
+.panel-mini-bar-fill { height: 100%; transition: width 0.4s, background 0.4s; }
+.panel-expand-arrow { font-size: 0.62rem; color: var(--text-dim); transition: transform 0.2s; margin-left: 0.2rem; flex-shrink: 0; }
+.combat-panel:not(.panel-compact) .panel-expand-arrow { transform: rotate(90deg); }
+.panel-compact-info { display: flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; color: var(--text-dim); }
+.panel-compact-hp { font-family: 'Cinzel', serif; color: var(--text); font-size: 0.8rem; }
 
 /* Panel header */
 .panel-header{
@@ -1311,6 +1322,7 @@ let currentUser    = null;
 let allPlayers     = [];
 let openPanels     = {};       // key → {type:'player'|'monster'|'friendly', username?, charId?, monsterId?}
 let _panelExpanded = new Set();  // keys of panels with details open
+let _expandedMonsterPanels = new Set(); // monster/friendly panels with full details open
 let expandedPlayers= new Set();
 let localMonsters  = {};       // id → {id,name,avatar,hpMax,hp,ac,initiative,conditions}
 let localFriendlies= {};       // id → {id,name,avatar,hpMax,hp,ac,initiative,conditions}
@@ -1336,12 +1348,17 @@ const DM_STATE_KEY = 'kaleysur-dm-v1';
 
 function saveDmState() {
   try {
+    // Only persist monster/friendly panels — player panels reset each session
+    const savedPanels = {};
+    Object.keys(openPanels).forEach(k => {
+      if (k.startsWith('m::') || k.startsWith('f::')) savedPanels[k] = openPanels[k];
+    });
     localStorage.setItem(DM_STATE_KEY, JSON.stringify({
       localMonsters,
       monsterCounter,
       localFriendlies,
       friendlyCounter,
-      openPanels,
+      openPanels: savedPanels,
       expandedPlayers: [...expandedPlayers],
       compactMode,
       initState
@@ -2155,62 +2172,81 @@ function renderMonsterPanel(panel, key) {
 
   const pct  = m.hpMax > 0 ? Math.max(0, Math.min(100, m.hp / m.hpMax * 100)) : 0;
   const dead = m.hp <= 0 && m.hpMax > 0;
+  const isExpanded = _expandedMonsterPanels.has(key);
+
+  panel.classList.toggle('panel-compact', !isExpanded);
 
   panel.innerHTML = `
-    <div class="panel-header">
+    <div class="panel-header" style="cursor:pointer;" data-toggle-panel="${esc(key)}">
       <span class="panel-avatar">${m.avatar}</span>
       <div class="panel-title">
-        <input class="panel-name-input" data-rename-monster="${esc(id)}" value="${esc(m.name)}" title="Double-click to rename">
-        <div class="panel-char-sub" style="color:rgba(192,57,43,0.7);">NPC / Monster</div>
+        <input class="panel-name-input" data-rename-monster="${esc(id)}" value="${esc(m.name)}" title="Double-click to rename" onclick="event.stopPropagation()">
+        <div class="panel-compact-info">
+          <span>AC ${m.ac}</span>
+          <span>·</span>
+          <span class="panel-compact-hp" style="color:${dead?'var(--danger)':'var(--text)'};">${m.hp}<span style="color:var(--text-dim);font-size:0.72rem;">/${m.hpMax}</span></span>
+          ${dead ? `<span style="color:var(--danger);">💀</span>` : ''}
+        </div>
       </div>
       <div class="panel-acts">
-        <button class="pact" data-clone="${esc(key)}" title="Duplicate">⎘</button>
-        <button class="pact danger" data-close="${esc(key)}" title="Delete">🗑</button>
+        <span class="panel-expand-arrow">▶</span>
+        <button class="pact" data-clone="${esc(key)}" title="Duplicate" onclick="event.stopPropagation()">⎘</button>
+        <button class="pact danger" data-close="${esc(key)}" title="Delete" onclick="event.stopPropagation()">🗑</button>
       </div>
     </div>
-    <div class="panel-hp">
-      <div class="hp-bar-wrap"><div class="hp-bar-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>
-      <div class="hp-row">
-        <span class="hp-num" style="color:${dead?'var(--danger)':'var(--text)'};">${m.hp}</span>
-        <span class="hp-max">/ ${m.hpMax} HP</span>
-        ${dead ? `<span style="color:var(--danger);font-size:0.72rem;margin-left:auto;">💀 Éliminé</span>` : ''}
+    <div class="panel-mini-bar"><div class="panel-mini-bar-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>
+    <div class="panel-body">
+      <div class="panel-hp">
+        <div class="hp-bar-wrap"><div class="hp-bar-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>
+        <div class="hp-row">
+          <span class="hp-num" style="color:${dead?'var(--danger)':'var(--text)'};">${m.hp}</span>
+          <span class="hp-max">/ ${m.hpMax} HP</span>
+          ${dead ? `<span style="color:var(--danger);font-size:0.72rem;margin-left:auto;">💀 Éliminé</span>` : ''}
+        </div>
+        <div class="hp-controls">
+          <button class="hp-qbtn m" data-delta="-10">−10</button>
+          <button class="hp-qbtn m" data-delta="-5">−5</button>
+          <button class="hp-qbtn m" data-delta="-1">−1</button>
+          <input type="number" class="hp-inp" placeholder="±HP" id="hpinp-${esc(key)}">
+          <button class="hp-qbtn p" data-delta="+1">+1</button>
+          <button class="hp-qbtn p" data-delta="+5">+5</button>
+          <button class="hp-apply" data-apply="${esc(key)}">✓</button>
+        </div>
       </div>
-      <div class="hp-controls">
-        <button class="hp-qbtn m" data-delta="-10">−10</button>
-        <button class="hp-qbtn m" data-delta="-5">−5</button>
-        <button class="hp-qbtn m" data-delta="-1">−1</button>
-        <input type="number" class="hp-inp" placeholder="±HP" id="hpinp-${esc(key)}">
-        <button class="hp-qbtn p" data-delta="+1">+1</button>
-        <button class="hp-qbtn p" data-delta="+5">+5</button>
-        <button class="hp-apply" data-apply="${esc(key)}">✓</button>
+      <div class="panel-stats">
+        <div class="stat-cell"><div class="stat-val">${m.ac}</div><div class="stat-lbl">CA</div></div>
+        <div class="stat-cell"><div class="stat-val">${fmtInit(m.initiative)}</div><div class="stat-lbl">Init.</div></div>
+        <div class="stat-cell">
+          <input type="number" class="hp-inp" id="maxhp-${esc(key)}" value="${m.hpMax}" style="width:55px;margin:0 auto;" title="HP Max">
+          <div class="stat-lbl">HP Max</div>
+        </div>
       </div>
-    </div>
-    <div class="panel-stats">
-      <div class="stat-cell"><div class="stat-val">${m.ac}</div><div class="stat-lbl">CA</div></div>
-      <div class="stat-cell"><div class="stat-val">${fmtInit(m.initiative)}</div><div class="stat-lbl">Init.</div></div>
-      <div class="stat-cell">
-        <input type="number" class="hp-inp" id="maxhp-${esc(key)}" value="${m.hpMax}" style="width:55px;margin:0 auto;" title="HP Max">
-        <div class="stat-lbl">HP Max</div>
-      </div>
-    </div>
-    <div class="panel-cond">
-      <div class="sec-label">Conditions</div>
-      <div class="cond-badges">
-        ${m.conditions.map(cond =>
-          `<span class="cond-badge" data-remove-cond="${esc(cond)}">${esc(cond)} <span class="cond-x">✕</span></span>`
-        ).join('')}
-        <div class="cond-picker">
-          <button class="cond-add-btn">+ Condition</button>
-          <div class="cond-menu" id="cmenu-${esc(key)}">
-            ${ALL_CONDITIONS.filter(co => !m.conditions.includes(co)).map(co =>
-              `<div class="cond-opt" data-add-cond="${esc(co)}">${esc(co)}</div>`
-            ).join('')}
+      <div class="panel-cond">
+        <div class="sec-label">Conditions</div>
+        <div class="cond-badges">
+          ${m.conditions.map(cond =>
+            `<span class="cond-badge" data-remove-cond="${esc(cond)}">${esc(cond)} <span class="cond-x">✕</span></span>`
+          ).join('')}
+          <div class="cond-picker">
+            <button class="cond-add-btn">+ Condition</button>
+            <div class="cond-menu" id="cmenu-${esc(key)}">
+              ${ALL_CONDITIONS.filter(co => !m.conditions.includes(co)).map(co =>
+                `<div class="cond-opt" data-add-cond="${esc(co)}">${esc(co)}</div>`
+              ).join('')}
+            </div>
           </div>
         </div>
       </div>
     </div>`;
 
-  // Events
+  // Toggle expand on header click
+  panel.querySelector('[data-toggle-panel]')?.addEventListener('click', (e) => {
+    if (e.target.closest('.pact') || e.target.closest('.panel-name-input')) return;
+    if (_expandedMonsterPanels.has(key)) _expandedMonsterPanels.delete(key);
+    else _expandedMonsterPanels.add(key);
+    updatePanel(key);
+  });
+
   panel.querySelector('[data-clone]')?.addEventListener('click', () => {
     const newId = 'monster-' + (++monsterCounter);
     localMonsters[newId] = { ...m, id: newId, hp: m.hpMax };
@@ -2225,6 +2261,7 @@ function renderMonsterPanel(panel, key) {
 
   panel.querySelector('[data-close]')?.addEventListener('click', () => {
     delete localMonsters[id];
+    _expandedMonsterPanels.delete(key);
     closePanel(key);
     renderMonsterSidebar();
     removeInitCombatant(key);
@@ -2256,43 +2293,19 @@ function renderMonsterPanel(panel, key) {
     if(e.key==='Enter') panel.querySelector('[data-apply]')?.click();
   });
 
-  // HP Max edit
+  // HP Max edit (only in expanded state)
   const maxInp = document.getElementById('maxhp-' + key);
   if (maxInp) {
     maxInp.addEventListener('change', () => {
       const v = Math.max(1, parseInt(maxInp.value) || 1);
-      m.hpMax = v;
-      m.hp = Math.min(m.hp, v);
+      m.hpMax = v; m.hp = Math.min(m.hp, v);
       updatePanel(key);
+      renderMonsterSidebar();
       saveDmState();
     });
   }
 
-  panel.querySelectorAll('[data-remove-cond]').forEach(el => {
-    el.addEventListener('click', () => {
-      m.conditions = m.conditions.filter(x => x !== el.dataset.removeCond);
-      updatePanel(key);
-      saveDmState();
-    });
-  });
-  panel.querySelectorAll('.cond-add-btn').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      closeAllMenus();
-      document.getElementById('cmenu-' + key)?.classList.add('open');
-    });
-  });
-  panel.querySelectorAll('[data-add-cond]').forEach(el => {
-    el.addEventListener('click', e => {
-      e.stopPropagation();
-      document.getElementById('cmenu-' + key)?.classList.remove('open');
-      if (!m.conditions.includes(el.dataset.addCond)) m.conditions.push(el.dataset.addCond);
-      updatePanel(key);
-      saveDmState();
-    });
-  });
-
-  // Rename inline
+  // Rename
   const nameInp = panel.querySelector('[data-rename-monster]');
   if (nameInp) {
     nameInp.addEventListener('change', () => {
@@ -2300,12 +2313,29 @@ function renderMonsterPanel(panel, key) {
       m.name = newName;
       nameInp.value = newName;
       renderMonsterSidebar();
-      // Update initiative bar label
       const initC = initState.combatants.find(c => c.id === key);
       if (initC) { initC.label = newName; renderInitChips(); }
       saveDmState();
     });
   }
+
+  // Conditions
+  panel.querySelectorAll('[data-remove-cond]').forEach(el => {
+    el.addEventListener('click', () => {
+      m.conditions = m.conditions.filter(c => c !== el.dataset.removeCond);
+      updatePanel(key); saveDmState();
+    });
+  });
+  panel.querySelectorAll('.cond-add-btn').forEach(btn => {
+    btn.addEventListener('click', e => { e.stopPropagation(); closeAllMenus(); document.getElementById('cmenu-' + key)?.classList.add('open'); });
+  });
+  panel.querySelectorAll('[data-add-cond]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      document.getElementById('cmenu-' + key)?.classList.remove('open');
+      if (!m.conditions.includes(el.dataset.addCond)) { m.conditions.push(el.dataset.addCond); updatePanel(key); saveDmState(); }
+    });
+  });
 }
 
 /* ══════════════════════════════════════════
@@ -2336,62 +2366,81 @@ function renderFriendlyPanel(panel, key) {
 
   const pct  = f.hpMax > 0 ? Math.max(0, Math.min(100, f.hp / f.hpMax * 100)) : 0;
   const dead = f.hp <= 0 && f.hpMax > 0;
+  const isExpanded = _expandedMonsterPanels.has(key);
+
+  panel.classList.toggle('panel-compact', !isExpanded);
 
   panel.innerHTML = `
-    <div class="panel-header">
+    <div class="panel-header" style="cursor:pointer;" data-toggle-panel="${esc(key)}">
       <span class="panel-avatar">${f.avatar}</span>
       <div class="panel-title">
-        <input class="panel-name-input" data-rename-friendly="${esc(id)}" value="${esc(f.name)}" title="Edit to rename">
-        <div class="panel-char-sub" style="color:rgba(50,130,200,0.8);">Friendly NPC</div>
+        <input class="panel-name-input" data-rename-friendly="${esc(id)}" value="${esc(f.name)}" title="Edit to rename" onclick="event.stopPropagation()">
+        <div class="panel-compact-info">
+          <span>AC ${f.ac}</span>
+          <span>·</span>
+          <span class="panel-compact-hp" style="color:${dead?'var(--danger)':'var(--text)'};">${f.hp}<span style="color:var(--text-dim);font-size:0.72rem;">/${f.hpMax}</span></span>
+          ${dead ? `<span style="color:var(--danger);">💀</span>` : ''}
+        </div>
       </div>
       <div class="panel-acts">
-        <button class="pact" data-clone-friendly="${esc(key)}" title="Duplicate">⎘</button>
-        <button class="pact danger" data-close-friendly="${esc(key)}" title="Delete">🗑</button>
+        <span class="panel-expand-arrow">▶</span>
+        <button class="pact" data-clone-friendly="${esc(key)}" title="Duplicate" onclick="event.stopPropagation()">⎘</button>
+        <button class="pact danger" data-close-friendly="${esc(key)}" title="Delete" onclick="event.stopPropagation()">🗑</button>
       </div>
     </div>
-    <div class="panel-hp">
-      <div class="hp-bar-wrap"><div class="hp-bar-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>
-      <div class="hp-row">
-        <span class="hp-num" style="color:${dead?'var(--danger)':'var(--text)'};">${f.hp}</span>
-        <span class="hp-max">/ ${f.hpMax} HP</span>
-        ${dead ? `<span style="color:var(--danger);font-size:0.72rem;margin-left:auto;">💀 Down</span>` : ''}
+    <div class="panel-mini-bar"><div class="panel-mini-bar-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>
+    <div class="panel-body">
+      <div class="panel-hp">
+        <div class="hp-bar-wrap"><div class="hp-bar-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>
+        <div class="hp-row">
+          <span class="hp-num" style="color:${dead?'var(--danger)':'var(--text)'};">${f.hp}</span>
+          <span class="hp-max">/ ${f.hpMax} HP</span>
+          ${dead ? `<span style="color:var(--danger);font-size:0.72rem;margin-left:auto;">💀 Down</span>` : ''}
+        </div>
+        <div class="hp-controls">
+          <button class="hp-qbtn m" data-delta="-10">−10</button>
+          <button class="hp-qbtn m" data-delta="-5">−5</button>
+          <button class="hp-qbtn m" data-delta="-1">−1</button>
+          <input type="number" class="hp-inp" placeholder="±HP" id="hpinp-${esc(key)}">
+          <button class="hp-qbtn p" data-delta="+1">+1</button>
+          <button class="hp-qbtn p" data-delta="+5">+5</button>
+          <button class="hp-apply" data-apply-friendly="${esc(key)}">✓</button>
+        </div>
       </div>
-      <div class="hp-controls">
-        <button class="hp-qbtn m" data-delta="-10">−10</button>
-        <button class="hp-qbtn m" data-delta="-5">−5</button>
-        <button class="hp-qbtn m" data-delta="-1">−1</button>
-        <input type="number" class="hp-inp" placeholder="±HP" id="hpinp-${esc(key)}">
-        <button class="hp-qbtn p" data-delta="+1">+1</button>
-        <button class="hp-qbtn p" data-delta="+5">+5</button>
-        <button class="hp-apply" data-apply-friendly="${esc(key)}">✓</button>
+      <div class="panel-stats">
+        <div class="stat-cell"><div class="stat-val">${f.ac}</div><div class="stat-lbl">AC</div></div>
+        <div class="stat-cell"><div class="stat-val">${fmtInit(f.initiative)}</div><div class="stat-lbl">Init.</div></div>
+        <div class="stat-cell">
+          <input type="number" class="hp-inp" id="maxhp-${esc(key)}" value="${f.hpMax}" style="width:55px;margin:0 auto;" title="HP Max">
+          <div class="stat-lbl">HP Max</div>
+        </div>
       </div>
-    </div>
-    <div class="panel-stats">
-      <div class="stat-cell"><div class="stat-val">${f.ac}</div><div class="stat-lbl">AC</div></div>
-      <div class="stat-cell"><div class="stat-val">${fmtInit(f.initiative)}</div><div class="stat-lbl">Init.</div></div>
-      <div class="stat-cell">
-        <input type="number" class="hp-inp" id="maxhp-${esc(key)}" value="${f.hpMax}" style="width:55px;margin:0 auto;" title="HP Max">
-        <div class="stat-lbl">HP Max</div>
-      </div>
-    </div>
-    <div class="panel-cond">
-      <div class="sec-label">Conditions</div>
-      <div class="cond-badges">
-        ${f.conditions.map(cond =>
-          `<span class="cond-badge" data-rm-fcond="${esc(cond)}">${esc(cond)} <span class="cond-x">✕</span></span>`
-        ).join('')}
-        <div class="cond-picker">
-          <button class="cond-add-btn">+ Condition</button>
-          <div class="cond-menu" id="cmenu-${esc(key)}">
-            ${ALL_CONDITIONS.filter(co => !f.conditions.includes(co)).map(co =>
-              `<div class="cond-opt" data-add-fcond="${esc(co)}">${esc(co)}</div>`
-            ).join('')}
+      <div class="panel-cond">
+        <div class="sec-label">Conditions</div>
+        <div class="cond-badges">
+          ${f.conditions.map(cond =>
+            `<span class="cond-badge" data-rm-fcond="${esc(cond)}">${esc(cond)} <span class="cond-x">✕</span></span>`
+          ).join('')}
+          <div class="cond-picker">
+            <button class="cond-add-btn">+ Condition</button>
+            <div class="cond-menu" id="cmenu-${esc(key)}">
+              ${ALL_CONDITIONS.filter(co => !f.conditions.includes(co)).map(co =>
+                `<div class="cond-opt" data-add-fcond="${esc(co)}">${esc(co)}</div>`
+              ).join('')}
+            </div>
           </div>
         </div>
       </div>
     </div>`;
 
-  // Clone
+  // Toggle expand on header click
+  panel.querySelector('[data-toggle-panel]')?.addEventListener('click', (e) => {
+    if (e.target.closest('.pact') || e.target.closest('.panel-name-input')) return;
+    if (_expandedMonsterPanels.has(key)) _expandedMonsterPanels.delete(key);
+    else _expandedMonsterPanels.add(key);
+    updatePanel(key);
+  });
+
   panel.querySelector('[data-clone-friendly]')?.addEventListener('click', () => {
     const newId = 'friendly-' + (++friendlyCounter);
     localFriendlies[newId] = { ...f, id: newId, hp: f.hpMax, conditions: [] };
@@ -2404,16 +2453,15 @@ function renderFriendlyPanel(panel, key) {
     saveDmState();
   });
 
-  // Delete
   panel.querySelector('[data-close-friendly]')?.addEventListener('click', () => {
     delete localFriendlies[id];
+    _expandedMonsterPanels.delete(key);
     closePanel(key);
     renderFriendlySidebar();
     removeInitCombatant(key);
     saveDmState();
   });
 
-  // HP quick buttons
   panel.querySelectorAll('.hp-qbtn').forEach(btn => {
     btn.addEventListener('click', () => {
       f.hp = Math.max(0, Math.min(f.hpMax, f.hp + parseInt(btn.dataset.delta)));
@@ -2424,7 +2472,6 @@ function renderFriendlyPanel(panel, key) {
     });
   });
 
-  // HP apply
   panel.querySelector('[data-apply-friendly]')?.addEventListener('click', () => {
     const inp = document.getElementById('hpinp-' + key);
     const v   = parseInt(inp?.value);
@@ -2441,50 +2488,46 @@ function renderFriendlyPanel(panel, key) {
     if (e.key === 'Enter') panel.querySelector('[data-apply-friendly]')?.click();
   });
 
-  // HP Max
   const maxInp = document.getElementById('maxhp-' + key);
   if (maxInp) {
     maxInp.addEventListener('change', () => {
       const v = Math.max(1, parseInt(maxInp.value) || 1);
       f.hpMax = v; f.hp = Math.min(f.hp, v);
-      updatePanel(key); saveDmState();
+      updatePanel(key);
+      renderFriendlySidebar();
+      saveDmState();
     });
   }
 
-  // Conditions
-  panel.querySelectorAll('[data-rm-fcond]').forEach(el => {
-    el.addEventListener('click', () => {
-      f.conditions = f.conditions.filter(x => x !== el.dataset.rmFcond);
-      updatePanel(key); saveDmState();
-    });
-  });
-  panel.querySelectorAll('.cond-add-btn').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.stopPropagation(); closeAllMenus();
-      document.getElementById('cmenu-' + key)?.classList.add('open');
-    });
-  });
-  panel.querySelectorAll('[data-add-fcond]').forEach(el => {
-    el.addEventListener('click', e => {
-      e.stopPropagation();
-      document.getElementById('cmenu-' + key)?.classList.remove('open');
-      if (!f.conditions.includes(el.dataset.addFcond)) f.conditions.push(el.dataset.addFcond);
-      updatePanel(key); saveDmState();
-    });
-  });
-
-  // Rename
   const nameInp = panel.querySelector('[data-rename-friendly]');
   if (nameInp) {
     nameInp.addEventListener('change', () => {
       const newName = nameInp.value.trim() || f.name;
-      f.name = newName; nameInp.value = newName;
+      f.name = newName;
+      nameInp.value = newName;
       renderFriendlySidebar();
       const initC = initState.combatants.find(c => c.id === key);
       if (initC) { initC.label = newName; renderInitChips(); }
       saveDmState();
     });
   }
+
+  panel.querySelectorAll('[data-rm-fcond]').forEach(el => {
+    el.addEventListener('click', () => {
+      f.conditions = f.conditions.filter(c => c !== el.dataset.rmFcond);
+      updatePanel(key); saveDmState();
+    });
+  });
+  panel.querySelectorAll('.cond-add-btn').forEach(btn => {
+    btn.addEventListener('click', e => { e.stopPropagation(); closeAllMenus(); document.getElementById('cmenu-' + key)?.classList.add('open'); });
+  });
+  panel.querySelectorAll('[data-add-fcond]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      document.getElementById('cmenu-' + key)?.classList.remove('open');
+      if (!f.conditions.includes(el.dataset.addFcond)) { f.conditions.push(el.dataset.addFcond); updatePanel(key); saveDmState(); }
+    });
+  });
 }
 
 /* ══════════════════════════════════════════
