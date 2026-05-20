@@ -1791,11 +1791,14 @@
 #btn-field-lock { transition: all 0.2s; }
 #btn-field-lock.active { border-color: var(--gold-dark); color: var(--gold); background: rgba(201,169,110,0.1); }
 
-/* Tous les inputs/textareas dans les sections de fiche */
-#screen-dashboard.fields-locked .sheet-section input,
+/* Tous les inputs/textareas dans les sections de fiche — sauf checkboxes */
+#screen-dashboard.fields-locked .sheet-section input:not([type=checkbox]),
 #screen-dashboard.fields-locked .sheet-section textarea,
 #screen-dashboard.fields-locked .sheet-section select,
-#screen-dashboard.fields-locked [data-f] {
+#screen-dashboard.fields-locked [data-f]:not([type=checkbox]),
+#screen-dashboard.fields-locked .notes-editor,
+#screen-dashboard.fields-locked .notes-page-title-input,
+#screen-dashboard.fields-locked #hero-note {
   background: transparent !important;
   border-color: transparent !important;
   box-shadow: none !important;
@@ -1805,15 +1808,24 @@
   color: var(--j-text, #e8e0d0) !important;
   -moz-appearance: textfield;
 }
-#screen-dashboard.fields-locked .sheet-section input::-webkit-inner-spin-button,
-#screen-dashboard.fields-locked .sheet-section input::-webkit-outer-spin-button,
-#screen-dashboard.fields-locked [data-f]::-webkit-inner-spin-button,
-#screen-dashboard.fields-locked [data-f]::-webkit-outer-spin-button { display: none; }
+#screen-dashboard.fields-locked .sheet-section input:not([type=checkbox])::-webkit-inner-spin-button,
+#screen-dashboard.fields-locked .sheet-section input:not([type=checkbox])::-webkit-outer-spin-button,
+#screen-dashboard.fields-locked [data-f]:not([type=checkbox])::-webkit-inner-spin-button,
+#screen-dashboard.fields-locked [data-f]:not([type=checkbox])::-webkit-outer-spin-button { display: none; }
+/* Checkboxes, prof-dots et roll-triggers restent cliquables en mode affichage */
+#screen-dashboard.fields-locked .sheet-section input[type=checkbox],
+#screen-dashboard.fields-locked [data-f][type=checkbox],
+#screen-dashboard.fields-locked .prof-dot,
+#screen-dashboard.fields-locked .roll-trigger { pointer-events: auto !important; cursor: pointer !important; }
 /* Textareas : auto-expansion pour voir tout le contenu */
 #screen-dashboard.fields-locked .sheet-section textarea,
-#screen-dashboard.fields-locked textarea[data-f] {
+#screen-dashboard.fields-locked textarea[data-f],
+#screen-dashboard.fields-locked .notes-editor,
+#screen-dashboard.fields-locked #hero-note {
   overflow: hidden !important;
   field-sizing: content; /* Chrome 123+ */
+  flex: none !important; /* empêche le flex de court-circuiter la hauteur calculée */
+  min-height: unset !important;
 }
 .read-mode .layout-wrapper,
 .read-mode .sheet-section,
@@ -11673,8 +11685,10 @@ document.addEventListener('keydown', e => {
   let locked = false;
   let observer = null;
 
+  const TA_SEL = '.sheet-section textarea, textarea[data-f], .notes-editor, #hero-note';
+
   function expandTextareas() {
-    dash.querySelectorAll('.sheet-section textarea, textarea[data-f]').forEach(ta => {
+    dash.querySelectorAll(TA_SEL).forEach(ta => {
       ta.style.height = 'auto';
       ta.style.height = ta.scrollHeight + 'px';
     });
@@ -11696,7 +11710,7 @@ document.addEventListener('keydown', e => {
     } else {
       observer?.disconnect();
       observer = null;
-      dash.querySelectorAll('.sheet-section textarea, textarea[data-f]').forEach(ta => ta.style.height = '');
+      dash.querySelectorAll(TA_SEL).forEach(ta => ta.style.height = '');
     }
   }
 
