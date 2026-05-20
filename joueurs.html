@@ -228,8 +228,9 @@
     .attack-table { width:100%; border-collapse:collapse; font-size:0.82rem; }
     .attack-table th { color:var(--gold-dark); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em; padding:0 0.4rem 0.4rem; border-bottom:1px solid var(--j-border-col,#2a2a3a); text-align:left; font-family:'Cinzel',serif; }
     .attack-table td { padding:0.3rem 0.4rem; }
-    .atk-inp { background:var(--j-input,#0d0d14); border:1px solid var(--j-border-col,#2a2a3a); border-radius:4px; color:var(--j-text,#e8e0d0); font-size:0.82rem; padding:0.25rem 0.4rem; width:100%; }
+    .atk-inp { background:var(--j-input,#0d0d14); border:1px solid var(--j-border-col,#2a2a3a); border-radius:4px; color:var(--j-text,#e8e0d0); font-size:0.9rem; padding:0.3rem 0.5rem; width:100%; }
     .atk-inp:focus { outline:none; border-color:var(--gold-dark); }
+    @media (max-width:1100px) { .atk-inp { font-size:1rem; padding:0.4rem 0.5rem; } }
     .atk-del { background:none; border:none; color:var(--danger); cursor:pointer; font-size:1rem; padding:0; line-height:1; }
     .atk-card { display:flex; flex-direction:column; gap:8px; padding:10px 12px; border:1px solid var(--j-border-col,#2a1f0d); border-radius:4px; background:var(--j-panel,#1a1308); }
     .atk-card-lbl { font-size:0.6rem; color:var(--gold-dark); font-family:'Cinzel',serif; letter-spacing:.06em; text-transform:uppercase; display:block; margin-bottom:2px; }
@@ -1788,13 +1789,10 @@
 #btn-field-lock.active { border-color: var(--gold-dark); color: var(--gold); background: rgba(201,169,110,0.1); }
 
 /* Tous les inputs/textareas dans les sections de fiche — sauf checkboxes */
-#screen-dashboard.fields-locked .sheet-section input:not([type=checkbox]),
-#screen-dashboard.fields-locked .sheet-section textarea,
+#screen-dashboard.fields-locked .sheet-section input:not([type=checkbox]):not([data-currency]),
+#screen-dashboard.fields-locked .sheet-section textarea:not(.notes-editor),
 #screen-dashboard.fields-locked .sheet-section select,
-#screen-dashboard.fields-locked [data-f]:not([type=checkbox]),
-#screen-dashboard.fields-locked .notes-editor,
-#screen-dashboard.fields-locked .notes-page-title-input,
-#screen-dashboard.fields-locked #hero-note {
+#screen-dashboard.fields-locked [data-f]:not([type=checkbox]):not(#hero-note):not(.notes-editor) {
   background: transparent !important;
   border-color: transparent !important;
   box-shadow: none !important;
@@ -1804,23 +1802,25 @@
   color: var(--j-text, #e8e0d0) !important;
   -moz-appearance: textfield;
 }
-#screen-dashboard.fields-locked .sheet-section input:not([type=checkbox])::-webkit-inner-spin-button,
-#screen-dashboard.fields-locked .sheet-section input:not([type=checkbox])::-webkit-outer-spin-button,
-#screen-dashboard.fields-locked [data-f]:not([type=checkbox])::-webkit-inner-spin-button,
-#screen-dashboard.fields-locked [data-f]:not([type=checkbox])::-webkit-outer-spin-button { display: none; }
-/* Checkboxes, prof-dots et roll-triggers restent cliquables en mode affichage */
+#screen-dashboard.fields-locked .sheet-section input:not([type=checkbox]):not([data-currency])::-webkit-inner-spin-button,
+#screen-dashboard.fields-locked .sheet-section input:not([type=checkbox]):not([data-currency])::-webkit-outer-spin-button,
+#screen-dashboard.fields-locked [data-f]:not([type=checkbox]):not(#hero-note)::-webkit-inner-spin-button,
+#screen-dashboard.fields-locked [data-f]:not([type=checkbox]):not(#hero-note)::-webkit-outer-spin-button { display: none; }
+/* Checkboxes, prof-dots, roll-triggers, monnaie, notes — toujours interactifs */
 #screen-dashboard.fields-locked .sheet-section input[type=checkbox],
 #screen-dashboard.fields-locked [data-f][type=checkbox],
 #screen-dashboard.fields-locked .prof-dot,
-#screen-dashboard.fields-locked .roll-trigger { pointer-events: auto !important; cursor: pointer !important; }
-/* Textareas : auto-expansion pour voir tout le contenu */
-#screen-dashboard.fields-locked .sheet-section textarea,
-#screen-dashboard.fields-locked textarea[data-f],
+#screen-dashboard.fields-locked .roll-trigger,
+#screen-dashboard.fields-locked [data-currency],
 #screen-dashboard.fields-locked .notes-editor,
-#screen-dashboard.fields-locked #hero-note {
+#screen-dashboard.fields-locked .notes-page-title-input,
+#screen-dashboard.fields-locked #hero-note { pointer-events: auto !important; cursor: auto !important; }
+/* Textareas (hors notes) : auto-expansion pour voir tout le contenu */
+#screen-dashboard.fields-locked .sheet-section textarea:not(.notes-editor),
+#screen-dashboard.fields-locked textarea[data-f]:not(#hero-note) {
   overflow: hidden !important;
   field-sizing: content; /* Chrome 123+ */
-  flex: none !important; /* empêche le flex de court-circuiter la hauteur calculée */
+  flex: none !important;
   min-height: unset !important;
 }
 
@@ -2974,13 +2974,13 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
           </div>
           <table class="attack-table">
             <thead><tr>
-              <th style="width:28%">Name</th>
-              <th style="width:12%" title="Attack bonus — click to roll">To Hit</th>
-              <th style="width:20%">Damage</th>
-              <th style="width:14%">Type</th>
-              <th style="width:10%">Stat</th>
-              <th style="width:8%" title="Proficiency">Prof.</th>
-              <th style="width:8%"></th>
+              <th style="width:24%">Name</th>
+              <th style="width:10%" title="Attack bonus — click to roll">To Hit</th>
+              <th style="width:22%">Damage</th>
+              <th style="width:17%">Type</th>
+              <th style="width:13%">Stat</th>
+              <th style="width:7%" title="Proficiency">Prof.</th>
+              <th style="width:7%"></th>
             </tr></thead>
             <tbody id="attack-tbody"></tbody>
           </table>
@@ -6703,9 +6703,9 @@ function renderAttacks() {
       tr.innerHTML = `
         <td><input class="atk-inp" data-atk="${i}" data-ak="name" value="${esc(atk.name||'')}" placeholder="Weapon name"></td>
         <td class="atk-bonus-cell roll-trigger" data-roll-label="${esc(atk.name||'Attack')} – Attack" data-roll-bonus="${ab.num}" title="${ab.tip}">${ab.val}</td>
-        <td><div class="atk-dmg-wrap"><input class="atk-inp" data-atk="${i}" data-ak="degats" value="${esc(atk.degats||'')}" placeholder="1d8+3" style="font-size:0.75rem;">${dmgDiceBtn}</div></td>
-        <td><input class="atk-inp" data-atk="${i}" data-ak="typeDegat" value="${esc(atk.typeDegat||'')}" placeholder="slashing" style="font-size:0.75rem;"></td>
-        <td><select class="atk-inp" data-atk="${i}" data-ak="atkType" style="padding:0.18rem 0.2rem;font-size:0.74rem;">${statSelOpts}</select></td>
+        <td><div class="atk-dmg-wrap"><input class="atk-inp" data-atk="${i}" data-ak="degats" value="${esc(atk.degats||'')}" placeholder="1d8+3">${dmgDiceBtn}</div></td>
+        <td><input class="atk-inp" data-atk="${i}" data-ak="typeDegat" value="${esc(atk.typeDegat||'')}" placeholder="slashing"></td>
+        <td><select class="atk-inp" data-atk="${i}" data-ak="atkType">${statSelOpts}</select></td>
         <td style="text-align:center;"><input type="checkbox" data-atk="${i}" data-ak="prof" ${atk.prof ? 'checked' : ''} style="accent-color:var(--gold-dark);width:14px;height:14px;cursor:pointer;" title="Proficiency"></td>
         <td><button class="atk-del" data-del="${i}" title="Delete">✕</button></td>
       `;
@@ -11671,7 +11671,8 @@ document.addEventListener('keydown', e => {
   let locked = false;
   let observer = null;
 
-  const TA_SEL = '.sheet-section textarea, textarea[data-f], .notes-editor, #hero-note';
+  // Sélectionne les textareas à auto-expander (hors notes qui restent éditables)
+  const TA_SEL = '.sheet-section textarea:not(.notes-editor), textarea[data-f]:not(#hero-note)';
 
   function expandTextareas() {
     dash.querySelectorAll(TA_SEL).forEach(ta => {
@@ -11682,6 +11683,7 @@ document.addEventListener('keydown', e => {
 
   function setLock(on) {
     locked = on;
+    localStorage.setItem('kaleysur_field_lock', on ? '1' : '0');
     dash.classList.toggle('fields-locked', locked);
     btn.textContent = locked ? '🔒' : '✏';
     btn.classList.toggle('active', locked);
@@ -11698,6 +11700,13 @@ document.addEventListener('keydown', e => {
       observer = null;
       dash.querySelectorAll(TA_SEL).forEach(ta => ta.style.height = '');
     }
+  }
+
+  // Restaurer l'état sauvegardé
+  if (localStorage.getItem('kaleysur_field_lock') === '1') {
+    // Attendre que les données soient chargées avant de verrouiller
+    const _origRender = window.renderAll || null;
+    setTimeout(() => setLock(true), 800);
   }
 
   btn.addEventListener('click', () => setLock(!locked));
