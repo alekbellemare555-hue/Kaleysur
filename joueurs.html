@@ -12326,9 +12326,13 @@ function renderFamiliars() {
     'Mounts and Other Animals':'Animaux & Montures',
   };
 
-  // Extrait la catégorie d'un item (Open5e v2 : item.category | dnd5eapi : item.equipment_category.name)
+  // Extrait la catégorie d'un item
+  // Open5e v2 : item.category = { name:"Armor", key:"armor" }  (objet)
+  // dnd5eapi   : item.equipment_category.name                   (string imbriquée)
+  // local      : item.category = "Wondrous Items"               (string directe)
   function _itemCat(item) {
-    return item.category || item.equipment_category?.name || '';
+    const c = item.category;
+    return (typeof c === 'string' ? c : c?.name) || item.equipment_category?.name || '';
   }
 
   function _populateCatFilter() {
@@ -12455,9 +12459,11 @@ function renderFamiliars() {
       } else if (_activeTab === 'equipment') {
         const catRaw  = _itemCat(item);
         const cat     = CAT_FR[catRaw] || catRaw;
-        // cost : Open5e v2 → string "75 gp" | dnd5eapi → {quantity, unit}
-        const costStr = typeof item.cost === 'string' ? item.cost
-                      : item.cost ? `${item.cost.quantity} ${item.cost.unit}` : '';
+        // cost : Open5e v2 → string "75.00" (sans unité) | local → "75 gp" / "—" | dnd5eapi → {quantity, unit}
+        const rawCost = item.cost;
+        const costStr = typeof rawCost === 'string'
+          ? (/^\d/.test(rawCost) ? parseFloat(rawCost) + ' gp' : rawCost)
+          : rawCost ? `${rawCost.quantity} ${rawCost.unit}` : '';
         const weight  = item.weight ? `${item.weight} lb` : '';
         div.innerHTML = `
           <div class="comp-item-info">
@@ -12468,7 +12474,9 @@ function renderFamiliars() {
 
       } else {
         const crDisplay = item.challenge_rating ?? item.cr ?? '?';
-        const typeStr   = [item.creature_type?.name || item.type, item.subtype].filter(Boolean).join(', ');
+        // type : Open5e v2 → objet {name,key} | local/dnd5eapi → string
+        const typeRaw   = item.creature_type?.name || (typeof item.type === 'string' ? item.type : item.type?.name) || '';
+        const typeStr   = [typeRaw, item.subtype].filter(Boolean).join(', ');
         const hpDisplay = item.hit_points ? `· ${item.hit_points} HP` : '';
         div.innerHTML = `
           <div class="comp-item-info">
@@ -12530,107 +12538,197 @@ function renderFamiliars() {
     renderSpells(); triggerSave();
   }
 
-  /* ── Ajouter un item — dual schema (Open5e v2 2024 + dnd5eapi fallback) ── */
+  /* ── Ajouter un item — triple schema :
+       Open5e v2 2024 : weapon/armor sous-objets, category objet, cost "75.00"
+       dnd5eapi v1    : damage/range/armor_class objets imbriqués, cost {quantity,unit}
+       local Eberron  : category string, cost "X gp"/"—", desc string  ── */
   function _addItem(item) {
     if (!playerData) return;
 
     // ── Catégorie ──
     const catName = _itemCat(item);
-    const CAT_MAP = { Weapon:'arme', Armor:'armure', 'Wondrous Items':'magique', 'Magic Items':'magique' };
+    const CAT_MAP = { Weapon:'arme', Armor:'armure', 'Wondrous Items':'magique', 'Magic Items':'magique', Ring:'magique' };
     const cat = CAT_MAP[catName] || 'equipement';
 
     const parts = [];
 
-    // ── Dégâts (Open5e v2 : damage_dice string | dnd5eapi : damage.damage_dice) ──
-    const dmgDice = item.damage_dice || item.damage?.damage_dice || '';
-    const dmgType = item.damage_type || item.damage?.damage_type?.name || '';
+    // ── Dégâts arme ──
+    // v2 : item.weapon.damage_dice (string) + item.weapon.damage_type (objet ou string)
+    // v1 : item.damage.damage_dice | local : item.damage_dice
+    const wep      = item.weapon || {};
+    const dmgDice  = wep.damage_dice  || item.damage_dice  || item.damage?.damage_dice  || '';
+    const dmgTypeR = wep.damage_type  || item.damage_type  || item.damage?.damage_type  || '';
+    const dmgType  = typeof dmgTypeR === 'object' ? (dmgTypeR?.name || '') : dmgTypeR;
     if (dmgDice) parts.push(`${dmgDice}${dmgType ? ' ' + dmgType : ''}`.trim());
 
-    const twoHDice = item.two_handed_damage_dice || item.two_handed_damage?.damage_dice || '';
-    const twoHType = item.two_handed_damage_type || item.two_handed_damage?.damage_type?.name || '';
+    const twoHDice  = wep.two_handed_damage_dice || item.two_handed_damage_dice || item.two_handed_damage?.damage_dice || '';
+    const twoHTypeR = wep.two_handed_damage_type || item.two_handed_damage_type || item.two_handed_damage?.damage_type || '';
+    const twoHType  = typeof twoHTypeR === 'object' ? (twoHTypeR?.name || '') : twoHTypeR;
     if (twoHDice) parts.push(`(2H: ${twoHDice}${twoHType ? ' ' + twoHType : ''})`.trim());
 
-    // ── Propriétés (Open5e v2 : strings | dnd5eapi : [{name}]) ──
-    if (item.properties?.length) {
-      const propNames = item.properties.map(p => typeof p === 'string' ? p : (p.name || '')).filter(Boolean);
+    // ── Propriétés ──
+    // v2 : item.weapon.properties[].property.name | v1 : item.properties[{name}] | local : string[]
+    const propsArr = wep.properties?.length ? wep.properties : (item.properties || []);
+    if (propsArr.length) {
+      const propNames = propsArr
+        .map(p => typeof p === 'string' ? p : (p.property?.name || p.name || ''))
+        .filter(Boolean);
       if (propNames.length) parts.push(propNames.join(', '));
     }
-    // Open5e v2 weapon mastery 2024
-    if (item.weapon_mastery) parts.push(`Maîtrise : ${item.weapon_mastery}`);
+    // Weapon Mastery 2024 : champ direct ou dans weapon.properties (type Mastery)
+    if (item.weapon_mastery) {
+      parts.push(`Maîtrise : ${item.weapon_mastery}`);
+    } else {
+      const mp = propsArr.find(p => p.property?.type === 'Mastery' || p.property?.name === 'Mastery');
+      if (mp) parts.push(`Maîtrise : ${mp.detail || mp.property?.name || 'Mastery'}`);
+    }
 
-    // ── Portée (Open5e v2 : range_normal | dnd5eapi : range.normal) ──
-    const rNorm = item.range_normal ?? item.range?.normal ?? null;
-    const rLong = item.range_long   ?? item.range?.long   ?? null;
+    // ── Portée ──
+    // v2 : item.weapon.range_normal | v1 : item.range.normal | local : item.range_normal
+    const rNorm = wep.range_normal ?? item.range_normal ?? item.range?.normal ?? null;
+    const rLong = wep.range_long   ?? item.range_long   ?? item.range?.long   ?? null;
     if (rNorm) parts.push(`Portée ${rNorm}/${rLong || rNorm} ft`);
 
-    // ── CA armure (Open5e v2 : armor_class number + armor_dex_bonus bool | dnd5eapi : {base, dex_bonus}) ──
-    const acBase  = typeof item.armor_class === 'number' ? item.armor_class : item.armor_class?.base ?? null;
+    // ── CA armure ──
+    // v2 : item.armor.ac_base + ac_add_dexmod + ac_cap_dexmod
+    // v1 : item.armor_class.base + .dex_bonus + .max_bonus | local : item.armor_class number
+    const arm    = item.armor || {};
+    const acBase = arm.ac_base ?? (typeof item.armor_class === 'number' ? item.armor_class : item.armor_class?.base ?? null);
     if (acBase != null) {
-      const dexBonus = (typeof item.armor_class === 'object' ? item.armor_class.dex_bonus : item.armor_dex_bonus) ?? false;
-      const maxDex   = (typeof item.armor_class === 'object' ? item.armor_class.max_bonus  : item.armor_max_dex)  ?? null;
+      const dexBonus = arm.ac_add_dexmod  ?? (typeof item.armor_class === 'object' ? item.armor_class.dex_bonus : item.armor_dex_bonus) ?? false;
+      const maxDex   = arm.ac_cap_dexmod  ?? (typeof item.armor_class === 'object' ? item.armor_class.max_bonus : item.armor_max_dex)   ?? null;
       let acStr = `CA ${acBase}`;
       if (dexBonus) acStr += maxDex ? ` + DEX (max +${maxDex})` : ' + DEX';
       parts.push(acStr);
     }
-    const strMin = item.str_minimum || item.strength_requirement;
-    if (strMin)                    parts.push(`Force min. ${strMin}`);
-    if (item.stealth_disadvantage) parts.push('Discrétion désavantage');
+    const strMin = arm.strength_score_required ?? item.str_minimum ?? item.strength_requirement;
+    if (strMin) parts.push(`Force min. ${strMin}`);
+    if (arm.grants_stealth_disadvantage || item.stealth_disadvantage) parts.push('Discrétion désavantage');
 
-    // ── Poids + coût (Open5e v2 : strings | dnd5eapi : objects) ──
+    // ── Poids + coût ──
     if (item.weight) parts.push(`${item.weight} lb`);
-    const costStr = typeof item.cost === 'string' ? item.cost
-                  : item.cost ? `${item.cost.quantity} ${item.cost.unit}` : '';
-    if (costStr) parts.push(costStr);
+    const rawCost = item.cost;
+    const costStr = typeof rawCost === 'string'
+      ? (/^\d/.test(rawCost) ? parseFloat(rawCost) + ' gp' : rawCost)  // v2 "75.00" → "75 gp"
+      : rawCost ? `${rawCost.quantity} ${rawCost.unit}` : '';           // v1 {quantity, unit}
+    if (costStr && costStr !== '—') parts.push(costStr);
 
-    // ── Description (première phrase) ──
+    // ── Rareté / attunement (items magiques locaux) ──
+    if (item.rarity) parts.push(item.rarity);
+    if (item.requires_attunement === true) parts.push('Nécessite un lien');
+
+    // ── Description (première ligne) ──
     const descRaw = Array.isArray(item.desc) ? item.desc[0] : (item.desc || '');
-    if (descRaw) parts.push(descRaw.length > 100 ? descRaw.slice(0, 100) + '…' : descRaw);
+    const descFirst = descRaw.split('\n').find(l => l.trim()) || '';
+    if (descFirst) parts.push(descFirst.length > 120 ? descFirst.slice(0, 120) + '…' : descFirst);
 
     INV().items.push({ qty: 1, name: item.name, cat, notes: parts.join(' · ') });
     renderInventory(); triggerSave();
   }
 
-  /* ── Add monster as familiar (handles both Open5e v2 and dnd5eapi v1 schemas) ── */
+  /* ── Add monster as familiar — triple schema :
+       Open5e v2 2024 : type objet, ability_scores imbriqué, speed numbers,
+                         senses absents (champs séparés), skill_bonuses, traits
+       dnd5eapi v1    : proficiencies array, senses objet, armor_class [{value}]
+       local Eberron  : schéma proche v1/code attendu (type string, scores top-level) ── */
   function _addMonsterAsFamiliar(data) {
     if (!playerData) return;
     const c = C();
     if (!c.familiars) c.familiars = [];
     const sizeMap = { Tiny:'Tiny', Small:'Small', Medium:'Medium', Large:'Large', Huge:'Huge', Gargantuan:'Gargantuan' };
-    const typeStr = [data.creature_type?.name || data.type, data.subtype].filter(Boolean).join(', ');
 
-    // AC: v2 may return a number, v1 returns [{value, type}]
+    // ── Type ──
+    // v2 : data.type = {name, key} | local/v1 : string
+    const typeRaw = data.creature_type?.name || (typeof data.type === 'string' ? data.type : data.type?.name) || '';
+    const typeStr = [typeRaw, data.subtype].filter(Boolean).join(', ');
+
+    // ── AC ──
+    // v2 : number | v1 : [{value, type}] | local : number
     const acVal  = typeof data.armor_class === 'number' ? data.armor_class
                  : data.armor_class?.[0]?.value ?? 10;
     const acNote = typeof data.armor_class === 'number' ? (data.armor_desc || '')
                  : data.armor_class?.[0]?.type ?? '';
 
-    // Speed: both use {walk, fly, swim, ...} with "X ft." string values
+    // ── Scores de caractéristiques ──
+    // v2 : data.ability_scores.{strength,dexterity,...} | local/v1 : data.{strength,...}
+    const ab    = data.ability_scores || data;
+    const abStr = ab.strength     ?? 10;
+    const abDex = ab.dexterity    ?? 10;
+    const abCon = ab.constitution ?? 10;
+    const abInt = ab.intelligence ?? 10;
+    const abWis = ab.wisdom       ?? 10;
+    const abCha = ab.charisma     ?? 10;
+
+    // ── Vitesse ──
+    // v2 : {walk:30, fly:60, unit:'feet'} (nombres) | local : {walk:'30 ft.'} (strings)
     const speeds = data.speed
       ? Object.entries(data.speed)
-          .filter(([,v]) => v && v !== '0 ft.')
-          .map(([k,v]) => k === 'walk' ? v : `${k} ${v}`)
-          .join(', ')
+          .filter(([k, v]) => k !== 'unit' && v && v !== 0 && v !== '0 ft.')
+          .map(([k, v]) => {
+            const val = typeof v === 'number' ? `${v} ft.` : v;
+            return k === 'walk' ? val : `${k} ${val}`;
+          }).join(', ')
       : '';
 
-    // Senses: v2 may be a string "Darkvision 60 ft., Passive Perception 12"
-    const senses = typeof data.senses === 'string' ? data.senses
-                 : Object.entries(data.senses||{}).map(([k,v])=>`${k.replace(/_/g,' ')} ${v}`).join(', ');
+    // ── Sens ──
+    // v2 : champs séparés darkvision_range, blindsight_range, passive_perception
+    // v1  : data.senses = objet {darkvision:'60 ft.',...}
+    // local : data.senses = string directe
+    let senses;
+    if (typeof data.senses === 'string') {
+      senses = data.senses;
+    } else if (data.senses && typeof data.senses === 'object') {
+      senses = Object.entries(data.senses).map(([k, v]) => `${k.replace(/_/g,' ')} ${v}`).join(', ');
+    } else {
+      const sp = [];
+      if (data.darkvision_range)  sp.push(`darkvision ${data.darkvision_range} ft.`);
+      if (data.blindsight_range)  sp.push(`blindsight ${data.blindsight_range} ft.`);
+      if (data.tremorsense_range) sp.push(`tremorsense ${data.tremorsense_range} ft.`);
+      if (data.truesight_range)   sp.push(`truesight ${data.truesight_range} ft.`);
+      if (data.passive_perception) sp.push(`passive Perception ${data.passive_perception}`);
+      senses = sp.join(', ');
+    }
 
-    // Saving throws / skills: v2 uses direct objects {str: "+4"}, v1 uses proficiencies array
-    let savesNote = '', skillsNote = '';
+    // ── Jets de sauvegarde ──
+    // v2 : {strength:5, dexterity:3} (clés longues, valeurs numériques)
+    // local : {str:'+4', dex:'+2'} (clés courtes, strings)
+    // v1 : proficiencies[]
+    const SAVE_LONG  = { strength:'STR', dexterity:'DEX', constitution:'CON', intelligence:'INT', wisdom:'WIS', charisma:'CHA' };
+    const SAVE_SHORT = { str:'STR', dex:'DEX', con:'CON', int:'INT', wis:'WIS', cha:'CHA' };
+    let savesNote = '';
     if (data.saving_throws && typeof data.saving_throws === 'object' && !Array.isArray(data.saving_throws)) {
-      const map = { str:'STR', dex:'DEX', con:'CON', int:'INT', wis:'WIS', cha:'CHA' };
-      savesNote = Object.entries(data.saving_throws).map(([k,v]) => `${map[k]||k} ${v}`).join(', ');
+      savesNote = Object.entries(data.saving_throws).map(([k, v]) => {
+        const label = SAVE_SHORT[k] || SAVE_LONG[k] || k.toUpperCase();
+        const val   = typeof v === 'number' ? (v >= 0 ? `+${v}` : `${v}`) : v;
+        return `${label} ${val}`;
+      }).join(', ');
     } else {
-      savesNote = (data.proficiencies||[]).filter(p=>p.proficiency?.index?.startsWith('saving-throw'))
-        .map(p=>`${p.proficiency.name?.replace('Saving Throw: ','')} +${p.value}`).join(', ');
+      savesNote = (data.proficiencies||[])
+        .filter(p => p.proficiency?.index?.startsWith('saving-throw'))
+        .map(p => `${p.proficiency.name?.replace('Saving Throw: ','')} +${p.value}`).join(', ');
     }
-    if (data.skills && typeof data.skills === 'object' && !Array.isArray(data.skills)) {
-      skillsNote = Object.entries(data.skills).map(([k,v])=>`${k} ${v}`).join(', ');
+
+    // ── Compétences ──
+    // v2 : data.skill_bonuses = {history:12} (clés lowercase, valeurs numériques)
+    // local : data.skills = {perception:'+3'} (clés lowercase, strings)
+    // v1 : proficiencies[]
+    let skillsNote = '';
+    const skillsObj = data.skills || data.skill_bonuses;
+    if (skillsObj && typeof skillsObj === 'object' && !Array.isArray(skillsObj)) {
+      skillsNote = Object.entries(skillsObj).map(([k, v]) => {
+        const val = typeof v === 'number' ? (v >= 0 ? `+${v}` : `${v}`) : v;
+        return `${k} ${val}`;
+      }).join(', ');
     } else {
-      skillsNote = (data.proficiencies||[]).filter(p=>p.proficiency?.index?.startsWith('skill-'))
-        .map(p=>`${p.proficiency.name?.replace('Skill: ','')} +${p.value}`).join(', ');
+      skillsNote = (data.proficiencies||[])
+        .filter(p => p.proficiency?.index?.startsWith('skill-'))
+        .map(p => `${p.proficiency.name?.replace('Skill: ','')} +${p.value}`).join(', ');
     }
+
+    // ── Résistances / immunités ──
+    // v2 : data.resistances_and_immunities.damage_resistances | local/v1 : data.damage_resistances
+    const ri = data.resistances_and_immunities || {};
+    const _joinArr = arr => Array.isArray(arr) ? arr.join(', ') : (arr || '');
 
     const toList = arr => (arr||[]).map(x => ({ name: x.name||'', desc: x.desc||'' }));
 
@@ -12642,16 +12740,18 @@ function renderFamiliars() {
       ac: acVal, acNote,
       pvMax: data.hit_points || 4, pvActuel: data.hit_points || 4,
       speed: speeds,
-      for: data.strength||10, dex: data.dexterity||10, con: data.constitution||10,
-      int: data.intelligence||10, sag: data.wisdom||10, cha: data.charisma||10,
+      for: abStr, dex: abDex, con: abCon, int: abInt, sag: abWis, cha: abCha,
       savesNote, skillsNote,
-      vulnerabilities: (data.damage_vulnerabilities||[]).join(', '),
-      resistances:     (data.damage_resistances||[]).join(', '),
-      immunities:      (data.damage_immunities||[]).join(', '),
+      vulnerabilities: _joinArr(ri.damage_vulnerabilities || data.damage_vulnerabilities),
+      resistances:     _joinArr(ri.damage_resistances     || data.damage_resistances),
+      immunities:      _joinArr(ri.damage_immunities      || data.damage_immunities),
       senses, languages: data.languages || '—',
       cr: String(data.challenge_rating ?? data.cr ?? '0'),
-      traits: toList(data.special_abilities), actions: toList(data.actions),
-      bonusActions: toList(data.bonus_actions), reactions: toList(data.reactions),
+      // v2 : traits | local/v1 : special_abilities
+      traits:       toList(data.traits || data.special_abilities),
+      actions:      toList(data.actions),
+      bonusActions: toList(data.bonus_actions),
+      reactions:    toList(data.reactions),
       notes: '', _collapsed: false
     };
     c.familiars.push(fam);
