@@ -1,0 +1,93 @@
+[
+  {
+    "name": "Boots of the Winding Path",
+    "category": "Wondrous Items",
+    "rarity": "Uncommon",
+    "requires_attunement": true,
+    "cost": "—",
+    "weight": 1,
+    "desc": "Uncommon Wondrous Item · Requires Attunement\n\nWhile wearing these boots, you can use a Bonus Action to teleport up to 15 feet to an unoccupied space you occupied earlier in your current turn.",
+    "properties": []
+  },
+  {
+    "name": "Dazzling Weapon",
+    "category": "Magic Items",
+    "rarity": "Rare",
+    "requires_attunement": true,
+    "cost": "—",
+    "weight": null,
+    "desc": "Rare Weapon (Any Simple or Martial) · Requires Attunement\n\nThis magic weapon grants a +1 bonus to attack and damage rolls. It has 4 charges. When you hit a creature with this weapon, you can expend 1 charge as a Reaction to force the target to make a DC 15 Constitution saving throw or have the Blinded condition until the end of your next turn. The weapon regains 1d4 charges each dawn.",
+    "properties": []
+  },
+  {
+    "name": "Helm of Awareness",
+    "category": "Wondrous Items",
+    "rarity": "Uncommon",
+    "requires_attunement": false,
+    "cost": "—",
+    "weight": 1,
+    "desc": "Uncommon Wondrous Item\n\nWhile wearing this helm, you have Advantage on Initiative rolls.",
+    "properties": []
+  },
+  {
+    "name": "Manifold Tool",
+    "category": "Wondrous Items",
+    "rarity": "Common",
+    "requires_attunement": true,
+    "cost": "—",
+    "weight": 1,
+    "desc": "Common Wondrous Item · Requires Attunement\n\nThis small device is about the size of a coin. While attuned to it, you can use a Magic action to transform it into any set of Artisan's Tools of your choice, provided you are proficient with those tools. The tools disappear when they revert to their coin-like form or when you are no longer attuned to the device.",
+    "properties": []
+  },
+  {
+    "name": "Mindsharpener",
+    "category": "Magic Items",
+    "rarity": "Uncommon",
+    "requires_attunement": true,
+    "cost": "—",
+    "weight": 0,
+    "desc": "Uncommon Ring · Requires Attunement\n\nThis ring has 4 charges. When you fail a Constitution saving throw to maintain Concentration on a spell, you can use a Reaction to expend 1 charge to succeed on the saving throw instead. The ring regains 1d4 charges each dawn.",
+    "properties": []
+  },
+  {
+    "name": "Repeating Shot",
+    "category": "Magic Items",
+    "rarity": "Uncommon",
+    "requires_attunement": true,
+    "cost": "—",
+    "weight": null,
+    "desc": "Uncommon Weapon (Any with the Ammunition property) · Requires Attunement\n\nThis magic weapon grants a +1 bonus to attack and damage rolls. In addition, the weapon ignores the Loading property. Whenever you make a ranged attack with this weapon and it hits, the weapon magically creates its own ammunition, which disappears after the attack.",
+    "properties": ["Ammunition"]
+  },
+  {
+    "name": "Repulsion Shield",
+    "category": "Armor",
+    "rarity": "Uncommon",
+    "requires_attunement": true,
+    "cost": "—",
+    "weight": 6,
+    "desc": "Uncommon Armor (Shield) · Requires Attunement\n\nWhile holding this shield, you have a +1 bonus to AC (for a total of +3 with the shield). The shield has 4 charges. When you are hit by a melee attack while holding the shield, you can use a Reaction to expend 1 charge and push the attacker up to 15 feet away from you. The shield regains 1d4 charges each dawn.",
+    "properties": [],
+    "armor_class": 3
+  },
+  {
+    "name": "Returning Weapon",
+    "category": "Magic Items",
+    "rarity": "Uncommon",
+    "requires_attunement": false,
+    "cost": "—",
+    "weight": null,
+    "desc": "Uncommon Weapon (Any with the Thrown property)\n\nThis magic weapon grants a +1 bonus to attack and damage rolls. When you throw the weapon and it hits, it flies back to your hand immediately after the attack. If your hand is full when the weapon returns, it falls at your feet.",
+    "properties": ["Thrown"]
+  },
+  {
+    "name": "Spell-Refueling Ring",
+    "category": "Magic Items",
+    "rarity": "Uncommon",
+    "requires_attunement": true,
+    "cost": "—",
+    "weight": 0,
+    "desc": "Uncommon Ring · Requires Attunement by a Spellcaster\n\nWhile wearing this ring, you can use a Bonus Action to recover one expended spell slot of 3rd level or lower. Once the ring has recovered a spell slot, it can't do so again until the next dawn.",
+    "properties": []
+  }
+]

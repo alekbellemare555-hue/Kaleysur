@@ -1,0 +1,877 @@
+[
+  {
+    "name": "Boromar Smuggler",
+    "size": "Small",
+    "type": "Humanoid",
+    "subtype": "Halfling",
+    "alignment": "Neutral Evil",
+    "armor_class": 13,
+    "armor_desc": "studded leather",
+    "hit_points": 27,
+    "hit_dice": "6d6+6",
+    "speed": {"walk": "40 ft."},
+    "strength": 10, "dexterity": 15, "constitution": 12,
+    "intelligence": 12, "wisdom": 10, "charisma": 14,
+    "saving_throws": {},
+    "skills": {"deception": "+4", "stealth": "+5", "perception": "+2"},
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "passive Perception 12",
+    "languages": "Common, Halfling",
+    "challenge_rating": "1/2",
+    "cr": 0.5,
+    "special_abilities": [
+      {"name": "Hustle", "desc": "As a Bonus Action, the smuggler can move up to half its Speed without provoking Opportunity Attacks."}
+    ],
+    "actions": [
+      {"name": "Shortsword", "desc": "Melee Attack Roll: +4, reach 5 ft. Hit: 5 (1d6+2) Piercing damage plus 2 (1d4) Poison damage."},
+      {"name": "Pistol", "desc": "Ranged Attack Roll: +4, range 30/90 ft. Hit: 7 (1d10+2) Piercing damage."}
+    ],
+    "bonus_actions": [
+      {"name": "Hustle", "desc": "Move up to half Speed without provoking Opportunity Attacks."}
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Boromar Underboss",
+    "size": "Small",
+    "type": "Humanoid",
+    "subtype": "Halfling",
+    "alignment": "Lawful Evil",
+    "armor_class": 16,
+    "armor_desc": "studded leather + Dexterity",
+    "hit_points": 104,
+    "hit_dice": "19d6+38",
+    "speed": {"walk": "30 ft."},
+    "strength": 13, "dexterity": 18, "constitution": 14,
+    "intelligence": 16, "wisdom": 14, "charisma": 16,
+    "saving_throws": {"dex": "+7", "wis": "+5"},
+    "skills": {"deception": "+6", "insight": "+5", "intimidation": "+6", "stealth": "+7"},
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "passive Perception 12",
+    "languages": "Common, Halfling, Thieves' Cant",
+    "challenge_rating": "8",
+    "cr": 8,
+    "special_abilities": [
+      {"name": "Hustle", "desc": "As a Bonus Action, the underboss can move up to half its Speed without provoking Opportunity Attacks."}
+    ],
+    "actions": [
+      {"name": "Multiattack", "desc": "The underboss makes three attacks."},
+      {"name": "Poisoned Blade", "desc": "Melee Attack Roll: +7, reach 5 ft. Hit: 13 (2d8+4) Slashing damage plus 7 (2d6) Poison damage."},
+      {"name": "Arcane Firearm", "desc": "Ranged Attack Roll: +7, range 30/90 ft. Hit: 26 (4d10+4) Force damage."}
+    ],
+    "bonus_actions": [
+      {"name": "Hustle", "desc": "Move up to half Speed without provoking Opportunity Attacks."}
+    ],
+    "reactions": [
+      {"name": "Uncanny Dodge", "desc": "When an attacker the underboss can see hits it with an attack, it halves the damage."}
+    ]
+  },
+  {
+    "name": "Daask Bruiser",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "Gnoll",
+    "alignment": "Neutral Evil",
+    "armor_class": 17,
+    "armor_desc": "chain mail + shield",
+    "hit_points": 150,
+    "hit_dice": "20d8+60",
+    "speed": {"walk": "30 ft."},
+    "strength": 20, "dexterity": 12, "constitution": 16,
+    "intelligence": 8, "wisdom": 10, "charisma": 10,
+    "saving_throws": {"str": "+9", "con": "+7"},
+    "skills": {"athletics": "+9", "intimidation": "+4", "perception": "+4"},
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "darkvision 60 ft., passive Perception 14",
+    "languages": "Common, Gnoll",
+    "challenge_rating": "9",
+    "cr": 9,
+    "special_abilities": [
+      {"name": "Blood Frenzy", "desc": "The bruiser has Advantage on melee attack rolls against any creature that doesn't have all its Hit Points."}
+    ],
+    "actions": [
+      {"name": "Multiattack", "desc": "The bruiser makes three Pummel attacks and uses Glare."},
+      {"name": "Pummel", "desc": "Melee Attack Roll: +9, reach 5 ft. Hit: 12 (2d6+5) Bludgeoning damage."},
+      {"name": "Glare", "desc": "Wisdom Saving Throw: DC 14, one creature the bruiser can see within 30 ft. Failure: The target has the Frightened condition until the end of its next turn."}
+    ],
+    "bonus_actions": [],
+    "reactions": [
+      {"name": "Smackback", "desc": "When a creature misses the bruiser with a melee attack, the bruiser can make one Pummel attack against that creature."}
+    ]
+  },
+  {
+    "name": "Daask Raider",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "Gnoll",
+    "alignment": "Neutral Evil",
+    "armor_class": 15,
+    "armor_desc": "chain shirt + shield",
+    "hit_points": 33,
+    "hit_dice": "6d8+6",
+    "speed": {"walk": "30 ft."},
+    "strength": 16, "dexterity": 14, "constitution": 12,
+    "intelligence": 8, "wisdom": 10, "charisma": 8,
+    "saving_throws": {},
+    "skills": {"perception": "+2"},
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "darkvision 60 ft., passive Perception 12",
+    "languages": "Common, Gnoll",
+    "challenge_rating": "1",
+    "cr": 1,
+    "special_abilities": [
+      {"name": "Pack Tactics", "desc": "The raider has Advantage on attack rolls against a creature if at least one of the raider's allies is within 5 ft. of the creature and the ally doesn't have the Incapacitated condition."}
+    ],
+    "actions": [
+      {"name": "Pummel", "desc": "Melee Attack Roll: +5, reach 5 ft. Hit: 6 (1d4+3) Bludgeoning damage."}
+    ],
+    "bonus_actions": [],
+    "reactions": [
+      {"name": "Smackback", "desc": "When a creature misses the raider with a melee attack, the raider can make one Pummel attack against that creature."}
+    ]
+  },
+  {
+    "name": "Dreaming Dark Infiltrator",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "",
+    "alignment": "Lawful Evil",
+    "armor_class": 15,
+    "armor_desc": "natural armor",
+    "hit_points": 104,
+    "hit_dice": "16d8+32",
+    "speed": {"walk": "30 ft."},
+    "strength": 10, "dexterity": 18, "constitution": 14,
+    "intelligence": 18, "wisdom": 14, "charisma": 16,
+    "saving_throws": {"int": "+7", "wis": "+5"},
+    "skills": {"deception": "+6", "insight": "+5", "perception": "+5", "stealth": "+7"},
+    "damage_resistances": ["Psychic"],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "truesight 30 ft., telepathy 120 ft., passive Perception 15",
+    "languages": "Common, Quori, telepathy 120 ft.",
+    "challenge_rating": "7",
+    "cr": 7,
+    "special_abilities": [
+      {"name": "Psychic Resistance", "desc": "The infiltrator has resistance to Psychic damage."}
+    ],
+    "actions": [
+      {"name": "Multiattack", "desc": "The infiltrator makes three Mind Blade attacks."},
+      {"name": "Mind Blade", "desc": "Melee Attack Roll: +7, reach 5 ft. Hit: 14 (3d6+4) Psychic damage."},
+      {"name": "Detect Thoughts (3/Day)", "desc": "The infiltrator casts Detect Thoughts (save DC 15)."},
+      {"name": "Synaptic Static (1/Day)", "desc": "The infiltrator casts Synaptic Static (save DC 15)."}
+    ],
+    "bonus_actions": [
+      {"name": "Mind Curse", "desc": "Wisdom Saving Throw: DC 15, one creature the infiltrator can see within 30 ft. Failure: The target has Disadvantage on attack rolls and is Cursed until the end of its next turn."}
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Dreaming Dark Mindkiller",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "",
+    "alignment": "Lawful Evil",
+    "armor_class": 19,
+    "armor_desc": "natural armor",
+    "hit_points": 180,
+    "hit_dice": "24d8+72",
+    "speed": {"walk": "30 ft."},
+    "strength": 10, "dexterity": 16, "constitution": 16,
+    "intelligence": 18, "wisdom": 18, "charisma": 20,
+    "saving_throws": {"int": "+9", "wis": "+9", "cha": "+10"},
+    "skills": {"deception": "+10", "insight": "+9", "intimidation": "+10", "perception": "+9"},
+    "damage_resistances": ["Psychic"],
+    "damage_immunities": [],
+    "condition_immunities": ["Charmed", "Frightened"],
+    "senses": "truesight 30 ft., telepathy 120 ft., passive Perception 19",
+    "languages": "Common, Quori, telepathy 120 ft.",
+    "challenge_rating": "11",
+    "cr": 11,
+    "special_abilities": [
+      {"name": "Psychic Resistance", "desc": "The mindkiller has resistance to Psychic damage."},
+      {"name": "Immune to Charm and Fear", "desc": "The mindkiller is immune to the Charmed and Frightened conditions."}
+    ],
+    "actions": [
+      {"name": "Multiattack", "desc": "The mindkiller makes two Nightmare Whisper attacks."},
+      {"name": "Nightmare Whisper", "desc": "Ranged Attack Roll: +9, range 60 ft. Hit: 27 (5d8+5) Psychic damage and the target has the Frightened condition until the end of its next turn."},
+      {"name": "Primal Fear (1/Day)", "desc": "Constitution Saving Throw: DC 17, each creature in a 30-foot Emanation. Failure: 35 (10d6) Psychic damage. Success: Half damage."},
+      {"name": "Dominate Person (1/Day)", "desc": "The mindkiller casts Dominate Person (save DC 17)."}
+    ],
+    "bonus_actions": [],
+    "reactions": []
+  },
+  {
+    "name": "Tarkanan Marauder",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "",
+    "alignment": "Chaotic Evil",
+    "armor_class": 16,
+    "armor_desc": "natural armor",
+    "hit_points": 247,
+    "hit_dice": "26d8+130",
+    "speed": {"walk": "30 ft."},
+    "strength": 16, "dexterity": 18, "constitution": 20,
+    "intelligence": 12, "wisdom": 12, "charisma": 14,
+    "saving_throws": {"con": "+9", "dex": "+8"},
+    "skills": {"athletics": "+7", "intimidation": "+6", "perception": "+5"},
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "passive Perception 15",
+    "languages": "Common",
+    "challenge_rating": "11",
+    "cr": 11,
+    "special_abilities": [
+      {"name": "Evasion", "desc": "If the marauder is subjected to an effect that allows a Dexterity saving throw to take only half damage, it instead takes no damage on a success and half damage on a failure."}
+    ],
+    "actions": [
+      {"name": "Multiattack", "desc": "The marauder makes three Aberrant Strike attacks."},
+      {"name": "Aberrant Strike", "desc": "Melee Attack Roll: +7, reach 5 ft. Hit: 10 (3d6+3) damage plus 21 (6d6) Force damage if the marauder had Advantage on the attack roll."},
+      {"name": "Message (At Will)", "desc": "The marauder casts Message (Constitution DC 17)."},
+      {"name": "Disintegrate (1/Day)", "desc": "The marauder casts Disintegrate (save DC 17)."}
+    ],
+    "bonus_actions": [
+      {"name": "Tear through Space", "desc": "The marauder teleports up to 30 ft. to a space it can see. Constitution Saving Throw: DC 17, each creature within 5 ft. of the destination. Failure: The target has the Blinded condition until the end of its next turn."}
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Tarkanan Ruffian",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "",
+    "alignment": "Chaotic Evil",
+    "armor_class": 13,
+    "armor_desc": "leather armor",
+    "hit_points": 32,
+    "hit_dice": "5d8+10",
+    "speed": {"walk": "40 ft."},
+    "strength": 14, "dexterity": 14, "constitution": 14,
+    "intelligence": 10, "wisdom": 10, "charisma": 12,
+    "saving_throws": {},
+    "skills": {"athletics": "+4", "intimidation": "+3"},
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "passive Perception 10",
+    "languages": "Common",
+    "challenge_rating": "1",
+    "cr": 1,
+    "special_abilities": [
+      {"name": "Aberrant Surge", "desc": "Once per turn when the ruffian hits with an attack, it can channel aberrant power to deal an extra 3 (1d6) Force damage."}
+    ],
+    "actions": [
+      {"name": "Spear", "desc": "Melee or Ranged Attack Roll: +4, reach 5 ft. or range 20/60 ft. Hit: 6 (1d8+2) Piercing damage."},
+      {"name": "Thaumaturgy (At Will)", "desc": "The ruffian casts Thaumaturgy (Constitution DC 12)."},
+      {"name": "Witch Bolt (1/Day)", "desc": "The ruffian casts Witch Bolt (Constitution DC 12)."}
+    ],
+    "bonus_actions": [],
+    "reactions": []
+  },
+  {
+    "name": "Cannith Artificer",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "Human",
+    "alignment": "Neutral",
+    "armor_class": 16,
+    "armor_desc": "breastplate",
+    "hit_points": 71,
+    "hit_dice": "11d8+22",
+    "speed": {"walk": "30 ft."},
+    "strength": 18, "dexterity": 12, "constitution": 14,
+    "intelligence": 18, "wisdom": 12, "charisma": 12,
+    "saving_throws": {"int": "+6", "con": "+4"},
+    "skills": {"arcana": "+6", "investigation": "+6", "perception": "+3"},
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "passive Perception 13",
+    "languages": "Common, Draconic, Gnomish",
+    "challenge_rating": "4",
+    "cr": 4,
+    "special_abilities": [],
+    "actions": [
+      {"name": "Multiattack", "desc": "The artificer makes two attacks."},
+      {"name": "Battering Mace", "desc": "Melee Attack Roll: +6, reach 5 ft. Hit: 14 (3d6+4) Bludgeoning damage and the target must succeed on a DC 14 Strength saving throw or have the Prone condition."},
+      {"name": "Artillery Strike", "desc": "Ranged Attack Roll: +6, range 120 ft. Hit: 22 (4d8+4) Force damage."},
+      {"name": "Burning Hands / Thunderwave (At Will, 3rd Level)", "desc": "The artificer casts Burning Hands or Thunderwave as a 3rd-level spell (Intelligence DC 14)."},
+      {"name": "Cure Wounds / Invisibility (1/Day)", "desc": "The artificer casts Cure Wounds or Invisibility (Intelligence DC 14)."}
+    ],
+    "bonus_actions": [],
+    "reactions": []
+  },
+  {
+    "name": "Ghallanda Troubleshooter",
+    "size": "Small",
+    "type": "Humanoid",
+    "subtype": "Halfling",
+    "alignment": "Neutral",
+    "armor_class": 14,
+    "armor_desc": "studded leather",
+    "hit_points": 78,
+    "hit_dice": "12d6+36",
+    "speed": {"walk": "30 ft."},
+    "strength": 10, "dexterity": 16, "constitution": 16,
+    "intelligence": 12, "wisdom": 12, "charisma": 16,
+    "saving_throws": {"cha": "+5", "dex": "+5"},
+    "skills": {"deception": "+5", "persuasion": "+5", "sleight_of_hand": "+5", "stealth": "+5"},
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": ["Frightened"],
+    "senses": "passive Perception 11",
+    "languages": "Common, Halfling",
+    "challenge_rating": "3",
+    "cr": 3,
+    "special_abilities": [
+      {"name": "Hustle", "desc": "As a Bonus Action, the troubleshooter can move up to half its Speed without provoking Opportunity Attacks."},
+      {"name": "Immune to Fright", "desc": "The troubleshooter is immune to the Frightened condition."}
+    ],
+    "actions": [
+      {"name": "Multiattack", "desc": "The troubleshooter makes two Poisoned Dagger attacks."},
+      {"name": "Poisoned Dagger", "desc": "Melee or Ranged Attack Roll: +5, reach 5 ft. or range 20/60 ft. Hit: 5 (1d4+3) Piercing damage and the target must succeed on a DC 13 Constitution saving throw or have the Poisoned condition until the end of its next turn."},
+      {"name": "Sleep (1/Day)", "desc": "The troubleshooter casts Sleep (Charisma DC 13)."},
+      {"name": "Unseen Servant (1/Day)", "desc": "The troubleshooter casts Unseen Servant."}
+    ],
+    "bonus_actions": [
+      {"name": "Nimble Escape", "desc": "The troubleshooter takes the Disengage or Hide action."}
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Jorasco Medic",
+    "size": "Small",
+    "type": "Humanoid",
+    "subtype": "Halfling",
+    "alignment": "Neutral",
+    "armor_class": 16,
+    "armor_desc": "breastplate",
+    "hit_points": 58,
+    "hit_dice": "9d6+27",
+    "speed": {"walk": "30 ft."},
+    "strength": 10, "dexterity": 14, "constitution": 16,
+    "intelligence": 12, "wisdom": 16, "charisma": 14,
+    "saving_throws": {"wis": "+5", "con": "+5"},
+    "skills": {"medicine": "+5", "perception": "+5", "religion": "+3"},
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "passive Perception 15",
+    "languages": "Common, Halfling",
+    "challenge_rating": "4",
+    "cr": 4,
+    "special_abilities": [
+      {"name": "Lucky", "desc": "When the medic rolls a 1 on a d20 for an attack roll, ability check, or saving throw, it can reroll and must use the new result."}
+    ],
+    "actions": [
+      {"name": "Multiattack", "desc": "The medic makes two Radiant Burst attacks."},
+      {"name": "Radiant Burst", "desc": "Ranged Attack Roll: +5, range 60 ft. Hit: 7 (2d6) Radiant damage and the target must succeed on a DC 13 Constitution saving throw or have the Blinded condition until the end of its next turn."}
+    ],
+    "bonus_actions": [
+      {"name": "Mark of Healing (2/Day)", "desc": "The medic casts Cure Wounds or Lesser Restoration."}
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Kundarak Warden",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "Dwarf",
+    "alignment": "Neutral",
+    "armor_class": 14,
+    "armor_desc": "natural armor",
+    "hit_points": 82,
+    "hit_dice": "11d8+33",
+    "speed": {"walk": "25 ft."},
+    "strength": 14, "dexterity": 10, "constitution": 16,
+    "intelligence": 16, "wisdom": 14, "charisma": 12,
+    "saving_throws": {"int": "+6", "wis": "+5"},
+    "skills": {"arcana": "+6", "investigation": "+6", "perception": "+5"},
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "darkvision 60 ft., passive Perception 15",
+    "languages": "Common, Dwarvish",
+    "challenge_rating": "5",
+    "cr": 5,
+    "special_abilities": [
+      {"name": "Magic Resistance", "desc": "The warden has Advantage on saving throws against spells and other magical effects."}
+    ],
+    "actions": [
+      {"name": "Multiattack", "desc": "The warden makes two Arcane Whip attacks."},
+      {"name": "Arcane Whip", "desc": "Melee Attack Roll: +6, reach 10 ft. Hit: 14 (3d6+3) Force damage and the target must succeed on a DC 14 Strength saving throw or have the Prone condition."},
+      {"name": "Shackling Glyph (Recharge 6)", "desc": "Strength Saving Throw: DC 14, one creature within 60 ft. Failure: The target has the Grappled and Restrained conditions."},
+      {"name": "Alarm / Arcane Lock / Mage Armor (At Will)", "desc": "The warden casts Alarm, Arcane Lock, or Mage Armor (Intelligence DC 14)."},
+      {"name": "Dispel Magic (1/Day)", "desc": "The warden casts Dispel Magic (Intelligence DC 14)."}
+    ],
+    "bonus_actions": [],
+    "reactions": [
+      {"name": "Counterspell / Shield (3/Day)", "desc": "The warden casts Counterspell or Shield in response to a trigger."}
+    ]
+  },
+  {
+    "name": "Lyrandar Scion",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "Khoravar (Half-Elf)",
+    "alignment": "Neutral",
+    "armor_class": 13,
+    "armor_desc": "",
+    "hit_points": 60,
+    "hit_dice": "11d8+11",
+    "speed": {"walk": "30 ft.", "fly": "30 ft."},
+    "strength": 12, "dexterity": 14, "constitution": 12,
+    "intelligence": 14, "wisdom": 12, "charisma": 18,
+    "saving_throws": {"cha": "+6", "dex": "+4"},
+    "skills": {"arcana": "+4", "nature": "+4", "perception": "+3"},
+    "damage_resistances": ["Lightning", "Thunder"],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "darkvision 60 ft., passive Perception 13",
+    "languages": "Common, Elvish",
+    "challenge_rating": "4",
+    "cr": 4,
+    "special_abilities": [],
+    "actions": [
+      {"name": "Multiattack", "desc": "The scion makes two Thunderbolt attacks."},
+      {"name": "Thunderbolt", "desc": "Ranged Attack Roll: +6, range 60 ft. Hit: 11 (2d6+4) Lightning damage plus 9 (2d8) Thunder damage."},
+      {"name": "Elementalism / Gust of Wind / Thunderwave (At Will)", "desc": "The scion casts Elementalism, Gust of Wind, or Thunderwave (Charisma DC 14)."}
+    ],
+    "bonus_actions": [
+      {"name": "Jump (2/Day)", "desc": "The scion casts Jump on itself."}
+    ],
+    "reactions": [
+      {"name": "Feather Fall (2/Day)", "desc": "When the scion or a creature within 60 ft. falls, it casts Feather Fall."}
+    ]
+  },
+  {
+    "name": "Medani Inquisitive",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "Khoravar (Half-Elf)",
+    "alignment": "Neutral",
+    "armor_class": 14,
+    "armor_desc": "",
+    "hit_points": 45,
+    "hit_dice": "7d8+14",
+    "speed": {"walk": "30 ft."},
+    "strength": 12, "dexterity": 14, "constitution": 14,
+    "intelligence": 14, "wisdom": 16, "charisma": 12,
+    "saving_throws": {"wis": "+5", "int": "+4"},
+    "skills": {"insight": "+5", "investigation": "+4", "perception": "+5", "persuasion": "+3"},
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "darkvision 60 ft., passive Perception 15",
+    "languages": "Common, Elvish",
+    "challenge_rating": "3",
+    "cr": 3,
+    "special_abilities": [],
+    "actions": [
+      {"name": "Multiattack", "desc": "The inquisitive makes three Crooked Staff attacks and uses Inquisitive Eye."},
+      {"name": "Crooked Staff", "desc": "Melee Attack Roll: +4, reach 5 ft. Hit: 6 (1d8+2) Bludgeoning damage and the target has the Prone condition. Extra: 7 (2d6) Radiant damage if the target is already Prone."},
+      {"name": "Inquisitive Eye", "desc": "Wisdom Saving Throw: DC 13, one creature the inquisitive can see within 60 ft. Failure: 10 (3d6) Psychic damage and the target is Marked until the end of its next turn."},
+      {"name": "Detect Thoughts / See Invisibility (1/Day Each)", "desc": "The inquisitive casts Detect Thoughts or See Invisibility (Wisdom DC 13)."}
+    ],
+    "bonus_actions": [],
+    "reactions": [
+      {"name": "Spontaneous Barrier (Recharge 4–6)", "desc": "In response to being hit, the inquisitive imposes Disadvantage on the triggering attack roll."}
+    ]
+  },
+  {
+    "name": "Orien Enforcer",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "Human",
+    "alignment": "Neutral",
+    "armor_class": 16,
+    "armor_desc": "breastplate",
+    "hit_points": 55,
+    "hit_dice": "10d8+10",
+    "speed": {"walk": "35 ft."},
+    "strength": 12, "dexterity": 18, "constitution": 12,
+    "intelligence": 14, "wisdom": 12, "charisma": 14,
+    "saving_throws": {"dex": "+6", "con": "+3"},
+    "skills": {"acrobatics": "+6", "perception": "+3", "stealth": "+6"},
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "passive Perception 13",
+    "languages": "Common",
+    "challenge_rating": "4",
+    "cr": 4,
+    "special_abilities": [],
+    "actions": [
+      {"name": "Multiattack", "desc": "The enforcer makes three Dagger attacks."},
+      {"name": "Dagger", "desc": "Melee or Ranged Attack Roll: +6, reach 5 ft. or range 20/60 ft. Hit: 9 (2d4+4) Piercing damage plus 7 (2d6) Poison damage."},
+      {"name": "Lightning Cage (Recharge 5–6)", "desc": "Constitution Saving Throw: DC 13, each creature in a 15-foot Cube. Failure: 13 (3d8) Lightning damage. Success: Half damage."}
+    ],
+    "bonus_actions": [
+      {"name": "Misty Step (2/Day)", "desc": "The enforcer teleports up to 30 ft. to an unoccupied space it can see."}
+    ],
+    "reactions": [
+      {"name": "Temporal Disruption (1/Day)", "desc": "In response to being hit, the enforcer teleports up to 30 ft. The attacker must succeed on a DC 13 Constitution saving throw or have its Speed reduced by half until the end of its next turn."}
+    ]
+  },
+  {
+    "name": "Sentinel Marshal",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "Human",
+    "alignment": "Lawful Neutral",
+    "armor_class": 16,
+    "armor_desc": "chain mail",
+    "hit_points": 110,
+    "hit_dice": "20d8+20",
+    "speed": {"walk": "30 ft."},
+    "strength": 18, "dexterity": 18, "constitution": 12,
+    "intelligence": 14, "wisdom": 14, "charisma": 14,
+    "saving_throws": {"str": "+7", "dex": "+7", "wis": "+5"},
+    "skills": {"insight": "+5", "investigation": "+5", "perception": "+5"},
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "passive Perception 15",
+    "languages": "Common",
+    "challenge_rating": "6",
+    "cr": 6,
+    "special_abilities": [
+      {"name": "Alert", "desc": "Initiative +10. The marshal can't be surprised and creatures don't gain Advantage on attacks against it due to being hidden."}
+    ],
+    "actions": [
+      {"name": "Multiattack", "desc": "The marshal makes three attacks."},
+      {"name": "Longsword", "desc": "Melee Attack Roll: +7, reach 5 ft. Hit: 13 (2d8+4) Slashing damage and the target has Disadvantage on its next attack roll before the marshal's next turn."},
+      {"name": "Pistol", "desc": "Ranged Attack Roll: +7, range 30/90 ft. Hit: 15 (2d10+4) Piercing damage."}
+    ],
+    "bonus_actions": [],
+    "reactions": [
+      {"name": "Shield (3/Day)", "desc": "When hit by an attack, the marshal gains +5 AC until the start of its next turn, potentially causing the attack to miss."}
+    ]
+  },
+  {
+    "name": "Shadow-Marked Agent",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "Elf",
+    "alignment": "Neutral",
+    "armor_class": 17,
+    "armor_desc": "natural armor",
+    "hit_points": 132,
+    "hit_dice": "24d8+24",
+    "speed": {"walk": "30 ft."},
+    "strength": 10, "dexterity": 20, "constitution": 12,
+    "intelligence": 14, "wisdom": 12, "charisma": 16,
+    "saving_throws": {"dex": "+8", "cha": "+6"},
+    "skills": {"deception": "+6", "perception": "+4", "stealth": "+8"},
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "darkvision 60 ft., passive Perception 14",
+    "languages": "Common, Elvish",
+    "challenge_rating": "7",
+    "cr": 7,
+    "special_abilities": [
+      {"name": "Fey Ancestry", "desc": "Magic can't put the agent to sleep."}
+    ],
+    "actions": [
+      {"name": "Multiattack", "desc": "The agent makes two Shadow Knife attacks."},
+      {"name": "Shadow Knife", "desc": "Melee or Ranged Attack Roll: +8, reach 5 ft. or range 30/60 ft. Hit: 12 (2d4+5) Piercing damage plus 14 (4d6) Necrotic damage and the target's Speed is reduced by 10 ft. until the end of its next turn."},
+      {"name": "Disguise Self / Minor Illusion (At Will)", "desc": "The agent casts Disguise Self or Minor Illusion (Charisma DC 14)."},
+      {"name": "Pass without Trace (1/Day)", "desc": "The agent casts Pass without Trace."}
+    ],
+    "bonus_actions": [
+      {"name": "Shadow Cloak", "desc": "The agent has the Invisible condition until the start of its next turn."}
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Sivis Scribe",
+    "size": "Small",
+    "type": "Humanoid",
+    "subtype": "Gnome",
+    "alignment": "Neutral",
+    "armor_class": 15,
+    "armor_desc": "Mage Armor",
+    "hit_points": 56,
+    "hit_dice": "16d6",
+    "speed": {"walk": "25 ft."},
+    "strength": 8, "dexterity": 14, "constitution": 10,
+    "intelligence": 16, "wisdom": 12, "charisma": 14,
+    "saving_throws": {"int": "+5", "cha": "+4"},
+    "skills": {"arcana": "+5", "history": "+5", "perception": "+3"},
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "darkvision 60 ft., passive Perception 13",
+    "languages": "Common, Gnomish, one additional language",
+    "challenge_rating": "3",
+    "cr": 3,
+    "special_abilities": [
+      {"name": "Words of Reason", "desc": "The scribe and all allies within a 10-foot Emanation have Advantage on saving throws against the Charmed and Frightened conditions."}
+    ],
+    "actions": [
+      {"name": "Multiattack", "desc": "The scribe makes two Bursting Sigil attacks."},
+      {"name": "Bursting Sigil", "desc": "Ranged Attack Roll: +5, range 60 ft. Hit: 13 (3d6+3) Radiant damage."},
+      {"name": "Comprehend Languages / Mage Armor / Message (At Will)", "desc": "The scribe casts Comprehend Languages, Mage Armor, or Message (Intelligence DC 13)."},
+      {"name": "Sending (1/Day)", "desc": "The scribe casts Sending."}
+    ],
+    "bonus_actions": [
+      {"name": "Word of Stasis (Recharge 5–6)", "desc": "Constitution Saving Throw: DC 13, each creature in a 20-foot Emanation. Failure: The target has the Incapacitated condition until the end of its next turn."}
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Tharashk Hunter",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "Human or Orc",
+    "alignment": "Neutral",
+    "armor_class": 16,
+    "armor_desc": "chain mail",
+    "hit_points": 97,
+    "hit_dice": "15d8+30",
+    "speed": {"walk": "40 ft."},
+    "strength": 14, "dexterity": 18, "constitution": 14,
+    "intelligence": 12, "wisdom": 14, "charisma": 12,
+    "saving_throws": {"dex": "+7", "wis": "+5"},
+    "skills": {"athletics": "+5", "perception": "+5", "stealth": "+7", "survival": "+5"},
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "darkvision 60 ft., passive Perception 15",
+    "languages": "Common, Goblin, Orc",
+    "challenge_rating": "6",
+    "cr": 6,
+    "special_abilities": [],
+    "actions": [
+      {"name": "Multiattack", "desc": "The hunter makes three attacks."},
+      {"name": "Shortsword", "desc": "Melee Attack Roll: +7, reach 5 ft. Hit: 11 (2d6+4) Piercing damage and the target has Disadvantage on attack rolls until the end of its next turn."},
+      {"name": "Longbow", "desc": "Ranged Attack Roll: +7, range 150/600 ft. Hit: 17 (3d8+4) Piercing damage and the target's Speed is reduced by 10 ft. until the end of its next turn."}
+    ],
+    "bonus_actions": [
+      {"name": "Mark of Tharashk", "desc": "The hunter marks one creature it can see within 60 ft. Until the start of its next turn, the hunter has Advantage on attacks against that creature and the creature can't benefit from being Invisible against the hunter."}
+    ],
+    "reactions": [
+      {"name": "Uncanny Dodge", "desc": "When an attacker the hunter can see hits it with an attack, it halves the damage."}
+    ]
+  },
+  {
+    "name": "Vadalis Heir",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "Human",
+    "alignment": "Neutral",
+    "armor_class": 14,
+    "armor_desc": "leather armor",
+    "hit_points": 52,
+    "hit_dice": "8d8+16",
+    "speed": {"walk": "30 ft."},
+    "strength": 16, "dexterity": 14, "constitution": 14,
+    "intelligence": 12, "wisdom": 16, "charisma": 14,
+    "saving_throws": {"wis": "+5", "str": "+5"},
+    "skills": {"animal_handling": "+5", "nature": "+3", "perception": "+5"},
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "passive Perception 15",
+    "languages": "Common, Elvish",
+    "challenge_rating": "4",
+    "cr": 4,
+    "special_abilities": [
+      {"name": "Pack Tactics", "desc": "The heir has Advantage on attack rolls against a creature if at least one of its allies is within 5 ft. of the creature and isn't incapacitated."}
+    ],
+    "actions": [
+      {"name": "Multiattack", "desc": "The heir makes four Scimitar attacks or two Lunar Wisp attacks."},
+      {"name": "Scimitar", "desc": "Melee Attack Roll: +5, reach 5 ft. Hit: 6 (1d6+3) Slashing damage plus 3 (1d6) Poison damage."},
+      {"name": "Lunar Wisp", "desc": "Ranged Attack Roll: +5, range 60 ft. Hit: 9 (2d8) Radiant damage. The target sheds Dim Light in a 10-foot radius and can't benefit from being Invisible until the end of its next turn."},
+      {"name": "Druidcraft / Light / Speak with Animals (At Will)", "desc": "The heir casts Druidcraft, Light, or Speak with Animals (Wisdom DC 13)."},
+      {"name": "Animal Friendship / Animal Messenger (3/Day Each)", "desc": "The heir casts Animal Friendship or Animal Messenger (Wisdom DC 13)."},
+      {"name": "Ice Storm (1/Day)", "desc": "The heir casts Ice Storm (Wisdom DC 13)."}
+    ],
+    "bonus_actions": [
+      {"name": "Spur Beast", "desc": "One Beast the heir can see within 30 ft. can immediately move up to half its Speed or make one attack."}
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Emerald Claw Commander",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "",
+    "alignment": "Lawful Evil",
+    "armor_class": 20,
+    "armor_desc": "plate armor + shield",
+    "hit_points": 78,
+    "hit_dice": "12d8+24",
+    "speed": {"walk": "30 ft."},
+    "strength": 18, "dexterity": 11, "constitution": 15,
+    "intelligence": 15, "wisdom": 12, "charisma": 14,
+    "saving_throws": {"con": "+4", "wis": "+3"},
+    "skills": {"athletics": "+6", "intimidation": "+4", "perception": "+3"},
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "passive Perception 13",
+    "languages": "Common, Dwarvish",
+    "challenge_rating": "4",
+    "cr": 4,
+    "special_abilities": [
+      {"name": "Aura of Authority", "desc": "While in a 30-foot Emanation originating from the commander, the commander and its allies have Advantage on attack rolls and saving throws, provided the commander doesn't have the Incapacitated condition."}
+    ],
+    "actions": [
+      {"name": "Multiattack", "desc": "The commander makes two attacks, using Flail or Javelin in any combination."},
+      {"name": "Flail", "desc": "Melee Attack Roll: +6, reach 5 ft. Hit: 8 (1d8+4) Bludgeoning damage — plus 7 (2d6) Necrotic damage if the commander is Bloodied — and the target has Disadvantage on its next attack roll before the start of the commander's next turn."},
+      {"name": "Javelin", "desc": "Melee or Ranged Attack Roll: +6, reach 5 ft. or range 30/120 ft. Hit: 7 (1d6+4) Piercing damage — plus 7 (2d6) Necrotic damage if the commander is Bloodied."}
+    ],
+    "bonus_actions": [],
+    "reactions": []
+  },
+  {
+    "name": "Emerald Claw Knight",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "",
+    "alignment": "Lawful Evil",
+    "armor_class": 18,
+    "armor_desc": "chain mail + shield",
+    "hit_points": 52,
+    "hit_dice": "8d8+16",
+    "speed": {"walk": "30 ft."},
+    "strength": 17, "dexterity": 11, "constitution": 14,
+    "intelligence": 13, "wisdom": 10, "charisma": 13,
+    "saving_throws": {"wis": "+2"},
+    "skills": {"athletics": "+5", "perception": "+2"},
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "passive Perception 12",
+    "languages": "Common, Dwarvish",
+    "challenge_rating": "2",
+    "cr": 2,
+    "special_abilities": [
+      {"name": "Chill of the Grave", "desc": "As the knight draws closer to death, its attacks become suffused with necromantic energy. When Bloodied, all attacks deal bonus Necrotic damage (see actions)."}
+    ],
+    "actions": [
+      {"name": "Multiattack", "desc": "The knight makes two attacks, using Flail or Javelin in any combination."},
+      {"name": "Flail", "desc": "Melee Attack Roll: +5, reach 5 ft. Hit: 7 (1d8+3) Bludgeoning damage — plus 4 (1d8) Necrotic damage if the knight is Bloodied — and the target has Disadvantage on its next attack roll before the start of the knight's next turn."},
+      {"name": "Javelin", "desc": "Melee or Ranged Attack Roll: +5, reach 5 ft. or range 30/120 ft. Hit: 6 (1d6+3) Piercing damage — plus 4 (1d8) Necrotic damage if the knight is Bloodied."}
+    ],
+    "bonus_actions": [],
+    "reactions": []
+  },
+  {
+    "name": "Vulkoori Stingblade",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "Elf (Drow)",
+    "alignment": "Neutral",
+    "armor_class": 14,
+    "armor_desc": "studded leather",
+    "hit_points": 27,
+    "hit_dice": "6d8",
+    "speed": {"walk": "30 ft."},
+    "strength": 11, "dexterity": 15, "constitution": 10,
+    "intelligence": 11, "wisdom": 12, "charisma": 12,
+    "saving_throws": {"dex": "+4"},
+    "skills": {"perception": "+3", "stealth": "+4"},
+    "damage_resistances": ["Poison"],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "darkvision 120 ft., passive Perception 13",
+    "languages": "Common, Elvish, Giant",
+    "challenge_rating": "1/2",
+    "cr": 0.5,
+    "special_abilities": [
+      {"name": "Fey Ancestry", "desc": "Magic can't put the stingblade to sleep."}
+    ],
+    "actions": [
+      {"name": "Stingblade", "desc": "Melee Attack Roll: +4, reach 5 ft. Hit: 5 (1d6+2) Piercing damage plus 2 (1d4) Poison damage."},
+      {"name": "Boomerang", "desc": "Ranged Attack Roll: +4, range 30/120 ft. Hit: 7 (2d4+2) Bludgeoning damage."}
+    ],
+    "bonus_actions": [],
+    "reactions": []
+  },
+  {
+    "name": "Vulkoori Venom Priest",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "Elf (Drow)",
+    "alignment": "Neutral Evil",
+    "armor_class": 15,
+    "armor_desc": "studded leather",
+    "hit_points": 44,
+    "hit_dice": "8d8+8",
+    "speed": {"walk": "30 ft."},
+    "strength": 15, "dexterity": 16, "constitution": 12,
+    "intelligence": 10, "wisdom": 16, "charisma": 13,
+    "saving_throws": {"con": "+3", "wis": "+5"},
+    "skills": {"perception": "+5", "religion": "+2", "stealth": "+5"},
+    "damage_resistances": ["Poison"],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "darkvision 120 ft., passive Perception 15",
+    "languages": "Common, Elvish, Giant",
+    "challenge_rating": "2",
+    "cr": 2,
+    "special_abilities": [
+      {"name": "Fey Ancestry", "desc": "Magic can't put the priest to sleep."}
+    ],
+    "actions": [
+      {"name": "Venom Staff", "desc": "Melee Attack Roll: +4, reach 5 ft. Hit: 9 (2d6+2) Bludgeoning damage and the target has the Poisoned condition until the end of the priest's next turn."},
+      {"name": "Dancing Lights / Ray of Sickness / Thaumaturgy (At Will)", "desc": "The priest casts Dancing Lights, Ray of Sickness, or Thaumaturgy (Wisdom DC 13, +5 to hit)."},
+      {"name": "Cure Wounds / Hold Person / Protection from Poison (1/Day Each)", "desc": "The priest casts Cure Wounds, Hold Person, or Protection from Poison (Wisdom DC 13)."}
+    ],
+    "bonus_actions": [
+      {"name": "Intensify Poison", "desc": "Each creature with the Poisoned condition within a 30-foot Emanation originating from the priest takes 3 (1d6) Poison damage."}
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Umbragen Shadow Walker",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "Elf (Drow)",
+    "alignment": "Neutral",
+    "armor_class": 14,
+    "armor_desc": "natural armor",
+    "hit_points": 162,
+    "hit_dice": "25d8+50",
+    "speed": {"walk": "30 ft."},
+    "strength": 12, "dexterity": 19, "constitution": 14,
+    "intelligence": 13, "wisdom": 15, "charisma": 20,
+    "saving_throws": {"dex": "+8", "wis": "+6"},
+    "skills": {"arcana": "+5", "perception": "+6", "stealth": "+8"},
+    "damage_vulnerabilities": ["Radiant"],
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "darkvision 120 ft., passive Perception 16",
+    "languages": "Common, Elvish, Undercommon",
+    "challenge_rating": "9",
+    "cr": 9,
+    "special_abilities": [
+      {"name": "Fey Ancestry", "desc": "Magic can't put the shadow walker to sleep."},
+      {"name": "Sunlight Sensitivity", "desc": "While in sunlight, the shadow walker has Disadvantage on ability checks and attack rolls."}
+    ],
+    "actions": [
+      {"name": "Multiattack", "desc": "The shadow walker makes three Gloom Burst attacks and uses Shadow Cowl."},
+      {"name": "Gloom Burst", "desc": "Melee or Ranged Attack Roll: +9, reach 5 ft. or range 120 ft. Hit: 14 (2d8+5) Psychic damage."},
+      {"name": "Shadow Cowl", "desc": "Wisdom Saving Throw: DC 17, one creature the shadow walker can see within 120 ft. Failure: 14 (4d6) Necrotic damage and the target has the Blinded condition until the start of the shadow walker's next turn."},
+      {"name": "Dancing Lights / Darkness / Minor Illusion (At Will)", "desc": "The shadow walker casts Dancing Lights, Darkness, or Minor Illusion (Charisma DC 17)."}
+    ],
+    "bonus_actions": [
+      {"name": "Draining Teleport", "desc": "While in Dim Light or Darkness, the shadow walker teleports up to 60 ft. to a space it can see that is also in Dim Light or Darkness. Constitution Saving Throw: DC 17, each creature in a 5-foot Emanation at the destination. Failure: 9 (2d8) Necrotic damage."}
+    ],
+    "reactions": []
+  }
+]
