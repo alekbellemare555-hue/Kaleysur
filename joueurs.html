@@ -71,7 +71,7 @@
       text-align:center; box-sizing:border-box;
     }
     .char-card:hover { border-color:var(--gold-dark); background:var(--j-panel,#1a1a24); }
-    .char-card.active { border-color:var(--gold); background:#1c1408; box-shadow:0 0 0 1px rgba(201,169,110,0.15); }
+    .char-card.active { border-color:var(--gold); background:var(--j-panel,#1c1408); box-shadow:0 0 0 1px rgba(201,169,110,0.15); }
     .char-card-avatar { font-size:1.9rem; margin-bottom:0.3rem; }
     .char-card-name { font-family:'Cinzel',serif; font-size:0.8rem; color:var(--gold); margin-bottom:0.15rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .char-card-sub { font-size:0.7rem; color:#888; }
@@ -88,8 +88,8 @@
     .char-card-add-label { font-size:0.72rem; margin-top:0.3rem; }
 
     /* ── Boutons ── */
-    .btn { padding:0.35rem 0.85rem; border-radius:5px; border:1px solid #3a2810; background:var(--j-panel,#1a1a24); color:var(--j-text,#e8e0d0); font-size:0.82rem; cursor:pointer; transition:background var(--transition), border-color var(--transition); white-space:nowrap; }
-    .btn:hover { background:#201808; border-color:#4a3510; }
+    .btn { padding:0.35rem 0.85rem; border-radius:5px; border:1px solid var(--j-border-col,#3a2810); background:var(--j-panel,#1a1a24); color:var(--j-text,#e8e0d0); font-size:0.82rem; cursor:pointer; transition:background var(--transition), border-color var(--transition); white-space:nowrap; }
+    .btn:hover { background:var(--bg-secondary,#201808); border-color:var(--j-border-col,#4a3510); }
     .btn-gold { background:var(--gold-dark); border-color:var(--gold-dark); color:#fff; }
     .btn-gold:hover { background:var(--gold); border-color:var(--gold); }
     .btn-danger { background:rgba(201,122,122,0.15); border-color:rgba(201,122,122,0.4); color:var(--danger); }
@@ -137,7 +137,7 @@
     .save-skill-grid { display:grid; grid-template-columns:1fr 1fr; gap:0 1rem; }
     .sv-row, .sk-row { display:flex; align-items:center; gap:0.4rem; padding:0.22rem 0.35rem; font-size:0.82rem; color:#ccc; border-radius:3px; }
     .sv-row:nth-child(even), .sk-row:nth-child(even) { background:rgba(255,255,255,0.025); }
-    .prof-dot { width:11px; height:11px; border-radius:50%; border:2px solid #3a2810; background:transparent; cursor:pointer; flex-shrink:0; transition:background var(--transition), border-color var(--transition); }
+    .prof-dot { width:11px; height:11px; border-radius:50%; border:2px solid var(--j-border-col,#3a2810); background:transparent; cursor:pointer; flex-shrink:0; transition:background var(--transition), border-color var(--transition); }
     .prof-dot.on { background:var(--gold-dark); border-color:var(--gold); }
     .prof-dot.expert { background:var(--gold); border-color:var(--gold); box-shadow:0 0 0 2px var(--j-input,#0d0d14), 0 0 0 3.5px var(--gold); }
     /* ── Concentration spell button ── */
@@ -162,7 +162,7 @@
     .jat-toggle { display:flex; align-items:center; gap:0.35rem; margin-top:0.3rem; font-size:0.68rem; color:#555; cursor:pointer; user-select:none; }
     .jat-toggle input { accent-color:var(--gold-dark); width:12px; height:12px; cursor:pointer; }
     .jat-toggle.active { color:var(--gold-dark); }
-    .skill-filter-wrap { display:flex; align-items:center; gap:0.3rem; background:rgba(10,7,3,0.5); border:1px solid #3a2810; border-radius:4px; padding:0.18rem 0.5rem; margin:0.3rem 0 0.25rem; }
+    .skill-filter-wrap { display:flex; align-items:center; gap:0.3rem; background:rgba(10,7,3,0.5); border:1px solid var(--j-border-col,#3a2810); border-radius:4px; padding:0.18rem 0.5rem; margin:0.3rem 0 0.25rem; }
     .skill-filter-icon { font-size:0.62rem; opacity:0.5; flex-shrink:0; }
     #skill-filter { flex:1; background:none; border:none; color:var(--j-text,#e2cfa0); font-size:0.7rem; padding:0; outline:none; min-width:0; }
     #skill-filter::placeholder { color:#555; }
@@ -276,7 +276,7 @@
     /* ── Import confirm modal ── */
     .ddb-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.78); z-index:9000; align-items:center; justify-content:center; }
     .ddb-modal-overlay.open { display:flex; }
-    .ddb-modal { background:#0e0a04; border:1px solid #3a2810; border-radius:10px; padding:1.5rem; width:420px; max-width:96vw; max-height:90vh; overflow-y:auto; box-shadow:0 8px 40px rgba(0,0,0,0.7); }
+    .ddb-modal { background:var(--bg-primary,#0e0a04); border:1px solid var(--j-border-col,#3a2810); border-radius:10px; padding:1.5rem; width:420px; max-width:96vw; max-height:90vh; overflow-y:auto; box-shadow:0 8px 40px rgba(0,0,0,0.7); }
     .ddb-modal h3 { font-family:'Cinzel',serif; color:var(--gold); font-size:1rem; margin:0 0 0.35rem; }
     .ddb-modal-sub { font-size:0.75rem; color:#666; margin-bottom:1rem; }
     .ddb-preview { background:#090704; border:1px solid #2a1e0a; border-radius:6px; padding:0.75rem 0.85rem; margin-bottom:1rem; }
@@ -302,7 +302,7 @@
     .ddb-dropzone-sub { font-size:0.72rem; color:#555; margin-bottom:0.55rem; font-family:'Cinzel',serif; letter-spacing:0.06em; }
     .ddb-fetch-loading { display:inline-block; vertical-align:middle; }
     /* ── Toast undo ── */
-    #undo-toast { position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%); background:#1c1008; border:1px solid #4a3510; color:#e2cfa0; padding:0.65rem 1.2rem; border-radius:8px; font-size:0.85rem; z-index:9999; display:none; align-items:center; gap:0.85rem; box-shadow:0 6px 24px rgba(0,0,0,0.6); }
+    #undo-toast { position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%); background:var(--j-panel,#1c1008); border:1px solid var(--j-border-col,#4a3510); color:#e2cfa0; padding:0.65rem 1.2rem; border-radius:8px; font-size:0.85rem; z-index:9999; display:none; align-items:center; gap:0.85rem; box-shadow:0 6px 24px rgba(0,0,0,0.6); }
     #undo-toast.visible { display:flex; }
     #undo-toast button { background:rgba(201,169,110,0.15); border:1px solid var(--gold-dark); color:var(--gold); cursor:pointer; padding:0.25rem 0.7rem; border-radius:5px; font-family:'Cinzel',serif; font-size:0.75rem; letter-spacing:0.04em; }
     #undo-toast button:hover { background:rgba(201,169,110,0.25); }
@@ -329,7 +329,7 @@
     #char-bg-layer::after { content:''; position:absolute; inset:0; background:rgba(14,10,4,0.72); }
     .page-wrapper { position:relative; z-index:1; }
     .bg-upload-row { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
-    .bg-preview { width:60px; height:40px; border-radius:6px; object-fit:cover; border:1px solid #3a2810; display:none; }
+    .bg-preview { width:60px; height:40px; border-radius:6px; object-fit:cover; border:1px solid var(--j-border-col,#3a2810); display:none; }
     .bg-clear-btn { font-size:0.7rem; color:var(--danger); background:none; border:none; cursor:pointer; padding:0.2rem 0.4rem; display:none; }
     .av-btn:hover { border-color:var(--gold-dark); }
     .av-btn.selected { border-color:var(--gold); background:rgba(201,162,39,0.1); }
@@ -361,19 +361,19 @@
 
     /* ── Jets de mort ── */
     .death-dots { display:flex; gap:0.35rem; }
-    .death-dot { width:14px; height:14px; border-radius:50%; border:2px solid #3a2810; background:transparent; cursor:pointer; transition:background var(--transition), border-color var(--transition); }
+    .death-dot { width:14px; height:14px; border-radius:50%; border:2px solid var(--j-border-col,#3a2810); background:transparent; cursor:pointer; transition:background var(--transition), border-color var(--transition); }
     .death-dot.success-on { background:var(--success); border-color:var(--success); }
     .death-dot.fail-on { background:var(--danger); border-color:var(--danger); }
     /* ── Stress Points ── */
     .stress-dots { display:flex; gap:0.35rem; flex-wrap:wrap; }
-    .stress-dot { width:14px; height:14px; border-radius:3px; border:2px solid #3a2810; background:transparent; cursor:pointer; transition:background var(--transition), border-color var(--transition); }
+    .stress-dot { width:14px; height:14px; border-radius:3px; border:2px solid var(--j-border-col,#3a2810); background:transparent; cursor:pointer; transition:background var(--transition), border-color var(--transition); }
     .stress-dot.used { background:#8b5cf6; border-color:#8b5cf6; }
     .stress-count-inp { width:36px; background:var(--j-input,#0d0d14); border:1px solid var(--j-border-col,#2a2a3a); border-radius:4px; color:var(--j-text,#e8e0d0); font-size:0.75rem; padding:0.15rem 0.3rem; text-align:center; margin-left:0.5rem; vertical-align:middle; }
 
     /* ── Class Features ── */
     .cf-level-group { margin-bottom:0.45rem; border:1px solid var(--j-border-col,#2a2a3a); border-radius:6px; overflow:hidden; }
     .cf-level-header { display:flex; align-items:center; gap:0.6rem; padding:0.5rem 0.75rem; background:var(--j-input,#0d0d14); cursor:pointer; user-select:none; transition:background var(--transition); }
-    .cf-level-header:hover { background:#1c1408; }
+    .cf-level-header:hover { background:var(--j-panel,#1c1408); }
     .cf-level-title { font-family:'Cinzel',serif; font-size:0.75rem; color:var(--gold-dark); letter-spacing:0.06em; text-transform:uppercase; flex:1; }
     .cf-level-header.cf-current .cf-level-title { color:var(--gold); }
     .cf-chevron { font-size:0.62rem; color:#555; transition:transform var(--transition); display:inline-block; }
@@ -401,8 +401,8 @@
     .cf-level-header.cf-collapsed .cf-level-preview { color:#444; }
     .cf-locked .cf-level-header { opacity:0.45; }
     .cf-locked .cf-feature-name { color:#555; }
-    .cf-locked .cf-feature-desc { color:#3a2810; }
-    .cf-lock-icon { font-size:0.62rem; color:#3a2810; flex-shrink:0; }
+    .cf-locked .cf-feature-desc { color:var(--j-border-col,#3a2810); }
+    .cf-lock-icon { font-size:0.62rem; color:var(--j-border-col,#3a2810); flex-shrink:0; }
     .cf-feature.cf-sub { border-left-color:rgba(140,80,200,0.55); background:var(--j-input,#0d0d14); }
     .cf-sub-label { font-size:0.62rem; color:#9a76cc; font-style:italic; margin-top:0.1rem; }
     .cf-sub-divider { border:none; border-top:1px dashed var(--j-border-col,#2a2a3a); margin:0.3rem 0; }
@@ -433,7 +433,7 @@
 
     /* ── Ressources de classe ── */
     .res-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:0.6rem; margin-bottom:0.75rem; }
-    .res-card { background:#0c0905; border:1px solid var(--j-border-col,#2a2a3a); border-radius:6px; padding:0.55rem 0.65rem; display:flex; flex-direction:column; gap:0.25rem; position:relative; }
+    .res-card { background:var(--j-input,#0c0905); border:1px solid var(--j-border-col,#2a2a3a); border-radius:6px; padding:0.55rem 0.65rem; display:flex; flex-direction:column; gap:0.25rem; position:relative; }
     .res-card-name { font-size:0.72rem; color:#aaa; text-transform:uppercase; letter-spacing:0.04em; padding-right:1.2rem; line-height:1.3; }
     .res-card-counter { display:flex; align-items:center; gap:0.35rem; margin-top:0.15rem; }
     .res-counter-inp { width:40px; text-align:center; background:var(--j-panel,#1a1a24); border:1px solid var(--j-border-col,#2a2a3a); border-radius:4px; color:var(--gold); font-family:'Cinzel',serif; font-size:1rem; padding:0.15rem 0; }
@@ -451,7 +451,7 @@
     .res-max-label { font-size:0.62rem; color:#555; text-transform:uppercase; letter-spacing:.04em; }
     .res-reset-badge { font-size:0.6rem; color:#555; text-transform:uppercase; letter-spacing:0.04em; }
     .res-card-name-inp { background:transparent; border:none; border-bottom:1px solid transparent; color:#aaa; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.04em; padding:0 0 0.1rem; width:calc(100% - 1.2rem); box-sizing:border-box; transition:border-color var(--transition), color var(--transition); line-height:1.3; margin-bottom:0.2rem; }
-    .res-card-name-inp:hover { border-bottom-color:#3a2810; }
+    .res-card-name-inp:hover { border-bottom-color:var(--j-border-col,#3a2810); }
     .res-card-name-inp:focus { outline:none; border-bottom-color:var(--gold-dark); color:#ddd; }
     .res-del { position:absolute; top:0.35rem; right:0.35rem; background:none; border:none; color:#333; cursor:pointer; font-size:0.65rem; padding:0.1rem; transition:color var(--transition); }
     .res-del:hover { color:var(--danger); }
@@ -459,7 +459,7 @@
     /* ── Repos court modal ── */
     .sr-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.72); z-index:8000; align-items:center; justify-content:center; }
     .sr-modal-overlay.open { display:flex; }
-    .sr-modal { background:#0e0a04; border:1px solid #3a2810; border-radius:10px; padding:1.5rem; width:340px; max-width:94vw; box-shadow:0 8px 40px rgba(0,0,0,0.7); }
+    .sr-modal { background:var(--bg-primary,#0e0a04); border:1px solid var(--j-border-col,#3a2810); border-radius:10px; padding:1.5rem; width:340px; max-width:94vw; box-shadow:0 8px 40px rgba(0,0,0,0.7); }
     .sr-modal h3 { font-family:'Cinzel',serif; color:var(--gold); font-size:1rem; margin:0 0 1rem; text-align:center; }
     .sr-hp-display { text-align:center; font-size:0.85rem; color:#aaa; margin-bottom:0.75rem; }
     .sr-hp-display strong { color:var(--j-text,#e8e0d0); }
@@ -502,7 +502,7 @@
     .attunement-slot input[type=text].attuned { border-color:#7a4aaa; color:#c090e8; }
     .attunement-slot-check { accent-color:#9a60d0; width:15px; height:15px; cursor:pointer; flex-shrink:0; }
     .attunement-slot-label { font-size:0.7rem; color:#555; font-style:italic; flex-shrink:0; }
-    .btn-rest { font-size:0.75rem; padding:0.35rem 0.75rem; border-radius:5px; border:1px solid var(--j-border-col,#2a2a3a); background:#0c0905; color:#aaa; cursor:pointer; font-family:'Cinzel',serif; letter-spacing:0.04em; transition:all var(--transition); }
+    .btn-rest { font-size:0.75rem; padding:0.35rem 0.75rem; border-radius:5px; border:1px solid var(--j-border-col,#2a2a3a); background:var(--j-input,#0c0905); color:#aaa; cursor:pointer; font-family:'Cinzel',serif; letter-spacing:0.04em; transition:all var(--transition); }
     .btn-rest:hover { border-color:var(--gold-dark); color:var(--gold-dark); background:var(--j-panel,#1a1a24); }
     .btn-rest.short { border-color:#3a6060; color:#7ababa; }
     .btn-rest.short:hover { background:#0f2020; border-color:#7ababa; }
@@ -511,7 +511,7 @@
 
     /* ── Conditions ── */
     .cond-grid { display:flex; flex-wrap:wrap; gap:0.4rem; }
-    .cond-badge { font-size:0.7rem; font-family:'Cinzel',serif; padding:0.2rem 0.55rem; border-radius:99px; border:1px solid var(--j-border-col,#2a2a3a); background:#0c0905; color:#555; cursor:pointer; transition:all var(--transition); user-select:none; letter-spacing:0.03em; }
+    .cond-badge { font-size:0.7rem; font-family:'Cinzel',serif; padding:0.2rem 0.55rem; border-radius:99px; border:1px solid var(--j-border-col,#2a2a3a); background:var(--j-input,#0c0905); color:#555; cursor:pointer; transition:all var(--transition); user-select:none; letter-spacing:0.03em; }
     .cond-badge:hover { border-color:#666; color:#999; }
     .cond-badge.active { border-color:#c04040; background:#2a0f0f; color:#f08080; }
     .cond-badge.active.conc { border-color:#6040c0; background:#1a0f2a; color:#e2cfa0; }
@@ -606,7 +606,7 @@
     .sec-col-btn:hover { opacity:1; }
 
     /* ── Barre d'outils layout ── */
-    .layout-toolbar { display:none; background:var(--j-input,#0d0d14); border:1px solid #3a2810; border-radius:var(--radius); padding:0.5rem 0.85rem; margin-bottom:0.85rem; gap:0.65rem; align-items:center; flex-wrap:wrap; font-size:0.78rem; color:#777; font-style:italic; }
+    .layout-toolbar { display:none; background:var(--j-input,#0d0d14); border:1px solid var(--j-border-col,#3a2810); border-radius:var(--radius); padding:0.5rem 0.85rem; margin-bottom:0.85rem; gap:0.65rem; align-items:center; flex-wrap:wrap; font-size:0.78rem; color:#777; font-style:italic; }
     .layout-toolbar.visible { display:flex; }
     .layout-col-label { font-family:'Cinzel',serif; font-size:0.62rem; color:#555; letter-spacing:0.06em; text-transform:uppercase; text-align:center; padding:0.2rem 0 0.4rem; }
     @media (max-width:840px) { .layout-col-label { display:none; } }
@@ -637,7 +637,7 @@
     .sec-vis-btn.visible { opacity:1; border-color:var(--gold-dark); color:var(--gold); background:rgba(201,169,110,0.08); }
 
     /* ── Inspiration ── */
-    .inspiration-btn { font-size:1.1rem; background:none; border:1px solid #3a2810; border-radius:6px; padding:0.25rem 0.55rem; cursor:pointer; transition:all var(--transition); color:#555; line-height:1; }
+    .inspiration-btn { font-size:1.1rem; background:none; border:1px solid var(--j-border-col,#3a2810); border-radius:6px; padding:0.25rem 0.55rem; cursor:pointer; transition:all var(--transition); color:#555; line-height:1; }
     .inspiration-btn:hover { border-color:var(--gold-dark); color:var(--gold-dark); }
     .inspiration-btn.active { color:#f0c040; border-color:#b08020; background:rgba(240,192,64,0.12); text-shadow:0 0 8px rgba(240,192,64,0.6); }
     .inspiration-btn.active::after { content:' Inspiration'; font-size:0.65rem; font-family:'Cinzel',serif; letter-spacing:0.05em; vertical-align:middle; }
@@ -646,7 +646,7 @@
     .exhaustion-row { display:flex; align-items:center; gap:0.5rem; margin-top:0.65rem; flex-wrap:wrap; }
     .exhaustion-label { font-size:0.72rem; color:#888; text-transform:uppercase; letter-spacing:0.05em; }
     .exhaustion-pips { display:flex; gap:0.3rem; }
-    .exhaust-pip { width:16px; height:16px; border-radius:3px; border:1px solid #3a2810; background:#0c0905; cursor:pointer; transition:all var(--transition); }
+    .exhaust-pip { width:16px; height:16px; border-radius:3px; border:1px solid var(--j-border-col,#3a2810); background:var(--j-input,#0c0905); cursor:pointer; transition:all var(--transition); }
     .exhaust-pip.on { background:#7a3030; border-color:#c04040; }
     .exhaust-pip:hover { border-color:#888; }
     .exhaustion-desc { font-size:0.68rem; color:#c04040; font-style:italic; margin-left:0.3rem; }
@@ -680,12 +680,12 @@
     #chat-fab { position:fixed; bottom:1.2rem; right:1.2rem; z-index:2000; width:46px; height:46px; border-radius:50%; background:var(--gold-dark); border:none; color:#fff; font-size:1.3rem; cursor:pointer; box-shadow:0 3px 14px rgba(0,0,0,0.55); transition:background var(--transition), transform 0.15s; display:flex; align-items:center; justify-content:center; }
     #chat-fab:hover { background:var(--gold); transform:scale(1.08); }
     #chat-fab .chat-unread { position:absolute; top:-3px; right:-3px; background:var(--danger); color:#fff; font-size:0.6rem; font-family:'Cinzel',serif; border-radius:99px; min-width:16px; height:16px; line-height:16px; text-align:center; padding:0 3px; display:none; }
-    #chat-panel { position:fixed; bottom:4.2rem; right:1.2rem; z-index:1999; width:320px; height:480px; background:#0e0a04; border:1px solid var(--gold-dark); border-radius:2px; box-shadow:0 8px 32px rgba(0,0,0,0.75); display:none; flex-direction:column; overflow:hidden; resize:vertical; min-height:200px; max-height:80vh; }
+    #chat-panel { position:fixed; bottom:4.2rem; right:1.2rem; z-index:1999; width:320px; height:480px; background:var(--bg-primary,#0e0a04); border:1px solid var(--gold-dark); border-radius:2px; box-shadow:0 8px 32px rgba(0,0,0,0.75); display:none; flex-direction:column; overflow:hidden; resize:vertical; min-height:200px; max-height:80vh; }
     #chat-panel.open { display:flex; }
     #chat-view-rooms { display:flex; flex-direction:column; flex:1; min-height:0; }
     #chat-view-msgs { display:none; flex-direction:column; flex:1; min-height:0; }
     #chat-view-msgs.active { display:flex; }
-    .chat-header { padding:0.45rem 0.75rem; background:#080604; border-bottom:1px solid #3a2810; font-family:'Cinzel',serif; font-size:0.75rem; color:var(--gold); letter-spacing:0.08em; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+    .chat-header { padding:0.45rem 0.75rem; background:var(--bg-primary,#080604); border-bottom:1px solid var(--j-border-col,#3a2810); font-family:'Cinzel',serif; font-size:0.75rem; color:var(--gold); letter-spacing:0.08em; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
     .chat-header-left { display:flex; align-items:center; gap:0.45rem; overflow:hidden; }
     .chat-header-left span { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:180px; }
     .chat-online-dot { width:7px; height:7px; border-radius:50%; background:#6aba6a; box-shadow:0 0 5px rgba(106,186,106,0.5); flex-shrink:0; }
@@ -702,11 +702,11 @@
     /* Room list */
     #chat-room-list { flex:1; overflow-y:auto; }
     #chat-room-list::-webkit-scrollbar { width:4px; }
-    #chat-room-list::-webkit-scrollbar-thumb { background:#3a2810; border-radius:2px; }
-    .chat-room-item { display:flex; align-items:center; gap:0.6rem; padding:0.55rem 0.85rem; border-bottom:1px solid #1a1208; cursor:pointer; transition:background 0.12s; }
+    #chat-room-list::-webkit-scrollbar-thumb { background:var(--j-border-col,#3a2810); border-radius:2px; }
+    .chat-room-item { display:flex; align-items:center; gap:0.6rem; padding:0.55rem 0.85rem; border-bottom:1px solid var(--j-border-col,#1a1208); cursor:pointer; transition:background 0.12s; }
     .chat-room-item:hover { background:rgba(201,162,39,0.06); }
     .chat-room-item.active { background:rgba(201,162,39,0.1); }
-    .chat-room-icon { width:30px; height:30px; border-radius:50%; background:#1a1208; border:1px solid #3a2810; display:flex; align-items:center; justify-content:center; font-size:0.85rem; flex-shrink:0; }
+    .chat-room-icon { width:30px; height:30px; border-radius:50%; background:var(--j-panel,#1a1208); border:1px solid var(--j-border-col,#3a2810); display:flex; align-items:center; justify-content:center; font-size:0.85rem; flex-shrink:0; }
     .chat-room-info { flex:1; min-width:0; }
     .chat-room-name { font-family:'Cinzel',serif; font-size:0.72rem; color:var(--gold-dark); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .chat-room-preview { font-size:0.67rem; color:#555; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:0.1rem; }
@@ -715,7 +715,7 @@
     /* Messages */
     .chat-messages { flex:1; overflow-y:auto; padding:0.6rem 0.65rem; display:flex; flex-direction:column; gap:0.15rem; scroll-behavior:smooth; min-height:0; }
     .chat-messages::-webkit-scrollbar { width:4px; }
-    .chat-messages::-webkit-scrollbar-thumb { background:#3a2810; border-radius:2px; }
+    .chat-messages::-webkit-scrollbar-thumb { background:var(--j-border-col,#3a2810); border-radius:2px; }
     .chat-bubble-wrap { display:flex; flex-direction:column; margin-bottom:0.2rem; }
     .chat-bubble-wrap.me { align-items:flex-end; }
     .chat-bubble-wrap.other { align-items:flex-start; }
@@ -734,12 +734,12 @@
     .chat-bubble:hover .chat-del-btn { opacity:1; }
     .chat-del-btn:hover { color:var(--danger); }
     .chat-msg-system { font-size:0.67rem; color:#444; font-style:italic; text-align:center; padding:0.2rem 0; }
-    .chat-day-sep { text-align:center; font-size:0.62rem; color:#3a2810; margin:0.5rem 0; border-top:1px solid #1a1208; padding-top:0.35rem; font-family:'Cinzel',serif; letter-spacing:0.06em; }
+    .chat-day-sep { text-align:center; font-size:0.62rem; color:var(--j-border-col,#3a2810); margin:0.5rem 0; border-top:1px solid var(--j-border-col,#1a1208); padding-top:0.35rem; font-family:'Cinzel',serif; letter-spacing:0.06em; }
     #chat-scroll-btn { position:absolute; bottom:3.8rem; right:0.6rem; background:var(--gold-dark); border:none; border-radius:50%; width:26px; height:26px; color:#fff; font-size:0.85rem; cursor:pointer; display:none; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.5); z-index:10; }
     #chat-scroll-btn.visible { display:flex; }
-    .chat-footer { flex-shrink:0; border-top:1px solid #3a2810; }
+    .chat-footer { flex-shrink:0; border-top:1px solid var(--j-border-col,#3a2810); }
     .chat-input-row { display:flex; gap:0.4rem; padding:0.45rem 0.65rem; }
-    .chat-input { flex:1; background:#080604; border:1px solid #3a2810; border-radius:2px; color:var(--j-text,#e8e0d0); font-size:0.82rem; padding:0.35rem 0.55rem; resize:none; height:34px; }
+    .chat-input { flex:1; background:var(--bg-primary,#080604); border:1px solid var(--j-border-col,#3a2810); border-radius:2px; color:var(--j-text,#e8e0d0); font-size:0.82rem; padding:0.35rem 0.55rem; resize:none; height:34px; }
     .chat-input:focus { outline:none; border-color:var(--gold-dark); }
     .chat-send { background:var(--gold-dark); border:none; border-radius:2px; color:#fff; padding:0.35rem 0.7rem; cursor:pointer; font-size:0.9rem; transition:background var(--transition); flex-shrink:0; }
     .chat-send:hover { background:var(--gold); }
@@ -749,14 +749,14 @@
     /* Modal nouvelle conversation */
     #chat-new-modal { position:fixed; inset:0; z-index:3000; background:rgba(0,0,0,0.7); display:none; align-items:center; justify-content:center; }
     #chat-new-modal.open { display:flex; }
-    .chat-new-box { background:#0e0a04; border:1px solid var(--gold-dark); border-radius:2px; padding:1.25rem; width:280px; max-width:90vw; }
+    .chat-new-box { background:var(--bg-primary,#0e0a04); border:1px solid var(--gold-dark); border-radius:2px; padding:1.25rem; width:280px; max-width:90vw; }
     .chat-new-title { font-family:'Cinzel',serif; font-size:0.85rem; color:var(--gold); margin-bottom:1rem; }
     .chat-new-tabs { display:flex; gap:0.5rem; margin-bottom:0.85rem; }
-    .chat-new-tab { flex:1; padding:0.3rem; background:none; border:1px solid #3a2810; color:#777; font-family:'Cinzel',serif; font-size:0.7rem; cursor:pointer; border-radius:2px; transition:all 0.15s; }
+    .chat-new-tab { flex:1; padding:0.3rem; background:none; border:1px solid var(--j-border-col,#3a2810); color:#777; font-family:'Cinzel',serif; font-size:0.7rem; cursor:pointer; border-radius:2px; transition:all 0.15s; }
     .chat-new-tab.active { background:rgba(201,162,39,0.12); border-color:var(--gold-dark); color:var(--gold); }
     .chat-new-section { display:none; }
     .chat-new-section.active { display:block; }
-    .chat-new-input { width:100%; background:#080604; border:1px solid #3a2810; border-radius:2px; color:var(--j-text,#e8e0d0); font-size:0.82rem; padding:0.35rem 0.55rem; margin-bottom:0.5rem; box-sizing:border-box; }
+    .chat-new-input { width:100%; background:var(--bg-primary,#080604); border:1px solid var(--j-border-col,#3a2810); border-radius:2px; color:var(--j-text,#e8e0d0); font-size:0.82rem; padding:0.35rem 0.55rem; margin-bottom:0.5rem; box-sizing:border-box; }
     .chat-new-input:focus { outline:none; border-color:var(--gold-dark); }
     .chat-player-list { display:flex; flex-direction:column; gap:0.3rem; max-height:160px; overflow-y:auto; margin-bottom:0.65rem; }
     .chat-player-opt { display:flex; align-items:center; gap:0.5rem; padding:0.3rem 0.4rem; cursor:pointer; border-radius:2px; transition:background 0.12s; }
@@ -764,7 +764,7 @@
     .chat-player-opt input[type=checkbox] { accent-color:var(--gold-dark); }
     .chat-player-opt label { font-size:0.78rem; color:var(--j-text,#e8e0d0); cursor:pointer; }
     .chat-new-actions { display:flex; gap:0.5rem; justify-content:flex-end; margin-top:0.5rem; }
-    .chat-new-cancel { background:none; border:1px solid #3a2810; color:#777; padding:0.3rem 0.7rem; border-radius:2px; cursor:pointer; font-size:0.78rem; }
+    .chat-new-cancel { background:none; border:1px solid var(--j-border-col,#3a2810); color:#777; padding:0.3rem 0.7rem; border-radius:2px; cursor:pointer; font-size:0.78rem; }
     .chat-new-confirm { background:var(--gold-dark); border:none; color:#fff; padding:0.3rem 0.7rem; border-radius:2px; cursor:pointer; font-size:0.78rem; transition:background 0.15s; }
     .chat-new-confirm:hover { background:var(--gold); }
 
@@ -816,7 +816,7 @@
     /* ── Modal nouvelle fiche ── */
     .new-char-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.78); z-index:9500; align-items:center; justify-content:center; }
     .new-char-modal-overlay.open { display:flex; }
-    .new-char-modal { background:#0e0a04; border:1px solid #3a2810; border-radius:10px; padding:1.75rem; width:400px; max-width:94vw; box-shadow:0 8px 40px rgba(0,0,0,0.7); }
+    .new-char-modal { background:var(--bg-primary,#0e0a04); border:1px solid var(--j-border-col,#3a2810); border-radius:10px; padding:1.75rem; width:400px; max-width:94vw; box-shadow:0 8px 40px rgba(0,0,0,0.7); }
     .new-char-modal h3 { font-family:'Cinzel',serif; color:var(--gold); font-size:1rem; margin:0 0 1.25rem; text-align:center; letter-spacing:0.06em; }
     .new-char-avatar-grid { display:flex; flex-wrap:wrap; gap:0.4rem; justify-content:center; margin:0.6rem 0 1rem; }
     .new-char-av-btn { width:38px; height:38px; border-radius:6px; border:2px solid var(--j-border-col,#2a2a3a); background:var(--j-input,#0d0d14); font-size:1.3rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:border-color 0.15s, background 0.15s; }
@@ -825,14 +825,14 @@
     .new-char-btn-row { display:flex; gap:0.6rem; justify-content:flex-end; margin-top:1.1rem; }
 
     /* ── Indicateur connexion ── */
-    .conn-indicator { font-size:0.72rem; font-family:var(--font-ui,sans-serif); padding:0.18rem 0.55rem; border-radius:99px; border:1px solid var(--j-border-col,#2a2a3a); background:#0c0905; color:#666; letter-spacing:0.04em; white-space:nowrap; transition:all 0.3s ease; }
+    .conn-indicator { font-size:0.72rem; font-family:var(--font-ui,sans-serif); padding:0.18rem 0.55rem; border-radius:99px; border:1px solid var(--j-border-col,#2a2a3a); background:var(--j-input,#0c0905); color:#666; letter-spacing:0.04em; white-space:nowrap; transition:all 0.3s ease; }
     .conn-indicator.online  { border-color:rgba(106,186,106,0.4); color:#6aba6a; background:rgba(106,186,106,0.08); }
     .conn-indicator.offline { border-color:rgba(201,169,110,0.4); color:#c9a227; background:rgba(201,169,110,0.08); }
     .conn-indicator.local   { border-color:rgba(201,122,122,0.4); color:#c97a7a; background:rgba(201,122,122,0.08); }
 
     /* ── Vue MJ enrichie ── */
     .mj-player-card { background:var(--j-input,#0d0d14); border:1px solid var(--j-border-col,#2a2a3a); border-radius:var(--radius); padding:1rem 1.1rem; transition:border-color var(--transition); }
-    .mj-player-card:hover { border-color:#3a2810; }
+    .mj-player-card:hover { border-color:var(--j-border-col,#3a2810); }
     .mj-player-header { display:flex; align-items:center; gap:0.6rem; margin-bottom:0.65rem; }
     .mj-player-avatar { font-size:1.4rem; flex-shrink:0; }
     .mj-player-name { font-family:'Cinzel',serif; color:var(--gold); font-size:0.88rem; }
@@ -907,7 +907,7 @@
     }
     .vb-brand-sigil { color: var(--gold-dark); font-size: 14px; }
     .vb-brand-name { font-family: 'Cinzel', serif; color: var(--gold); font-size: 14px; letter-spacing: .05em; }
-    .vb-brand-sep { color: #3a2810; margin: 0 4px; }
+    .vb-brand-sep { color: var(--j-border-col,#3a2810); margin: 0 4px; }
     .vb-brand-sub { font-family: 'Cinzel', serif; font-size: 8px; color: var(--gold-dark); letter-spacing: .12em; text-transform: uppercase; }
     .vb-topbar .dash-player { display: none; }
     .vb-topbar .dash-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
@@ -1213,7 +1213,7 @@
     }
     .vb-hd-val { font-family: 'Cinzel', serif; color: var(--gold); font-size: 13px; margin-top: 3px; }
     .vb-death-pips { display: flex; gap: 3px; flex-wrap: wrap; margin-top: 4px; }
-    .vb-death-pip { width: 9px; height: 9px; border-radius: 50%; border: 2px solid #3a2810; background: transparent; display: inline-block; }
+    .vb-death-pip { width: 9px; height: 9px; border-radius: 50%; border: 2px solid var(--j-border-col,#3a2810); background: transparent; display: inline-block; }
     .vb-death-pip.success-on { background: var(--success); border-color: var(--success); }
     .vb-death-pip.fail-on { background: var(--danger); border-color: var(--danger); }
     .vb-rest-btns { display: flex; gap: 6px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--j-border-col, #4a3510); }
@@ -1351,7 +1351,7 @@
   border: none !important;
   transition: color .2s !important;
 }
-.layout-toolbar:hover { color: #4a3510 !important; }
+.layout-toolbar:hover { color: var(--j-border-col,#4a3510) !important; }
 
 /* Layout-bottom: full-width spells below 3 cols */
 .layout-bottom { padding: 0 32px 40px; }
@@ -1367,12 +1367,12 @@
 
 /* Inputs: very dark transparent bg, subtle border */
 .field-input, .atk-inp, .inv-inp {
-  background: rgba(10,7,3,0.7) !important;
-  border-color: #3a2810 !important;
+  background: var(--j-input,rgba(10,7,3,0.7)) !important;
+  border-color: var(--j-border-col,#3a2810) !important;
 }
 .field-input:focus, .atk-inp:focus, .inv-inp:focus {
   border-color: var(--gold-dark) !important;
-  background: rgba(10,7,3,0.9) !important;
+  background: var(--j-input,rgba(10,7,3,0.9)) !important;
 }
 
 /* Table headers match VB subheader style */
@@ -1382,7 +1382,7 @@
   color: var(--gold-dark) !important;
   letter-spacing: .07em !important;
   text-transform: uppercase !important;
-  border-bottom-color: #3a2810 !important;
+  border-bottom-color: var(--j-border-col,#3a2810) !important;
   padding-bottom: 6px !important;
 }
 
@@ -1393,11 +1393,11 @@
 .cond-grid { gap: 6px !important; }
 
 /* Resources cards */
-.res-card { background: rgba(10,7,3,0.6) !important; border-color: #3a2810 !important; }
+.res-card { background: var(--j-input,rgba(10,7,3,0.6)) !important; border-color: var(--j-border-col,#3a2810) !important; }
 
 /* Class features */
-.cf-level-header { background: rgba(10,7,3,0.6) !important; }
-.cf-feature { background: rgba(10,7,3,0.5) !important; border-left-color: #3a2810 !important; }
+.cf-level-header { background: var(--j-input,rgba(10,7,3,0.6)) !important; }
+.cf-feature { background: var(--j-input,rgba(10,7,3,0.5)) !important; border-left-color: var(--j-border-col,#3a2810) !important; }
 
 /* Sheet-section-full: no change needed since it's removed now */
 
@@ -1829,7 +1829,7 @@
 .roll-trigger:hover { color: var(--gold) !important; }
 #dice-toast {
   position: fixed; bottom: 4.5rem; left: 50%; transform: translateX(-50%);
-  background: #0e0a04; border: 1px solid var(--gold-dark); color: var(--gold);
+  background: var(--bg-primary,#0e0a04); border: 1px solid var(--gold-dark); color: var(--gold);
   font-family: 'Cinzel', serif; letter-spacing: 0.06em;
   padding: 0.55rem 1.4rem; z-index: 9997; pointer-events: none;
   opacity: 0; transition: opacity 0.25s; display: flex; flex-direction: column; align-items: center; gap: 2px;
@@ -1846,7 +1846,7 @@
 #dice-tray-btn { font-size:0.8rem; padding:0.3rem 0.65rem; }
 #dice-tray {
   position: fixed; bottom: 1.2rem; right: 1.2rem; z-index: 9990;
-  background: #0e0a04; border: 1px solid var(--gold-dark);
+  background: var(--bg-primary,#0e0a04); border: 1px solid var(--gold-dark);
   padding: 0.6rem 0.75rem; display: none; flex-direction: column; gap: 0.4rem;
   box-shadow: 0 6px 24px rgba(0,0,0,0.7); border-radius: 2px; min-width: 210px;
 }
@@ -1861,10 +1861,10 @@
 }
 .dice-btn:hover { background:rgba(201,162,39,0.18); }
 .dice-tray-modifier { display:flex; align-items:center; gap:0.35rem; margin-top:0.15rem; font-size:0.75rem; color:#888; }
-.dice-tray-modifier input { width:48px; background:#0a0703; border:1px solid #3a2810; color:var(--j-text,#e2cfa0); font-size:0.82rem; text-align:center; padding:0.2rem; border-radius:2px; }
+.dice-tray-modifier input { width:48px; background:var(--j-input,#0a0703); border:1px solid var(--j-border-col,#3a2810); color:var(--j-text,#e2cfa0); font-size:0.82rem; text-align:center; padding:0.2rem; border-radius:2px; }
 /* ── ADV / DIS roll mode ── */
 .dice-roll-mode { display:flex; gap:3px; margin-top:0.35rem; }
-.drm-btn { flex:1; padding:0.22rem 0.3rem; font-family:'Cinzel',serif; font-size:0.65rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; background:rgba(255,255,255,0.03); border:1px solid #3a2810; color:#555; cursor:pointer; transition:all 0.15s; border-radius:2px; }
+.drm-btn { flex:1; padding:0.22rem 0.3rem; font-family:'Cinzel',serif; font-size:0.65rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; background:rgba(255,255,255,0.03); border:1px solid var(--j-border-col,#3a2810); color:#555; cursor:pointer; transition:all 0.15s; border-radius:2px; }
 .drm-btn:hover { border-color:var(--gold-dark); color:var(--gold-dark); }
 .drm-btn.adv.active  { background:rgba(106,186,106,0.12); border-color:#6aba6a; color:#6aba6a; }
 .drm-btn.norm.active { background:rgba(230,210,122,0.06); border-color:var(--gold-dark); color:var(--gold); }
@@ -3334,7 +3334,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
               <div class="ink-dot" data-ink="#1a5a2a" style="background:#1a5a2a;" title="Green"></div>
               <div class="ink-dot" data-ink="#6a3a00" style="background:#6a3a00;" title="Sepia"></div>
               <div class="ink-dot" data-ink="#7a007a" style="background:#7a007a;" title="Purple"></div>
-              <input type="color" id="ink-custom" value="#1a1212" title="Custom color" style="width:24px;height:24px;border-radius:50%;border:2px solid #3a2810;background:none;cursor:pointer;padding:1px;">
+              <input type="color" id="ink-custom" value="#1a1212" title="Custom color" style="width:24px;height:24px;border-radius:50%;border:2px solid var(--j-border-col,#3a2810);background:none;cursor:pointer;padding:1px;">
               <div class="canvas-tool-sep"></div>
               <!-- Actions -->
               <button class="canvas-tool-btn" id="ctool-undo" title="Undo (Ctrl+Z)">↩</button>
@@ -8805,7 +8805,7 @@ function renderAdminModalTab() {
         <div style="font-size:0.8rem;color:#888;font-style:italic;margin-bottom:0.5rem;">Current values (maximums are automatically calculated based on class and level)</div>
         <div id="ae-resources-wrap" style="display:flex;flex-wrap:wrap;gap:0.75rem;">
           ${(c.resources||[]).map((r,i) => `
-            <div style="background:#140f08;border:1px solid #4a3510;border-radius:6px;padding:0.5rem 0.75rem;min-width:120px;">
+            <div style="background:var(--j-panel,#140f08);border:1px solid var(--j-border-col,#4a3510);border-radius:6px;padding:0.5rem 0.75rem;min-width:120px;">
               <div style="font-size:0.75rem;color:var(--gold);font-family:'Cinzel',serif;margin-bottom:0.3rem;">${esc(r.name)}</div>
               <div style="display:flex;align-items:center;gap:0.4rem;">
                 <input type="number" class="field-input ae-resource-cur" data-ri="${i}" value="${r.current||0}" min="0" max="${r.max||99}" style="width:55px;text-align:center;">
@@ -8848,7 +8848,7 @@ function renderAdminModalTab() {
         <div class="sheet-section-title">Saving Throws</div>
         <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
           ${SAVES.map(s => `
-            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;color:#bbb;cursor:pointer;background:#140f08;border:1px solid #4a3510;border-radius:6px;padding:0.3rem 0.65rem;">
+            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;color:#bbb;cursor:pointer;background:var(--j-panel,#140f08);border:1px solid var(--j-border-col,#4a3510);border-radius:6px;padding:0.3rem 0.65rem;">
               <input type="checkbox" class="ae-save" data-save="${s}" ${c['save'+s.charAt(0).toUpperCase()+s.slice(1)]?'checked':''} style="accent-color:var(--gold-dark);">
               ${SAVE_LABELS[s]}
             </label>
@@ -8979,7 +8979,7 @@ function renderAdminModalTab() {
     if (!Array.isArray(pages) || pages.length === 0) pages = [{ name: 'Session Notes', content: '' }];
     const pagesHtml = pages.map((page, i) => `
       <div style="margin-bottom:1.2rem;">
-        <div style="font-size:0.75rem;color:var(--gold);font-family:'Cinzel',serif;letter-spacing:0.06em;margin-bottom:0.4rem;padding-bottom:0.3rem;border-bottom:1px solid #4a3510;">${esc(page.name || `Page ${i + 1}`)}</div>
+        <div style="font-size:0.75rem;color:var(--gold);font-family:'Cinzel',serif;letter-spacing:0.06em;margin-bottom:0.4rem;padding-bottom:0.3rem;border-bottom:1px solid var(--j-border-col,#4a3510);">${esc(page.name || `Page ${i + 1}`)}</div>
         <textarea class="notes-editor ae-notes-page" data-page-idx="${i}" style="min-height:140px;">${esc(page.content || '')}</textarea>
       </div>
     `).join('');
@@ -12957,38 +12957,45 @@ function renderFamiliars() {
     { spell:'Summon Beast', level:2, icon:'🦁', note:'AC/HP scale with slot level',
       creatures:[
         { n:'Bestial Spirit — Air', spirit:{name:'Bestial Spirit (Air)',type:'Beast',size:'Small',
-            ac:11,acNote:'11 + slot level',hp:20,hpNote:'20 + 5 per slot above 2nd',
+            ac:11,acNote:'11 + slot level',hp:20,hpNote:'20 (Air) + 5 per slot above 2nd',
             speed:'30 ft., fly 60 ft.',str:18,dex:11,con:16,int:4,wis:14,cha:5,
-            cr:'2',languages:'—',senses:'Darkvision 60 ft.',
+            cr:'—',languages:'Understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 12',
             traits:[
               {name:'Flyby',desc:"The spirit doesn't provoke Opportunity Attacks when it flies out of an enemy's reach."},
               {name:'Scaling',desc:'AC = 11 + slot level · HP = 20 + 5 × (slot − 2)'},
             ],
-            actions:[{name:'Maul',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level slashing.'}]
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of Rend attacks equal to half this spell's level (round down)."},
+              {name:'Rend',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level Piercing damage.'},
+            ]
           }
         },
         { n:'Bestial Spirit — Land', spirit:{name:'Bestial Spirit (Land)',type:'Beast',size:'Small',
-            ac:11,acNote:'11 + slot level',hp:20,hpNote:'20 + 5 per slot above 2nd',
-            speed:'30 ft., burrow 30 ft.',str:18,dex:11,con:16,int:4,wis:14,cha:5,
-            cr:'2',languages:'—',senses:'Darkvision 60 ft.',
-            traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 20 + 5 × (slot − 2)'}],
+            ac:11,acNote:'11 + slot level',hp:30,hpNote:'30 (Land/Water) + 5 per slot above 2nd',
+            speed:'30 ft., climb 30 ft.',str:18,dex:11,con:16,int:4,wis:14,cha:5,
+            cr:'—',languages:'Understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 12',
+            traits:[
+              {name:'Pack Tactics',desc:"The spirit has Advantage on an attack roll against a creature if at least one of the spirit's allies is within 5 feet of the creature and the ally doesn't have the Incapacitated condition."},
+              {name:'Scaling',desc:'AC = 11 + slot level · HP = 30 + 5 × (slot − 2)'},
+            ],
             actions:[
-              {name:'Multiattack',desc:'The spirit makes a number of Maul attacks equal to half the spell slot level (round down).'},
-              {name:'Maul',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level bludgeoning, piercing, or slashing.'},
+              {name:'Multiattack',desc:"The spirit makes a number of Rend attacks equal to half this spell's level (round down)."},
+              {name:'Rend',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level Piercing damage.'},
             ]
           }
         },
         { n:'Bestial Spirit — Water', spirit:{name:'Bestial Spirit (Water)',type:'Beast',size:'Small',
-            ac:11,acNote:'11 + slot level',hp:20,hpNote:'20 + 5 per slot above 2nd',
+            ac:11,acNote:'11 + slot level',hp:30,hpNote:'30 (Land/Water) + 5 per slot above 2nd',
             speed:'30 ft., swim 30 ft.',str:18,dex:11,con:16,int:4,wis:14,cha:5,
-            cr:'2',languages:'—',senses:'Darkvision 60 ft., Blindsight 30 ft.',
+            cr:'—',languages:'Understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 12',
             traits:[
-              {name:'Amphibious',desc:'The spirit can breathe air and water.'},
-              {name:'Scaling',desc:'AC = 11 + slot level · HP = 20 + 5 × (slot − 2)'},
+              {name:'Pack Tactics',desc:"The spirit has Advantage on an attack roll against a creature if at least one of the spirit's allies is within 5 feet of the creature and the ally doesn't have the Incapacitated condition."},
+              {name:'Water Breathing',desc:'The spirit can breathe only underwater.'},
+              {name:'Scaling',desc:'AC = 11 + slot level · HP = 30 + 5 × (slot − 2)'},
             ],
             actions:[
-              {name:'Multiattack',desc:'The spirit makes a number of Maul attacks equal to half the spell slot level (round down).'},
-              {name:'Maul',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level piercing.'},
+              {name:'Multiattack',desc:"The spirit makes a number of Rend attacks equal to half this spell's level (round down)."},
+              {name:'Rend',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level Piercing damage.'},
             ]
           }
         },
@@ -12998,36 +13005,41 @@ function renderFamiliars() {
       creatures:[
         { n:'Fey Spirit — Fuming', spirit:{name:'Fey Spirit (Fuming)',type:'Fey',size:'Small',
             ac:12,acNote:'12 + slot level',hp:30,hpNote:'30 + 10 per slot above 3rd',
-            speed:'40 ft.',str:13,dex:16,con:14,int:14,wis:11,cha:16,cr:'3',
-            languages:"Sylvan + caster's languages",senses:'Darkvision 60 ft.',
+            speed:'30 ft., fly 30 ft.',str:13,dex:16,con:14,int:14,wis:11,cha:16,cr:'—',
+            immunities:'Charmed',
+            languages:'Sylvan, understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
             traits:[{name:'Scaling',desc:'AC = 12 + slot level · HP = 30 + 10 × (slot − 3)'}],
             actions:[
-              {name:'Multiattack',desc:'The spirit makes two Fey Strike attacks.'},
-              {name:'Fey Strike',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 3 + slot level slashing + 1d6 psychic.'},
-            ]
+              {name:'Multiattack',desc:"The spirit makes a number of Fey Blade attacks equal to half this spell's level (round down)."},
+              {name:'Fey Blade',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 2d6 + 3 + slot level Force damage.'},
+            ],
+            bonus_actions:[{name:'Fey Step',desc:'The spirit teleports up to 30 feet to an unoccupied space it can see. Fuming effect: The spirit has Advantage on the next attack roll it makes before the end of this turn.'}]
           }
         },
         { n:'Fey Spirit — Mirthful', spirit:{name:'Fey Spirit (Mirthful)',type:'Fey',size:'Small',
             ac:12,acNote:'12 + slot level',hp:30,hpNote:'30 + 10 per slot above 3rd',
-            speed:'40 ft.',str:13,dex:16,con:14,int:14,wis:11,cha:16,cr:'3',
-            languages:"Sylvan + caster's languages",senses:'Darkvision 60 ft.',
+            speed:'30 ft., fly 30 ft.',str:13,dex:16,con:14,int:14,wis:11,cha:16,cr:'—',
+            immunities:'Charmed',
+            languages:'Sylvan, understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
             traits:[{name:'Scaling',desc:'AC = 12 + slot level · HP = 30 + 10 × (slot − 3)'}],
             actions:[
-              {name:'Multiattack',desc:'The spirit makes two Fey Strike attacks.'},
-              {name:'Fey Strike',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 3 + slot level slashing.'},
-              {name:'Fey Step (Recharge 4–6)',desc:'The spirit teleports up to 30 ft. to an unoccupied space it can see, taking one willing creature within 5 ft.'},
-            ]
+              {name:'Multiattack',desc:"The spirit makes a number of Fey Blade attacks equal to half this spell's level (round down)."},
+              {name:'Fey Blade',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 2d6 + 3 + slot level Force damage.'},
+            ],
+            bonus_actions:[{name:'Fey Step',desc:'The spirit teleports up to 30 feet to an unoccupied space it can see. Mirthful effect: WIS save (DC = spell save DC), one creature within 10 feet the spirit can see. Failure: The target is Charmed by you and the spirit for 1 minute or until the target takes any damage.'}]
           }
         },
         { n:'Fey Spirit — Tricksy', spirit:{name:'Fey Spirit (Tricksy)',type:'Fey',size:'Small',
             ac:12,acNote:'12 + slot level',hp:30,hpNote:'30 + 10 per slot above 3rd',
-            speed:'40 ft.',str:13,dex:16,con:14,int:14,wis:11,cha:16,cr:'3',
-            languages:"Sylvan + caster's languages",senses:'Darkvision 60 ft.',
+            speed:'30 ft., fly 30 ft.',str:13,dex:16,con:14,int:14,wis:11,cha:16,cr:'—',
+            immunities:'Charmed',
+            languages:'Sylvan, understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
             traits:[{name:'Scaling',desc:'AC = 12 + slot level · HP = 30 + 10 × (slot − 3)'}],
             actions:[
-              {name:'Fey Strike',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 3 + slot level slashing.'},
-              {name:'Invisibility',desc:'The spirit has the Invisible condition until it attacks or until its Concentration ends.'},
-            ]
+              {name:'Multiattack',desc:"The spirit makes a number of Fey Blade attacks equal to half this spell's level (round down)."},
+              {name:'Fey Blade',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 2d6 + 3 + slot level Force damage.'},
+            ],
+            bonus_actions:[{name:'Fey Step',desc:'The spirit teleports up to 30 feet to an unoccupied space it can see. Tricksy effect: The spirit fills a 10-foot Cube within 5 feet of it with magical Darkness, which lasts until the end of its next turn.'}]
           }
         },
       ]
@@ -13035,32 +13047,44 @@ function renderFamiliars() {
     { spell:'Summon Undead', level:3, icon:'💀', note:'AC/HP scale with slot level',
       creatures:[
         { n:'Undead Spirit — Ghostly', spirit:{name:'Undead Spirit (Ghostly)',type:'Undead',size:'Medium',
-            ac:11,acNote:'11 + slot level',hp:30,hpNote:'30 + 10 per slot above 3rd',
-            speed:'0 ft., fly 40 ft. (hover)',str:6,dex:16,con:15,int:4,wis:10,cha:16,cr:'3',
-            languages:'—',senses:'Darkvision 60 ft.',
+            ac:11,acNote:'11 + slot level',hp:30,hpNote:'30 (Ghostly/Putrid) + 10 per slot above 3rd',
+            speed:'0 ft., fly 40 ft. (hover)',str:12,dex:16,con:15,int:4,wis:10,cha:9,cr:'—',
+            immunities:'Necrotic, Poison; Exhaustion, Frightened, Paralyzed, Poisoned',
+            languages:'Understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
             traits:[
-              {name:'Incorporeal Passage',desc:'The spirit can move through other creatures and objects. It takes 1d10 force damage if it ends its turn inside an object.'},
+              {name:'Incorporeal Passage',desc:'The spirit can move through other creatures and objects as if they were Difficult Terrain. If it ends its turn inside an object, it is shunted to the nearest unoccupied space and takes 1d10 Force damage for every 5 feet traveled.'},
               {name:'Scaling',desc:'AC = 11 + slot level · HP = 30 + 10 × (slot − 3)'},
             ],
-            actions:[{name:'Deathly Touch',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 3 + slot level necrotic. Target makes a WIS save (DC = spell save DC) or has the Frightened condition until the end of your next turn.'}]
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of attacks equal to half this spell's level (round down)."},
+              {name:'Deathly Touch',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 3 + slot level Necrotic, and the target has the Frightened condition until the end of its next turn.'},
+            ]
           }
         },
         { n:'Undead Spirit — Putrid', spirit:{name:'Undead Spirit (Putrid)',type:'Undead',size:'Medium',
-            ac:11,acNote:'11 + slot level',hp:30,hpNote:'30 + 10 per slot above 3rd',
-            speed:'30 ft.',str:16,dex:8,con:15,int:4,wis:10,cha:16,cr:'3',
-            languages:'—',senses:'Darkvision 60 ft.',
-            traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 30 + 10 × (slot − 3)'}],
-            actions:[{name:'Rotting Claw',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 3 + slot level necrotic. Target makes a CON save (DC = spell save DC) or has the Poisoned condition until the end of your next turn.'}]
+            ac:11,acNote:'11 + slot level',hp:30,hpNote:'30 (Ghostly/Putrid) + 10 per slot above 3rd',
+            speed:'30 ft.',str:12,dex:16,con:15,int:4,wis:10,cha:9,cr:'—',
+            immunities:'Necrotic, Poison; Exhaustion, Frightened, Paralyzed, Poisoned',
+            languages:'Understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
+            traits:[
+              {name:'Festering Aura',desc:'CON save (DC = spell save DC), any creature (other than you) that starts its turn within a 5-foot Emanation originating from the spirit. Failure: The creature has the Poisoned condition until the start of its next turn.'},
+              {name:'Scaling',desc:'AC = 11 + slot level · HP = 30 + 10 × (slot − 3)'},
+            ],
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of attacks equal to half this spell's level (round down)."},
+              {name:'Rotting Claw',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 3 + slot level Slashing. If the target has the Poisoned condition, it has the Paralyzed condition until the end of its next turn.'},
+            ]
           }
         },
         { n:'Undead Spirit — Skeletal', spirit:{name:'Undead Spirit (Skeletal)',type:'Undead',size:'Medium',
-            ac:11,acNote:'11 + slot level',hp:30,hpNote:'30 + 10 per slot above 3rd',
-            speed:'30 ft.',str:16,dex:16,con:15,int:4,wis:10,cha:16,cr:'3',
-            languages:'—',senses:'Darkvision 60 ft.',
-            traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 30 + 10 × (slot − 3)'}],
+            ac:11,acNote:'11 + slot level',hp:20,hpNote:'20 (Skeletal) + 10 per slot above 3rd',
+            speed:'30 ft.',str:12,dex:16,con:15,int:4,wis:10,cha:9,cr:'—',
+            immunities:'Necrotic, Poison; Exhaustion, Frightened, Paralyzed, Poisoned',
+            languages:'Understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
+            traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 20 + 10 × (slot − 3)'}],
             actions:[
-              {name:'Multiattack',desc:'The spirit makes two Grave Bolt attacks.'},
-              {name:'Grave Bolt',desc:'Ranged Spell Attack: your spell attack modifier to hit, range 150 ft. Hit: 1d4 + 3 + slot level necrotic.'},
+              {name:'Multiattack',desc:"The spirit makes a number of attacks equal to half this spell's level (round down)."},
+              {name:'Grave Bolt',desc:'Ranged Attack: your spell attack modifier to hit, range 150 ft. Hit: 2d4 + 3 + slot level Necrotic damage.'},
             ]
           }
         },
@@ -13068,39 +13092,64 @@ function renderFamiliars() {
     },
     { spell:'Summon Elemental', level:4, icon:'🌊', note:'AC/HP scale with slot level',
       creatures:[
-        { n:'Elemental Spirit — Air', spirit:{name:'Elemental Spirit (Air)',type:'Elemental',size:'Large',
+        { n:'Elemental Spirit — Air', spirit:{name:'Elemental Spirit (Air)',type:'Elemental',size:'Medium',
             ac:11,acNote:'11 + slot level',hp:50,hpNote:'50 + 10 per slot above 4th',
-            speed:'30 ft., fly 40 ft.',str:18,dex:15,con:17,int:8,wis:10,cha:10,cr:'4',
-            languages:"Auran + caster's languages",senses:'Darkvision 60 ft.',
-            traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 50 + 10 × (slot − 4)'}],
-            actions:[{name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d10 + 4 + slot level bludgeoning + 1d6 thunder.'}]
-          }
-        },
-        { n:'Elemental Spirit — Earth', spirit:{name:'Elemental Spirit (Earth)',type:'Elemental',size:'Large',
-            ac:17,acNote:'17 (natural armor)',hp:50,hpNote:'50 + 10 per slot above 4th',
-            speed:'30 ft., burrow 30 ft.',str:20,dex:8,con:18,int:8,wis:10,cha:5,cr:'4',
-            languages:"Terran + caster's languages",senses:'Darkvision 60 ft., Tremorsense 60 ft.',
-            traits:[{name:'Scaling',desc:'AC fixed 17 · HP = 50 + 10 × (slot − 4)'}],
-            actions:[{name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 2d6 + 5 + slot level bludgeoning.'}]
-          }
-        },
-        { n:'Elemental Spirit — Fire', spirit:{name:'Elemental Spirit (Fire)',type:'Elemental',size:'Large',
-            ac:11,acNote:'11 + slot level',hp:50,hpNote:'50 + 10 per slot above 4th',
-            speed:'40 ft.',str:18,dex:15,con:17,int:6,wis:10,cha:7,cr:'4',
-            languages:"Ignan + caster's languages",senses:'Darkvision 60 ft.',
+            speed:'40 ft., fly 40 ft. (hover)',str:18,dex:15,con:17,int:4,wis:10,cha:16,cr:'—',
+            resistances:'Lightning, Thunder',
+            immunities:'Poison; Exhaustion, Paralyzed, Petrified, Poisoned',
+            languages:'Primordial, understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
             traits:[
-              {name:'Illumination',desc:'The spirit sheds bright light in a 30-foot radius and dim light for an additional 30 feet.'},
+              {name:'Amorphous Form',desc:'The spirit can move through a space as narrow as 1 inch wide without it counting as Difficult Terrain.'},
               {name:'Scaling',desc:'AC = 11 + slot level · HP = 50 + 10 × (slot − 4)'},
             ],
-            actions:[{name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d10 + 4 + slot level bludgeoning + 1d6 fire.'}]
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of Slam attacks equal to half this spell's level (round down)."},
+              {name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d10 + 4 + slot level Lightning damage.'},
+            ]
           }
         },
-        { n:'Elemental Spirit — Water', spirit:{name:'Elemental Spirit (Water)',type:'Elemental',size:'Large',
+        { n:'Elemental Spirit — Earth', spirit:{name:'Elemental Spirit (Earth)',type:'Elemental',size:'Medium',
+            ac:17,acNote:'17 (natural armor)',hp:50,hpNote:'50 + 10 per slot above 4th',
+            speed:'40 ft., burrow 40 ft.',str:18,dex:15,con:17,int:4,wis:10,cha:16,cr:'—',
+            resistances:'Piercing, Slashing',
+            immunities:'Poison; Exhaustion, Paralyzed, Petrified, Poisoned',
+            languages:'Primordial, understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
+            traits:[{name:'Scaling',desc:'AC fixed 17 · HP = 50 + 10 × (slot − 4)'}],
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of Slam attacks equal to half this spell's level (round down)."},
+              {name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d10 + 4 + slot level Bludgeoning damage.'},
+            ]
+          }
+        },
+        { n:'Elemental Spirit — Fire', spirit:{name:'Elemental Spirit (Fire)',type:'Elemental',size:'Medium',
             ac:11,acNote:'11 + slot level',hp:50,hpNote:'50 + 10 per slot above 4th',
-            speed:'30 ft., swim 40 ft.',str:18,dex:14,con:17,int:8,wis:10,cha:3,cr:'4',
-            languages:"Aquan + caster's languages",senses:'Darkvision 60 ft.',
-            traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 50 + 10 × (slot − 4)'}],
-            actions:[{name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 2d6 + 4 + slot level bludgeoning.'}]
+            speed:'40 ft.',str:18,dex:15,con:17,int:4,wis:10,cha:16,cr:'—',
+            immunities:'Fire, Poison; Exhaustion, Paralyzed, Petrified, Poisoned',
+            languages:'Primordial, understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
+            traits:[
+              {name:'Amorphous Form',desc:'The spirit can move through a space as narrow as 1 inch wide without it counting as Difficult Terrain.'},
+              {name:'Scaling',desc:'AC = 11 + slot level · HP = 50 + 10 × (slot − 4)'},
+            ],
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of Slam attacks equal to half this spell's level (round down)."},
+              {name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d10 + 4 + slot level Fire damage.'},
+            ]
+          }
+        },
+        { n:'Elemental Spirit — Water', spirit:{name:'Elemental Spirit (Water)',type:'Elemental',size:'Medium',
+            ac:11,acNote:'11 + slot level',hp:50,hpNote:'50 + 10 per slot above 4th',
+            speed:'40 ft., swim 40 ft.',str:18,dex:15,con:17,int:4,wis:10,cha:16,cr:'—',
+            resistances:'Acid',
+            immunities:'Poison; Exhaustion, Paralyzed, Petrified, Poisoned',
+            languages:'Primordial, understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
+            traits:[
+              {name:'Amorphous Form',desc:'The spirit can move through a space as narrow as 1 inch wide without it counting as Difficult Terrain.'},
+              {name:'Scaling',desc:'AC = 11 + slot level · HP = 50 + 10 × (slot − 4)'},
+            ],
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of Slam attacks equal to half this spell's level (round down)."},
+              {name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d10 + 4 + slot level Cold damage.'},
+            ]
           }
         },
       ]
@@ -13109,29 +13158,44 @@ function renderFamiliars() {
       creatures:[
         { n:'Aberrant Spirit — Beholderkin', spirit:{name:'Aberrant Spirit (Beholderkin)',type:'Aberration',size:'Medium',
             ac:11,acNote:'11 + slot level',hp:40,hpNote:'40 + 10 per slot above 4th',
-            speed:'0 ft., fly 30 ft. (hover)',str:16,dex:10,con:15,int:16,wis:10,cha:6,cr:'4',
-            languages:"Deep Speech + caster's languages",senses:'Darkvision 60 ft.',
+            speed:'0 ft., fly 30 ft. (hover)',str:16,dex:10,con:15,int:16,wis:10,cha:6,cr:'—',
+            immunities:'Psychic',
+            languages:'Deep Speech, understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
             traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 40 + 10 × (slot − 4)'}],
-            actions:[{name:'Eye Ray',desc:'Ranged Spell Attack: your spell attack modifier to hit, range 150 ft. Hit: 1d8 + 3 + slot level psychic.'}]
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of attacks equal to half this spell's level (round down)."},
+              {name:'Eye Ray',desc:'Ranged Attack: your spell attack modifier to hit, range 150 ft. Hit: 1d8 + 3 + slot level Psychic damage.'},
+            ]
           }
         },
-        { n:'Aberrant Spirit — Slaadi', spirit:{name:'Aberrant Spirit (Slaadi)',type:'Aberration',size:'Medium',
+        { n:'Aberrant Spirit — Mind Flayer', spirit:{name:'Aberrant Spirit (Mind Flayer)',type:'Aberration',size:'Medium',
             ac:11,acNote:'11 + slot level',hp:40,hpNote:'40 + 10 per slot above 4th',
-            speed:'30 ft.',str:17,dex:10,con:16,int:6,wis:12,cha:7,cr:'4',
-            languages:"Slaad + caster's languages",senses:'Darkvision 60 ft.',
+            speed:'30 ft.',str:16,dex:10,con:15,int:16,wis:10,cha:6,cr:'—',
+            immunities:'Psychic',
+            languages:'Deep Speech, understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
             traits:[
-              {name:'Regeneration',desc:'The spirit regains 5 HP at the start of its turn if it has at least 1 HP.'},
+              {name:'Whispering Aura',desc:"At the start of each of the spirit's turns, it emits psionic energy if it doesn't have the Incapacitated condition. WIS save (DC = spell save DC), each creature (other than you) within 5 feet. Failure: 2d6 Psychic damage."},
               {name:'Scaling',desc:'AC = 11 + slot level · HP = 40 + 10 × (slot − 4)'},
             ],
-            actions:[{name:'Claws',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 3 + slot level slashing.'}]
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of attacks equal to half this spell's level (round down)."},
+              {name:'Psychic Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 3 + slot level Psychic damage.'},
+            ]
           }
         },
-        { n:'Aberrant Spirit — Star Spawn', spirit:{name:'Aberrant Spirit (Star Spawn)',type:'Aberration',size:'Medium',
+        { n:'Aberrant Spirit — Slaad', spirit:{name:'Aberrant Spirit (Slaad)',type:'Aberration',size:'Medium',
             ac:11,acNote:'11 + slot level',hp:40,hpNote:'40 + 10 per slot above 4th',
-            speed:'30 ft.',str:16,dex:10,con:15,int:16,wis:10,cha:8,cr:'4',
-            languages:"Deep Speech + caster's languages",senses:'Darkvision 60 ft.',
-            traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 40 + 10 × (slot − 4)'}],
-            actions:[{name:'Psychic Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 3 + slot level bludgeoning.'}]
+            speed:'30 ft.',str:16,dex:10,con:15,int:16,wis:10,cha:6,cr:'—',
+            immunities:'Psychic',
+            languages:'Deep Speech, understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
+            traits:[
+              {name:'Regeneration',desc:'The spirit regains 5 Hit Points at the start of its turn if it has at least 1 Hit Point.'},
+              {name:'Scaling',desc:'AC = 11 + slot level · HP = 40 + 10 × (slot − 4)'},
+            ],
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of attacks equal to half this spell's level (round down)."},
+              {name:'Claw',desc:"Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d10 + 3 + slot level Slashing. The target can't regain Hit Points until the start of the spirit's next turn."},
+            ]
           }
         },
       ]
@@ -13139,59 +13203,80 @@ function renderFamiliars() {
     { spell:'Summon Construct', level:4, icon:'⚙️', note:'AC/HP scale with slot level',
       creatures:[
         { n:'Construct Spirit — Clay', spirit:{name:'Construct Spirit (Clay)',type:'Construct',size:'Medium',
-            ac:13,acNote:'13 + slot level',hp:40,hpNote:'40 + 10 per slot above 4th',
-            speed:'30 ft.',str:18,dex:7,con:18,int:6,wis:10,cha:3,cr:'4',
-            languages:'—',senses:'Darkvision 60 ft.',
-            traits:[
-              {name:'Heated Body',desc:'A creature that touches the spirit or hits it with a melee attack takes 1d6 fire damage.'},
-              {name:'Scaling',desc:'AC = 13 + slot level · HP = 40 + 10 × (slot − 4)'},
+            ac:13,acNote:'13 + slot level',hp:40,hpNote:'40 + 15 per slot above 4th',
+            speed:'30 ft.',str:18,dex:10,con:18,int:14,wis:11,cha:5,cr:'—',
+            resistances:'Poison',
+            immunities:'Charmed, Exhaustion, Frightened, Paralyzed, Poisoned',
+            languages:'Understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
+            traits:[{name:'Scaling',desc:'AC = 13 + slot level · HP = 40 + 15 × (slot − 4)'}],
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of Slam attacks equal to half this spell's level (round down)."},
+              {name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level Bludgeoning damage.'},
             ],
-            actions:[{name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level bludgeoning.'}]
+            reactions:[{name:'Berserk Lashing',desc:'Trigger: The spirit takes damage from a creature. Response: The spirit makes a Slam attack against that creature if possible, or moves up to half its Speed toward that creature without provoking Opportunity Attacks.'}]
           }
         },
         { n:'Construct Spirit — Metal', spirit:{name:'Construct Spirit (Metal)',type:'Construct',size:'Medium',
-            ac:13,acNote:'13 + slot level',hp:40,hpNote:'40 + 10 per slot above 4th',
-            speed:'30 ft.',str:19,dex:9,con:18,int:6,wis:10,cha:5,cr:'4',
-            languages:'—',senses:'Darkvision 60 ft.',
+            ac:13,acNote:'13 + slot level',hp:40,hpNote:'40 + 15 per slot above 4th',
+            speed:'30 ft.',str:18,dex:10,con:18,int:14,wis:11,cha:5,cr:'—',
+            resistances:'Poison',
+            immunities:'Charmed, Exhaustion, Frightened, Paralyzed, Poisoned',
+            languages:'Understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
             traits:[
-              {name:'Heated Body',desc:'A creature that touches the spirit or hits it with a melee attack takes 1d6 fire damage.'},
-              {name:'Scaling',desc:'AC = 13 + slot level · HP = 40 + 10 × (slot − 4)'},
+              {name:'Heated Body',desc:'A creature that hits the spirit with a melee attack or that starts its turn in a grapple with the spirit takes 1d10 Fire damage.'},
+              {name:'Scaling',desc:'AC = 13 + slot level · HP = 40 + 15 × (slot − 4)'},
             ],
-            actions:[{name:'Sword',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 4 + slot level slashing.'}]
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of Slam attacks equal to half this spell's level (round down)."},
+              {name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level Bludgeoning damage.'},
+            ]
           }
         },
         { n:'Construct Spirit — Stone', spirit:{name:'Construct Spirit (Stone)',type:'Construct',size:'Medium',
-            ac:13,acNote:'13 + slot level',hp:40,hpNote:'40 + 10 per slot above 4th',
-            speed:'30 ft.',str:19,dex:7,con:18,int:6,wis:10,cha:3,cr:'4',
-            languages:'—',senses:'Darkvision 60 ft.',
+            ac:13,acNote:'13 + slot level',hp:40,hpNote:'40 + 15 per slot above 4th',
+            speed:'30 ft.',str:18,dex:10,con:18,int:14,wis:11,cha:5,cr:'—',
+            resistances:'Poison',
+            immunities:'Charmed, Exhaustion, Frightened, Paralyzed, Poisoned',
+            languages:'Understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
             traits:[
-              {name:'Siege Monster',desc:'The spirit deals double damage to objects and structures.'},
-              {name:'Scaling',desc:'AC = 13 + slot level · HP = 40 + 10 × (slot − 4)'},
+              {name:'Stony Lethargy',desc:'When a creature starts its turn within 10 feet of the spirit, the spirit can target it with magical energy if the spirit can see it. WIS save (DC = spell save DC), the target. Failure: Until the start of its next turn, the target cannot make Opportunity Attacks, and its Speed is halved.'},
+              {name:'Scaling',desc:'AC = 13 + slot level · HP = 40 + 15 × (slot − 4)'},
             ],
-            actions:[{name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level bludgeoning.'}]
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of Slam attacks equal to half this spell's level (round down)."},
+              {name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level Bludgeoning damage.'},
+            ]
           }
         },
       ]
     },
     { spell:'Summon Celestial', level:5, icon:'✨', note:'AC/HP scale with slot level',
       creatures:[
-        { n:'Celestial Spirit — Avenger', spirit:{name:'Celestial Spirit (Avenger)',type:'Celestial',size:'Medium',
+        { n:'Celestial Spirit — Avenger', spirit:{name:'Celestial Spirit (Avenger)',type:'Celestial',size:'Large',
             ac:11,acNote:'11 + slot level',hp:40,hpNote:'40 + 10 per slot above 5th',
-            speed:'30 ft., fly 90 ft.',str:16,dex:14,con:16,int:14,wis:14,cha:16,cr:'5',
-            languages:"Celestial + caster's languages",senses:'Darkvision 120 ft.',
+            speed:'30 ft., fly 40 ft.',str:16,dex:14,con:16,int:10,wis:14,cha:16,cr:'—',
+            resistances:'Radiant',
+            immunities:'Charmed, Frightened',
+            languages:'Celestial, understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 12',
             traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 40 + 10 × (slot − 5)'}],
-            actions:[{name:'Radiant Bow',desc:'Ranged Spell Attack: your spell attack modifier to hit, range 150 ft. Hit: 2d6 + 2 + slot level radiant.'}]
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of attacks equal to half this spell's level (round down)."},
+              {name:'Radiant Bow',desc:'Ranged Attack: your spell attack modifier to hit, range 600 ft. Hit: 2d6 + 2 + slot level Radiant damage.'},
+              {name:'Healing Touch (1/Day)',desc:'The spirit touches another creature. The target regains 2d8 + slot level Hit Points.'},
+            ]
           }
         },
-        { n:'Celestial Spirit — Defender', spirit:{name:'Celestial Spirit (Defender)',type:'Celestial',size:'Medium',
-            ac:13,acNote:'13 + slot level',hp:40,hpNote:'40 + 10 per slot above 5th',
-            speed:'30 ft., fly 30 ft. (hover)',str:16,dex:14,con:16,int:14,wis:14,cha:16,cr:'5',
-            languages:"Celestial + caster's languages",senses:'Darkvision 120 ft.',
+        { n:'Celestial Spirit — Defender', spirit:{name:'Celestial Spirit (Defender)',type:'Celestial',size:'Large',
+            ac:13,acNote:'13 + slot level (11 + 2)',hp:40,hpNote:'40 + 10 per slot above 5th',
+            speed:'30 ft., fly 40 ft.',str:16,dex:14,con:16,int:10,wis:14,cha:16,cr:'—',
+            resistances:'Radiant',
+            immunities:'Charmed, Frightened',
+            languages:'Celestial, understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 12',
             traits:[{name:'Scaling',desc:'AC = 13 + slot level · HP = 40 + 10 × (slot − 5)'}],
             actions:[
-              {name:'Multiattack',desc:'The spirit makes two Radiant Mace attacks.'},
-              {name:'Radiant Mace',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 4 + slot level radiant.'},
-              {name:'Healing Touch (1/day)',desc:'The spirit touches a creature. That creature regains 2d8 + slot level HP.'},
+              {name:'Multiattack',desc:"The spirit makes a number of attacks equal to half this spell's level (round down)."},
+              {name:'Radiant Mace',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d10 + 3 + slot level Radiant, and the spirit chooses itself or another creature it can see within 10 feet of the target; the chosen creature gains 1d10 Temporary Hit Points.'},
+              {name:'Healing Touch (1/Day)',desc:'The spirit touches another creature. The target regains 2d8 + slot level Hit Points.'},
             ]
           }
         },
@@ -13200,46 +13285,52 @@ function renderFamiliars() {
     { spell:'Summon Fiend', level:6, icon:'😈', note:'AC/HP scale with slot level',
       creatures:[
         { n:'Fiendish Spirit — Demon', spirit:{name:'Fiendish Spirit (Demon)',type:'Fiend',size:'Large',
-            ac:11,acNote:'11 + slot level',hp:50,hpNote:'50 + 10 per slot above 6th',
-            speed:'40 ft., climb 40 ft.',str:13,dex:16,con:15,int:10,wis:10,cha:16,cr:'6',
-            languages:"Abyssal + caster's languages",senses:'Darkvision 60 ft.',
+            ac:12,acNote:'12 + slot level',hp:50,hpNote:'50 (Demon) + 15 per slot above 6th',
+            speed:'40 ft., climb 40 ft.',str:13,dex:16,con:15,int:10,wis:10,cha:16,cr:'—',
+            resistances:'Fire',
+            immunities:'Poison; Poisoned',
+            languages:'Abyssal, Infernal, Telepathy 60 ft.',senses:'Darkvision 60 ft., Passive Perception 10',
             traits:[
-              {name:'Magic Resistance',desc:'Advantage on saving throws against spells and magical effects.'},
-              {name:'Scaling',desc:'AC = 11 + slot level · HP = 50 + 10 × (slot − 6)'},
+              {name:'Death Throes',desc:'When the spirit drops to 0 Hit Points or the spell ends, the spirit explodes. DEX save (DC = spell save DC), each creature in a 10-foot Emanation. Failure: 2d10 + slot level Fire damage. Success: Half damage.'},
+              {name:'Magic Resistance',desc:'The spirit has Advantage on saving throws against spells and other magical effects.'},
+              {name:'Scaling',desc:'AC = 12 + slot level · HP = 50 + 15 × (slot − 6)'},
             ],
             actions:[
-              {name:'Multiattack',desc:'The spirit makes two Bite attacks.'},
-              {name:'Bite',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d12 + 3 + slot level necrotic.'},
+              {name:'Multiattack',desc:"The spirit makes a number of attacks equal to half this spell's level (round down)."},
+              {name:'Bite',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d12 + 3 + slot level Necrotic damage.'},
             ]
           }
         },
         { n:'Fiendish Spirit — Devil', spirit:{name:'Fiendish Spirit (Devil)',type:'Fiend',size:'Large',
-            ac:12,acNote:'12 + slot level',hp:50,hpNote:'50 + 10 per slot above 6th',
-            speed:'30 ft., fly 40 ft.',str:13,dex:16,con:15,int:10,wis:10,cha:16,cr:'6',
-            languages:"Infernal + caster's languages",senses:'Darkvision 60 ft.',
+            ac:12,acNote:'12 + slot level',hp:40,hpNote:'40 (Devil) + 15 per slot above 6th',
+            speed:'40 ft., fly 60 ft.',str:13,dex:16,con:15,int:10,wis:10,cha:16,cr:'—',
+            resistances:'Fire',
+            immunities:'Poison; Poisoned',
+            languages:'Abyssal, Infernal, Telepathy 60 ft.',senses:'Darkvision 60 ft., Passive Perception 10',
             traits:[
-              {name:'Magic Resistance',desc:'Advantage on saving throws against spells and magical effects.'},
-              {name:'Scaling',desc:'AC = 12 + slot level · HP = 50 + 10 × (slot − 6)'},
+              {name:"Devil's Sight",desc:"Magical Darkness doesn't impede the spirit's Darkvision."},
+              {name:'Magic Resistance',desc:'The spirit has Advantage on saving throws against spells and other magical effects.'},
+              {name:'Scaling',desc:'AC = 12 + slot level · HP = 40 + 15 × (slot − 6)'},
             ],
             actions:[
-              {name:'Multiattack',desc:'The spirit makes two Fiendish Weapon attacks.'},
-              {name:'Fiendish Weapon',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d12 + 3 + slot level fire.'},
-            ],
-            bonus_actions:[{name:'Fiendish Charm',desc:'One humanoid within 30 ft. must succeed on a WIS save (DC = spell save DC) or have the Charmed condition for 1 minute.'}]
+              {name:'Multiattack',desc:"The spirit makes a number of attacks equal to half this spell's level (round down)."},
+              {name:'Fiery Strike',desc:'Melee or Ranged Attack: your spell attack modifier to hit, reach 5 ft. or range 150 ft. Hit: 2d6 + 3 + slot level Fire damage.'},
+            ]
           }
         },
         { n:'Fiendish Spirit — Yugoloth', spirit:{name:'Fiendish Spirit (Yugoloth)',type:'Fiend',size:'Large',
-            ac:11,acNote:'11 + slot level',hp:50,hpNote:'50 + 10 per slot above 6th',
-            speed:'30 ft.',str:13,dex:16,con:15,int:10,wis:10,cha:16,cr:'6',
-            languages:"Abyssal, Infernal + caster's languages",senses:'Darkvision 60 ft.',
+            ac:12,acNote:'12 + slot level',hp:60,hpNote:'60 (Yugoloth) + 15 per slot above 6th',
+            speed:'40 ft.',str:13,dex:16,con:15,int:10,wis:10,cha:16,cr:'—',
+            resistances:'Fire',
+            immunities:'Poison; Poisoned',
+            languages:'Abyssal, Infernal, Telepathy 60 ft.',senses:'Darkvision 60 ft., Passive Perception 10',
             traits:[
-              {name:'Magic Resistance',desc:'Advantage on saving throws against spells and magical effects.'},
-              {name:'Toxic Poison',desc:'A creature Poisoned by this spirit has Disadvantage on all saving throws.'},
-              {name:'Scaling',desc:'AC = 11 + slot level · HP = 50 + 10 × (slot − 6)'},
+              {name:'Magic Resistance',desc:'The spirit has Advantage on saving throws against spells and other magical effects.'},
+              {name:'Scaling',desc:'AC = 12 + slot level · HP = 60 + 15 × (slot − 6)'},
             ],
             actions:[
-              {name:'Multiattack',desc:'The spirit makes two Claws attacks.'},
-              {name:'Claws',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 3 + slot level slashing + target makes a CON save (DC = spell save DC) or is Poisoned for 1 minute.'},
+              {name:'Multiattack',desc:"The spirit makes a number of attacks equal to half this spell's level (round down)."},
+              {name:'Claws',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 3 + slot level Slashing. Immediately after the attack hits or misses, the spirit can teleport up to 30 feet to an unoccupied space it can see.'},
             ]
           }
         },
@@ -13301,10 +13392,11 @@ function renderFamiliars() {
       ac: s.ac, acNote: s.acNote || '',
       pvMax: s.hp, pvActuel: s.hp, speed: s.speed,
       for: s.str||10, dex: s.dex||10, con: s.con||10, int: s.int||10, sag: s.wis||10, cha: s.cha||10,
-      savesNote:'', skillsNote:'', vulnerabilities:'', resistances:'', immunities:'',
+      savesNote:'', skillsNote:'', vulnerabilities: s.vulnerabilities||'',
+      resistances: s.resistances||'', immunities: s.immunities||'',
       senses: s.senses||'', languages: s.languages||'—', cr: s.cr||'?',
       traits: toList(s.traits), actions: toList(s.actions),
-      bonusActions:[], reactions:[],
+      bonusActions: toList(s.bonus_actions), reactions: toList(s.reactions),
       notes: `⚠️ ${s.acNote||''} · ${s.hpNote||''}`, _collapsed: false,
     });
     if (typeof _tabDirty !== 'undefined') _tabDirty.familiers = true;
