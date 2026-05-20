@@ -1,8 +1,8 @@
 {
-  "name": "Kaleysur — Wiki",
+  "name": "Kaleysur",
   "short_name": "Kaleysur",
-  "description": "Wiki et fiches de personnage pour le monde de Kaleysur",
-  "start_url": "./index.html",
+  "description": "Fiches de personnage et wiki pour le monde de Kaleysur",
+  "start_url": "./joueurs.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",

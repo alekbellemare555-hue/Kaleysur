@@ -2646,6 +2646,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
         <button class="btn btn-sm" id="btn-layout-edit" title="Rearrange sections">⠿</button>
         <button class="btn btn-sm" id="btn-read-mode" title="Read Mode — lock the sheet">🔒</button>
         <button class="btn btn-sm" id="dice-tray-btn" title="Dice Roller">⚄</button>
+        <button class="btn btn-sm" id="btn-install-app" title="Installer l'application" style="display:none;">📲</button>
         <button class="btn btn-sm btn-danger" id="btn-logout">Log out</button>
       </div>
     </div>
@@ -11555,11 +11556,15 @@ document.addEventListener('keydown', e => {
 
 /* ── 7. Swipe entre onglets (mobile) ── */
 (function () {
-  let startX = 0, startY = 0, locked = null; // locked: null | 'h' | 'v'
+  let startX = 0, startY = 0, locked = null; // locked: null | 'h' | 'v' | 'ignore'
   const area = document.getElementById('screen-dashboard');
   if (!area) return;
 
   area.addEventListener('touchstart', e => {
+    // Ne pas intercepter les swipes qui démarrent sur les barres d'onglets scrollables
+    if (e.target.closest('#sec-tab-bar') || e.target.closest('#mobile-bottom-nav')) {
+      locked = 'ignore'; return;
+    }
     startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
     locked = null;
@@ -11567,7 +11572,7 @@ document.addEventListener('keydown', e => {
 
   // non-passive : on peut appeler preventDefault() pour bloquer le scroll natif
   area.addEventListener('touchmove', e => {
-    if (locked === 'v') return;
+    if (locked === 'v' || locked === 'ignore') return;
     const dx = Math.abs(e.touches[0].clientX - startX);
     const dy = Math.abs(e.touches[0].clientY - startY);
     if (locked === null) {
@@ -11582,10 +11587,19 @@ document.addEventListener('keydown', e => {
     const dx = e.changedTouches[0].clientX - startX;
     const dy = e.changedTouches[0].clientY - startY;
     if (Math.abs(dy) > Math.abs(dx) || Math.abs(dx) < 55) return;
-    const btns = [...document.querySelectorAll('.tab-btn')];
-    const cur  = btns.findIndex(b => b.classList.contains('active'));
-    const next = dx < 0 ? cur + 1 : cur - 1;
-    if (btns[next]) btns[next].click();
+    // Sur mobile (≤640px) : swipe navigue entre les petits onglets de section
+    // Sur tablette/desktop : swipe navigue entre les gros onglets principaux
+    if (window.innerWidth <= 640) {
+      const btns = [...document.querySelectorAll('.sec-tab-btn')];
+      const cur  = btns.findIndex(b => b.classList.contains('active'));
+      const next = dx < 0 ? cur + 1 : cur - 1;
+      if (btns[next]) btns[next].click();
+    } else {
+      const btns = [...document.querySelectorAll('.tab-btn')];
+      const cur  = btns.findIndex(b => b.classList.contains('active'));
+      const next = dx < 0 ? cur + 1 : cur - 1;
+      if (btns[next]) btns[next].click();
+    }
   }, { passive: true });
 })();
 
@@ -13689,6 +13703,32 @@ function startRealtime(username) {
     <div id="compendium-list"><div class="comp-loading">Chargement…</div></div>
   </div>
 </div>
+
+<script>
+/* ── PWA Install prompt ── */
+(function () {
+  let _installPrompt = null;
+  const btn = document.getElementById('btn-install-app');
+
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    _installPrompt = e;
+    if (btn) btn.style.display = '';   // afficher le bouton
+  });
+
+  window.addEventListener('appinstalled', () => {
+    _installPrompt = null;
+    if (btn) btn.style.display = 'none';
+  });
+
+  btn?.addEventListener('click', async () => {
+    if (!_installPrompt) return;
+    _installPrompt.prompt();
+    const { outcome } = await _installPrompt.userChoice;
+    if (outcome === 'accepted') _installPrompt = null;
+  });
+})();
+</script>
 
 <script>
 if ('serviceWorker' in navigator) {
