@@ -1,0 +1,2464 @@
+[
+  {
+    "name": "Flying Wonder",
+    "size": "Tiny",
+    "type": "Construct",
+    "subtype": "",
+    "alignment": "Unaligned",
+    "armor_class": 12,
+    "armor_desc": "",
+    "hit_points": 2,
+    "hit_dice": "1d4",
+    "speed": { "walk": "5 ft.", "fly": "30 ft." },
+    "strength": 2,
+    "dexterity": 15,
+    "constitution": 10,
+    "intelligence": 3,
+    "wisdom": 10,
+    "charisma": 1,
+    "saving_throws": {},
+    "skills": {},
+    "damage_vulnerabilities": [],
+    "damage_resistances": [],
+    "damage_immunities": ["poison"],
+    "condition_immunities": ["exhaustion", "poisoned"],
+    "senses": "Blindsight 60 ft.; Passive Perception 10",
+    "languages": "Understands Common but can't speak",
+    "challenge_rating": "0",
+    "cr": 0,
+    "special_abilities": [
+      {
+        "name": "Increased Carrying Capacity",
+        "desc": "The wonder can carry up to 100 pounds."
+      },
+      {
+        "name": "Wind-Up Operation",
+        "desc": "The wonder has the Unconscious condition until another creature winds it with the wonder's unique key for 1 minute. Once wound, the wonder operates for 24 hours or until a creature touches the wonder with its key as a Utilize action to deactivate it."
+      }
+    ],
+    "actions": [],
+    "bonus_actions": [
+      {
+        "name": "Chime",
+        "desc": "The wonder chirps a merry, metronomic tune. One ally it can see within 60 feet has Advantage on the next ability check it makes with a Musical Instrument or Tinker's Tools until the start of the wonder's next turn."
+      },
+      {
+        "name": "Sprint",
+        "desc": "The wonder takes the Dash action."
+      }
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Aranea",
+    "size": "Medium",
+    "type": "Monstrosity",
+    "subtype": "",
+    "alignment": "Neutral",
+    "armor_class": 14,
+    "armor_desc": "",
+    "hit_points": 66,
+    "hit_dice": "12d8+12",
+    "speed": { "walk": "30 ft.", "climb": "30 ft. (spider or hybrid form only)" },
+    "strength": 10,
+    "dexterity": 17,
+    "constitution": 12,
+    "intelligence": 12,
+    "wisdom": 10,
+    "charisma": 15,
+    "saving_throws": {},
+    "skills": { "perception": 2, "stealth": 5 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "Darkvision 60 ft.; Passive Perception 12",
+    "languages": "Common",
+    "challenge_rating": "2",
+    "cr": 2,
+    "special_abilities": [
+      {
+        "name": "Spider Climb (Hybrid or Spider Form Only)",
+        "desc": "The aranea can climb difficult surfaces, including along ceilings, without needing to make an ability check."
+      },
+      {
+        "name": "Web Walker",
+        "desc": "The aranea ignores movement restrictions caused by webs, and it knows the location of any other creature in contact with the same web."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The aranea makes two attacks, using Bite, Slam, or Sling in any combination."
+      },
+      {
+        "name": "Bite (Hybrid or Spider Form Only)",
+        "desc": "Melee Attack Roll: +5, reach 5 ft. Hit: 6 (1d6 + 3) Piercing damage plus 2 (1d4) Poison damage."
+      },
+      {
+        "name": "Slam",
+        "desc": "Melee Attack Roll: +5, reach 5 ft. Hit: 7 (1d8 + 3) Bludgeoning damage."
+      },
+      {
+        "name": "Sling (Humanoid or Hybrid Form Only)",
+        "desc": "Ranged Attack Roll: +5, range 30/120 ft. Hit: 8 (2d4 + 3) Bludgeoning damage."
+      },
+      {
+        "name": "Spellcasting",
+        "desc": "The aranea casts one of the following spells, requiring no Material components and using Charisma as the spellcasting ability (spell save DC 12): At Will: Friends, Silent Image; 1/Day: Hold Person."
+      }
+    ],
+    "bonus_actions": [
+      {
+        "name": "Shape-Shift",
+        "desc": "The aranea shape-shifts into a humanoid form, into a humanoid-spider hybrid form, or back into its true spider form. Its game statistics are the same in each form, except where noted."
+      }
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Beast of Malar",
+    "size": "Medium",
+    "type": "Monstrosity",
+    "subtype": "",
+    "alignment": "Chaotic Evil",
+    "armor_class": 17,
+    "armor_desc": "",
+    "hit_points": 168,
+    "hit_dice": "16d8+96",
+    "speed": { "walk": "50 ft.", "burrow": "40 ft. (land form only)", "fly": "60 ft. (sky form only)", "swim": "40 ft. (sea form only)" },
+    "strength": 21,
+    "dexterity": 16,
+    "constitution": 23,
+    "intelligence": 10,
+    "wisdom": 14,
+    "charisma": 12,
+    "saving_throws": { "str": 9, "con": 6 },
+    "skills": { "perception": 10, "stealth": 7 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": ["charmed", "frightened"],
+    "senses": "Darkvision 60 ft.; Passive Perception 20",
+    "languages": "Understands Common but can't speak",
+    "challenge_rating": "11",
+    "cr": 11,
+    "special_abilities": [
+      {
+        "name": "Amphibious (Sea Form Only)",
+        "desc": "The beast breathes air and water."
+      },
+      {
+        "name": "Divine Immortality",
+        "desc": "If the beast dies, its body dissolves into black goo, and it gains a new body after 1d10 days, reviving with all its Hit Points in a place of Malar's choosing."
+      },
+      {
+        "name": "Legendary Resistance (3/Day)",
+        "desc": "If the beast fails a saving throw, it can choose to succeed instead."
+      },
+      {
+        "name": "Magic Resistance",
+        "desc": "The beast has Advantage on saving throws against spells and other magical effects."
+      },
+      {
+        "name": "Regeneration",
+        "desc": "The beast regains 20 Hit Points at the start of its turn. If the beast takes Radiant damage or damage from a Critical Hit, this trait doesn't function at the start of the beast's next turn. The beast dies only if it starts its turn with 0 Hit Points and doesn't regenerate."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The beast makes three attacks, using Bite or Claws in any combination."
+      },
+      {
+        "name": "Bite",
+        "desc": "Melee Attack Roll: +9, reach 5 ft. Hit: 23 (4d8 + 5) Piercing damage."
+      },
+      {
+        "name": "Claws (Land or Sky Form Only)",
+        "desc": "Melee Attack Roll: +9, reach 5 ft. Hit: 18 (3d8 + 5) Slashing damage. If the target is Large or smaller, it has the Prone condition."
+      }
+    ],
+    "bonus_actions": [
+      {
+        "name": "Recuperative Shape-Shift",
+        "desc": "The beast shape-shifts into its land form, sea form, or sky form and regains 9 (2d8) Hit Points. Its game statistics are the same in each form, except where noted."
+      }
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Biha Babir",
+    "size": "Large",
+    "type": "Elemental",
+    "subtype": "Genie",
+    "alignment": "Lawful Evil",
+    "armor_class": 17,
+    "armor_desc": "",
+    "hit_points": 229,
+    "hit_dice": "17d10+136",
+    "speed": { "walk": "30 ft.", "fly": "60 ft.", "swim": "90 ft." },
+    "strength": 22,
+    "dexterity": 12,
+    "constitution": 26,
+    "intelligence": 18,
+    "wisdom": 17,
+    "charisma": 20,
+    "saving_throws": { "dex": 5, "wis": 7, "cha": 9 },
+    "skills": { "deception": 9, "insight": 7, "perception": 7, "stealth": 5 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": ["acid", "cold", "lightning"],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "Blindsight 30 ft., Darkvision 120 ft.; Passive Perception 17",
+    "languages": "Common, Primordial (Aquan)",
+    "challenge_rating": "12",
+    "cr": 12,
+    "special_abilities": [
+      {
+        "name": "Amphibious",
+        "desc": "Biha Babir can breathe air and water."
+      },
+      {
+        "name": "Elemental Restoration",
+        "desc": "If Biha Babir dies outside the Elemental Plane of Water, her body dissolves into brine, and she gains a new body in 1d4 days, reviving with all her Hit Points somewhere on the Plane of Water."
+      },
+      {
+        "name": "Legendary Resistance (3/Day)",
+        "desc": "If Biha Babir fails a saving throw, she can choose to succeed instead."
+      },
+      {
+        "name": "Wishes",
+        "desc": "Biha Babir knows the Wish spell but can cast it only on behalf of a non-genie creature who communicates a wish she can understand. She can cast it three times before it's unavailable for 365 days."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "Biha Babir makes two Marine Burst attacks. She can replace one with a Tail attack."
+      },
+      {
+        "name": "Marine Burst",
+        "desc": "Melee or Ranged Attack Roll: +10, reach 5 ft. or range 60 ft. Hit: 17 (2d10 + 6) Cold damage."
+      },
+      {
+        "name": "Tail (Marid Form Only)",
+        "desc": "Melee Attack Roll: +10, reach 15 ft. Hit: 13 (2d6 + 6) Bludgeoning damage, and if the target is Huge or smaller, it has the Prone condition."
+      },
+      {
+        "name": "Spellcasting",
+        "desc": "At Will: Create or Destroy Water, Detect Magic, Major Image; 2/Day Each: Control Water (Flood/Part/Redirect only), Dispel Magic, Invisibility; 1/Day Each: Control Weather, Plane Shift."
+      }
+    ],
+    "bonus_actions": [
+      {
+        "name": "Fluid Form",
+        "desc": "Biha Babir shape-shifts into a form resembling a Beast or Humanoid that is Medium or smaller, retaining her statistics (other than size), or returns to her true marid form."
+      }
+    ],
+    "legendary_actions": [
+      {
+        "name": "Misty Burst",
+        "desc": "Biha Babir teleports to an unoccupied space she can see within 30 feet and makes one Marine Burst attack."
+      },
+      {
+        "name": "Whirlpool",
+        "desc": "Strength Saving Throw: DC 18, each creature in a 30-foot Emanation. Failure: 10 (3d6) Force damage, and the target is pulled 15 feet straight toward Biha Babir. Success: Half damage only."
+      }
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Cultist of Bane",
+    "size": "Medium or Small",
+    "type": "Humanoid",
+    "subtype": "",
+    "alignment": "Neutral Evil",
+    "armor_class": 16,
+    "armor_desc": "Breastplate",
+    "hit_points": 142,
+    "hit_dice": "19d8+57",
+    "speed": { "walk": "30 ft." },
+    "strength": 18,
+    "dexterity": 14,
+    "constitution": 16,
+    "intelligence": 13,
+    "wisdom": 19,
+    "charisma": 15,
+    "saving_throws": { "wis": 8, "cha": 6 },
+    "skills": { "intimidation": 6, "perception": 8 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "Passive Perception 18",
+    "languages": "Common",
+    "challenge_rating": "9",
+    "cr": 9,
+    "special_abilities": [
+      {
+        "name": "Determined Survivor",
+        "desc": "The cultist regains 10 Hit Points at the start of each of its turns if it is Bloodied and has at least 1 Hit Point."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The cultist makes three attacks using Gauntlet or Oppressive Burst in any combination. It can replace one attack with Spellcasting to cast Dominate Person, if available."
+      },
+      {
+        "name": "Gauntlet",
+        "desc": "Melee Attack Roll: +8, reach 5 ft. Hit: 17 (3d8 + 4) Bludgeoning damage."
+      },
+      {
+        "name": "Oppressive Burst",
+        "desc": "Ranged Attack Roll: +8, range 120 ft. Hit: 16 (2d10 + 5) Psychic damage, and the target can't take Reactions until the start of the cultist's next turn."
+      },
+      {
+        "name": "Spellcasting",
+        "desc": "2/Day Each: Calm Emotions, Detect Thoughts; 1/Day: Dominate Person (spell save DC 16)."
+      }
+    ],
+    "bonus_actions": [],
+    "reactions": [
+      {
+        "name": "Counterattack",
+        "desc": "Trigger: The cultist is hit by an attack roll. Response: The cultist makes one Gauntlet or Oppressive Burst attack against the triggering creature."
+      }
+    ]
+  },
+  {
+    "name": "Cultist of Bhaal",
+    "size": "Medium or Small",
+    "type": "Humanoid",
+    "subtype": "",
+    "alignment": "Neutral Evil",
+    "armor_class": 16,
+    "armor_desc": "Studded Leather Armor",
+    "hit_points": 144,
+    "hit_dice": "17d8+68",
+    "speed": { "walk": "30 ft." },
+    "strength": 13,
+    "dexterity": 19,
+    "constitution": 18,
+    "intelligence": 15,
+    "wisdom": 17,
+    "charisma": 14,
+    "saving_throws": { "int": 5, "dex": 7 },
+    "skills": { "perception": 6, "stealth": 7 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "Darkvision 60 ft.; Passive Perception 16",
+    "languages": "Common",
+    "challenge_rating": "7",
+    "cr": 7,
+    "special_abilities": [
+      {
+        "name": "Blood-Soaked Resolve",
+        "desc": "While Bloodied, the cultist has Advantage on saving throws."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The cultist makes three Cursed Blade attacks. It can replace one with Spellcasting."
+      },
+      {
+        "name": "Cursed Blade",
+        "desc": "Melee or Ranged Attack Roll: +7 (with Advantage if the target doesn't have all its Hit Points), reach 5 ft. or range 20/80 ft. Hit: 14 (3d6 + 4) Slashing damage. The blade magically returns to the cultist's hand immediately after a ranged attack."
+      },
+      {
+        "name": "Spellcasting",
+        "desc": "2/Day: Mind Spike (spell save DC 14); 1/Day Each: Dimension Door, Mislead."
+      }
+    ],
+    "bonus_actions": [],
+    "reactions": []
+  },
+  {
+    "name": "Cultist of Myrkul",
+    "size": "Medium or Small",
+    "type": "Humanoid",
+    "subtype": "",
+    "alignment": "Neutral Evil",
+    "armor_class": 16,
+    "armor_desc": "Breastplate",
+    "hit_points": 204,
+    "hit_dice": "24d8+96",
+    "speed": { "walk": "30 ft." },
+    "strength": 13,
+    "dexterity": 14,
+    "constitution": 18,
+    "intelligence": 20,
+    "wisdom": 18,
+    "charisma": 15,
+    "saving_throws": { "int": 9, "wis": 8, "cha": 6 },
+    "skills": { "arcana": 9, "insight": 8, "religion": 9 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": ["necrotic"],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "Darkvision 60 ft.; Passive Perception 14",
+    "languages": "Common",
+    "challenge_rating": "11",
+    "cr": 11,
+    "special_abilities": [
+      {
+        "name": "Nearer to the Dead",
+        "desc": "While Bloodied, the cultist has Immunity to the Frightened and Poisoned conditions."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The cultist makes three Necrotic Burst attacks."
+      },
+      {
+        "name": "Necrotic Burst",
+        "desc": "Melee or Ranged Attack Roll: +9, reach 5 ft. or range 120 ft. Hit: 27 (5d10) Necrotic damage and the target can't regain Hit Points until the end of the cultist's next turn."
+      },
+      {
+        "name": "Spellcasting",
+        "desc": "At Will: Speak with Dead, Thaumaturgy; 1/Day Each: Animate Dead, Circle of Death (spell save DC 17, using Intelligence)."
+      }
+    ],
+    "bonus_actions": [],
+    "reactions": []
+  },
+  {
+    "name": "Dead Three Scion",
+    "size": "Medium or Small",
+    "type": "Humanoid",
+    "subtype": "",
+    "alignment": "Neutral Evil",
+    "armor_class": 17,
+    "armor_desc": "",
+    "hit_points": 221,
+    "hit_dice": "26d8+104",
+    "speed": { "walk": "30 ft." },
+    "strength": 20,
+    "dexterity": 14,
+    "constitution": 19,
+    "intelligence": 18,
+    "wisdom": 21,
+    "charisma": 24,
+    "saving_throws": { "str": 5, "con": 9, "wis": 10 },
+    "skills": { "arcana": 9, "intimidation": 12, "stealth": 7 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": [],
+    "damage_immunities": ["necrotic"],
+    "condition_immunities": ["charmed", "frightened"],
+    "senses": "Truesight 120 ft.; Passive Perception 15",
+    "languages": "Common",
+    "challenge_rating": "16",
+    "cr": 16,
+    "special_abilities": [
+      {
+        "name": "Culling Aura",
+        "desc": "Constitution Saving Throw: DC 20, each Bloodied creature in a 30-foot Emanation at the end of the scion's turn. Failure: The target can't regain Hit Points until the start of the scion's next turn."
+      },
+      {
+        "name": "Legendary Resistance (3/Day)",
+        "desc": "If the scion fails a saving throw, it can choose to succeed instead."
+      },
+      {
+        "name": "Magic Resistance",
+        "desc": "The scion has Advantage on saving throws against spells and other magical effects."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The scion makes two attacks, using Death Touch or Mindwrack Bolt in any combination."
+      },
+      {
+        "name": "Death Touch",
+        "desc": "Melee Attack Roll: +12, reach 5 ft. Hit: 25 (4d8 + 7) Necrotic damage."
+      },
+      {
+        "name": "Mindwrack Bolt",
+        "desc": "Ranged Attack Roll: +12, range 120 ft. Hit: 21 (6d6) Psychic damage and the target has the Poisoned condition until the start of the scion's next turn."
+      },
+      {
+        "name": "Spellcasting",
+        "desc": "At Will: Detect Thoughts, Dispel Magic; 2/Day Each: Dimension Door, Invisibility, Scrying; 1/Day Each: Circle of Death, Create Undead (spell save DC 20, using Charisma)."
+      }
+    ],
+    "bonus_actions": [],
+    "legendary_actions": [
+      {
+        "name": "Attack",
+        "desc": "The scion makes a Death Touch or Mindwrack Bolt attack."
+      },
+      {
+        "name": "Command",
+        "desc": "The scion casts Command (level 2 version). Can't take this action again until the start of its next turn."
+      }
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Deep Dragon Wyrmling",
+    "size": "Medium",
+    "type": "Dragon",
+    "subtype": "",
+    "alignment": "Neutral Evil",
+    "armor_class": 15,
+    "armor_desc": "",
+    "hit_points": 27,
+    "hit_dice": "5d8+5",
+    "speed": { "walk": "30 ft.", "burrow": "15 ft.", "fly": "60 ft.", "swim": "30 ft." },
+    "strength": 14,
+    "dexterity": 11,
+    "constitution": 12,
+    "intelligence": 11,
+    "wisdom": 12,
+    "charisma": 13,
+    "saving_throws": { "dex": 2, "wis": 3 },
+    "skills": { "perception": 5, "stealth": 4 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": ["poison", "psychic"],
+    "damage_immunities": [],
+    "condition_immunities": ["charmed", "frightened", "poisoned"],
+    "senses": "Blindsight 10 ft., Darkvision 60 ft.; Passive Perception 15",
+    "languages": "Draconic",
+    "challenge_rating": "1",
+    "cr": 1,
+    "special_abilities": [],
+    "actions": [
+      {
+        "name": "Rend",
+        "desc": "Melee Attack Roll: +4, reach 5 ft. Hit: 6 (1d8 + 2) Slashing damage."
+      },
+      {
+        "name": "Nightmare Breath (Recharge 5-6)",
+        "desc": "Wisdom Saving Throw: DC 11, each creature in a 15-foot Cone. Failure: 7 (2d6) Psychic damage, and the target has the Frightened condition until the end of the dragon's next turn. Success: Half damage only."
+      }
+    ],
+    "bonus_actions": [],
+    "reactions": []
+  },
+  {
+    "name": "Young Deep Dragon",
+    "size": "Large",
+    "type": "Dragon",
+    "subtype": "",
+    "alignment": "Neutral Evil",
+    "armor_class": 16,
+    "armor_desc": "",
+    "hit_points": 93,
+    "hit_dice": "11d10+33",
+    "speed": { "walk": "40 ft.", "burrow": "20 ft.", "fly": "80 ft.", "swim": "40 ft." },
+    "strength": 18,
+    "dexterity": 13,
+    "constitution": 16,
+    "intelligence": 12,
+    "wisdom": 14,
+    "charisma": 16,
+    "saving_throws": { "dex": 4, "wis": 5 },
+    "skills": { "perception": 8, "stealth": 7 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": ["poison", "psychic"],
+    "damage_immunities": [],
+    "condition_immunities": ["charmed", "frightened", "poisoned"],
+    "senses": "Blindsight 30 ft., Darkvision 150 ft.; Passive Perception 18",
+    "languages": "Common, Draconic, Undercommon",
+    "challenge_rating": "5",
+    "cr": 5,
+    "special_abilities": [],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The dragon makes three Rend attacks."
+      },
+      {
+        "name": "Rend",
+        "desc": "Melee Attack Roll: +7, reach 10 ft. Hit: 11 (2d6 + 4) Slashing damage plus 3 (1d6) Poison damage."
+      },
+      {
+        "name": "Nightmare Breath (Recharge 5-6)",
+        "desc": "Wisdom Saving Throw: DC 14, each creature in a 30-foot Cone. Failure: 22 (4d10) Psychic damage, and the target has the Frightened condition until the end of the dragon's next turn. Success: Half damage only."
+      }
+    ],
+    "bonus_actions": [],
+    "reactions": []
+  },
+  {
+    "name": "Adult Deep Dragon",
+    "size": "Huge",
+    "type": "Dragon",
+    "subtype": "",
+    "alignment": "Neutral Evil",
+    "armor_class": 17,
+    "armor_desc": "",
+    "hit_points": 161,
+    "hit_dice": "17d12+51",
+    "speed": { "walk": "40 ft.", "burrow": "30 ft.", "fly": "80 ft.", "swim": "40 ft." },
+    "strength": 20,
+    "dexterity": 14,
+    "constitution": 17,
+    "intelligence": 16,
+    "wisdom": 16,
+    "charisma": 18,
+    "saving_throws": { "dex": 6, "wis": 7 },
+    "skills": { "perception": 11, "stealth": 10 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": ["poison", "psychic"],
+    "damage_immunities": [],
+    "condition_immunities": ["charmed", "frightened", "poisoned"],
+    "senses": "Blindsight 60 ft., Darkvision 150 ft.; Passive Perception 21",
+    "languages": "Common, Draconic, Undercommon",
+    "challenge_rating": "11",
+    "cr": 11,
+    "special_abilities": [
+      {
+        "name": "Legendary Resistance (3/Day, or 4/Day in Lair)",
+        "desc": "If the dragon fails a saving throw, it can choose to succeed instead."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The dragon makes three Rend attacks."
+      },
+      {
+        "name": "Rend",
+        "desc": "Melee Attack Roll: +9, reach 10 ft. Hit: 14 (2d8 + 5) Slashing damage plus 5 (1d10) Poison damage."
+      },
+      {
+        "name": "Nightmare Breath (Recharge 5-6)",
+        "desc": "Wisdom Saving Throw: DC 15, each creature in a 30-foot Cone. Failure: 38 (7d10) Psychic damage, and the target has the Frightened condition until the end of the dragon's next turn. Success: Half damage only."
+      }
+    ],
+    "bonus_actions": [
+      {
+        "name": "Shape-Shift",
+        "desc": "The dragon shape-shifts into a Small or Medium Humanoid or a Small or Medium Beast, or it returns to its true form. Its statistics, other than its size, are the same in each form."
+      }
+    ],
+    "legendary_actions": [
+      {
+        "name": "Pounce",
+        "desc": "The dragon moves up to half its Speed and makes one Rend attack."
+      },
+      {
+        "name": "Spore Salvo",
+        "desc": "Constitution Saving Throw: DC 15, one creature within 30 feet. Failure: 13 (3d8) Poison damage, and the target has the Poisoned condition. It repeats the save at the end of each of its turns, ending the effect on a success (1 minute max)."
+      }
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Ancient Deep Dragon",
+    "size": "Gargantuan",
+    "type": "Dragon",
+    "subtype": "",
+    "alignment": "Neutral Evil",
+    "armor_class": 20,
+    "armor_desc": "",
+    "hit_points": 247,
+    "hit_dice": "15d20+90",
+    "speed": { "walk": "40 ft.", "burrow": "40 ft.", "fly": "80 ft.", "swim": "40 ft." },
+    "strength": 23,
+    "dexterity": 16,
+    "constitution": 22,
+    "intelligence": 19,
+    "wisdom": 18,
+    "charisma": 21,
+    "saving_throws": { "dex": 9, "wis": 10 },
+    "skills": { "perception": 16, "stealth": 15 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": ["poison", "psychic"],
+    "damage_immunities": [],
+    "condition_immunities": ["charmed", "frightened", "poisoned"],
+    "senses": "Blindsight 60 ft., Darkvision 300 ft.; Passive Perception 26",
+    "languages": "Common, Draconic, Undercommon",
+    "challenge_rating": "18",
+    "cr": 18,
+    "special_abilities": [
+      {
+        "name": "Legendary Resistance (4/Day, or 5/Day in Lair)",
+        "desc": "If the dragon fails a saving throw, it can choose to succeed instead."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The dragon makes three Rend attacks."
+      },
+      {
+        "name": "Rend",
+        "desc": "Melee Attack Roll: +12, reach 15 ft. Hit: 17 (2d10 + 6) Slashing damage plus 5 (1d10) Poison damage."
+      },
+      {
+        "name": "Nightmare Breath (Recharge 5-6)",
+        "desc": "Wisdom Saving Throw: DC 20, each creature in a 90-foot Cone. Failure: 44 (8d10) Psychic damage, and the target has the Frightened condition until the end of the dragon's next turn. Success: Half damage only."
+      }
+    ],
+    "bonus_actions": [
+      {
+        "name": "Shape-Shift",
+        "desc": "The dragon shape-shifts into a Small or Medium Humanoid or a Small or Medium Beast, or returns to its true form."
+      }
+    ],
+    "legendary_actions": [
+      {
+        "name": "Pounce",
+        "desc": "The dragon moves up to half its Speed and makes one Rend attack."
+      },
+      {
+        "name": "Spore Salvo",
+        "desc": "Constitution Saving Throw: DC 20, one creature within 30 feet. Failure: 16 (3d10) Poison damage and Poisoned condition, repeating save at end of each of its turns (1 minute max)."
+      }
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Drow of Lolth",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "Elf",
+    "alignment": "Chaotic Evil",
+    "armor_class": 15,
+    "armor_desc": "Chain Shirt",
+    "hit_points": 13,
+    "hit_dice": "3d8",
+    "speed": { "walk": "30 ft." },
+    "strength": 10,
+    "dexterity": 14,
+    "constitution": 10,
+    "intelligence": 11,
+    "wisdom": 11,
+    "charisma": 12,
+    "saving_throws": {},
+    "skills": { "perception": 2, "stealth": 4 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "Darkvision 120 ft.; Passive Perception 12",
+    "languages": "Common, Elvish, Undercommon",
+    "challenge_rating": "1/4",
+    "cr": 0.25,
+    "special_abilities": [
+      {
+        "name": "Fey Ancestry",
+        "desc": "The drow has Advantage on saving throws to avoid or end the Charmed condition, and magic can't put it to sleep."
+      },
+      {
+        "name": "Sunlight Sensitivity",
+        "desc": "While in sunlight, the drow has Disadvantage on attack rolls."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Rapier",
+        "desc": "Melee Attack Roll: +4, reach 5 ft. Hit: 6 (1d8 + 2) Piercing damage."
+      },
+      {
+        "name": "Drow Hand Crossbow",
+        "desc": "Ranged Attack Roll: +4, range 30/120 ft. Hit: 4 (1d4 + 2) Piercing damage, and the target makes a DC 12 Constitution save or is Poisoned for 1 hour. If the target fails by 5 or more, it is also Unconscious while Poisoned."
+      },
+      {
+        "name": "Spellcasting",
+        "desc": "At Will: Dancing Lights; 1/Day: Faerie Fire (spell save DC 11, using Charisma)."
+      }
+    ],
+    "bonus_actions": [],
+    "reactions": []
+  },
+  {
+    "name": "Drow Elite Warrior of Lolth",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "Elf",
+    "alignment": "Chaotic Evil",
+    "armor_class": 18,
+    "armor_desc": "Studded Leather + Shield",
+    "hit_points": 71,
+    "hit_dice": "11d8+22",
+    "speed": { "walk": "30 ft." },
+    "strength": 13,
+    "dexterity": 18,
+    "constitution": 14,
+    "intelligence": 11,
+    "wisdom": 13,
+    "charisma": 12,
+    "saving_throws": { "dex": 7, "wis": 4 },
+    "skills": { "perception": 4, "stealth": 10 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "Darkvision 120 ft.; Passive Perception 14",
+    "languages": "Common, Elvish, Undercommon",
+    "challenge_rating": "5",
+    "cr": 5,
+    "special_abilities": [
+      {
+        "name": "Fey Ancestry",
+        "desc": "The drow has Advantage on saving throws to avoid or end the Charmed condition, and magic can't put it to sleep."
+      },
+      {
+        "name": "Sunlight Sensitivity",
+        "desc": "While in sunlight, the drow has Disadvantage on attack rolls."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The drow makes two attacks using Shortsword or Drow Hand Crossbow in any combination."
+      },
+      {
+        "name": "Shortsword",
+        "desc": "Melee Attack Roll: +7, reach 5 ft. Hit: 11 (2d6 + 4) Piercing damage plus 10 (3d6) Poison damage."
+      },
+      {
+        "name": "Drow Hand Crossbow",
+        "desc": "Ranged Attack Roll: +7, range 30/120 ft. Hit: 7 (1d6 + 4) Piercing damage. DC 15 Constitution save or Poisoned for 1 hour (and Unconscious while Poisoned)."
+      }
+    ],
+    "bonus_actions": [
+      {
+        "name": "Underdark Magic (3/Day)",
+        "desc": "The drow casts Darkness, Faerie Fire, or Levitate (self only), using Charisma (spell save DC 12)."
+      }
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Drow Mage of Lolth",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "Elf",
+    "alignment": "Chaotic Evil",
+    "armor_class": 15,
+    "armor_desc": "Mage Armor",
+    "hit_points": 81,
+    "hit_dice": "18d8",
+    "speed": { "walk": "30 ft.", "fly": "15 ft. (hover)" },
+    "strength": 9,
+    "dexterity": 14,
+    "constitution": 10,
+    "intelligence": 17,
+    "wisdom": 13,
+    "charisma": 12,
+    "saving_throws": { "dex": 5, "wis": 4 },
+    "skills": { "arcana": 6, "perception": 4, "stealth": 5 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "Darkvision 120 ft.; Passive Perception 14",
+    "languages": "Abyssal, Common, Elvish, Undercommon",
+    "challenge_rating": "7",
+    "cr": 7,
+    "special_abilities": [
+      {
+        "name": "Fey Ancestry",
+        "desc": "The drow has Advantage on saving throws to avoid or end the Charmed condition, and magic can't put it to sleep."
+      },
+      {
+        "name": "Sunlight Sensitivity",
+        "desc": "While in sunlight, the drow has Disadvantage on attack rolls."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The drow makes three Abyssal Burst attacks."
+      },
+      {
+        "name": "Abyssal Burst",
+        "desc": "Melee or Ranged Attack Roll: +6, reach 5 ft. or range 120 ft. Hit: 21 (4d8 + 3) Poison damage."
+      },
+      {
+        "name": "Spellcasting",
+        "desc": "At Will: Dancing Lights, Mage Armor (included in AC), Mage Hand, Minor Illusion; 1/Day: Summon Fiend (demon only). Uses Intelligence (spell save DC 14, +6 to hit)."
+      }
+    ],
+    "bonus_actions": [
+      {
+        "name": "Underdark Magic (3/Day)",
+        "desc": "The drow casts Faerie Fire or Misty Step, using the same spellcasting ability."
+      }
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Drow Priestess of Lolth",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "Elf",
+    "alignment": "Chaotic Evil",
+    "armor_class": 16,
+    "armor_desc": "",
+    "hit_points": 99,
+    "hit_dice": "18d8+18",
+    "speed": { "walk": "30 ft.", "fly": "15 ft. (hover)" },
+    "strength": 10,
+    "dexterity": 14,
+    "constitution": 12,
+    "intelligence": 13,
+    "wisdom": 18,
+    "charisma": 17,
+    "saving_throws": { "wis": 7, "cha": 6 },
+    "skills": { "insight": 7, "perception": 7, "religion": 4, "stealth": 5 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "Darkvision 120 ft.; Passive Perception 17",
+    "languages": "Abyssal, Common, Elvish, Undercommon",
+    "challenge_rating": "8",
+    "cr": 8,
+    "special_abilities": [
+      {
+        "name": "Fey Ancestry",
+        "desc": "The drow has Advantage on saving throws to avoid or end the Charmed condition, and magic can't put it to sleep."
+      },
+      {
+        "name": "Sunlight Sensitivity",
+        "desc": "While in sunlight, the drow has Disadvantage on attack rolls."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The drow makes three Scourge attacks."
+      },
+      {
+        "name": "Scourge",
+        "desc": "Melee Attack Roll: +5, reach 10 ft. Hit: 6 (1d6 + 3) Piercing damage plus 17 (5d6) Poison damage."
+      },
+      {
+        "name": "Spellcasting",
+        "desc": "At Will: Dancing Lights, Guidance, Thaumaturgy. Uses Wisdom."
+      },
+      {
+        "name": "Spider Vortex (Recharge 5-6)",
+        "desc": "Constitution Saving Throw: DC 15, each enemy in a 20-foot Emanation. Failure: 33 (6d10) Piercing damage, and Restrained until the start of the drow's next turn. Success: Half damage."
+      }
+    ],
+    "bonus_actions": [
+      {
+        "name": "Lolth's Blessing (3/Day)",
+        "desc": "The drow casts Cure Wounds, Darkness, Dispel Magic, or Lesser Restoration using Wisdom."
+      }
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Karas Chembryl",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "Human",
+    "alignment": "Neutral Evil",
+    "armor_class": 17,
+    "armor_desc": "Studded Leather Armor",
+    "hit_points": 104,
+    "hit_dice": "19d8+19",
+    "speed": { "walk": "30 ft.", "climb": "30 ft." },
+    "strength": 11,
+    "dexterity": 20,
+    "constitution": 12,
+    "intelligence": 18,
+    "wisdom": 15,
+    "charisma": 17,
+    "saving_throws": { "dex": 8, "int": 7 },
+    "skills": { "acrobatics": 8, "perception": 8, "stealth": 11 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": ["poison", "psychic"],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "Blindsight 10 ft.; Passive Perception 18",
+    "languages": "Common, Elvish, Infernal, Thieves' Cant",
+    "challenge_rating": "8",
+    "cr": 8,
+    "special_abilities": [
+      {
+        "name": "Evasion",
+        "desc": "If Karas is subjected to an effect that allows her to make a Dexterity saving throw to take only half damage, she instead takes no damage if she succeeds and only half damage if she fails. She can't use this trait if she has the Incapacitated condition."
+      },
+      {
+        "name": "Legendary Resistance (3/Day, or 4/Day in Lair)",
+        "desc": "If Karas fails a saving throw, she can choose to succeed instead."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "Karas makes two attacks using Dread Dagger or Tyrant's Blade in any combination."
+      },
+      {
+        "name": "Dread Dagger",
+        "desc": "Melee or Ranged Attack Roll: +8, reach 5 ft. or range 20/60 ft. Hit: 10 (2d4 + 5) Piercing damage plus 4 (1d8) Necrotic damage. The dagger returns to Karas's hand after a ranged attack."
+      },
+      {
+        "name": "Tyrant's Blade",
+        "desc": "Melee Attack Roll: +8, reach 5 ft. Hit: 8 (1d6 + 5) Slashing damage, and the target has the Frightened condition until the start of Karas's next turn. If already Frightened, it instead takes 10 (3d6) Psychic damage."
+      },
+      {
+        "name": "Spellcasting",
+        "desc": "At Will: Friends, Silence, Thaumaturgy; 2/Day: Ray of Sickness (level 5); 1/Day: Blight, Mislead. Uses Intelligence (spell save DC 15, +7 to hit)."
+      }
+    ],
+    "bonus_actions": [
+      {
+        "name": "Withdraw",
+        "desc": "Karas moves up to half her Speed without provoking Opportunity Attacks and takes the Hide action."
+      }
+    ],
+    "legendary_actions": [
+      {
+        "name": "Harrow",
+        "desc": "Wisdom Saving Throw: DC 15, one creature within 90 feet. Failure: 10 (3d6) Psychic damage and Frightened for 1 minute (Speed 0 while Frightened; repeats save at end of each turn)."
+      },
+      {
+        "name": "Stealth Attack",
+        "desc": "Karas makes one Dread Dagger attack and uses Withdraw."
+      }
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Manshoon",
+    "size": "Medium",
+    "type": "Humanoid",
+    "subtype": "Human, Wizard",
+    "alignment": "Lawful Evil",
+    "armor_class": 15,
+    "armor_desc": "Mage Armor",
+    "hit_points": 214,
+    "hit_dice": "33d8+66",
+    "speed": { "walk": "30 ft." },
+    "strength": 10,
+    "dexterity": 14,
+    "constitution": 14,
+    "intelligence": 23,
+    "wisdom": 15,
+    "charisma": 16,
+    "saving_throws": { "int": 11, "wis": 7 },
+    "skills": { "arcana": 11, "history": 11, "insight": 7 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": [],
+    "damage_immunities": ["psychic"],
+    "condition_immunities": ["charmed"],
+    "senses": "Darkvision 60 ft.; Passive Perception 12",
+    "languages": "Common, Draconic, Infernal, Undercommon",
+    "challenge_rating": "13",
+    "cr": 13,
+    "special_abilities": [
+      {
+        "name": "Magic Resistance",
+        "desc": "Manshoon has Advantage on saving throws against spells and other magical effects."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "Manshoon makes three Arcane Burst attacks. He can replace two attacks with Spellcasting."
+      },
+      {
+        "name": "Arcane Burst",
+        "desc": "Melee or Ranged Attack Roll: +11, reach 5 ft. or range 120 ft. Hit: 32 (4d12 + 6) Force damage."
+      },
+      {
+        "name": "Spellcasting",
+        "desc": "At Will: Detect Magic, Detect Thoughts, Light, Lightning Bolt (level 4), Mage Armor (included), Mage Hand, Prestidigitation; 2/Day Each: Scrying, Sending, Wall of Force; 1/Day Each: Befuddlement, Clone, Finger of Death, Mind Blank, Simulacrum. Uses Intelligence (spell save DC 19)."
+      }
+    ],
+    "bonus_actions": [
+      {
+        "name": "Misty Step",
+        "desc": "Manshoon casts Misty Step."
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Protective Magic",
+        "desc": "Manshoon casts Counterspell or Shield in response to the triggering spell."
+      }
+    ]
+  },
+  {
+    "name": "Nimblewright Guard",
+    "size": "Medium",
+    "type": "Construct",
+    "subtype": "",
+    "alignment": "Neutral",
+    "armor_class": 16,
+    "armor_desc": "",
+    "hit_points": 67,
+    "hit_dice": "9d8+27",
+    "speed": { "walk": "60 ft." },
+    "strength": 12,
+    "dexterity": 18,
+    "constitution": 16,
+    "intelligence": 8,
+    "wisdom": 12,
+    "charisma": 6,
+    "saving_throws": { "dex": 6 },
+    "skills": { "acrobatics": 6, "perception": 3 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": [],
+    "damage_immunities": ["poison", "psychic"],
+    "condition_immunities": ["charmed", "exhaustion", "paralyzed", "petrified", "poisoned"],
+    "senses": "Darkvision 60 ft.; Passive Perception 13",
+    "languages": "Understands Common plus one other language but can't speak",
+    "challenge_rating": "3",
+    "cr": 3,
+    "special_abilities": [
+      {
+        "name": "Evasion",
+        "desc": "If subjected to an effect that allows a Dexterity saving throw to take only half damage, the nimblewright takes no damage if it succeeds and only half if it fails, provided it doesn't have the Incapacitated condition."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The nimblewright makes three attacks using Scimitar or Clockwork Crossbow in any combination."
+      },
+      {
+        "name": "Scimitar",
+        "desc": "Melee Attack Roll: +6, reach 5 ft. Hit: 7 (1d6 + 4) Slashing damage."
+      },
+      {
+        "name": "Clockwork Crossbow",
+        "desc": "Ranged Attack Roll: +6, range 80/320 ft. Hit: 8 (1d8 + 4) Piercing damage."
+      }
+    ],
+    "bonus_actions": [],
+    "reactions": [
+      {
+        "name": "Parry",
+        "desc": "Trigger: The nimblewright is hit by a melee attack roll while holding a weapon. Response: The nimblewright adds 2 to its AC against that attack, potentially causing it to miss."
+      }
+    ]
+  },
+  {
+    "name": "Nimblewright Hulk",
+    "size": "Large",
+    "type": "Construct",
+    "subtype": "",
+    "alignment": "Neutral",
+    "armor_class": 18,
+    "armor_desc": "",
+    "hit_points": 104,
+    "hit_dice": "11d10+44",
+    "speed": { "walk": "50 ft." },
+    "strength": 19,
+    "dexterity": 18,
+    "constitution": 19,
+    "intelligence": 10,
+    "wisdom": 12,
+    "charisma": 6,
+    "saving_throws": { "str": 7, "dex": 7 },
+    "skills": { "acrobatics": 7, "perception": 7 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": [],
+    "damage_immunities": ["poison", "psychic"],
+    "condition_immunities": ["charmed", "exhaustion", "paralyzed", "petrified", "poisoned"],
+    "senses": "Darkvision 60 ft.; Passive Perception 17",
+    "languages": "Understands Common plus one other language but can't speak",
+    "challenge_rating": "7",
+    "cr": 7,
+    "special_abilities": [
+      {
+        "name": "Evasion",
+        "desc": "If subjected to an effect that allows a Dexterity saving throw to take only half damage, the nimblewright takes no damage if it succeeds and only half if it fails, provided it doesn't have the Incapacitated condition."
+      },
+      {
+        "name": "Magic Resistance",
+        "desc": "The nimblewright has Advantage on saving throws against spells and other magical effects."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The nimblewright makes four attacks using Halting Slam or Radiant Ray in any combination."
+      },
+      {
+        "name": "Halting Slam",
+        "desc": "Melee Attack Roll: +7, reach 10 ft. Hit: 15 (2d10 + 4) Bludgeoning damage, and the target's Speed is reduced to 0 until the end of its next turn."
+      },
+      {
+        "name": "Radiant Ray",
+        "desc": "Ranged Attack Roll: +7, range 60 ft. Hit: 14 (4d6) Radiant damage."
+      }
+    ],
+    "bonus_actions": [],
+    "reactions": []
+  },
+  {
+    "name": "Nimblewright Steed",
+    "size": "Large",
+    "type": "Construct",
+    "subtype": "",
+    "alignment": "Neutral",
+    "armor_class": 16,
+    "armor_desc": "",
+    "hit_points": 47,
+    "hit_dice": "5d10+20",
+    "speed": { "walk": "60 ft." },
+    "strength": 17,
+    "dexterity": 18,
+    "constitution": 18,
+    "intelligence": 6,
+    "wisdom": 10,
+    "charisma": 6,
+    "saving_throws": { "dex": 6 },
+    "skills": {},
+    "damage_vulnerabilities": [],
+    "damage_resistances": [],
+    "damage_immunities": ["poison", "psychic"],
+    "condition_immunities": ["charmed", "exhaustion", "paralyzed", "petrified", "poisoned"],
+    "senses": "Darkvision 60 ft.; Passive Perception 10",
+    "languages": "Understands Common plus one other language but can't speak",
+    "challenge_rating": "2",
+    "cr": 2,
+    "special_abilities": [
+      {
+        "name": "Evasion",
+        "desc": "If subjected to an effect that allows a Dexterity saving throw to take only half damage, the nimblewright takes no damage if it succeeds and only half if it fails, provided it doesn't have the Incapacitated condition."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Hooves",
+        "desc": "Melee Attack Roll: +6, reach 5 ft. Hit: 7 (1d8 + 3) Bludgeoning damage. If the nimblewright moved at least 20 feet straight toward the target immediately before the hit, the target takes an extra 4 (1d8) Bludgeoning damage and, if Huge or smaller, has the Prone condition."
+      }
+    ],
+    "bonus_actions": [
+      {
+        "name": "Nimble Movement",
+        "desc": "The nimblewright takes the Disengage action."
+      }
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Phaerimm Hatchling",
+    "size": "Small",
+    "type": "Aberration",
+    "subtype": "",
+    "alignment": "Neutral Evil",
+    "armor_class": 12,
+    "armor_desc": "",
+    "hit_points": 13,
+    "hit_dice": "3d6+3",
+    "speed": { "walk": "10 ft.", "fly": "30 ft. (hover)" },
+    "strength": 11,
+    "dexterity": 12,
+    "constitution": 12,
+    "intelligence": 14,
+    "wisdom": 16,
+    "charisma": 14,
+    "saving_throws": {},
+    "skills": { "perception": 5 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": ["charmed"],
+    "senses": "Truesight 60 ft.; Passive Perception 15",
+    "languages": "Understands Common and Deep Speech but can't speak; telepathy 30 ft.",
+    "challenge_rating": "1/4",
+    "cr": 0.25,
+    "special_abilities": [
+      {
+        "name": "Magic Resistance",
+        "desc": "The phaerimm has Advantage on saving throws against spells and other magical effects."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The phaerimm makes two Stinger attacks."
+      },
+      {
+        "name": "Stinger",
+        "desc": "Melee Attack Roll: +3, reach 5 ft. Hit: 3 (1d4 + 1) Piercing damage."
+      },
+      {
+        "name": "Spellcasting",
+        "desc": "At Will: Detect Thoughts, Mage Hand. Uses Charisma (spell save DC 12)."
+      }
+    ],
+    "bonus_actions": [],
+    "reactions": []
+  },
+  {
+    "name": "Phaerimm Agent",
+    "size": "Large",
+    "type": "Aberration",
+    "subtype": "",
+    "alignment": "Neutral Evil",
+    "armor_class": 15,
+    "armor_desc": "",
+    "hit_points": 123,
+    "hit_dice": "19d10+19",
+    "speed": { "walk": "10 ft.", "fly": "40 ft. (hover)" },
+    "strength": 12,
+    "dexterity": 18,
+    "constitution": 12,
+    "intelligence": 17,
+    "wisdom": 16,
+    "charisma": 18,
+    "saving_throws": { "int": 6, "wis": 6, "cha": 7 },
+    "skills": { "arcana": 9, "insight": 6, "perception": 6 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": ["charmed"],
+    "senses": "Truesight 120 ft.; Passive Perception 16",
+    "languages": "Understands Common and Deep Speech but can't speak; telepathy 120 ft.",
+    "challenge_rating": "8",
+    "cr": 8,
+    "special_abilities": [
+      {
+        "name": "Magic Resistance",
+        "desc": "The phaerimm has Advantage on saving throws against spells and other magical effects."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The phaerimm makes three attacks using Dread Stinger or Mindwarp Ray in any combination."
+      },
+      {
+        "name": "Dread Stinger",
+        "desc": "Melee Attack Roll: +7, reach 5 ft. Hit: 7 (1d6 + 4) Piercing damage plus 13 (2d12) Poison damage."
+      },
+      {
+        "name": "Mindwarp Ray",
+        "desc": "Ranged Attack Roll: +7, range 120 ft. Hit: 13 (2d8 + 4) Psychic damage, and the target has the Charmed condition until the start of the phaerimm's next turn."
+      },
+      {
+        "name": "Spellcasting",
+        "desc": "At Will: Detect Magic, Detect Thoughts, Mage Hand; 1/Day Each: Clairvoyance, Major Image, Synaptic Static. Uses Charisma (spell save DC 15)."
+      }
+    ],
+    "bonus_actions": [
+      {
+        "name": "Teleport",
+        "desc": "The phaerimm teleports up to 30 feet to an unoccupied space it can see."
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Protective Magic (3/Day)",
+        "desc": "The phaerimm casts Counterspell or Shield in response to the triggering spell."
+      }
+    ]
+  },
+  {
+    "name": "Polar Serpent",
+    "size": "Large",
+    "type": "Elemental",
+    "subtype": "",
+    "alignment": "Neutral",
+    "armor_class": 14,
+    "armor_desc": "",
+    "hit_points": 58,
+    "hit_dice": "9d10+9",
+    "speed": { "walk": "40 ft.", "fly": "40 ft." },
+    "strength": 18,
+    "dexterity": 19,
+    "constitution": 12,
+    "intelligence": 4,
+    "wisdom": 12,
+    "charisma": 6,
+    "saving_throws": {},
+    "skills": { "perception": 3, "stealth": 6 },
+    "damage_vulnerabilities": ["fire"],
+    "damage_resistances": [],
+    "damage_immunities": ["cold"],
+    "condition_immunities": [],
+    "senses": "Darkvision 60 ft.; Passive Perception 13",
+    "languages": "Understands Primordial but can't speak",
+    "challenge_rating": "3",
+    "cr": 3,
+    "special_abilities": [
+      {
+        "name": "Misty Slithering",
+        "desc": "The serpent can move through a space as narrow as 1 inch without expending extra movement."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The serpent makes one Bite attack and uses Constrict."
+      },
+      {
+        "name": "Bite",
+        "desc": "Melee Attack Roll: +6, reach 5 ft. Hit: 8 (1d8 + 4) Piercing damage plus 3 (1d6) Cold damage."
+      },
+      {
+        "name": "Constrict",
+        "desc": "Strength Saving Throw: DC 14, one Medium or smaller creature within 10 feet. Failure: 3 (1d6) Bludgeoning damage plus 7 (2d6) Cold damage. The target has the Grappled and Restrained conditions (escape DC 14)."
+      }
+    ],
+    "bonus_actions": [],
+    "reactions": []
+  },
+  {
+    "name": "Queen Forfallen",
+    "size": "Medium",
+    "type": "Construct",
+    "subtype": "",
+    "alignment": "Neutral Evil",
+    "armor_class": 16,
+    "armor_desc": "Breastplate",
+    "hit_points": 153,
+    "hit_dice": "18d8+72",
+    "speed": { "walk": "30 ft." },
+    "strength": 20,
+    "dexterity": 14,
+    "constitution": 19,
+    "intelligence": 15,
+    "wisdom": 17,
+    "charisma": 18,
+    "saving_throws": { "wis": 7 },
+    "skills": { "athletics": 9, "insight": 7, "perception": 7 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": [],
+    "damage_immunities": ["poison"],
+    "condition_immunities": ["exhaustion", "petrified", "poisoned"],
+    "senses": "Passive Perception 17",
+    "languages": "Common",
+    "challenge_rating": "10",
+    "cr": 10,
+    "special_abilities": [
+      {
+        "name": "Inspiring Presence",
+        "desc": "Creatures of Forfallen's choice (excluding herself) in a 30-foot Emanation have Advantage on attack rolls. She can't use this trait if she has the Incapacitated condition."
+      },
+      {
+        "name": "Magic Resistance",
+        "desc": "Forfallen has Advantage on saving throws against spells and other magical effects."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "Forfallen makes three attacks using Greataxe or Handaxe in any combination."
+      },
+      {
+        "name": "Greataxe",
+        "desc": "Melee Attack Roll: +9, reach 5 ft. Hit: 18 (2d12 + 5) Slashing damage, and the target has the Poisoned condition until the end of its next turn."
+      },
+      {
+        "name": "Handaxe",
+        "desc": "Melee or Ranged Attack Roll: +9, reach 5 ft. or range 20/60 ft. Hit: 22 (5d6 + 5) Slashing damage."
+      }
+    ],
+    "bonus_actions": [
+      {
+        "name": "Rust's Grip",
+        "desc": "Constitution Saving Throw: DC 16, one creature within 20 feet (Disadvantage if Poisoned). First Failure: Restrained (save at end of next turn to end). Second Failure: Petrified (becomes a statue of rusted iron)."
+      }
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Rusted Behemoth",
+    "size": "Huge",
+    "type": "Construct",
+    "subtype": "",
+    "alignment": "Neutral",
+    "armor_class": 18,
+    "armor_desc": "",
+    "hit_points": 157,
+    "hit_dice": "15d12+60",
+    "speed": { "walk": "40 ft." },
+    "strength": 22,
+    "dexterity": 10,
+    "constitution": 19,
+    "intelligence": 6,
+    "wisdom": 12,
+    "charisma": 6,
+    "saving_throws": {},
+    "skills": {},
+    "damage_vulnerabilities": [],
+    "damage_resistances": [],
+    "damage_immunities": ["poison"],
+    "condition_immunities": ["exhaustion", "petrified", "poisoned"],
+    "senses": "Darkvision 120 ft.; Passive Perception 11",
+    "languages": "Common, Giant",
+    "challenge_rating": "9",
+    "cr": 9,
+    "special_abilities": [],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The Rusted makes three attacks using Slam or Rusted Shot Put in any combination."
+      },
+      {
+        "name": "Slam",
+        "desc": "Melee Attack Roll: +10, reach 10 ft. Hit: 20 (4d6 + 6) Bludgeoning damage."
+      },
+      {
+        "name": "Rusted Shot Put",
+        "desc": "Ranged Attack Roll: +10, range 60/240 ft. Hit: 15 (2d8 + 6) Bludgeoning damage, and the target has the Poisoned condition until the end of its next turn."
+      }
+    ],
+    "bonus_actions": [],
+    "reactions": [
+      {
+        "name": "Rust-Riddled Hide",
+        "desc": "Trigger: The Rusted is hit by an attack roll that deals Bludgeoning, Piercing, or Slashing damage. Response — Constitution Saving Throw: DC 16, each creature of the Rusted's choice in a 5-foot Emanation. Failure: Poisoned condition until the end of the target's next turn."
+      }
+    ]
+  },
+  {
+    "name": "Rusted Berserker",
+    "size": "Medium",
+    "type": "Construct",
+    "subtype": "",
+    "alignment": "Neutral",
+    "armor_class": 16,
+    "armor_desc": "",
+    "hit_points": 82,
+    "hit_dice": "11d8+33",
+    "speed": { "walk": "30 ft." },
+    "strength": 18,
+    "dexterity": 14,
+    "constitution": 17,
+    "intelligence": 6,
+    "wisdom": 10,
+    "charisma": 6,
+    "saving_throws": {},
+    "skills": {},
+    "damage_vulnerabilities": [],
+    "damage_resistances": [],
+    "damage_immunities": ["poison"],
+    "condition_immunities": ["exhaustion", "petrified", "poisoned"],
+    "senses": "Passive Perception 10",
+    "languages": "Common",
+    "challenge_rating": "4",
+    "cr": 4,
+    "special_abilities": [],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The Rusted makes two attacks using Greatsword or Javelin in any combination."
+      },
+      {
+        "name": "Greatsword",
+        "desc": "Melee Attack Roll: +6, reach 5 ft. Hit: 11 (2d6 + 4) Slashing damage, and the target has the Poisoned condition until the end of its next turn."
+      },
+      {
+        "name": "Javelin",
+        "desc": "Melee or Ranged Attack Roll: +6, reach 5 ft. or range 30/120 ft. Hit: 11 (2d6 + 4) Piercing damage, and the target has the Poisoned condition until the end of its next turn."
+      }
+    ],
+    "bonus_actions": [],
+    "reactions": []
+  },
+  {
+    "name": "Rusted Wyrm",
+    "size": "Gargantuan",
+    "type": "Construct",
+    "subtype": "",
+    "alignment": "Neutral",
+    "armor_class": 20,
+    "armor_desc": "",
+    "hit_points": 231,
+    "hit_dice": "14d20+84",
+    "speed": { "walk": "40 ft.", "swim": "60 ft." },
+    "strength": 25,
+    "dexterity": 13,
+    "constitution": 22,
+    "intelligence": 8,
+    "wisdom": 14,
+    "charisma": 6,
+    "saving_throws": {},
+    "skills": {},
+    "damage_vulnerabilities": [],
+    "damage_resistances": [],
+    "damage_immunities": ["fire", "poison"],
+    "condition_immunities": ["exhaustion", "frightened", "petrified", "poisoned"],
+    "senses": "Darkvision 120 ft.; Passive Perception 12",
+    "languages": "Common, Draconic",
+    "challenge_rating": "14",
+    "cr": 14,
+    "special_abilities": [
+      {
+        "name": "Legendary Resistance (3/Day)",
+        "desc": "If the Rusted fails a saving throw, it can choose to succeed instead."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The Rusted makes two Bite attacks."
+      },
+      {
+        "name": "Bite",
+        "desc": "Melee Attack Roll: +12, reach 20 ft. Hit: 29 (4d10 + 7) Piercing damage."
+      },
+      {
+        "name": "Steam Breath (Recharge 5-6)",
+        "desc": "Dexterity Saving Throw: DC 19, each creature and flammable object in a 60-foot Cone. Failure: 45 (7d12) Fire damage, and the target starts burning. Success: Half damage only. Being underwater doesn't grant Resistance to this Fire damage."
+      }
+    ],
+    "bonus_actions": [
+      {
+        "name": "Encasing Rust",
+        "desc": "Constitution Saving Throw: DC 19, one creature within 20 feet. Failure: 14 (4d6) Poison damage, and Poisoned until the end of its next turn. While Poisoned, the target has the Paralyzed condition."
+      }
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Sammaster (Dracolich Form)",
+    "size": "Huge",
+    "type": "Undead",
+    "subtype": "",
+    "alignment": "Chaotic Evil",
+    "armor_class": 20,
+    "armor_desc": "",
+    "hit_points": 276,
+    "hit_dice": "24d12+120",
+    "speed": { "walk": "40 ft.", "burrow": "30 ft.", "fly": "80 ft." },
+    "strength": 25,
+    "dexterity": 10,
+    "constitution": 21,
+    "intelligence": 23,
+    "wisdom": 15,
+    "charisma": 21,
+    "saving_throws": { "dex": 7, "con": 12, "int": 13, "wis": 9 },
+    "skills": { "arcana": 20, "history": 13, "perception": 16 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": [],
+    "damage_immunities": ["acid", "necrotic", "poison"],
+    "condition_immunities": ["charmed", "exhaustion", "frightened", "paralyzed", "poisoned"],
+    "senses": "Blindsight 60 ft., Darkvision 120 ft.; Passive Perception 26",
+    "languages": "Common, Draconic, Infernal",
+    "challenge_rating": "22",
+    "cr": 22,
+    "special_abilities": [
+      {
+        "name": "Legendary Resistance (3/Day)",
+        "desc": "If Sammaster fails a saving throw, he can choose to succeed instead."
+      },
+      {
+        "name": "Life Suppression",
+        "desc": "Creatures within 60 feet of Sammaster can't regain Hit Points."
+      },
+      {
+        "name": "Magic Resistance",
+        "desc": "Sammaster has Advantage on saving throws against spells and other magical effects."
+      },
+      {
+        "name": "Soul Gem",
+        "desc": "Sammaster has a magical soul gem as his dracolich heart. The gem can't be damaged or removed until he is reduced to 0 Hit Points. If reduced to 0 HP, his dracolich form dissolves to dust, and after 1d10 days he revives (in lich form) in an unoccupied space within 5 feet of his soul gem. The gem is a Tiny object with AC 20, HP 50, and immunity to Acid, Necrotic, Poison, and Psychic. The gem regains all its HP at the end of every turn, but turns to dust if reduced to 0 HP."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "Sammaster makes three Rend attacks. He can replace one attack with Spellcasting to cast Blight or Ray of Sickness (level 6)."
+      },
+      {
+        "name": "Rend",
+        "desc": "Melee Attack Roll: +14, reach 10 ft. Hit: 18 (2d10 + 7) Slashing damage plus 18 (4d8) Necrotic damage."
+      },
+      {
+        "name": "Corroding Breath (Recharge 5-6)",
+        "desc": "Constitution Saving Throw: DC 20, each creature in a 90-foot Cone. Failure: 52 (8d12) Acid or Necrotic damage (Sammaster's choice). Success: Half damage."
+      },
+      {
+        "name": "Spellcasting",
+        "desc": "At Will: Blight, Detect Magic, Dispel Magic, Mage Hand, Prestidigitation, Ray of Sickness (level 6); 2/Day Each: Dimension Door, Speak with Dead; 1/Day Each: Create Undead (level 8), Power Word Kill. Uses Intelligence (spell save DC 21, +13 to hit)."
+      }
+    ],
+    "bonus_actions": [],
+    "legendary_actions": [
+      {
+        "name": "Pounce",
+        "desc": "Sammaster moves up to half his Speed and makes one Rend attack."
+      },
+      {
+        "name": "Sickening Ray",
+        "desc": "Sammaster casts Ray of Sickness (level 6 version)."
+      },
+      {
+        "name": "Terrifying Presence",
+        "desc": "Wisdom Saving Throw: DC 21, each creature in a 20-foot Emanation. Failure: 13 (2d12) Psychic damage and Frightened until the end of its next turn. Can't use again until start of his next turn."
+      }
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Sammaster (Lich Form)",
+    "size": "Medium",
+    "type": "Undead",
+    "subtype": "Wizard",
+    "alignment": "Chaotic Evil",
+    "armor_class": 18,
+    "armor_desc": "",
+    "hit_points": 322,
+    "hit_dice": "43d8+129",
+    "speed": { "walk": "30 ft." },
+    "strength": 12,
+    "dexterity": 14,
+    "constitution": 16,
+    "intelligence": 23,
+    "wisdom": 15,
+    "charisma": 21,
+    "saving_throws": { "dex": 9, "con": 10, "int": 13, "wis": 9 },
+    "skills": { "arcana": 20, "history": 13, "perception": 9 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": ["acid", "cold", "lightning"],
+    "damage_immunities": ["necrotic", "poison"],
+    "condition_immunities": ["charmed", "exhaustion", "frightened", "paralyzed", "poisoned"],
+    "senses": "Blindsight 60 ft., Darkvision 120 ft.; Passive Perception 19",
+    "languages": "Common, Draconic, Infernal",
+    "challenge_rating": "22",
+    "cr": 22,
+    "special_abilities": [
+      {
+        "name": "Legendary Resistance (3/Day)",
+        "desc": "If Sammaster fails a saving throw, he can choose to succeed instead."
+      },
+      {
+        "name": "Life Suppression",
+        "desc": "Creatures within 60 feet of Sammaster can't regain Hit Points."
+      },
+      {
+        "name": "Magic Resistance",
+        "desc": "Sammaster has Advantage on saving throws against spells and other magical effects."
+      },
+      {
+        "name": "Soul Gem",
+        "desc": "If reduced to 0 Hit Points while his magical soul gem exists, his lich form dissolves to dust. After 1d10 days, he appears in the space of his soul gem, using the Sammaster (Dracolich Form) stat block. The gem is Tiny with AC 20, HP 50, immunity to Acid/Necrotic/Poison/Psychic. If the gem is destroyed, Sammaster can create a new one via an 8-hour ritual consuming a gem worth 1,000+ GP and 5,000 GP."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "Sammaster makes three attacks using Corrosive Burst or Paralyzing Touch in any combination. He can replace two attacks with Spellcasting."
+      },
+      {
+        "name": "Corrosive Burst",
+        "desc": "Melee or Ranged Attack Roll: +13, reach 5 ft. or range 120 ft. Hit: 38 (5d12 + 6) Acid or Necrotic damage (his choice)."
+      },
+      {
+        "name": "Paralyzing Touch",
+        "desc": "Melee Attack Roll: +13, reach 5 ft. Hit: 16 (3d6 + 6) Cold damage, and the target has the Paralyzed condition until the start of Sammaster's next turn."
+      },
+      {
+        "name": "Spellcasting",
+        "desc": "At Will: Cone of Cold, Detect Magic, Dispel Magic, Invisibility, Mage Hand, Prestidigitation; 2/Day Each: Speak with Dead, Wall of Force; 1/Day Each: Create Undead (level 8), Disintegrate, Power Word Kill. Uses Intelligence (spell save DC 21)."
+      }
+    ],
+    "bonus_actions": [],
+    "legendary_actions": [
+      {
+        "name": "Deathly Teleport",
+        "desc": "Sammaster teleports up to 60 feet to an unoccupied space he can see, and each creature within 10 feet of the space he left takes 19 (3d12) Necrotic damage."
+      },
+      {
+        "name": "Dissolve",
+        "desc": "Sammaster makes one Corrosive Burst attack."
+      },
+      {
+        "name": "Terrifying Presence",
+        "desc": "Wisdom Saving Throw: DC 21, each creature in a 20-foot Emanation. Failure: 13 (2d12) Psychic damage and Frightened until end of its next turn. Can't use again until start of his next turn."
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Protective Magic",
+        "desc": "Sammaster casts Counterspell or Shield in response to the triggering spell."
+      }
+    ]
+  },
+  {
+    "name": "Spirit Dragon Wyrmling",
+    "size": "Medium",
+    "type": "Dragon",
+    "subtype": "",
+    "alignment": "Neutral",
+    "armor_class": 16,
+    "armor_desc": "",
+    "hit_points": 52,
+    "hit_dice": "8d8+16",
+    "speed": { "walk": "30 ft.", "burrow": "20 ft.", "fly": "60 ft." },
+    "strength": 15,
+    "dexterity": 12,
+    "constitution": 15,
+    "intelligence": 14,
+    "wisdom": 11,
+    "charisma": 14,
+    "saving_throws": { "dex": 3, "con": 4 },
+    "skills": { "perception": 2, "stealth": 3 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": ["necrotic"],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "Blindsight 10 ft., Darkvision 60 ft.; Passive Perception 12",
+    "languages": "Common, Draconic; telepathy 120 ft.",
+    "challenge_rating": "2",
+    "cr": 2,
+    "special_abilities": [],
+    "actions": [
+      {
+        "name": "Rend",
+        "desc": "Melee Attack Roll: +4, reach 5 ft. Hit: 9 (2d6 + 2) Slashing damage plus 3 (1d6) Necrotic damage."
+      },
+      {
+        "name": "Ruinous Breath (Recharge 5-6)",
+        "desc": "Constitution Saving Throw: DC 12, each creature in a 15-foot Cone. Failure: 13 (3d8) Necrotic damage. Success: Half damage."
+      },
+      {
+        "name": "Time-Warping Breath",
+        "desc": "Wisdom Saving Throw: DC 12, each creature not currently affected by this breath in a 15-foot Cone. Failure: The target's Speed is halved, it can't take Reactions, and it can take either an action or a Bonus Action on its turn, not both. It repeats the save at end of each of its turns (1 minute max)."
+      }
+    ],
+    "bonus_actions": [],
+    "reactions": []
+  },
+  {
+    "name": "Young Spirit Dragon",
+    "size": "Large",
+    "type": "Dragon",
+    "subtype": "",
+    "alignment": "Neutral",
+    "armor_class": 17,
+    "armor_desc": "",
+    "hit_points": 152,
+    "hit_dice": "16d10+64",
+    "speed": { "walk": "40 ft.", "burrow": "30 ft.", "fly": "80 ft." },
+    "strength": 19,
+    "dexterity": 13,
+    "constitution": 19,
+    "intelligence": 17,
+    "wisdom": 14,
+    "charisma": 16,
+    "saving_throws": { "dex": 4, "con": 7 },
+    "skills": { "insight": 5, "perception": 5, "stealth": 4 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": ["necrotic"],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "Blindsight 30 ft., Darkvision 120 ft.; Passive Perception 15",
+    "languages": "Common, Draconic; telepathy 120 ft.",
+    "challenge_rating": "8",
+    "cr": 8,
+    "special_abilities": [],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The dragon makes three Rend attacks. It can replace one with Time-Warping Breath."
+      },
+      {
+        "name": "Rend",
+        "desc": "Melee Attack Roll: +7, reach 10 ft. Hit: 14 (3d6 + 4) Slashing damage plus 7 (2d6) Necrotic damage."
+      },
+      {
+        "name": "Ruinous Breath (Recharge 5-6)",
+        "desc": "Constitution Saving Throw: DC 15, each creature in a 30-foot Cone. Failure: 36 (8d8) Necrotic damage. Success: Half damage."
+      },
+      {
+        "name": "Time-Warping Breath",
+        "desc": "Wisdom Saving Throw: DC 15, each creature not currently affected in a 30-foot Cone. Failure: Speed halved, can't take Reactions, can take only an action or Bonus Action per turn (not both). Repeats save at end of each turn (1 minute max)."
+      }
+    ],
+    "bonus_actions": [],
+    "reactions": []
+  },
+  {
+    "name": "Adult Spirit Dragon",
+    "size": "Huge",
+    "type": "Dragon",
+    "subtype": "",
+    "alignment": "Neutral",
+    "armor_class": 18,
+    "armor_desc": "",
+    "hit_points": 207,
+    "hit_dice": "18d12+90",
+    "speed": { "walk": "40 ft.", "burrow": "30 ft.", "fly": "80 ft." },
+    "strength": 22,
+    "dexterity": 15,
+    "constitution": 21,
+    "intelligence": 20,
+    "wisdom": 15,
+    "charisma": 19,
+    "saving_throws": { "dex": 7, "con": 10 },
+    "skills": { "history": 10, "insight": 7, "perception": 7, "stealth": 7 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": ["necrotic"],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "Blindsight 30 ft., Darkvision 120 ft.; Passive Perception 17",
+    "languages": "Common, Draconic; telepathy 120 ft.",
+    "challenge_rating": "15",
+    "cr": 15,
+    "special_abilities": [
+      {
+        "name": "Legendary Resistance (3/Day, or 4/Day in Lair)",
+        "desc": "If the dragon fails a saving throw, it can choose to succeed instead."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The dragon makes three Rend attacks. It can replace one with Time-Warping Breath or Spellcasting to cast Thunderwave."
+      },
+      {
+        "name": "Rend",
+        "desc": "Melee Attack Roll: +11, reach 10 ft. Hit: 15 (2d8 + 6) Slashing damage plus 7 (2d6) Necrotic damage."
+      },
+      {
+        "name": "Ruinous Breath (Recharge 5-6)",
+        "desc": "Constitution Saving Throw: DC 18, each creature in a 60-foot Cone. Failure: 63 (14d8) Necrotic damage. Success: Half damage."
+      },
+      {
+        "name": "Spellcasting",
+        "desc": "At Will: Detect Magic, Shapechange (Beast or Humanoid only), Thunderwave; 1/Day: Legend Lore (as an action). Uses Intelligence (spell save DC 18)."
+      },
+      {
+        "name": "Time-Warping Breath",
+        "desc": "Wisdom Saving Throw: DC 18, each creature not currently affected in a 60-foot Cone. Failure: Speed halved, can't take Reactions, can take only action or Bonus Action (not both). Repeats save at end of each turn (1 minute max)."
+      }
+    ],
+    "bonus_actions": [],
+    "legendary_actions": [
+      {
+        "name": "Pounce",
+        "desc": "The dragon moves up to half its Speed and makes one Rend attack."
+      },
+      {
+        "name": "Shattering Wave",
+        "desc": "The dragon casts Thunderwave."
+      },
+      {
+        "name": "Unearth Ruins",
+        "desc": "The dragon magically raises ancient ruins in a 20-foot-radius, 60-foot-high Cylinder within 120 feet. Ground becomes Difficult Terrain. Strength Saving Throw: DC 18 for each creature in the Cylinder. Failure: 5 (2d4) Bludgeoning damage and Prone condition."
+      }
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Ancient Spirit Dragon",
+    "size": "Gargantuan",
+    "type": "Dragon",
+    "subtype": "",
+    "alignment": "Neutral",
+    "armor_class": 21,
+    "armor_desc": "",
+    "hit_points": 420,
+    "hit_dice": "24d20+168",
+    "speed": { "walk": "40 ft.", "burrow": "30 ft.", "fly": "80 ft." },
+    "strength": 26,
+    "dexterity": 14,
+    "constitution": 25,
+    "intelligence": 24,
+    "wisdom": 18,
+    "charisma": 23,
+    "saving_throws": { "dex": 9, "con": 14 },
+    "skills": { "history": 14, "insight": 11, "perception": 11, "stealth": 9 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": ["necrotic"],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "Blindsight 60 ft., Darkvision 120 ft.; Passive Perception 21",
+    "languages": "Common, Draconic; telepathy 120 ft.",
+    "challenge_rating": "22",
+    "cr": 22,
+    "special_abilities": [
+      {
+        "name": "Legendary Resistance (4/Day, or 5/Day in Lair)",
+        "desc": "If the dragon fails a saving throw, it can choose to succeed instead."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The dragon makes three Rend attacks. It can replace one with Time-Warping Breath or Spellcasting to cast Thunderwave (level 2)."
+      },
+      {
+        "name": "Rend",
+        "desc": "Melee Attack Roll: +15, reach 15 ft. Hit: 19 (2d10 + 8) Slashing damage plus 9 (2d8) Necrotic damage."
+      },
+      {
+        "name": "Ruinous Breath (Recharge 5-6)",
+        "desc": "Constitution Saving Throw: DC 22, each creature in a 90-foot Cone. Failure: 72 (16d8) Necrotic damage. Success: Half damage."
+      },
+      {
+        "name": "Spellcasting",
+        "desc": "At Will: Detect Magic, Shapechange (Beast or Humanoid only), Thunderwave (level 2); 1/Day Each: Legend Lore (as an action), Sequester. Uses Intelligence (spell save DC 22)."
+      },
+      {
+        "name": "Time-Warping Breath",
+        "desc": "Wisdom Saving Throw: DC 22, each creature not currently affected in a 90-foot Cone. Failure: Speed halved, can't take Reactions, can take only action or Bonus Action (not both). Repeats save at end of each turn (1 minute max)."
+      }
+    ],
+    "bonus_actions": [],
+    "legendary_actions": [
+      {
+        "name": "Pounce",
+        "desc": "The dragon moves up to half its Speed and makes one Rend attack."
+      },
+      {
+        "name": "Shattering Wave",
+        "desc": "The dragon casts Thunderwave (level 2 version)."
+      },
+      {
+        "name": "Unearth Ruins",
+        "desc": "The dragon magically raises ancient ruins in a 20-foot-radius, 60-foot-high Cylinder within 120 feet. Ground becomes Difficult Terrain. Strength Saving Throw: DC 22. Failure: 13 (3d8) Bludgeoning damage and Prone condition."
+      }
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Spore of Moander",
+    "size": "Huge",
+    "type": "Plant",
+    "subtype": "",
+    "alignment": "Chaotic Evil",
+    "armor_class": 19,
+    "armor_desc": "",
+    "hit_points": 230,
+    "hit_dice": "20d12+100",
+    "speed": { "walk": "30 ft.", "climb": "30 ft." },
+    "strength": 22,
+    "dexterity": 9,
+    "constitution": 20,
+    "intelligence": 4,
+    "wisdom": 10,
+    "charisma": 6,
+    "saving_throws": { "str": 10, "con": 9 },
+    "skills": {},
+    "damage_vulnerabilities": [],
+    "damage_resistances": ["acid", "cold", "lightning"],
+    "damage_immunities": ["fire", "poison"],
+    "condition_immunities": ["blinded", "deafened", "exhaustion", "paralyzed", "poisoned", "prone"],
+    "senses": "Blindsight 120 ft.; Passive Perception 10",
+    "languages": "Understands Abyssal but can't speak",
+    "challenge_rating": "12",
+    "cr": 12,
+    "special_abilities": [
+      {
+        "name": "Explosive Core",
+        "desc": "When the spore is subjected to Fire damage, each creature in a 5-foot Emanation takes 7 (2d6) Fire damage."
+      },
+      {
+        "name": "Rolling Mass",
+        "desc": "The spore doesn't need to expend extra movement to move through Difficult Terrain."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The spore makes four Tendril attacks. Alternatively, it makes two Tendril attacks and uses Consume once."
+      },
+      {
+        "name": "Tendril",
+        "desc": "Melee Attack Roll: +10, reach 20 ft. Hit: 11 (1d10 + 6) Piercing damage plus 10 (3d6) Acid damage. If the target is Large or smaller, the spore pulls the target 5 feet straight toward itself."
+      },
+      {
+        "name": "Consume",
+        "desc": "Strength Saving Throw: DC 18, one Large or smaller creature within 5 feet. Failure: The target is pulled into the spore's space with the Grappled condition (escape DC 16). Until the grapple ends, the target has the Blinded and Restrained conditions and takes 17 (5d6) Acid damage at the start of each of the spore's turns. The spore can have one Large or up to nine Medium or smaller creatures Grappled at a time."
+      }
+    ],
+    "bonus_actions": [],
+    "reactions": []
+  },
+  {
+    "name": "Swanmay",
+    "size": "Medium",
+    "type": "Fey",
+    "subtype": "",
+    "alignment": "Neutral Good",
+    "armor_class": 14,
+    "armor_desc": "",
+    "hit_points": 71,
+    "hit_dice": "11d8+22",
+    "speed": { "walk": "30 ft.", "fly": "40 ft. (swan form only)" },
+    "strength": 10,
+    "dexterity": 18,
+    "constitution": 14,
+    "intelligence": 10,
+    "wisdom": 16,
+    "charisma": 15,
+    "saving_throws": { "con": 4, "wis": 5 },
+    "skills": { "perception": 5, "nature": 4 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "Passive Perception 15",
+    "languages": "Common, Sylvan",
+    "challenge_rating": "3",
+    "cr": 3,
+    "special_abilities": [
+      {
+        "name": "Flyby (Swan Form Only)",
+        "desc": "The swanmay doesn't provoke an Opportunity Attack action when it flies out of an enemy's reach."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The swanmay makes two attacks using Beak, Longbow, or Scimitar in any combination."
+      },
+      {
+        "name": "Beak (Swan Form Only)",
+        "desc": "Melee Attack Roll: +6, reach 5 ft. Hit: 7 (1d6 + 4) Piercing damage. If the target is Large or smaller, it has the Prone condition."
+      },
+      {
+        "name": "Scimitar (Humanoid Form Only)",
+        "desc": "Melee Attack Roll: +6, reach 5 ft. Hit: 11 (2d6 + 4) Slashing damage."
+      },
+      {
+        "name": "Longbow (Humanoid Form Only)",
+        "desc": "Ranged Attack Roll: +6, range 150/600 ft. Hit: 13 (2d8 + 4) Piercing damage."
+      },
+      {
+        "name": "Spellcasting",
+        "desc": "At Will: Druidcraft, Speak with Animals (swan form only); 1/Day Each: Animal Friendship, Beast Sense, Spike Growth. Uses Wisdom (spell save DC 13)."
+      }
+    ],
+    "bonus_actions": [
+      {
+        "name": "Shape-Shift",
+        "desc": "The swanmay shape-shifts into a Small swan, or it returns to its true humanoid form. Its statistics are the same in each form, except where noted."
+      }
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Valindra Shadowmantle",
+    "size": "Medium",
+    "type": "Undead",
+    "subtype": "Wizard",
+    "alignment": "Neutral Evil",
+    "armor_class": 20,
+    "armor_desc": "",
+    "hit_points": 315,
+    "hit_dice": "42d8+126",
+    "speed": { "walk": "30 ft." },
+    "strength": 11,
+    "dexterity": 16,
+    "constitution": 16,
+    "intelligence": 21,
+    "wisdom": 14,
+    "charisma": 16,
+    "saving_throws": { "dex": 10, "int": 12, "wis": 9 },
+    "skills": { "arcana": 19, "history": 12, "insight": 9, "perception": 9 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": ["cold", "lightning"],
+    "damage_immunities": ["necrotic", "poison"],
+    "condition_immunities": ["charmed", "exhaustion", "frightened", "paralyzed", "poisoned"],
+    "senses": "Truesight 120 ft.; Passive Perception 19",
+    "languages": "All",
+    "challenge_rating": "21",
+    "cr": 21,
+    "special_abilities": [
+      {
+        "name": "Legendary Resistance (4/Day, or 5/Day in Lair)",
+        "desc": "If Valindra fails a saving throw, she can choose to succeed instead."
+      },
+      {
+        "name": "Spirit Gem",
+        "desc": "If destroyed, Valindra re-forms in 1d10 days if her spirit gem is intact, reviving with all her Hit Points. The new body appears in an unoccupied space within her lair."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "Valindra makes three attacks using Eldritch Burst or Paralyzing Touch in any combination. She can replace two attacks with Spellcasting to cast Lightning Bolt (level 5)."
+      },
+      {
+        "name": "Eldritch Burst",
+        "desc": "Melee or Ranged Attack Roll: +12, reach 5 ft. or range 120 ft. Hit: 31 (4d12 + 5) Force damage."
+      },
+      {
+        "name": "Paralyzing Touch",
+        "desc": "Melee Attack Roll: +12, reach 5 ft. Hit: 14 (2d8 + 5) Cold damage, and the target has the Paralyzed condition until the start of Valindra's next turn."
+      },
+      {
+        "name": "Deathly Grasp (Recharge 5-6)",
+        "desc": "Dexterity Saving Throw: DC 20, each creature in a 30-foot Emanation. First Failure: 39 (6d12) Force damage and Restrained (repeating save to end, 1 minute max). Subsequent Failures: 39 (6d12) Necrotic damage, and Valindra gains 20 Temporary Hit Points."
+      },
+      {
+        "name": "Spellcasting",
+        "desc": "At Will: Detect Magic, Detect Thoughts, Dispel Magic, Fly, Invisibility, Lightning Bolt (level 5), Mage Hand, Prestidigitation; 2/Day Each: Animate Dead, Plane Shift; 1/Day Each: Cone of Cold (level 8), Finger of Death, Power Word Kill, Scrying. Uses Intelligence (spell save DC 20)."
+      }
+    ],
+    "bonus_actions": [
+      {
+        "name": "Illusory Disguise",
+        "desc": "Valindra casts Disguise Self. Lasts until she drops to 30 Hit Points or fewer or uses Life-Rending Gaze. Investigation checks to discern her true appearance are made with Disadvantage."
+      }
+    ],
+    "legendary_actions": [
+      {
+        "name": "Disrupt Life",
+        "desc": "Constitution Saving Throw: DC 20, each non-Undead creature in a 20-foot Emanation. Failure: 21 (6d6) Necrotic damage. Success: Half. Can't use again until start of her next turn."
+      },
+      {
+        "name": "Eldritch Jaunt",
+        "desc": "Valindra makes one Eldritch Burst attack. Before or after the attack, she can teleport up to 20 feet to an unoccupied space she can see."
+      },
+      {
+        "name": "Life-Rending Gaze",
+        "desc": "Wisdom Saving Throw: DC 20, one creature within 30 feet. Failure: 22 (4d10) Necrotic damage and Frightened until the end of its next turn. Success: Half damage only."
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Protective Magic",
+        "desc": "Valindra casts Counterspell or Shield in response to the triggering spell."
+      }
+    ]
+  },
+  {
+    "name": "Werewyvern",
+    "size": "Medium",
+    "type": "Dragon",
+    "subtype": "Lycanthrope",
+    "alignment": "Chaotic Evil",
+    "armor_class": 16,
+    "armor_desc": "",
+    "hit_points": 152,
+    "hit_dice": "16d8+80",
+    "speed": { "walk": "30 ft.", "fly": "40 ft. (wyvern or hybrid form only)" },
+    "strength": 19,
+    "dexterity": 15,
+    "constitution": 20,
+    "intelligence": 10,
+    "wisdom": 12,
+    "charisma": 12,
+    "saving_throws": { "str": 4, "dex": 5, "con": 5, "wis": 4 },
+    "skills": { "perception": 4, "stealth": 5 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "Darkvision 120 ft.; Passive Perception 14",
+    "languages": "Common, Draconic (can't speak in wyvern form)",
+    "challenge_rating": "8",
+    "cr": 8,
+    "special_abilities": [
+      {
+        "name": "Flyby (Wyvern or Hybrid Form Only)",
+        "desc": "The werewyvern doesn't provoke an Opportunity Attack action when it flies out of an enemy's reach."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The werewyvern makes three attacks using Javelin or Rend in any combination. It can replace one with a Stinger attack."
+      },
+      {
+        "name": "Javelin (Humanoid or Hybrid Form Only)",
+        "desc": "Melee or Ranged Attack Roll: +7, reach 5 ft. or range 30/120 ft. Hit: 18 (4d6 + 4) Piercing damage."
+      },
+      {
+        "name": "Rend",
+        "desc": "Melee Attack Roll: +7, reach 5 ft. Hit: 18 (4d6 + 4) Slashing damage."
+      },
+      {
+        "name": "Stinger (Wyvern or Hybrid Form Only)",
+        "desc": "Melee Attack Roll: +7, reach 5 ft. Hit: 7 (1d6 + 4) Piercing damage plus 16 (3d10) Poison damage, and the target has the Poisoned condition until the start of the werewyvern's next turn. If the target is a Humanoid, it must make a DC 16 Constitution save or be cursed. If the cursed target drops to 0 Hit Points, it becomes a Werewyvern (20 HP) under the DM's control."
+      }
+    ],
+    "bonus_actions": [
+      {
+        "name": "Shape-Shift",
+        "desc": "The werewyvern shape-shifts into a Medium wyvern-humanoid hybrid or a Large wyvern, or returns to its true humanoid form. Its statistics, other than its size, are the same in each form."
+      }
+    ],
+    "reactions": []
+  },
+  {
+    "name": "Zhentilar Soldier",
+    "size": "Medium or Small",
+    "type": "Humanoid",
+    "subtype": "",
+    "alignment": "Lawful Evil",
+    "armor_class": 13,
+    "armor_desc": "Leather Armor",
+    "hit_points": 22,
+    "hit_dice": "4d8+4",
+    "speed": { "walk": "30 ft." },
+    "strength": 14,
+    "dexterity": 14,
+    "constitution": 13,
+    "intelligence": 10,
+    "wisdom": 11,
+    "charisma": 11,
+    "saving_throws": { "dex": 4 },
+    "skills": { "acrobatics": 4, "athletics": 4 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "Passive Perception 10",
+    "languages": "Common",
+    "challenge_rating": "1",
+    "cr": 1,
+    "special_abilities": [],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The Zhentilar makes two attacks using Shortsword or Pistol in any combination. It can replace one attack with Knock Down."
+      },
+      {
+        "name": "Shortsword",
+        "desc": "Melee Attack Roll: +4, reach 5 ft. Hit: 5 (1d6 + 2) Piercing damage plus 2 (1d4) Poison damage."
+      },
+      {
+        "name": "Pistol",
+        "desc": "Ranged Attack Roll: +4, range 80/320 ft. Hit: 7 (1d10 + 2) Piercing damage."
+      },
+      {
+        "name": "Knock Down",
+        "desc": "Strength Saving Throw: DC 12, one creature within 5 feet. Failure: 4 (1d4 + 2) Bludgeoning damage. If the target is Medium or smaller, it has the Prone condition."
+      }
+    ],
+    "bonus_actions": [],
+    "reactions": []
+  },
+  {
+    "name": "Zhentilar Paladin of Bane",
+    "size": "Medium or Small",
+    "type": "Humanoid",
+    "subtype": "",
+    "alignment": "Lawful Evil",
+    "armor_class": 18,
+    "armor_desc": "Plate Armor",
+    "hit_points": 58,
+    "hit_dice": "9d8+18",
+    "speed": { "walk": "30 ft." },
+    "strength": 16,
+    "dexterity": 11,
+    "constitution": 14,
+    "intelligence": 12,
+    "wisdom": 13,
+    "charisma": 17,
+    "saving_throws": { "str": 5, "cha": 5 },
+    "skills": { "athletics": 5, "intimidation": 5, "religion": 3 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": "Passive Perception 11",
+    "languages": "Common",
+    "challenge_rating": "4",
+    "cr": 4,
+    "special_abilities": [
+      {
+        "name": "Aura of Dread",
+        "desc": "Creatures in a 10-foot Emanation have their Speeds halved while in the Emanation. The Zhentilar can designate creatures to be unaffected by the aura."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "The Zhentilar makes three attacks using Dooming Blade or Oppressive Ray in any combination. It can replace one attack with Spellcasting."
+      },
+      {
+        "name": "Dooming Blade",
+        "desc": "Melee Attack Roll: +5, reach 5 ft. Hit: 7 (1d8 + 3) Bludgeoning damage plus 7 (2d6) Necrotic damage."
+      },
+      {
+        "name": "Oppressive Ray",
+        "desc": "Ranged Attack Roll: +5, range 90 ft. Hit: 16 (3d10) Psychic damage."
+      },
+      {
+        "name": "Spellcasting",
+        "desc": "1/Day Each: Command, Fear. Uses Charisma (spell save DC 13)."
+      }
+    ],
+    "bonus_actions": [],
+    "reactions": []
+  },
+  {
+    "name": "Zlan",
+    "size": "Huge",
+    "type": "Undead",
+    "subtype": "Wizard",
+    "alignment": "Chaotic Evil",
+    "armor_class": 18,
+    "armor_desc": "",
+    "hit_points": 199,
+    "hit_dice": "19d12+76",
+    "speed": { "walk": "30 ft." },
+    "strength": 20,
+    "dexterity": 12,
+    "constitution": 19,
+    "intelligence": 21,
+    "wisdom": 18,
+    "charisma": 14,
+    "saving_throws": { "dex": 7, "con": 10, "int": 11, "wis": 10 },
+    "skills": { "arcana": 17, "history": 11, "perception": 10 },
+    "damage_vulnerabilities": [],
+    "damage_resistances": ["lightning", "necrotic"],
+    "damage_immunities": ["cold", "poison"],
+    "condition_immunities": ["charmed", "exhaustion", "frightened", "paralyzed", "poisoned"],
+    "senses": "Truesight 120 ft.; Passive Perception 20",
+    "languages": "All",
+    "challenge_rating": "18",
+    "cr": 18,
+    "special_abilities": [
+      {
+        "name": "Chardalyn Sense",
+        "desc": "Zlan senses the emotions of anyone touching a piece of chardalyn within 100 miles of itself."
+      },
+      {
+        "name": "Legendary Resistance (3/Day)",
+        "desc": "If Zlan fails a saving throw, it can choose to succeed instead."
+      },
+      {
+        "name": "Magic Resistance",
+        "desc": "Zlan has Advantage on saving throws against spells and other magical effects."
+      },
+      {
+        "name": "Next of the Seven (6/Year)",
+        "desc": "If Zlan dies within 100 miles of a piece of chardalyn at least 4 inches long, it re-forms from that piece in 1d10 days, regaining all its Hit Points. Another lich's mind seizes control of the body."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "desc": "Zlan makes three attacks using Slam or Bewildering Bolt in any combination. It can replace two attacks with Spellcasting."
+      },
+      {
+        "name": "Slam",
+        "desc": "Melee Attack Roll: +11, reach 10 ft. Hit: 12 (3d4 + 5) Bludgeoning damage plus 22 (4d10) Necrotic damage."
+      },
+      {
+        "name": "Bewildering Bolt",
+        "desc": "Ranged Attack Roll: +11, range 120 ft. Hit: 27 (4d10 + 5) Psychic damage, and the target has the Charmed condition until the end of its next turn."
+      },
+      {
+        "name": "Spellcasting",
+        "desc": "At Will: Detect Magic, Detect Thoughts, Dispel Magic, Mage Hand, Message; 2/Day Each: Dimension Door, Fly, Scrying; 1/Day Each: Befuddlement, Disintegrate. Uses Intelligence (spell save DC 19)."
+      }
+    ],
+    "bonus_actions": [],
+    "legendary_actions": [
+      {
+        "name": "Retaliation",
+        "desc": "Zlan makes one Slam or Bewildering Bolt attack."
+      },
+      {
+        "name": "Stoke Paranoia",
+        "desc": "Wisdom Saving Throw: DC 19, one creature within 30 feet (Disadvantage if holding or wearing chardalyn). Failure: 27 (6d8) Psychic damage and the Charmed condition for 1 minute or until Zlan dies. While Charmed, the target doesn't act as an ally to any creature. Success: Half damage only. Can't use again until start of its next turn."
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Counterspell",
+        "desc": "Zlan casts Counterspell in response to the triggering spell."
+      }
+    ]
+  }
+]

@@ -1,0 +1,92 @@
+[
+  {
+    "name": "Calimemnon Crystal",
+    "category": "Wondrous Items",
+    "rarity": "Artifact",
+    "requires_attunement": true,
+    "cost": "—",
+    "weight": 0,
+    "desc": "Artifact Wondrous Item · Requires Attunement\n\nThis immaculately cut sixty-sided diamond fits in one hand, yet it contains an entire genie empire. The Calimemnon Crystal was made by high elf magic to imprison the notorious genie lords Calim and Memnon, who once ruled and warred over what is now Calimshan. When viewed by a creature with Truesight, the normally beautiful diamond is a grotesque sight: trapped within the gemstone are more than a hundred genies, including the physical forms of Calim and Memnon.\n\nProperties of the Crystal. While attuned, you gain:\n\nArcane Focus. You can use the Calimemnon Crystal as an Arcane Focus.\n\nFlight. You have a Fly Speed of 30 feet and can hover.\n\nSpells. You can cast these spells with the crystal (spell save DC 18): Create or Destroy Water, Enlarge/Reduce, Invisibility (targeting yourself only), and Major Image.\n\nAura of Cold. A 20-foot Emanation deals 2d6 Cold damage to any creature that enters it or ends its turn there (once per turn). You can disable or enable the aura as a Magic action.\n\nHealing/Damage Rays. As a Magic action, fire six rays at one or more creatures within 60 feet. Each ray: Damage Ray — DC 18 Dexterity save, 6d6 + 6 Radiant on failure; or Healing Ray — target regains 2d6 + 2 Hit Points. Recharges at dawn.\n\nRandom Properties. 1 minor beneficial, 1 major beneficial, 1 minor detrimental, 1 major detrimental.\n\nDestroying the Crystal. Only destroyed if the attuned creature casts Wish and wishes it destroyed. All trapped genies are released.",
+    "properties": []
+  },
+  {
+    "name": "Crown of Horns",
+    "category": "Wondrous Items",
+    "rarity": "Artifact",
+    "requires_attunement": true,
+    "cost": "—",
+    "weight": 0,
+    "desc": "Artifact Wondrous Item · Requires Attunement\n\nThis ghastly crown is a pale silver circlet with four curved bones set around its rim and a black diamond whose depths swirl with malignant energy. It contains the essence of Myrkul, one of the Dead Three.\n\nCursed. Attuning extends the curse: you are Bound (won't part with it), your alignment becomes Neutral Evil, and you slowly transform into a Lich over 365 days. Using Cone of Undeath or Myrkul's Hand has a 10% cumulative chance to instantly complete the transformation. Only a Wish spell or Myrkul's will can remove the curse.\n\nCone of Undeath (Magic action). 60-foot Cone — DC 18 Constitution save, 4d8 Necrotic damage. Humanoids killed rise as Specters at the start of your next turn.\n\nDamage Immunity. Immunity to Necrotic damage.\n\nFear Aura. 60-foot Emanation — creatures entering or starting their turn there make a DC 16 Wisdom save or are Frightened. Activate/deactivate as a Bonus Action.\n\nMyrkul's Hand (1/dawn). Cast Power Word Kill (save DC 18). Humanoids killed rise as Wraiths at the start of your next turn.\n\nTeleportation. Cast Teleport (crown can also cast this of its own will). Once cast, can't cast again for 7 days.\n\nRandom Properties. 1 minor beneficial, 1 minor detrimental, 1 major detrimental.\n\nSentience. Neutral Evil — Intelligence 10, Wisdom 16, Charisma 19; Darkvision 120 ft; telepathic in Common. Urges wearer to spread dread and destruction.\n\nDestroying the Crown. Destroyed if worn by Kelemvor while sitting on the throne of the Bone Castle.",
+    "properties": []
+  },
+  {
+    "name": "Harper Pin (Silver)",
+    "category": "Wondrous Items",
+    "rarity": "Uncommon",
+    "requires_attunement": true,
+    "cost": "—",
+    "weight": 0,
+    "desc": "Uncommon Wondrous Item · Requires Attunement\n\nWhen you attune to this pin, choose a Harper persona, including an alignment and creature type. While wearing this pin, you register as that persona when targeted by magic to determine your creature type, alignment, or location.\n\nSilver Harper Pin. When you attune to this pin, you can devise a preprogrammed line of thought of 25 words or fewer. While you wear this pin, a creature that reads your thoughts detects your preprogrammed line of thought instead. A creature that takes the Study action while reading your thoughts makes a DC 13 Intelligence (Investigation) check. On a success, it becomes aware that the thoughts are preprogrammed.",
+    "properties": []
+  },
+  {
+    "name": "Harper Pin (Golden)",
+    "category": "Wondrous Items",
+    "rarity": "Rare",
+    "requires_attunement": true,
+    "cost": "—",
+    "weight": 0,
+    "desc": "Rare Wondrous Item · Requires Attunement\n\nWhen you attune to this pin, choose a Harper persona, including an alignment and creature type. While wearing this pin, you register as that persona when targeted by magic to determine your creature type, alignment, or location.\n\nGolden Harper Pin. While wearing this pin, you can cast the Nondetection spell on yourself. The spell's duration is permanent until you disable the effect (no action required), remove the pin, or are no longer attuned to it.",
+    "properties": []
+  },
+  {
+    "name": "Flying Wonder",
+    "category": "Wondrous Items",
+    "rarity": "Common",
+    "requires_attunement": false,
+    "cost": "—",
+    "weight": 0,
+    "desc": "Common Wondrous Item\n\nA Mechanical Wonder dormant until activated by winding with a unique key (1 minute, Utilize action each turn). Once wound, remains active for the duration noted below.\n\nFlying Wonder (Common). An activated flying wonder uses the Flying Wonder stat block. The wonder is an ally to you and your allies. In combat, the wonder shares your Initiative count, but it takes its turn immediately after yours. It obeys your verbal commands (no action required by you). If you don't issue any, it takes the Dodge action and uses its movement to avoid danger. The flying wonder is destroyed if it drops to 0 Hit Points.",
+    "properties": []
+  },
+  {
+    "name": "Gyrocopter Wonder",
+    "category": "Wondrous Items",
+    "rarity": "Rare",
+    "requires_attunement": false,
+    "cost": "—",
+    "weight": 500,
+    "desc": "Rare Wondrous Item\n\nA Mechanical Wonder dormant until activated by winding with a unique key (1 minute, Utilize action each turn). Once wound, remains active for the duration noted below.\n\nGyrocopter Wonder (Rare). This wagon-sized vehicle is made of brassy metal and has a spiral-shaped propeller atop it. Its midsection is open on two sides. Once wound, the gyrocopter wonder remains active for 8 hours. While active, the gyrocopter can be used as a vehicle; it requires one pilot.\n\nThe gyrocopter wonder is a Huge object that weighs 500 pounds and has the following statistics: AC 14, HP 50, Speed 5 ft., and Fly Speed 20 ft. The gyrocopter can bear up to 2,000 pounds of cargo; if it bears any more than this, it deactivates.\n\nEight spectral cords are mounted to the inside of the cargo bay. A creature riding in the gyrocopter can take a Utilize action to attach or detach itself from one of these cords. A creature attached to a cord can leap from the gyrocopter and glide, moving up to 5 feet horizontally for every 1 foot it descends in the air. If a creature attached to a cord is ever more than 500 feet away from the gyrocopter, the cord immediately disappears and returns to the wonder.",
+    "properties": []
+  },
+  {
+    "name": "Mobility Wonder",
+    "category": "Wondrous Items",
+    "rarity": "Common",
+    "requires_attunement": false,
+    "cost": "—",
+    "weight": 0,
+    "desc": "Common Wondrous Item\n\nA Mechanical Wonder dormant until activated by winding with a unique key (1 minute, Utilize action each turn). Once wound, remains active for the duration noted below.\n\nMobility Wonder (Common). While inactive, the mobility wonder resembles a metal turtle shell with straps. It is designed to be worn on your back or flank, depending on your anatomy. Once wound, the mobility wonder transforms into a personal transport device and remains active for 24 hours. While active, the mobility wonder increases your Speed to 30 feet. Other creatures can't remove your mobility wonder from you unless you allow it.",
+    "properties": []
+  },
+  {
+    "name": "Orb of Damara",
+    "category": "Wondrous Items",
+    "rarity": "Artifact",
+    "requires_attunement": true,
+    "cost": "—",
+    "weight": 0,
+    "desc": "Artifact Wondrous Item · Requires Attunement\n\nA wizard named Damara created this orb while devising a way to become a dragon. The Orb of Damara is about 6 inches in diameter and is made of a glassy, iridescent material that's like obsidian but incredibly hard. If held to one's own lips with the intention of consuming it, the orb shrinks to the size of a grape.\n\nProperties of the Orb. While attuned:\n\nDragon's Breath (Magic action). Exhale a 15-foot Cone — choose Acid, Cold, Fire, Lightning, or Poison. DC 18 Dexterity save, 6d6 damage of the chosen type on failure, half on success.\n\nFear Aura. 20-foot Emanation — enemies that start their turn in the aura make a DC 18 Wisdom save or are Frightened until the start of their next turn. Disable/enable as a Magic action.\n\nFlight. Fly Speed of 60 feet and can hover.\n\nRandom Properties. 2 minor beneficial, 2 minor detrimental.\n\nSpellcasting. The orb has 6 charges (regains 1d4 + 2 at dawn, spell save DC 18, +10 spell attack). Spells: Disguise Self (0), Hold Person (1), See Invisibility (1), Fire Shield (2), Summon Dragon level 9 (4).\n\nDragon Transformation. If you swallow the orb, you permanently transform into an adult chromatic dragon (type chosen by DM based on personality and alignment) under the DM's control. If the dragon dies, the body reverts and the orb reappears outside it.\n\nDestroying the Orb. An Ancient Gold Dragon willingly swallowing the orb destroys both.",
+    "properties": []
+  },
+  {
+    "name": "Tome of the Dragon",
+    "category": "Wondrous Items",
+    "rarity": "Legendary",
+    "requires_attunement": false,
+    "cost": "—",
+    "weight": 0,
+    "desc": "Legendary Wondrous Item\n\nThis heavy tome is bound in dragonhide and reinforced with thick bands of cold iron. The original copies were made by wyrmspeakers of the Cult of the Dragon and bear that cult's symbol on their cover. The Tome of the Dragon contains the secret ritual to transform a dragon or a dead dragon's body into a dracolich.\n\nTo decipher and use the Tome of the Dragon, you must be either a spellcaster with at least two level 5 spell slots or a Dragon. A single assistant (or more, at the DM's discretion) can help you conduct the ritual, so long as the assistant also meets the requirements.\n\nTo create a dracolich, you must have continuous access to the body of an adult or ancient dragon (living or dead), plus 80,000 GP worth of supplies (including a gem that will serve as the dracolich's spirit anchor). The ritual lasts 180 days divided by the number of creatures conducting it (halved if you are a Dragon). Participants must work without interruption, resting no more than 8 hours per day.\n\nWhen the ritual is complete, the tome explodes with violet light, dealing 12d6 Necrotic damage to you and each assistant. A creature reduced to 0 Hit Points this way is killed and immediately reanimates as a Zombie under the DM's control.\n\nThe target transforms into a Dracolich. If the target was a living dragon, it dies and its spirit transfers to the gem. If the target was a dead dragon's body, the body reanimates with an evil dragon spirit from the Outer Planes. The dracolich is under no obligation to its creators.",
+    "properties": []
+  }
+]

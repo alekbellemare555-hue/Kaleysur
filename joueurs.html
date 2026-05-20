@@ -12362,7 +12362,7 @@ function renderFamiliars() {
         // Items 2024 — Open5e v2 (même source que les monstres)
         _allItems = await _fetchAll(`${O5E}/v2/items/?document__key__in=${DOC}&limit=300&ordering=name`);
         // Suppléments locaux (Eberron, Héros de Faerûn…)
-        for (const fname of ['items-eberron.json', 'items-faerun-heroes.json']) {
+        for (const fname of ['items-eberron.json', 'items-faerun-heroes.json', 'items-faerun-adventures.json']) {
           try {
             const re = await fetch(fname);
             if (re.ok) { const local = await re.json(); _allItems = [...local, ..._allItems]; }
@@ -12372,7 +12372,7 @@ function renderFamiliars() {
       } else {
         _allItems = await _fetchAll(`${O5E}/v2/creatures/?document__key__in=${DOC}&limit=300`);
         // Suppléments locaux (Eberron, Héros de Faerûn…)
-        for (const fname of ['monsters-eberron.json', 'monsters-faerun-heroes.json']) {
+        for (const fname of ['monsters-eberron.json', 'monsters-faerun-heroes.json', 'monsters-faerun-adventures.json']) {
           try {
             const rm = await fetch(fname);
             if (rm.ok) { const local = await rm.json(); _allItems = [...local, ..._allItems]; }
