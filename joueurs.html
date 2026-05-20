@@ -1795,7 +1795,10 @@
 #screen-dashboard.fields-locked .sheet-section input:not([type=checkbox]),
 #screen-dashboard.fields-locked .sheet-section textarea,
 #screen-dashboard.fields-locked .sheet-section select,
-#screen-dashboard.fields-locked [data-f]:not([type=checkbox]) {
+#screen-dashboard.fields-locked [data-f]:not([type=checkbox]),
+#screen-dashboard.fields-locked .notes-editor,
+#screen-dashboard.fields-locked .notes-page-title-input,
+#screen-dashboard.fields-locked #hero-note {
   background: transparent !important;
   border-color: transparent !important;
   box-shadow: none !important;
@@ -1816,9 +1819,13 @@
 #screen-dashboard.fields-locked .roll-trigger { pointer-events: auto !important; cursor: pointer !important; }
 /* Textareas : auto-expansion pour voir tout le contenu */
 #screen-dashboard.fields-locked .sheet-section textarea,
-#screen-dashboard.fields-locked textarea[data-f] {
+#screen-dashboard.fields-locked textarea[data-f],
+#screen-dashboard.fields-locked .notes-editor,
+#screen-dashboard.fields-locked #hero-note {
   overflow: hidden !important;
   field-sizing: content; /* Chrome 123+ */
+  flex: none !important; /* empêche le flex de court-circuiter la hauteur calculée */
+  min-height: unset !important;
 }
 .read-mode .layout-wrapper,
 .read-mode .sheet-section,
@@ -11678,8 +11685,10 @@ document.addEventListener('keydown', e => {
   let locked = false;
   let observer = null;
 
+  const TA_SEL = '.sheet-section textarea, textarea[data-f], .notes-editor, #hero-note';
+
   function expandTextareas() {
-    dash.querySelectorAll('.sheet-section textarea, textarea[data-f]').forEach(ta => {
+    dash.querySelectorAll(TA_SEL).forEach(ta => {
       ta.style.height = 'auto';
       ta.style.height = ta.scrollHeight + 'px';
     });
@@ -11701,7 +11710,7 @@ document.addEventListener('keydown', e => {
     } else {
       observer?.disconnect();
       observer = null;
-      dash.querySelectorAll('.sheet-section textarea, textarea[data-f]').forEach(ta => ta.style.height = '');
+      dash.querySelectorAll(TA_SEL).forEach(ta => ta.style.height = '');
     }
   }
 
