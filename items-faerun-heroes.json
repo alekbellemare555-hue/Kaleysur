@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Adventurer's Ring",
+    "category": "Magic Items",
+    "rarity": "Common",
+    "requires_attunement": false,
+    "cost": "250 gp",
+    "weight": 0,
+    "desc": "Common Ring\n\nWhile the cover on this ring is open, the ring produces a flame that creates no heat and consumes no fuel. It sheds Bright Light in a 20-foot radius and Dim Light for an additional 20 feet. As a Bonus Action, you can close the cover, smothering the flame, or open it again.",
+    "properties": []
+  },
+  {
+    "name": "Windskiff",
+    "category": "Wondrous Items",
+    "rarity": "Rare",
+    "requires_attunement": false,
+    "cost": "4000 gp",
+    "weight": 0,
+    "desc": "Rare Wondrous Item\n\nThis small piece of jewelry has 3 charges and regains all expended charges daily at dawn. While you are holding it, you can take a Magic action to expend 1 charge, which causes the jewelry to transform into a sail-powered personal vehicle. The vehicle is roughly the size and shape of a household door with a 10-foot-tall sail extending from one side. After 1 hour or until you use the item's command word (no action required), the transformation ends and the Windskiff reverts to its jewelry form.\n\nIn vehicle form, a Windskiff is a Medium object with the following statistics: AC 12, HP 30, and Speed 40 ft. The Windskiff hovers a few inches above whatever surface it's on and can glide; it moves 5 feet horizontally for every 1 foot it descends in the air. A Windskiff and its riders take no damage from falling.",
+    "properties": []
+  },
+  {
+    "name": "Domestic Wonder",
+    "category": "Wondrous Items",
+    "rarity": "Uncommon",
+    "requires_attunement": false,
+    "cost": "400 gp",
+    "weight": null,
+    "desc": "Uncommon Wondrous Item\n\nThis bipedal construct is designed to assist with household duties. It vaguely resembles whatever species its creator used as inspiration. An activated Domestic Wonder uses the Domestic Wonder stat block. The wonder is an ally to you and your allies. In combat, the wonder shares your Initiative count but it takes its turn immediately after yours. It obeys your verbal commands (no action required by you). If you don't issue any, it takes the Dodge action and uses its movement to avoid danger. The Domestic Wonder is destroyed if it drops to 0 Hit Points.",
+    "properties": []
+  },
+  {
+    "name": "Thayan Spell Tattoo",
+    "category": "Wondrous Items",
+    "rarity": "Uncommon",
+    "requires_attunement": true,
+    "cost": "—",
+    "weight": 0,
+    "desc": "Uncommon Wondrous Item · Requires Attunement\n\nThis magical tattoo contains the essence of a level 1–3 spell chosen by the tattoo's creator. While the tattoo is on your body, you always have the associated spell prepared, and you can cast the spell using any spell slots you have of the appropriate level. If you have the Spellcasting or Pact Magic feature, the spell uses your spellcasting ability; otherwise, if the spell requires a saving throw or an attack roll, the spell save DC is 13 and the attack bonus is +5. If your Attunement to the tattoo ends, the tattoo vanishes.\n\nYou can also cast the spell once without a spell slot and spell components. Once the spell is cast in this way, the tattoo vanishes.",
+    "properties": []
+  }
+]

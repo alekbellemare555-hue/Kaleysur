@@ -12361,25 +12361,23 @@ function renderFamiliars() {
       } else if (tab === 'equipment') {
         // Items 2024 — Open5e v2 (même source que les monstres)
         _allItems = await _fetchAll(`${O5E}/v2/items/?document__key__in=${DOC}&limit=300&ordering=name`);
-        // Suppléments locaux (usage privé, non commités — ex: Eberron)
-        try {
-          const re = await fetch('items-eberron.json');
-          if (re.ok) {
-            const local = await re.json();
-            _allItems = [...local, ..._allItems];
-          }
-        } catch {}
+        // Suppléments locaux (Eberron, Héros de Faerûn…)
+        for (const fname of ['items-eberron.json', 'items-faerun-heroes.json']) {
+          try {
+            const re = await fetch(fname);
+            if (re.ok) { const local = await re.json(); _allItems = [...local, ..._allItems]; }
+          } catch {}
+        }
         _populateCatFilter();
       } else {
         _allItems = await _fetchAll(`${O5E}/v2/creatures/?document__key__in=${DOC}&limit=300`);
-        // Suppléments locaux (usage privé, non commités — ex: Eberron)
-        try {
-          const rm = await fetch('monsters-eberron.json');
-          if (rm.ok) {
-            const local = await rm.json();
-            _allItems = [...local, ..._allItems];
-          }
-        } catch {}
+        // Suppléments locaux (Eberron, Héros de Faerûn…)
+        for (const fname of ['monsters-eberron.json', 'monsters-faerun-heroes.json']) {
+          try {
+            const rm = await fetch(fname);
+            if (rm.ok) { const local = await rm.json(); _allItems = [...local, ..._allItems]; }
+          } catch {}
+        }
       }
       _cache[tab] = _allItems;
       _render();
