@@ -1774,6 +1774,35 @@
 /* ── Mode Lecture ── */
 #btn-read-mode { transition: all 0.2s; }
 #btn-read-mode.active { border-color: var(--gold-dark); color: var(--gold); background: rgba(201,169,110,0.1); }
+
+/* ── Field Lock Mode (champs fixes) ── */
+#btn-field-lock { transition: all 0.2s; }
+#btn-field-lock.active { border-color: var(--gold-dark); color: var(--gold); background: rgba(201,169,110,0.1); }
+#screen-dashboard.fields-locked [data-f],
+#screen-dashboard.fields-locked .field-input:not([type=number]) {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  resize: none !important;
+  cursor: default !important;
+  pointer-events: none;
+  color: var(--j-text, #e8e0d0) !important;
+}
+/* Les champs numériques restent cliquables (HP, stats…) */
+#screen-dashboard.fields-locked input[type=number][data-f] {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  cursor: default !important;
+  -moz-appearance: textfield;
+}
+#screen-dashboard.fields-locked input[type=number][data-f]::-webkit-inner-spin-button,
+#screen-dashboard.fields-locked input[type=number][data-f]::-webkit-outer-spin-button { display: none; }
+/* Textareas : auto-expansion pour voir tout le contenu */
+#screen-dashboard.fields-locked textarea[data-f] {
+  overflow: hidden !important;
+  field-sizing: content; /* Chrome 123+ */
+}
 .read-mode .layout-wrapper,
 .read-mode .sheet-section,
 .read-mode .tab-panel > *:not(#vb-hero) { pointer-events: none; }
@@ -2644,6 +2673,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
         <button class="inspiration-btn" id="btn-inspiration" title="Inspiration (avantage sur un jet)">✦</button>
         <button class="btn btn-sm btn-gold" id="btn-new-char" title="New character" onclick="openNewCharModal()" style="font-size:1rem;padding:0 0.55rem;line-height:1;">+</button>
         <button class="btn btn-sm" id="btn-layout-edit" title="Rearrange sections">⠿</button>
+        <button class="btn btn-sm" id="btn-field-lock" title="Verrouiller les champs (mode affichage)">✏</button>
         <button class="btn btn-sm" id="btn-read-mode" title="Read Mode — lock the sheet">🔒</button>
         <button class="btn btn-sm" id="dice-tray-btn" title="Dice Roller">⚄</button>
         <button class="btn btn-sm" id="btn-install-app" title="Installer l'application" style="display:none;">📲</button>
@@ -11603,7 +11633,47 @@ document.addEventListener('keydown', e => {
   }, { passive: true });
 })();
 
-/* ── 8. Mode Lecture ── */
+/* ── 8. Field Lock Mode ── */
+(function () {
+  const btn  = document.getElementById('btn-field-lock');
+  const dash = document.getElementById('screen-dashboard');
+  if (!btn || !dash) return;
+  let locked = false;
+  let observer = null;
+
+  function expandTextareas() {
+    dash.querySelectorAll('textarea[data-f]').forEach(ta => {
+      ta.style.height = 'auto';
+      ta.style.height = ta.scrollHeight + 'px';
+    });
+  }
+
+  function setLock(on) {
+    locked = on;
+    dash.classList.toggle('fields-locked', locked);
+    btn.textContent = locked ? '🔒' : '✏';
+    btn.classList.toggle('active', locked);
+    btn.title = locked
+      ? 'Mode Affichage — cliquer pour éditer'
+      : 'Verrouiller les champs (mode affichage)';
+
+    if (locked) {
+      // Légère attente pour que les renders en cours soient finis
+      requestAnimationFrame(expandTextareas);
+      // Surveiller les re-renders pour ré-ajuster les hauteurs
+      observer = new MutationObserver(() => requestAnimationFrame(expandTextareas));
+      observer.observe(dash, { childList: true, subtree: true });
+    } else {
+      observer?.disconnect();
+      observer = null;
+      dash.querySelectorAll('textarea[data-f]').forEach(ta => ta.style.height = '');
+    }
+  }
+
+  btn.addEventListener('click', () => setLock(!locked));
+})();
+
+/* ── 9. Mode Lecture ── */
 document.getElementById('btn-read-mode')?.addEventListener('click', () => {
   const dash = document.getElementById('screen-dashboard');
   const btn = document.getElementById('btn-read-mode');
