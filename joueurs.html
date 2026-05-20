@@ -12861,28 +12861,30 @@ function renderFamiliars() {
   // k = clé Open5e/dnd5eapi, n = nom affiché
   // spirit = objet stat-block inline pour les esprits scalants
   const SUMMON_SPELLS = [
+    // ── Familiars & Steeds (PHB 2024) ──
     { spell:'Find Familiar', level:1, icon:'🐱',
       creatures:[
         {n:'Bat',k:'bat'},{n:'Cat',k:'cat'},{n:'Crab',k:'crab'},{n:'Frog',k:'frog'},
         {n:'Hawk',k:'hawk'},{n:'Lizard',k:'lizard'},{n:'Octopus',k:'octopus'},{n:'Owl',k:'owl'},
-        {n:'Poisonous Snake',k:'poisonous-snake'},{n:'Rat',k:'rat'},{n:'Raven',k:'raven'},
-        {n:'Sea Horse',k:'sea-horse'},{n:'Spider',k:'spider'},{n:'Weasel',k:'weasel'},
+        {n:'Poisonous Snake',k:'poisonous-snake'},{n:'Quipper',k:'quipper'},{n:'Rat',k:'rat'},
+        {n:'Raven',k:'raven'},{n:'Sea Horse',k:'sea-horse'},{n:'Spider',k:'spider'},{n:'Weasel',k:'weasel'},
       ]
     },
-    { spell:'Find Steed', level:2, icon:'🐴',
+    { spell:'Find Steed', level:2, icon:'🐴', note:'Spirit — CR ≤2, Large or smaller Beast',
       creatures:[
-        {n:'Elk',k:'elk'},{n:'Giant Eagle',k:'giant-eagle'},{n:'Giant Wolf Spider',k:'giant-wolf-spider'},
-        {n:'Mastiff',k:'mastiff'},{n:'Pony',k:'pony'},{n:'Warhorse',k:'warhorse'},
+        {n:'Black Bear',k:'black-bear'},{n:'Camel',k:'camel'},{n:'Elk',k:'elk'},
+        {n:'Giant Eagle',k:'giant-eagle'},{n:'Mastiff',k:'mastiff'},{n:'Pony',k:'pony'},
+        {n:'Rhinoceros',k:'rhinoceros'},{n:'Riding Horse',k:'riding-horse'},{n:'Warhorse',k:'warhorse'},
       ]
     },
-    { spell:'Find Greater Steed', level:4, icon:'🦅',
+    { spell:'Find Greater Steed', level:4, icon:'🦅', note:'Spirit — CR ≤5, Large or smaller',
       creatures:[
         {n:'Griffon',k:'griffon'},{n:'Hippogriff',k:'hippogriff'},{n:'Pegasus',k:'pegasus'},
-        {n:'Peryton',k:'peryton'},{n:'Dire Wolf',k:'dire-wolf'},{n:'Rhinoceros',k:'rhinoceros'},
-        {n:'Saber-Toothed Tiger',k:'saber-toothed-tiger'},
+        {n:'Peryton',k:'peryton'},{n:'Saber-Toothed Tiger',k:'saber-toothed-tiger'},
       ]
     },
-    { spell:'Conjure Animals', level:3, icon:'🐺', note:'CR 2 ou moins — exemples',
+    // ── Conjure (PHB 2024 — spirit in creature form) ──
+    { spell:'Conjure Animals', level:3, icon:'🐺', note:'Spirit in beast form — CR ≤2 examples',
       creatures:[
         {n:'Black Bear',k:'black-bear'},{n:'Brown Bear',k:'brown-bear'},{n:'Dire Wolf',k:'dire-wolf'},
         {n:'Giant Eagle',k:'giant-eagle'},{n:'Giant Owl',k:'giant-owl'},
@@ -12891,18 +12893,19 @@ function renderFamiliars() {
         {n:'Allosaurus',k:'allosaurus'},{n:'Giant Constrictor Snake',k:'giant-constrictor-snake'},
       ]
     },
-    { spell:'Conjure Elemental', level:5, icon:'🌀',
+    { spell:'Conjure Elemental', level:5, icon:'🌀', note:'Spirit in elemental form — CR ≤5',
       creatures:[
         {n:'Air Elemental',k:'air-elemental'},{n:'Earth Elemental',k:'earth-elemental'},
         {n:'Fire Elemental',k:'fire-elemental'},{n:'Water Elemental',k:'water-elemental'},
       ]
     },
-    { spell:'Conjure Fey', level:6, icon:'🧚', note:'CR 6 ou moins',
+    { spell:'Conjure Fey', level:6, icon:'🧚', note:'Spirit in fey form — CR ≤5',
       creatures:[
-        {n:'Green Hag',k:'green-hag'},{n:'Night Hag',k:'night-hag'},
-        {n:'Dryad',k:'dryad'},{n:'Pixie',k:'pixie'},{n:'Sprite',k:'sprite'},
+        {n:'Dryad',k:'dryad'},{n:'Green Hag',k:'green-hag'},{n:'Night Hag',k:'night-hag'},
+        {n:'Pixie',k:'pixie'},{n:'Satyr',k:'satyr'},{n:'Sprite',k:'sprite'},
       ]
     },
+    // ── Undead ──
     { spell:'Animate Dead', level:3, icon:'💀',
       creatures:[{n:'Skeleton',k:'skeleton'},{n:'Zombie',k:'zombie'}]
     },
@@ -12911,105 +12914,296 @@ function renderFamiliars() {
         {n:'Ghoul',k:'ghoul'},{n:'Ghast',k:'ghast'},{n:'Wight',k:'wight'},{n:'Mummy',k:'mummy'},
       ]
     },
-    { spell:'Infernal Calling', level:5, icon:'😈',
+    // ── Scaling Spirits (PHB 2024) ──
+    { spell:'Summon Beast', level:2, icon:'🦁', note:'AC/HP scale with slot level',
       creatures:[
-        {n:'Barbed Devil',k:'barbed-devil'},{n:'Bearded Devil',k:'bearded-devil'},
-        {n:'Bone Devil',k:'bone-devil'},{n:'Chain Devil',k:'chain-devil'},
-        {n:'Erinyes',k:'erinyes'},{n:'Horned Devil',k:'horned-devil'},
-        {n:'Ice Devil',k:'ice-devil'},{n:'Imp',k:'imp'},{n:'Spined Devil',k:'spined-devil'},
-      ]
-    },
-    // ── Esprits scalants (Tasha's / PHB 2024) ──
-    { spell:'Summon Beast', level:2, icon:'🦁', note:'CA / PV scalent avec le slot',
-      creatures:[
-        { n:'Esprit Bestial — Terre', spirit:{name:'Esprit Bestial (Terre)',type:'Beast',size:'Small',
-            ac:11,acNote:'11 + niv. sort',hp:20,hpNote:'20 + 5 par niv. au-dessus du 2e',
-            speed:'30 ft., burrow 30 ft.',str:18,dex:11,con:16,int:4,wis:14,cha:5,
-            cr:'2',languages:'—',senses:'Darkvision 60 ft.',
-            traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot utilisé · PV = 20 + 5 × (slot − 2)'}],
-            actions:[{name:'Force of the Beast',desc:'Attaque de corps à corps : bonus = +4 + niv. sort. Portée 5 ft. Dégâts : 1d8 + 4 + niv. sort contondants/perforants.'}]
-          }
-        },
-        { n:'Esprit Bestial — Air', spirit:{name:'Esprit Bestial (Air)',type:'Beast',size:'Small',
-            ac:11,acNote:'11 + niv. sort',hp:20,hpNote:'20 + 5 par niv. au-dessus du 2e',
+        { n:'Bestial Spirit — Air', spirit:{name:'Bestial Spirit (Air)',type:'Beast',size:'Small',
+            ac:11,acNote:'11 + slot level',hp:20,hpNote:'20 + 5 per slot above 2nd',
             speed:'30 ft., fly 60 ft.',str:18,dex:11,con:16,int:4,wis:14,cha:5,
             cr:'2',languages:'—',senses:'Darkvision 60 ft.',
-            traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 20 + 5 × (slot − 2)'}],
-            actions:[{name:'Maul',desc:'Attaque de corps à corps : +4 + niv. sort au toucher. 1d6 + 4 + niv. sort tranchants.'}]
+            traits:[
+              {name:'Flyby',desc:"The spirit doesn't provoke Opportunity Attacks when it flies out of an enemy's reach."},
+              {name:'Scaling',desc:'AC = 11 + slot level · HP = 20 + 5 × (slot − 2)'},
+            ],
+            actions:[{name:'Maul',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level slashing.'}]
           }
         },
-        { n:'Esprit Bestial — Eau', spirit:{name:'Esprit Bestial (Eau)',type:'Beast',size:'Small',
-            ac:11,acNote:'11 + niv. sort',hp:20,hpNote:'20 + 5 par niv. au-dessus du 2e',
+        { n:'Bestial Spirit — Land', spirit:{name:'Bestial Spirit (Land)',type:'Beast',size:'Small',
+            ac:11,acNote:'11 + slot level',hp:20,hpNote:'20 + 5 per slot above 2nd',
+            speed:'30 ft., burrow 30 ft.',str:18,dex:11,con:16,int:4,wis:14,cha:5,
+            cr:'2',languages:'—',senses:'Darkvision 60 ft.',
+            traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 20 + 5 × (slot − 2)'}],
+            actions:[
+              {name:'Multiattack',desc:'The spirit makes a number of Maul attacks equal to half the spell slot level (round down).'},
+              {name:'Maul',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level bludgeoning, piercing, or slashing.'},
+            ]
+          }
+        },
+        { n:'Bestial Spirit — Water', spirit:{name:'Bestial Spirit (Water)',type:'Beast',size:'Small',
+            ac:11,acNote:'11 + slot level',hp:20,hpNote:'20 + 5 per slot above 2nd',
             speed:'30 ft., swim 30 ft.',str:18,dex:11,con:16,int:4,wis:14,cha:5,
             cr:'2',languages:'—',senses:'Darkvision 60 ft., Blindsight 30 ft.',
-            traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 20 + 5 × (slot − 2)'}],
-            actions:[{name:'Bite',desc:'Attaque de corps à corps : +4 + niv. sort au toucher. 1d6 + 4 + niv. sort perforants.'}]
+            traits:[
+              {name:'Amphibious',desc:'The spirit can breathe air and water.'},
+              {name:'Scaling',desc:'AC = 11 + slot level · HP = 20 + 5 × (slot − 2)'},
+            ],
+            actions:[
+              {name:'Multiattack',desc:'The spirit makes a number of Maul attacks equal to half the spell slot level (round down).'},
+              {name:'Maul',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level piercing.'},
+            ]
           }
         },
       ]
     },
-    { spell:'Summon Fey', level:3, icon:'✨', note:'CA / PV scalent avec le slot',
+    { spell:'Summon Fey', level:3, icon:'✨', note:'AC/HP scale with slot level',
       creatures:[
-        { n:'Esprit Féerique — Furibond', spirit:{name:'Esprit Féerique (Furibond)',type:'Fey',size:'Small',
-            ac:12,acNote:'12 + niv. sort',hp:30,hpNote:'30 + 10 par niv. au-dessus du 3e',
+        { n:'Fey Spirit — Fuming', spirit:{name:'Fey Spirit (Fuming)',type:'Fey',size:'Small',
+            ac:12,acNote:'12 + slot level',hp:30,hpNote:'30 + 10 per slot above 3rd',
             speed:'40 ft.',str:13,dex:16,con:14,int:14,wis:11,cha:16,cr:'3',
-            languages:'Sylvain + langues du lanceur',senses:'Darkvision 60 ft.',
-            traits:[{name:'Scaling',desc:'CA = 12 + niv. du slot · PV = 30 + 10 × (slot − 3)'}],
-            actions:[{name:'Multiattack',desc:'2 attaques Tranchant Féerique.'},{name:'Tranchant Féerique',desc:'+3 + niv. sort au toucher. 1d6 + 3 + niv. sort tranchants + 1d6 psychiques.'}]
+            languages:"Sylvan + caster's languages",senses:'Darkvision 60 ft.',
+            traits:[{name:'Scaling',desc:'AC = 12 + slot level · HP = 30 + 10 × (slot − 3)'}],
+            actions:[
+              {name:'Multiattack',desc:'The spirit makes two Fey Strike attacks.'},
+              {name:'Fey Strike',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 3 + slot level slashing + 1d6 psychic.'},
+            ]
           }
         },
-        { n:'Esprit Féerique — Enjoué', spirit:{name:'Esprit Féerique (Enjoué)',type:'Fey',size:'Small',
-            ac:12,acNote:'12 + niv. sort',hp:30,hpNote:'30 + 10 par niv. au-dessus du 3e',
+        { n:'Fey Spirit — Mirthful', spirit:{name:'Fey Spirit (Mirthful)',type:'Fey',size:'Small',
+            ac:12,acNote:'12 + slot level',hp:30,hpNote:'30 + 10 per slot above 3rd',
             speed:'40 ft.',str:13,dex:16,con:14,int:14,wis:11,cha:16,cr:'3',
-            languages:'Sylvain + langues du lanceur',senses:'Darkvision 60 ft.',
-            traits:[{name:'Scaling',desc:'CA = 12 + niv. du slot · PV = 30 + 10 × (slot − 3)'}],
-            actions:[{name:'Multiattack',desc:'2 attaques Tranchant Féerique.'},{name:'Tranchant Féerique',desc:'+3 + niv. sort au toucher. 1d6 + 3 + niv. sort tranchants.'}]
+            languages:"Sylvan + caster's languages",senses:'Darkvision 60 ft.',
+            traits:[{name:'Scaling',desc:'AC = 12 + slot level · HP = 30 + 10 × (slot − 3)'}],
+            actions:[
+              {name:'Multiattack',desc:'The spirit makes two Fey Strike attacks.'},
+              {name:'Fey Strike',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 3 + slot level slashing.'},
+              {name:'Fey Step (Recharge 4–6)',desc:'The spirit teleports up to 30 ft. to an unoccupied space it can see, taking one willing creature within 5 ft.'},
+            ]
           }
         },
-        { n:'Esprit Féerique — Rusé', spirit:{name:'Esprit Féerique (Rusé)',type:'Fey',size:'Small',
-            ac:12,acNote:'12 + niv. sort',hp:30,hpNote:'30 + 10 par niv. au-dessus du 3e',
+        { n:'Fey Spirit — Tricksy', spirit:{name:'Fey Spirit (Tricksy)',type:'Fey',size:'Small',
+            ac:12,acNote:'12 + slot level',hp:30,hpNote:'30 + 10 per slot above 3rd',
             speed:'40 ft.',str:13,dex:16,con:14,int:14,wis:11,cha:16,cr:'3',
-            languages:'Sylvain + langues du lanceur',senses:'Darkvision 60 ft.',
-            traits:[{name:'Scaling',desc:'CA = 12 + niv. du slot · PV = 30 + 10 × (slot − 3)'}],
-            actions:[{name:'Tranchant Féerique',desc:'+3 + niv. sort au toucher. 1d6 + 3 + niv. sort tranchants.'}]
+            languages:"Sylvan + caster's languages",senses:'Darkvision 60 ft.',
+            traits:[{name:'Scaling',desc:'AC = 12 + slot level · HP = 30 + 10 × (slot − 3)'}],
+            actions:[
+              {name:'Fey Strike',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 3 + slot level slashing.'},
+              {name:'Invisibility',desc:'The spirit has the Invisible condition until it attacks or until its Concentration ends.'},
+            ]
           }
         },
       ]
     },
-    { spell:'Summon Shadowspawn', level:3, icon:'👁', note:'CA / PV scalent avec le slot',
+    { spell:'Summon Undead', level:3, icon:'💀', note:'AC/HP scale with slot level',
       creatures:[
-        { n:'Esprit des Ombres — Fureur',   spirit:{name:'Esprit des Ombres (Fureur)',type:'Undead',size:'Medium',ac:11,acNote:'11 + niv. sort',hp:35,hpNote:'35 + 10 par niv. au-dessus du 3e',speed:'40 ft.',str:13,dex:16,con:15,int:4,wis:10,cha:16,cr:'3',languages:'—',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 35 + 10 × (slot − 3)'}],actions:[{name:'Multiattack',desc:'2 attaques Griffes des Ombres.'},{name:'Griffes des Ombres',desc:'+3 + niv. sort au toucher. 1d8 + 3 + niv. sort nécrotiques.'}]} },
-        { n:'Esprit des Ombres — Désespoir',spirit:{name:'Esprit des Ombres (Désespoir)',type:'Undead',size:'Medium',ac:11,acNote:'11 + niv. sort',hp:35,hpNote:'35 + 10 par niv. au-dessus du 3e',speed:'40 ft.',str:13,dex:16,con:15,int:4,wis:10,cha:16,cr:'3',languages:'—',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 35 + 10 × (slot − 3)'}],actions:[{name:'Griffes des Ombres',desc:'+3 + niv. sort au toucher. 1d8 + 3 + niv. sort nécrotiques.'}]} },
-        { n:'Esprit des Ombres — Peur',     spirit:{name:'Esprit des Ombres (Peur)',type:'Undead',size:'Medium',ac:11,acNote:'11 + niv. sort',hp:35,hpNote:'35 + 10 par niv. au-dessus du 3e',speed:'40 ft.',str:13,dex:16,con:15,int:4,wis:10,cha:16,cr:'3',languages:'—',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 35 + 10 × (slot − 3)'}],actions:[{name:'Griffes des Ombres',desc:'+3 + niv. sort au toucher. 1d8 + 3 + niv. sort nécrotiques.'}]} },
+        { n:'Undead Spirit — Ghostly', spirit:{name:'Undead Spirit (Ghostly)',type:'Undead',size:'Medium',
+            ac:11,acNote:'11 + slot level',hp:30,hpNote:'30 + 10 per slot above 3rd',
+            speed:'0 ft., fly 40 ft. (hover)',str:6,dex:16,con:15,int:4,wis:10,cha:16,cr:'3',
+            languages:'—',senses:'Darkvision 60 ft.',
+            traits:[
+              {name:'Incorporeal Passage',desc:'The spirit can move through other creatures and objects. It takes 1d10 force damage if it ends its turn inside an object.'},
+              {name:'Scaling',desc:'AC = 11 + slot level · HP = 30 + 10 × (slot − 3)'},
+            ],
+            actions:[{name:'Deathly Touch',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 3 + slot level necrotic. Target makes a WIS save (DC = spell save DC) or has the Frightened condition until the end of your next turn.'}]
+          }
+        },
+        { n:'Undead Spirit — Putrid', spirit:{name:'Undead Spirit (Putrid)',type:'Undead',size:'Medium',
+            ac:11,acNote:'11 + slot level',hp:30,hpNote:'30 + 10 per slot above 3rd',
+            speed:'30 ft.',str:16,dex:8,con:15,int:4,wis:10,cha:16,cr:'3',
+            languages:'—',senses:'Darkvision 60 ft.',
+            traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 30 + 10 × (slot − 3)'}],
+            actions:[{name:'Rotting Claw',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 3 + slot level necrotic. Target makes a CON save (DC = spell save DC) or has the Poisoned condition until the end of your next turn.'}]
+          }
+        },
+        { n:'Undead Spirit — Skeletal', spirit:{name:'Undead Spirit (Skeletal)',type:'Undead',size:'Medium',
+            ac:11,acNote:'11 + slot level',hp:30,hpNote:'30 + 10 per slot above 3rd',
+            speed:'30 ft.',str:16,dex:16,con:15,int:4,wis:10,cha:16,cr:'3',
+            languages:'—',senses:'Darkvision 60 ft.',
+            traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 30 + 10 × (slot − 3)'}],
+            actions:[
+              {name:'Multiattack',desc:'The spirit makes two Grave Bolt attacks.'},
+              {name:'Grave Bolt',desc:'Ranged Spell Attack: your spell attack modifier to hit, range 150 ft. Hit: 1d4 + 3 + slot level necrotic.'},
+            ]
+          }
+        },
       ]
     },
-    { spell:'Summon Undead', level:3, icon:'💀', note:'CA / PV scalent avec le slot',
+    { spell:'Summon Elemental', level:4, icon:'🌊', note:'AC/HP scale with slot level',
       creatures:[
-        { n:'Esprit Mort-vivant — Fantôme', spirit:{name:'Esprit Mort-vivant (Fantôme)',type:'Undead',size:'Medium',ac:11,acNote:'11 + niv. sort',hp:30,hpNote:'30 + 10 par niv. au-dessus du 3e',speed:'0 ft., fly 40 ft. (hover)',str:6,dex:16,con:15,int:4,wis:10,cha:16,cr:'3',languages:'—',senses:'Darkvision 60 ft.',traits:[{name:'Incorporel',desc:'Peut traverser créatures et objets solides.'},{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 30 + 10 × (slot − 3)'}],actions:[{name:'Attaque Terrifiante',desc:'Attaque de corps à corps : +3 + niv. sort. 1d8 + 3 + niv. sort nécrotiques. Jet SAG DD 11+niv. sort ou effrayé.'}]} },
-        { n:'Esprit Mort-vivant — Putride', spirit:{name:'Esprit Mort-vivant (Putride)',type:'Undead',size:'Medium',ac:11,acNote:'11 + niv. sort',hp:30,hpNote:'30 + 10 par niv. au-dessus du 3e',speed:'30 ft.',str:16,dex:8,con:15,int:4,wis:10,cha:16,cr:'3',languages:'—',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 30 + 10 × (slot − 3)'}],actions:[{name:'Coup Pourrissant',desc:'Attaque de corps à corps : +3 + niv. sort. 1d6 + 3 + niv. sort nécrotiques + empoisonné jusqu\'à fin prochain tour.'}]} },
-        { n:'Esprit Mort-vivant — Squelette',spirit:{name:'Esprit Mort-vivant (Squelette)',type:'Undead',size:'Medium',ac:11,acNote:'11 + niv. sort',hp:30,hpNote:'30 + 10 par niv. au-dessus du 3e',speed:'30 ft.',str:16,dex:16,con:15,int:4,wis:10,cha:16,cr:'3',languages:'—',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 30 + 10 × (slot − 3)'}],actions:[{name:'Épées',desc:'2 attaques : +3 + niv. sort. 1d6 + 3 + niv. sort tranchants chacune.'}]} },
+        { n:'Elemental Spirit — Air', spirit:{name:'Elemental Spirit (Air)',type:'Elemental',size:'Large',
+            ac:11,acNote:'11 + slot level',hp:50,hpNote:'50 + 10 per slot above 4th',
+            speed:'30 ft., fly 40 ft.',str:18,dex:15,con:17,int:8,wis:10,cha:10,cr:'4',
+            languages:"Auran + caster's languages",senses:'Darkvision 60 ft.',
+            traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 50 + 10 × (slot − 4)'}],
+            actions:[{name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d10 + 4 + slot level bludgeoning + 1d6 thunder.'}]
+          }
+        },
+        { n:'Elemental Spirit — Earth', spirit:{name:'Elemental Spirit (Earth)',type:'Elemental',size:'Large',
+            ac:17,acNote:'17 (natural armor)',hp:50,hpNote:'50 + 10 per slot above 4th',
+            speed:'30 ft., burrow 30 ft.',str:20,dex:8,con:18,int:8,wis:10,cha:5,cr:'4',
+            languages:"Terran + caster's languages",senses:'Darkvision 60 ft., Tremorsense 60 ft.',
+            traits:[{name:'Scaling',desc:'AC fixed 17 · HP = 50 + 10 × (slot − 4)'}],
+            actions:[{name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 2d6 + 5 + slot level bludgeoning.'}]
+          }
+        },
+        { n:'Elemental Spirit — Fire', spirit:{name:'Elemental Spirit (Fire)',type:'Elemental',size:'Large',
+            ac:11,acNote:'11 + slot level',hp:50,hpNote:'50 + 10 per slot above 4th',
+            speed:'40 ft.',str:18,dex:15,con:17,int:6,wis:10,cha:7,cr:'4',
+            languages:"Ignan + caster's languages",senses:'Darkvision 60 ft.',
+            traits:[
+              {name:'Illumination',desc:'The spirit sheds bright light in a 30-foot radius and dim light for an additional 30 feet.'},
+              {name:'Scaling',desc:'AC = 11 + slot level · HP = 50 + 10 × (slot − 4)'},
+            ],
+            actions:[{name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d10 + 4 + slot level bludgeoning + 1d6 fire.'}]
+          }
+        },
+        { n:'Elemental Spirit — Water', spirit:{name:'Elemental Spirit (Water)',type:'Elemental',size:'Large',
+            ac:11,acNote:'11 + slot level',hp:50,hpNote:'50 + 10 per slot above 4th',
+            speed:'30 ft., swim 40 ft.',str:18,dex:14,con:17,int:8,wis:10,cha:3,cr:'4',
+            languages:"Aquan + caster's languages",senses:'Darkvision 60 ft.',
+            traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 50 + 10 × (slot − 4)'}],
+            actions:[{name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 2d6 + 4 + slot level bludgeoning.'}]
+          }
+        },
       ]
     },
-    { spell:'Summon Elemental', level:4, icon:'🌊', note:'CA / PV scalent avec le slot',
+    { spell:'Summon Aberration', level:4, icon:'🐙', note:'AC/HP scale with slot level',
       creatures:[
-        { n:'Esprit Élém. — Air',  spirit:{name:'Esprit Élémentaire (Air)',type:'Elemental',size:'Large',ac:11,acNote:'11 + niv. sort',hp:50,hpNote:'50 + 10 par niv. au-dessus du 4e',speed:'30 ft., fly 40 ft.',str:18,dex:15,con:17,int:8,wis:10,cha:10,cr:'4',languages:'Aérien + langues du lanceur',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 50 + 10 × (slot − 4)'}],actions:[{name:'Slam',desc:'+6 + niv. sort au toucher. 1d10 + 4 + niv. sort contondants + 1d6 tonnerre.'}]} },
-        { n:'Esprit Élém. — Terre',spirit:{name:'Esprit Élémentaire (Terre)',type:'Elemental',size:'Large',ac:17,acNote:'17 (armure naturelle)',hp:50,hpNote:'50 + 10 par niv. au-dessus du 4e',speed:'30 ft., burrow 30 ft.',str:20,dex:8,con:18,int:8,wis:10,cha:5,cr:'4',languages:'Terreux + langues du lanceur',senses:'Darkvision 60 ft., Tremorsense 60 ft.',traits:[{name:'Scaling',desc:'CA fixe 17 · PV = 50 + 10 × (slot − 4)'}],actions:[{name:'Slam',desc:'+7 + niv. sort au toucher. 2d6 + 5 + niv. sort contondants.'}]} },
-        { n:'Esprit Élém. — Feu',  spirit:{name:'Esprit Élémentaire (Feu)',type:'Elemental',size:'Large',ac:11,acNote:'11 + niv. sort',hp:50,hpNote:'50 + 10 par niv. au-dessus du 4e',speed:'40 ft.',str:18,dex:15,con:17,int:6,wis:10,cha:7,cr:'4',languages:'Ignan + langues du lanceur',senses:'Darkvision 60 ft.',traits:[{name:'Illumination',desc:'Lumière vive 30 ft., lumière faible 30 ft. supplémentaires.'},{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 50 + 10 × (slot − 4)'}],actions:[{name:'Slam',desc:'+6 + niv. sort au toucher. 1d10 + 4 + niv. sort contondants + 1d6 feu.'}]} },
-        { n:'Esprit Élém. — Eau',  spirit:{name:'Esprit Élémentaire (Eau)',type:'Elemental',size:'Large',ac:11,acNote:'11 + niv. sort',hp:50,hpNote:'50 + 10 par niv. au-dessus du 4e',speed:'30 ft., swim 40 ft.',str:18,dex:14,con:17,int:8,wis:10,cha:3,cr:'4',languages:'Aquan + langues du lanceur',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 50 + 10 × (slot − 4)'}],actions:[{name:'Slam',desc:'+6 + niv. sort au toucher. 2d6 + 4 + niv. sort contondants.'}]} },
+        { n:'Aberrant Spirit — Beholderkin', spirit:{name:'Aberrant Spirit (Beholderkin)',type:'Aberration',size:'Medium',
+            ac:11,acNote:'11 + slot level',hp:40,hpNote:'40 + 10 per slot above 4th',
+            speed:'0 ft., fly 30 ft. (hover)',str:16,dex:10,con:15,int:16,wis:10,cha:6,cr:'4',
+            languages:"Deep Speech + caster's languages",senses:'Darkvision 60 ft.',
+            traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 40 + 10 × (slot − 4)'}],
+            actions:[{name:'Eye Ray',desc:'Ranged Spell Attack: your spell attack modifier to hit, range 150 ft. Hit: 1d8 + 3 + slot level psychic.'}]
+          }
+        },
+        { n:'Aberrant Spirit — Slaadi', spirit:{name:'Aberrant Spirit (Slaadi)',type:'Aberration',size:'Medium',
+            ac:11,acNote:'11 + slot level',hp:40,hpNote:'40 + 10 per slot above 4th',
+            speed:'30 ft.',str:17,dex:10,con:16,int:6,wis:12,cha:7,cr:'4',
+            languages:"Slaad + caster's languages",senses:'Darkvision 60 ft.',
+            traits:[
+              {name:'Regeneration',desc:'The spirit regains 5 HP at the start of its turn if it has at least 1 HP.'},
+              {name:'Scaling',desc:'AC = 11 + slot level · HP = 40 + 10 × (slot − 4)'},
+            ],
+            actions:[{name:'Claws',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 3 + slot level slashing.'}]
+          }
+        },
+        { n:'Aberrant Spirit — Star Spawn', spirit:{name:'Aberrant Spirit (Star Spawn)',type:'Aberration',size:'Medium',
+            ac:11,acNote:'11 + slot level',hp:40,hpNote:'40 + 10 per slot above 4th',
+            speed:'30 ft.',str:16,dex:10,con:15,int:16,wis:10,cha:8,cr:'4',
+            languages:"Deep Speech + caster's languages",senses:'Darkvision 60 ft.',
+            traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 40 + 10 × (slot − 4)'}],
+            actions:[{name:'Psychic Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 3 + slot level bludgeoning.'}]
+          }
+        },
       ]
     },
-    { spell:'Summon Aberration', level:4, icon:'🐙', note:'CA / PV scalent avec le slot',
+    { spell:'Summon Construct', level:4, icon:'⚙️', note:'AC/HP scale with slot level',
       creatures:[
-        { n:'Esprit Aberrant — Beholder',   spirit:{name:'Esprit Aberrant (Beholder)',type:'Aberration',size:'Medium',ac:11,acNote:'11 + niv. sort',hp:40,hpNote:'40 + 10 par niv. au-dessus du 4e',speed:'0 ft., fly 30 ft. (hover)',str:16,dex:10,con:15,int:16,wis:10,cha:6,cr:'4',languages:'Profond + langues du lanceur',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 40 + 10 × (slot − 4)'}],actions:[{name:'Rayon Oculaire',desc:'Attaque de sort à distance : +5 + niv. sort au toucher. Portée 150 ft. 1d8 + 3 + niv. sort psychiques.'}]} },
-        { n:'Esprit Aberrant — Slaad',      spirit:{name:'Esprit Aberrant (Slaad)',type:'Aberration',size:'Medium',ac:11,acNote:'11 + niv. sort',hp:40,hpNote:'40 + 10 par niv. au-dessus du 4e',speed:'30 ft.',str:17,dex:10,con:16,int:6,wis:12,cha:7,cr:'4',languages:'Slaadi + langues du lanceur',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 40 + 10 × (slot − 4)'}],actions:[{name:'Griffes',desc:'+5 + niv. sort au toucher. 1d6 + 3 + niv. sort tranchants.'}]} },
-        { n:'Esprit Aberrant — Star Spawn', spirit:{name:'Esprit Aberrant (Star Spawn)',type:'Aberration',size:'Medium',ac:11,acNote:'11 + niv. sort',hp:40,hpNote:'40 + 10 par niv. au-dessus du 4e',speed:'30 ft.',str:16,dex:10,con:15,int:16,wis:10,cha:8,cr:'4',languages:'Profond + langues du lanceur',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 11 + niv. du slot · PV = 40 + 10 × (slot − 4)'}],actions:[{name:'Pseudopode',desc:'+5 + niv. sort au toucher. 1d8 + 3 + niv. sort contondants.'}]} },
+        { n:'Construct Spirit — Clay', spirit:{name:'Construct Spirit (Clay)',type:'Construct',size:'Medium',
+            ac:13,acNote:'13 + slot level',hp:40,hpNote:'40 + 10 per slot above 4th',
+            speed:'30 ft.',str:18,dex:7,con:18,int:6,wis:10,cha:3,cr:'4',
+            languages:'—',senses:'Darkvision 60 ft.',
+            traits:[
+              {name:'Heated Body',desc:'A creature that touches the spirit or hits it with a melee attack takes 1d6 fire damage.'},
+              {name:'Scaling',desc:'AC = 13 + slot level · HP = 40 + 10 × (slot − 4)'},
+            ],
+            actions:[{name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level bludgeoning.'}]
+          }
+        },
+        { n:'Construct Spirit — Metal', spirit:{name:'Construct Spirit (Metal)',type:'Construct',size:'Medium',
+            ac:13,acNote:'13 + slot level',hp:40,hpNote:'40 + 10 per slot above 4th',
+            speed:'30 ft.',str:19,dex:9,con:18,int:6,wis:10,cha:5,cr:'4',
+            languages:'—',senses:'Darkvision 60 ft.',
+            traits:[
+              {name:'Heated Body',desc:'A creature that touches the spirit or hits it with a melee attack takes 1d6 fire damage.'},
+              {name:'Scaling',desc:'AC = 13 + slot level · HP = 40 + 10 × (slot − 4)'},
+            ],
+            actions:[{name:'Sword',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 4 + slot level slashing.'}]
+          }
+        },
+        { n:'Construct Spirit — Stone', spirit:{name:'Construct Spirit (Stone)',type:'Construct',size:'Medium',
+            ac:13,acNote:'13 + slot level',hp:40,hpNote:'40 + 10 per slot above 4th',
+            speed:'30 ft.',str:19,dex:7,con:18,int:6,wis:10,cha:3,cr:'4',
+            languages:'—',senses:'Darkvision 60 ft.',
+            traits:[
+              {name:'Siege Monster',desc:'The spirit deals double damage to objects and structures.'},
+              {name:'Scaling',desc:'AC = 13 + slot level · HP = 40 + 10 × (slot − 4)'},
+            ],
+            actions:[{name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level bludgeoning.'}]
+          }
+        },
       ]
     },
-    { spell:'Summon Construct', level:4, icon:'⚙️', note:'CA / PV scalent avec le slot',
+    { spell:'Summon Celestial', level:5, icon:'✨', note:'AC/HP scale with slot level',
       creatures:[
-        { n:'Esprit Construit — Argile', spirit:{name:'Esprit Construit (Argile)',type:'Construct',size:'Medium',ac:13,acNote:'13 + niv. sort',hp:40,hpNote:'40 + 10 par niv. au-dessus du 4e',speed:'30 ft.',str:18,dex:7,con:18,int:6,wis:10,cha:3,cr:'4',languages:'—',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 13 + niv. du slot · PV = 40 + 10 × (slot − 4)'}],actions:[{name:'Coup',desc:'+6 + niv. sort au toucher. 1d8 + 4 + niv. sort contondants.'}]} },
-        { n:'Esprit Construit — Métal',  spirit:{name:'Esprit Construit (Métal)',type:'Construct',size:'Medium',ac:13,acNote:'13 + niv. sort',hp:40,hpNote:'40 + 10 par niv. au-dessus du 4e',speed:'30 ft.',str:19,dex:9,con:18,int:6,wis:10,cha:5,cr:'4',languages:'—',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 13 + niv. du slot · PV = 40 + 10 × (slot − 4)'}],actions:[{name:'Coup de lame',desc:'+6 + niv. sort au toucher. 1d6 + 4 + niv. sort tranchants.'}]} },
-        { n:'Esprit Construit — Pierre', spirit:{name:'Esprit Construit (Pierre)',type:'Construct',size:'Medium',ac:13,acNote:'13 + niv. sort',hp:40,hpNote:'40 + 10 par niv. au-dessus du 4e',speed:'30 ft.',str:19,dex:7,con:18,int:6,wis:10,cha:3,cr:'4',languages:'—',senses:'Darkvision 60 ft.',traits:[{name:'Scaling',desc:'CA = 13 + niv. du slot · PV = 40 + 10 × (slot − 4)'}],actions:[{name:'Coup de pierre',desc:'+6 + niv. sort au toucher. 1d8 + 4 + niv. sort contondants.'}]} },
+        { n:'Celestial Spirit — Avenger', spirit:{name:'Celestial Spirit (Avenger)',type:'Celestial',size:'Medium',
+            ac:11,acNote:'11 + slot level',hp:40,hpNote:'40 + 10 per slot above 5th',
+            speed:'30 ft., fly 90 ft.',str:16,dex:14,con:16,int:14,wis:14,cha:16,cr:'5',
+            languages:"Celestial + caster's languages",senses:'Darkvision 120 ft.',
+            traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 40 + 10 × (slot − 5)'}],
+            actions:[{name:'Radiant Bow',desc:'Ranged Spell Attack: your spell attack modifier to hit, range 150 ft. Hit: 2d6 + 2 + slot level radiant.'}]
+          }
+        },
+        { n:'Celestial Spirit — Defender', spirit:{name:'Celestial Spirit (Defender)',type:'Celestial',size:'Medium',
+            ac:13,acNote:'13 + slot level',hp:40,hpNote:'40 + 10 per slot above 5th',
+            speed:'30 ft., fly 30 ft. (hover)',str:16,dex:14,con:16,int:14,wis:14,cha:16,cr:'5',
+            languages:"Celestial + caster's languages",senses:'Darkvision 120 ft.',
+            traits:[{name:'Scaling',desc:'AC = 13 + slot level · HP = 40 + 10 × (slot − 5)'}],
+            actions:[
+              {name:'Multiattack',desc:'The spirit makes two Radiant Mace attacks.'},
+              {name:'Radiant Mace',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 4 + slot level radiant.'},
+              {name:'Healing Touch (1/day)',desc:'The spirit touches a creature. That creature regains 2d8 + slot level HP.'},
+            ]
+          }
+        },
+      ]
+    },
+    { spell:'Summon Fiend', level:6, icon:'😈', note:'AC/HP scale with slot level',
+      creatures:[
+        { n:'Fiendish Spirit — Demon', spirit:{name:'Fiendish Spirit (Demon)',type:'Fiend',size:'Large',
+            ac:11,acNote:'11 + slot level',hp:50,hpNote:'50 + 10 per slot above 6th',
+            speed:'40 ft., climb 40 ft.',str:13,dex:16,con:15,int:10,wis:10,cha:16,cr:'6',
+            languages:"Abyssal + caster's languages",senses:'Darkvision 60 ft.',
+            traits:[
+              {name:'Magic Resistance',desc:'Advantage on saving throws against spells and magical effects.'},
+              {name:'Scaling',desc:'AC = 11 + slot level · HP = 50 + 10 × (slot − 6)'},
+            ],
+            actions:[
+              {name:'Multiattack',desc:'The spirit makes two Bite attacks.'},
+              {name:'Bite',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d12 + 3 + slot level necrotic.'},
+            ]
+          }
+        },
+        { n:'Fiendish Spirit — Devil', spirit:{name:'Fiendish Spirit (Devil)',type:'Fiend',size:'Large',
+            ac:12,acNote:'12 + slot level',hp:50,hpNote:'50 + 10 per slot above 6th',
+            speed:'30 ft., fly 40 ft.',str:13,dex:16,con:15,int:10,wis:10,cha:16,cr:'6',
+            languages:"Infernal + caster's languages",senses:'Darkvision 60 ft.',
+            traits:[
+              {name:'Magic Resistance',desc:'Advantage on saving throws against spells and magical effects.'},
+              {name:'Scaling',desc:'AC = 12 + slot level · HP = 50 + 10 × (slot − 6)'},
+            ],
+            actions:[
+              {name:'Multiattack',desc:'The spirit makes two Fiendish Weapon attacks.'},
+              {name:'Fiendish Weapon',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d12 + 3 + slot level fire.'},
+            ],
+            bonus_actions:[{name:'Fiendish Charm',desc:'One humanoid within 30 ft. must succeed on a WIS save (DC = spell save DC) or have the Charmed condition for 1 minute.'}]
+          }
+        },
+        { n:'Fiendish Spirit — Yugoloth', spirit:{name:'Fiendish Spirit (Yugoloth)',type:'Fiend',size:'Large',
+            ac:11,acNote:'11 + slot level',hp:50,hpNote:'50 + 10 per slot above 6th',
+            speed:'30 ft.',str:13,dex:16,con:15,int:10,wis:10,cha:16,cr:'6',
+            languages:"Abyssal, Infernal + caster's languages",senses:'Darkvision 60 ft.',
+            traits:[
+              {name:'Magic Resistance',desc:'Advantage on saving throws against spells and magical effects.'},
+              {name:'Toxic Poison',desc:'A creature Poisoned by this spirit has Disadvantage on all saving throws.'},
+              {name:'Scaling',desc:'AC = 11 + slot level · HP = 50 + 10 × (slot − 6)'},
+            ],
+            actions:[
+              {name:'Multiattack',desc:'The spirit makes two Claws attacks.'},
+              {name:'Claws',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 3 + slot level slashing + target makes a CON save (DC = spell save DC) or is Poisoned for 1 minute.'},
+            ]
+          }
+        },
       ]
     },
   ];
