@@ -230,7 +230,6 @@
     .attack-table td { padding:0.3rem 0.4rem; }
     .atk-inp { background:var(--j-input,#0d0d14); border:1px solid var(--j-border-col,#2a2a3a); border-radius:4px; color:var(--j-text,#e8e0d0); font-size:0.9rem; padding:0.3rem 0.5rem; width:100%; }
     .atk-inp:focus { outline:none; border-color:var(--gold-dark); }
-    @media (max-width:1100px) { .atk-inp { font-size:1rem; padding:0.4rem 0.5rem; } }
     .atk-del { background:none; border:none; color:var(--danger); cursor:pointer; font-size:1rem; padding:0; line-height:1; }
     .atk-card { display:flex; flex-direction:column; gap:8px; padding:10px 12px; border:1px solid var(--j-border-col,#2a1f0d); border-radius:4px; background:var(--j-panel,#1a1308); }
     .atk-card-lbl { font-size:0.6rem; color:var(--gold-dark); font-family:'Cinzel',serif; letter-spacing:.06em; text-transform:uppercase; display:block; margin-bottom:2px; }
@@ -1529,11 +1528,7 @@
   #vb-hero .stress-dots, #vb-hero #stress-max-inp,
   #vb-hero .vb-hd > div:last-child { display: none !important; }
 
-  /* ── Attacks → mobile cards via JS ── */
-  .attack-table { display:block; }
-  .attack-table thead { display:none; }
-  .attack-table tbody { display:flex; flex-direction:column; gap:8px; }
-  .attack-table tr, .attack-table td { display:block; width:100%; padding:0; border:none; }
+  /* ── Attacks → already handled by ≤1100px block ── */
   /* ── Spells → compact on mobile ── */
   .spell-table { display:block; }
   .spell-table thead { display:none; }
@@ -1606,6 +1601,12 @@
 .mbn-icon { font-size: 1.1rem; line-height: 1; position: relative; z-index: 1; flex-shrink: 0; }
 .mbn-label { font-family: 'Cinzel', serif; font-size: 0.5rem; letter-spacing: 0.04em; text-transform: uppercase; position: relative; z-index: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 .mbn-btn.active { color: var(--gold, #c9a96e); }
+
+/* ══ Attaques : toujours layout carte (colonne trop étroite pour un tableau) ══ */
+.attack-table { display:block; }
+.attack-table thead { display:none; }
+.attack-table tbody { display:flex; flex-direction:column; gap:8px; }
+.attack-table tr, .attack-table td { display:block; width:100%; padding:0; border:none; }
 
 /* ══ Mobile phone (≤ 640px) — améliorations ══ */
 @media (max-width: 640px) {
@@ -6664,7 +6665,8 @@ function renderAttacks() {
   tbody.innerHTML = '';
   const c = C();
   const attacks = c.attaques || [];
-  const isMobile = window.innerWidth <= 640;
+  // Toujours layout carte — la colonne est trop étroite pour un vrai tableau
+  const isMobile = true;
   attacks.forEach((atk, i) => {
     const ab = calcAtkBonus(atk);
     const dmgLine = [atk.degats, atk.typeDegat].filter(Boolean).join(' ') || '—';
