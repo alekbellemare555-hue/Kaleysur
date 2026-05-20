@@ -1783,10 +1783,6 @@
 .notes-section-wrap, .inv-cat-tabs, .vb-vitals-box,
 .vb-prof-badge, .vb-identite-wrap { border-radius: 2px !important; }
 
-/* ── Mode Lecture ── */
-#btn-read-mode { transition: all 0.2s; }
-#btn-read-mode.active { border-color: var(--gold-dark); color: var(--gold); background: rgba(201,169,110,0.1); }
-
 /* ── Field Lock Mode (champs fixes) ── */
 #btn-field-lock { transition: all 0.2s; }
 #btn-field-lock.active { border-color: var(--gold-dark); color: var(--gold); background: rgba(201,169,110,0.1); }
@@ -1827,14 +1823,6 @@
   flex: none !important; /* empêche le flex de court-circuiter la hauteur calculée */
   min-height: unset !important;
 }
-.read-mode .layout-wrapper,
-.read-mode .sheet-section,
-.read-mode .tab-panel > *:not(#vb-hero) { pointer-events: none; }
-.read-mode #vb-hero-vitals,
-.read-mode .sheet-section { opacity: 0.88; }
-.read-mode .dash-actions > *:not(#btn-read-mode) { pointer-events: none; opacity: 0.5; }
-.read-mode-banner { display: none; position: fixed; top: 52px; left: 50%; transform: translateX(-50%); background: rgba(138,110,26,0.18); border: 1px solid var(--gold-dark); color: var(--gold); font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.25rem 1.2rem; border-radius: 2px; z-index: 1400; pointer-events: none; }
-.read-mode .read-mode-banner { display: block; }
 
 /* ── Toast sauvegarde ── */
 #save-flash { position: fixed; bottom: 1.4rem; right: 1.4rem; background: #0d2018; border: 1px solid #3a6a3a; color: #7acc7a; font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.08em; padding: 0.35rem 0.9rem; border-radius: 2px; z-index: 9998; pointer-events: none; opacity: 0; transition: opacity 0.3s; }
@@ -2700,7 +2688,6 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
         <button class="btn btn-sm btn-gold" id="btn-new-char" title="New character" onclick="openNewCharModal()" style="font-size:1rem;padding:0 0.55rem;line-height:1;">+</button>
         <button class="btn btn-sm" id="btn-layout-edit" title="Rearrange sections">⠿</button>
         <button class="btn btn-sm" id="btn-field-lock" title="Verrouiller les champs (mode affichage)">✏</button>
-        <button class="btn btn-sm" id="btn-read-mode" title="Read Mode — lock the sheet">🔒</button>
         <button class="btn btn-sm" id="dice-tray-btn" title="Dice Roller">⚄</button>
         <button class="btn btn-sm" id="btn-install-app" title="Installer l'application" style="display:none;">📲</button>
         <button class="btn btn-sm btn-danger" id="btn-logout">Log out</button>
@@ -2729,7 +2716,6 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
       </div>
     </div>
 
-    <div class="read-mode-banner">Mode Lecture — cliquez 🔒 pour modifier</div>
     <!-- char-cards gardé caché (rendu mais non affiché, sert au JS existant) -->
     <div id="char-cards" style="display:none;"></div>
 
@@ -11717,15 +11703,6 @@ document.addEventListener('keydown', e => {
   btn.addEventListener('click', () => setLock(!locked));
 })();
 
-/* ── 9. Mode Lecture ── */
-document.getElementById('btn-read-mode')?.addEventListener('click', () => {
-  const dash = document.getElementById('screen-dashboard');
-  const btn = document.getElementById('btn-read-mode');
-  const active = dash.classList.toggle('read-mode');
-  btn.textContent = active ? '🔓' : '🔒';
-  btn.classList.toggle('active', active);
-  btn.title = active ? 'Désactiver le Mode Lecture' : 'Mode Lecture — verrouille la fiche';
-});
 
 /* ── 9. Debounce stats heavy render (already wired via debouncedStats in main handler) ── */
 
