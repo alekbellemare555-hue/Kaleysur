@@ -1165,9 +1165,9 @@
     /* ability-grid lives inside #vb-hero-lead — inherits existing .ability-grid/.ability-box CSS */
     #hero-note-wrap { margin-top: 12px; }
     #hero-note-label { font-family:'Cinzel',serif; font-size:8px; color:#555; letter-spacing:.08em; text-transform:uppercase; margin-bottom:4px; }
-    #hero-note { width:100%; box-sizing:border-box; background:rgba(255,255,255,0.03); border:1px solid #2a1f0d; border-radius:3px; color:#ccc; font-size:0.75rem; line-height:1.5; padding:6px 8px; resize:vertical; min-height:60px; font-family:inherit; transition:border-color var(--transition); }
-    #hero-note:focus { outline:none; border-color:var(--gold-dark); background:rgba(255,255,255,0.05); }
-    #hero-note::placeholder { color:#3a3020; font-style:italic; }
+    #hero-note { width:100%; box-sizing:border-box; background:var(--j-input,rgba(255,255,255,0.03)); border:1px solid var(--j-border-col,#2a1f0d); border-radius:3px; color:var(--j-text,#ccc); font-size:0.75rem; line-height:1.5; padding:6px 8px; resize:vertical; min-height:60px; font-family:inherit; transition:border-color var(--transition); }
+    #hero-note:focus { outline:none; border-color:var(--gold-dark); background:var(--j-input,rgba(255,255,255,0.05)); }
+    #hero-note::placeholder { color:var(--j-border-col,#3a3020); font-style:italic; }
     #vb-hero-vitals { display: flex; flex-direction: column; gap: 12px; }
     .vb-vitals-box {
       background: linear-gradient(180deg, var(--j-panel, #1a1308), var(--bg-primary, #0e0a04));
