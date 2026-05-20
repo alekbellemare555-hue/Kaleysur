@@ -12304,7 +12304,7 @@ function renderFamiliars() {
     document.getElementById('comp-filter-cr').style.display    = _activeTab === 'monsters'  ? '' : 'none';
     document.getElementById('btn-startequip').style.display           = _activeTab === 'equipment' ? '' : 'none';
     document.getElementById('comp-filter-startequip').style.display   = _activeTab === 'equipment' ? '' : 'none';
-    document.getElementById('btn-comp-summons').style.display         = _activeTab === 'monsters'  ? '' : 'none';
+    document.getElementById('btn-comp-summons').style.display         = _activeTab === 'monsters'  ? 'inline-block' : 'none';
     if (_activeTab !== 'equipment') { document.getElementById('comp-startequip-panel').classList.remove('open'); document.getElementById('btn-startequip').classList.remove('open'); }
     if (_activeTab !== 'monsters') _toggleSummons(false);
     document.getElementById('comp-search').value = '';
@@ -12825,7 +12825,7 @@ function renderFamiliars() {
       document.getElementById('comp-filter-cr').style.display = _activeTab === 'monsters' ? '' : 'none';
       document.getElementById('btn-startequip').style.display           = _activeTab === 'equipment' ? '' : 'none';
       document.getElementById('comp-filter-startequip').style.display   = _activeTab === 'equipment' ? '' : 'none';
-      document.getElementById('btn-comp-summons').style.display         = _activeTab === 'monsters'  ? '' : 'none';
+      document.getElementById('btn-comp-summons').style.display         = _activeTab === 'monsters'  ? 'inline-block' : 'none';
       if (_activeTab !== 'equipment') { document.getElementById('comp-startequip-panel').classList.remove('open'); document.getElementById('btn-startequip').classList.remove('open'); }
       if (_activeTab !== 'monsters') _toggleSummons(false);
       document.getElementById('comp-search').value = '';
