@@ -5916,6 +5916,7 @@ function renderCharSelector() {
       renderCharSelector();
       renderAll();
       applyCharTheme(); applyCharBg(C());
+      renderAvatarPicker(); // recapture les closures avec le bon personnage
       setTimeout(() => { loadCanvasPages(); initCanvas(); renderCanvasPagesSidebar(); }, 50);
       triggerSave();
     });
@@ -5979,6 +5980,8 @@ function renderCharCards() {
       playerData.activeCharId = id;
       renderCharCards();
       renderAll();
+      applyCharTheme(); applyCharBg(C());
+      renderAvatarPicker(); // recapture les closures avec le bon personnage
       // Recharger le canvas pour ce personnage
       setTimeout(() => { loadCanvasPages(); initCanvas(); renderCanvasPagesSidebar(); }, 50);
       triggerSave();
@@ -6167,7 +6170,7 @@ const _TAB_RENDERERS = {
   identite:   () => { fillFields(); },
   inventaire: () => { renderWornArmor(); renderInventory(); renderRationTracker(); renderAttunement(); fillCurrency(); },
   notes:      () => { renderNotesPages(); loadCurrentNoteInEditor(); },
-  parametres: () => { renderSectionVisibility(); },
+  parametres: () => { renderSectionVisibility(); renderAvatarPicker(); renderBgPreviewUI(); renderPageBgUI(); },
   aide:       null,
   familiers:  () => { renderFamiliars(); },
   lvlup:      () => { renderLvlupTab(); },
