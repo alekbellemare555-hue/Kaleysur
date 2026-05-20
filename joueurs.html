@@ -3424,6 +3424,13 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
           </div>
         </div>
         <div class="settings-row" style="margin-top:0.5rem;">
+          <div class="settings-label">Portrait colors<div class="settings-desc">Extract from your portrait image</div></div>
+          <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+            <button class="btn btn-sm" id="btn-extract-portrait-color" title="Générer un thème depuis les couleurs du portrait">🎨 Extract from portrait</button>
+            <div id="portrait-palette" style="display:flex;gap:5px;align-items:center;"></div>
+          </div>
+        </div>
+        <div class="settings-row" style="margin-top:0.5rem;">
           <div class="settings-label">Custom color<div class="settings-desc">Custom hue (hex)</div></div>
           <div class="color-picker-wrap">
             <input type="color" class="color-inp" id="custom-color-inp" value="#c9a227" title="Pick a color">
@@ -8461,6 +8468,9 @@ function renderAvatarPicker() {
   grid.innerHTML = '';
   const curAv  = (c && c.avatar) || '';
   const curPng = (c && c.avatarPng) || '';
+  // Vider la palette portrait au changement de personnage
+  const palCont = document.getElementById('portrait-palette');
+  if (palCont) palCont.innerHTML = '';
 
   // Emoji grid
   AVATARS.forEach(av => {
@@ -9434,6 +9444,104 @@ function hslToHex(h,s,l){
   const k=n=>(n+h/30)%12,a=s*Math.min(l,1-l),f=n=>l-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1)));
   return'#'+[0,8,4].map(n=>Math.round(f(n)*255).toString(16).padStart(2,'0')).join('');
 }
+/* ── Extraction de palette depuis une image (portrait ou fond) ── */
+function extractPortraitPalette(src) {
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => {
+    // Dessiner en petit pour accélérer l'échantillonnage
+    const SIZE = 80;
+    const cv = document.createElement('canvas');
+    cv.width = SIZE; cv.height = SIZE;
+    const ctx = cv.getContext('2d');
+    ctx.drawImage(img, 0, 0, SIZE, SIZE);
+    const data = ctx.getImageData(0, 0, SIZE, SIZE).data;
+
+    // Regrouper par teinte (buckets de 15°) et garder les couleurs saturées
+    const buckets = {};
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
+      if (a < 128) continue; // transparent
+      const max = Math.max(r,g,b), min = Math.min(r,g,b);
+      const l = (max + min) / 510; // lightness 0-1
+      if (l < 0.08 || l > 0.92) continue; // trop sombre ou trop clair
+      const d = max - min;
+      if (max === 0 || d / max < 0.25) continue; // trop gris
+      // Teinte en degrés
+      let h = 0;
+      if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) * 60;
+      else if (max === g) h = ((b - r) / d + 2) * 60;
+      else h = ((r - g) / d + 4) * 60;
+      const key = Math.round(h / 15) * 15;
+      const score = (d / max) * (1 - Math.abs(l - 0.5) * 1.4); // saturation × mid-lightness
+      if (!buckets[key] || score > buckets[key].score) {
+        buckets[key] = { r, g, b, score, h: Math.round(h), l };
+      }
+    }
+
+    // Trier par score et garder les 5 meilleures teintes bien séparées
+    const sorted = Object.values(buckets).sort((a,b) => b.score - a.score);
+    const picks = [];
+    for (const col of sorted) {
+      if (picks.length >= 5) break;
+      const tooClose = picks.some(p => Math.abs(p.h - col.h) < 30 || Math.abs(p.h - col.h) > 330);
+      if (!tooClose || picks.length === 0) picks.push(col);
+    }
+    if (picks.length === 0) { alert('Aucune couleur exploitable dans ce portrait.'); return; }
+
+    // Convertir en hex et afficher les swatches cliquables
+    function toHex(r,g,b) {
+      return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+    }
+    // Booster légèrement vers une luminosité médiane (40-60%)
+    function boostHex(r,g,b) {
+      const max = Math.max(r,g,b), min = Math.min(r,g,b);
+      const l = (max + min) / 510;
+      if (l >= 0.35 && l <= 0.65) return toHex(r,g,b);
+      // Interpoler vers lightness cible
+      const target = l < 0.35 ? 0.48 : 0.52;
+      const t = Math.abs(target - l) * 1.5;
+      const bg = target > l ? 255 : 0;
+      return toHex(
+        Math.round(r + (bg - r) * t),
+        Math.round(g + (bg - g) * t),
+        Math.round(b + (bg - b) * t)
+      );
+    }
+
+    const palette = picks.map(p => boostHex(p.r, p.g, p.b));
+    const container = document.getElementById('portrait-palette');
+    if (!container) return;
+    container.innerHTML = '';
+    palette.forEach(hex => {
+      const sw = document.createElement('button');
+      sw.title = hex;
+      sw.style.cssText = `width:26px;height:26px;border-radius:50%;background:${hex};border:2px solid transparent;cursor:pointer;transition:transform 0.15s,border-color 0.15s;flex-shrink:0;`;
+      sw.addEventListener('mouseenter', () => { sw.style.transform = 'scale(1.2)'; sw.style.borderColor = '#fff'; });
+      sw.addEventListener('mouseleave', () => { sw.style.transform = ''; sw.style.borderColor = 'transparent'; });
+      sw.addEventListener('click', () => {
+        // Marquer actif
+        container.querySelectorAll('button').forEach(b => { b.style.borderColor='transparent'; b.style.transform=''; });
+        sw.style.borderColor = '#fff'; sw.style.transform = 'scale(1.1)';
+        applyCustomColor(hex);
+        // Sync le picker custom
+        const ci = document.getElementById('custom-color-inp');
+        const ch = document.getElementById('custom-color-hex');
+        if (ci) ci.value = hex; if (ch) ch.value = hex;
+      });
+      container.appendChild(sw);
+    });
+    // Appliquer automatiquement la couleur la plus saturée
+    applyCustomColor(palette[0]);
+    const ci = document.getElementById('custom-color-inp');
+    const ch = document.getElementById('custom-color-hex');
+    if (ci) ci.value = palette[0]; if (ch) ch.value = palette[0];
+    container.querySelector('button')?.click();
+  };
+  img.onerror = () => alert('Impossible de lire l\'image.');
+  img.src = src;
+}
+
 function applyCustomColor(hex) {
   if(!/^#[0-9a-f]{6}$/i.test(hex))return;
   const[h,s,l]=hexToHsl(hex);
@@ -11188,6 +11296,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   /* ── Couleur personnalisée ── */
+  /* ── Extraction de couleurs depuis le portrait ── */
+  document.getElementById('btn-extract-portrait-color')?.addEventListener('click', () => {
+    const c = C();
+    const src = c?.avatarPng || c?.bgImage;
+    if (!src) {
+      const btn = document.getElementById('btn-extract-portrait-color');
+      if (btn) { btn.textContent = '⚠ No portrait'; setTimeout(() => { btn.innerHTML = '🎨 Extract from portrait'; }, 2000); }
+      return;
+    }
+    extractPortraitPalette(src);
+  });
+
   document.getElementById('custom-color-inp')?.addEventListener('input', e => {
     const ch = document.getElementById('custom-color-hex');
     if (ch) ch.value = e.target.value;
