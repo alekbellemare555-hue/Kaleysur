@@ -1791,11 +1791,11 @@
 #btn-field-lock { transition: all 0.2s; }
 #btn-field-lock.active { border-color: var(--gold-dark); color: var(--gold); background: rgba(201,169,110,0.1); }
 
-/* Tous les inputs/textareas dans les sections de fiche */
-#screen-dashboard.fields-locked .sheet-section input,
+/* Tous les inputs/textareas dans les sections de fiche — sauf checkboxes */
+#screen-dashboard.fields-locked .sheet-section input:not([type=checkbox]),
 #screen-dashboard.fields-locked .sheet-section textarea,
 #screen-dashboard.fields-locked .sheet-section select,
-#screen-dashboard.fields-locked [data-f] {
+#screen-dashboard.fields-locked [data-f]:not([type=checkbox]) {
   background: transparent !important;
   border-color: transparent !important;
   box-shadow: none !important;
@@ -1805,10 +1805,15 @@
   color: var(--j-text, #e8e0d0) !important;
   -moz-appearance: textfield;
 }
-#screen-dashboard.fields-locked .sheet-section input::-webkit-inner-spin-button,
-#screen-dashboard.fields-locked .sheet-section input::-webkit-outer-spin-button,
-#screen-dashboard.fields-locked [data-f]::-webkit-inner-spin-button,
-#screen-dashboard.fields-locked [data-f]::-webkit-outer-spin-button { display: none; }
+#screen-dashboard.fields-locked .sheet-section input:not([type=checkbox])::-webkit-inner-spin-button,
+#screen-dashboard.fields-locked .sheet-section input:not([type=checkbox])::-webkit-outer-spin-button,
+#screen-dashboard.fields-locked [data-f]:not([type=checkbox])::-webkit-inner-spin-button,
+#screen-dashboard.fields-locked [data-f]:not([type=checkbox])::-webkit-outer-spin-button { display: none; }
+/* Checkboxes, prof-dots et roll-triggers restent cliquables en mode affichage */
+#screen-dashboard.fields-locked .sheet-section input[type=checkbox],
+#screen-dashboard.fields-locked [data-f][type=checkbox],
+#screen-dashboard.fields-locked .prof-dot,
+#screen-dashboard.fields-locked .roll-trigger { pointer-events: auto !important; cursor: pointer !important; }
 /* Textareas : auto-expansion pour voir tout le contenu */
 #screen-dashboard.fields-locked .sheet-section textarea,
 #screen-dashboard.fields-locked textarea[data-f] {
