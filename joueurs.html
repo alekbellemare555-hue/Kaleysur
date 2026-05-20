@@ -30,6 +30,18 @@
     /* Force sidebar above all joueurs.html elements */
     .sidebar { z-index: 1500 !important; }
 
+    /* ── Sidebar collapse (toutes tailles d'écran) ── */
+    body.sidebar-collapsed { --sidebar-w: 0px; }
+    body.sidebar-collapsed .sidebar {
+      transform: translateX(-260px) !important;
+    }
+    /* Transition douce sur la topbar et le contenu */
+    .dash-header.vb-topbar,
+    .main-content,
+    #char-bg-layer {
+      transition: left 0.3s ease, margin-left 0.3s ease !important;
+    }
+
     /* ── Auth ── */
     .auth-wrap { display:flex; justify-content:center; align-items:flex-start; padding:3rem 1rem; min-height:60vh; }
     .auth-box { background:var(--bg-card,var(--j-panel,#1a1a24)); border:1px solid var(--border,var(--j-border-col,#2a2a3a)); border-radius:var(--radius); padding:2rem 2.5rem; width:100%; max-width:400px; }
@@ -11642,8 +11654,14 @@ document.addEventListener('keydown', e => {
   const overlay = document.getElementById('sidebar-overlay');
   if (!btn || !sidebar) return;
   btn.addEventListener('click', () => {
-    const isOpen = sidebar.classList.toggle('open');
-    overlay?.classList.toggle('visible', isOpen);
+    if (window.innerWidth > 900) {
+      // Desktop : toggle class sidebar-collapsed sur body (ajuste --sidebar-w et translate)
+      document.body.classList.toggle('sidebar-collapsed');
+    } else {
+      // Mobile : mécanisme open/overlay existant
+      const isOpen = sidebar.classList.toggle('open');
+      overlay?.classList.toggle('visible', isOpen);
+    }
   });
 })();
 
