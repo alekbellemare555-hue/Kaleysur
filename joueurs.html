@@ -1602,13 +1602,11 @@
 .mbn-label { font-family: 'Cinzel', serif; font-size: 0.5rem; letter-spacing: 0.04em; text-transform: uppercase; position: relative; z-index: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 .mbn-btn.active { color: var(--gold, #c9a96e); }
 
-/* ══ Attaques : layout carte jusqu'à 1100px (tablette + téléphone) ══ */
-@media (max-width: 1100px) {
-  .attack-table { display:block; }
-  .attack-table thead { display:none; }
-  .attack-table tbody { display:flex; flex-direction:column; gap:8px; }
-  .attack-table tr, .attack-table td { display:block; width:100%; padding:0; border:none; }
-}
+/* ══ Attaques : toujours layout carte (colonne trop étroite pour un tableau) ══ */
+.attack-table { display:block; }
+.attack-table thead { display:none; }
+.attack-table tbody { display:flex; flex-direction:column; gap:8px; }
+.attack-table tr, .attack-table td { display:block; width:100%; padding:0; border:none; }
 
 /* ══ Mobile phone (≤ 640px) — améliorations ══ */
 @media (max-width: 640px) {
@@ -6667,8 +6665,8 @@ function renderAttacks() {
   tbody.innerHTML = '';
   const c = C();
   const attacks = c.attaques || [];
-  // Carte sur mobile ET tablette (table seulement sur grand écran)
-  const isMobile = window.innerWidth <= 1100;
+  // Toujours layout carte — la colonne est trop étroite pour un vrai tableau
+  const isMobile = true;
   attacks.forEach((atk, i) => {
     const ab = calcAtkBonus(atk);
     const dmgLine = [atk.degats, atk.typeDegat].filter(Boolean).join(' ') || '—';
