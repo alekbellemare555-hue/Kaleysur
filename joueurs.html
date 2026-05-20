@@ -12870,11 +12870,50 @@ function renderFamiliars() {
         {n:'Raven',k:'raven'},{n:'Sea Horse',k:'sea-horse'},{n:'Spider',k:'spider'},{n:'Weasel',k:'weasel'},
       ]
     },
-    { spell:'Find Steed', level:2, icon:'🐴', note:'Spirit — CR ≤2, Large or smaller Beast',
+    { spell:'Find Steed', level:2, icon:'🐴', note:'Otherworldly Steed — scales with slot level',
       creatures:[
-        {n:'Black Bear',k:'black-bear'},{n:'Camel',k:'camel'},{n:'Elk',k:'elk'},
-        {n:'Giant Eagle',k:'giant-eagle'},{n:'Mastiff',k:'mastiff'},{n:'Pony',k:'pony'},
-        {n:'Rhinoceros',k:'rhinoceros'},{n:'Riding Horse',k:'riding-horse'},{n:'Warhorse',k:'warhorse'},
+        { n:'Otherworldly Steed — Celestial', spirit:{
+            name:'Otherworldly Steed (Celestial)', type:'Celestial', size:'Large',
+            ac:12, acNote:'10 + spell slot level', hp:25, hpNote:'5 + 10 × slot level (d10s = slot level)',
+            speed:'60 ft. (Fly 60 ft. if slot ≥ 4)',
+            str:18, dex:12, con:14, int:6, wis:12, cha:8,
+            cr:'—', languages:'Telepathy 1 mile (caster only)', senses:'Passive Perception 11',
+            traits:[
+              {name:'Life Bond', desc:'When you regain HP from a level 1+ spell, the steed regains the same number of HP if it is within 5 feet of you.'},
+              {name:'Scaling', desc:'AC = 10 + slot level · HP = 5 + 10 × slot level · Fly 60 ft. only if slot ≥ 4'},
+            ],
+            actions:[{name:'Otherworldly Slam', desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + slot level Radiant damage.'}],
+            bonus_actions:[{name:'Healing Touch (1/Long Rest)', desc:'One creature within 5 feet of the steed regains 2d8 + spell slot level Hit Points.'}]
+          }
+        },
+        { n:'Otherworldly Steed — Fey', spirit:{
+            name:'Otherworldly Steed (Fey)', type:'Fey', size:'Large',
+            ac:12, acNote:'10 + spell slot level', hp:25, hpNote:'5 + 10 × slot level (d10s = slot level)',
+            speed:'60 ft. (Fly 60 ft. if slot ≥ 4)',
+            str:18, dex:12, con:14, int:6, wis:12, cha:8,
+            cr:'—', languages:'Telepathy 1 mile (caster only)', senses:'Passive Perception 11',
+            traits:[
+              {name:'Life Bond', desc:'When you regain HP from a level 1+ spell, the steed regains the same number of HP if it is within 5 feet of you.'},
+              {name:'Scaling', desc:'AC = 10 + slot level · HP = 5 + 10 × slot level · Fly 60 ft. only if slot ≥ 4'},
+            ],
+            actions:[{name:'Otherworldly Slam', desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + slot level Psychic damage.'}],
+            bonus_actions:[{name:'Fey Step (1/Long Rest)', desc:'The steed teleports, along with its rider, to an unoccupied space of your choice up to 60 feet away from itself.'}]
+          }
+        },
+        { n:'Otherworldly Steed — Fiend', spirit:{
+            name:'Otherworldly Steed (Fiend)', type:'Fiend', size:'Large',
+            ac:12, acNote:'10 + spell slot level', hp:25, hpNote:'5 + 10 × slot level (d10s = slot level)',
+            speed:'60 ft. (Fly 60 ft. if slot ≥ 4)',
+            str:18, dex:12, con:14, int:6, wis:12, cha:8,
+            cr:'—', languages:'Telepathy 1 mile (caster only)', senses:'Passive Perception 11',
+            traits:[
+              {name:'Life Bond', desc:'When you regain HP from a level 1+ spell, the steed regains the same number of HP if it is within 5 feet of you.'},
+              {name:'Scaling', desc:'AC = 10 + slot level · HP = 5 + 10 × slot level · Fly 60 ft. only if slot ≥ 4'},
+            ],
+            actions:[{name:'Otherworldly Slam', desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + slot level Necrotic damage.'}],
+            bonus_actions:[{name:'Fell Glare (1/Long Rest)', desc:'WIS save (DC = your spell save DC), one creature within 60 feet the steed can see. On a failure, the target has the Frightened condition until the end of your next turn.'}]
+          }
+        },
       ]
     },
     { spell:'Find Greater Steed', level:4, icon:'🦅', note:'Spirit — CR ≤5, Large or smaller',
