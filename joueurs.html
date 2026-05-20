@@ -1300,11 +1300,13 @@
 
 /* Sheet sections → flat, transparent, no card border */
 .sheet-section {
-  background: none !important;
-  border: none !important;
-  border-radius: 0 !important;
-  padding: 0 !important;
+  background: color-mix(in srgb, var(--j-panel, #221a0e) var(--section-bg-pct, 0%), transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--j-border-col, #2a2a3a) var(--section-bg-pct, 0%), transparent) !important;
+  border-radius: var(--radius) !important;
+  padding: var(--section-pad, 0) !important;
   margin-bottom: 32px !important;
+  transition: background 0.3s, border-color 0.3s, padding 0.3s !important;
+  box-sizing: border-box !important;
 }
 /* Collapsed state */
 .sheet-section.collapsed { margin-bottom: 16px !important; }
@@ -3492,6 +3494,18 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
             </label>
             <img id="bg-preview" class="bg-preview" alt="background">
             <button id="bg-clear-btn" class="bg-clear-btn">✕ Remove</button>
+          </div>
+        </div>
+      </div>
+      <div class="settings-section">
+        <h3>Sheet Sections</h3>
+        <div class="settings-row">
+          <div class="settings-label">Section background<div class="settings-desc">Fond des sections (Attacks, Spells…) — utile avec une image de fond</div></div>
+          <div style="display:flex;align-items:center;gap:0.65rem;">
+            <span style="font-size:0.72rem;color:#666;">○</span>
+            <input type="range" id="section-bg-slider" min="0" max="100" value="0" step="5" style="width:110px;">
+            <span style="font-size:0.9rem;color:#aaa;">●</span>
+            <span id="section-bg-label" style="font-size:0.72rem;color:#666;min-width:32px;">0%</span>
           </div>
         </div>
       </div>
@@ -5854,6 +5868,7 @@ async function openDashboard() {
   buildSecTabBar();
   initLayoutDrag();
   if (playerData?.fontSize) applyFontSizeValue(playerData.fontSize);
+  if (playerData?.sectionBgPct != null) applySectionBgValue(playerData.sectionBgPct);
   document.getElementById('tab-admin-btn').style.display = currentUser === ADMIN_USER ? '' : 'none';
   // Migration : ajouter heroNote si absent
   Object.values(playerData?.characters || {}).forEach(slot => {
@@ -10340,6 +10355,24 @@ function renderBgPreviewUI() {
   btn.style.display  = bg ? 'inline-block' : 'none';
   if (bg) img.src = bg;
 }
+/* ── Opacité du fond des sections ── */
+function applySectionBgValue(pct) {
+  // pct = 0-100 : pourcentage pour color-mix (0 = transparent, 100 = plein)
+  const r = document.documentElement;
+  r.style.setProperty('--section-bg-pct', pct + '%');
+  // Ajouter un padding interne dès qu'il y a un fond visible
+  r.style.setProperty('--section-pad', pct > 3 ? '0.85rem 1rem' : '0');
+  const lbl = document.getElementById('section-bg-label');
+  if (lbl) lbl.textContent = pct + '%';
+  const slider = document.getElementById('section-bg-slider');
+  if (slider) slider.value = pct;
+}
+function applySectionBg(pct) {
+  applySectionBgValue(pct);
+  try { localStorage.setItem('kaleysur_section_bg', pct); } catch(e) {}
+  if (playerData) { playerData.sectionBgPct = pct; triggerSave(); }
+}
+
 function applyFontSizeValue(pct) {
   // Set on <html> so rem-based units scale correctly; clear any stale main override
   document.documentElement.style.fontSize = pct + '%';
@@ -10477,6 +10510,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (ch && gold.startsWith('#')) ch.value = gold;
         const slider = document.getElementById('font-size-slider');
         if (slider && playerData?.fontSize) { slider.value = playerData.fontSize; document.getElementById('font-size-label').textContent = playerData.fontSize + '%'; }
+        const sbSlider = document.getElementById('section-bg-slider');
+        if (sbSlider) { const v = playerData?.sectionBgPct ?? 0; sbSlider.value = v; const lbl = document.getElementById('section-bg-label'); if (lbl) lbl.textContent = v + '%'; }
         syncPaletteUI(loadPalette());
         renderBgPreviewUI();
         renderPageBgUI();
@@ -11414,6 +11449,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     document.getElementById('font-size-slider')?.addEventListener('change', e => {
       applyFontSize(parseInt(e.target.value));
+    });
+  })();
+
+  /* ── Opacité du fond des sections ── */
+  (() => {
+    const saved = playerData?.sectionBgPct ?? parseInt(localStorage.getItem('kaleysur_section_bg') || '0');
+    applySectionBgValue(saved);
+    document.getElementById('section-bg-slider')?.addEventListener('input', e => {
+      applySectionBgValue(parseInt(e.target.value));
+    });
+    document.getElementById('section-bg-slider')?.addEventListener('change', e => {
+      applySectionBg(parseInt(e.target.value));
     });
   })();
 
