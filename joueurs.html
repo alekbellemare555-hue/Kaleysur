@@ -12957,38 +12957,45 @@ function renderFamiliars() {
     { spell:'Summon Beast', level:2, icon:'🦁', note:'AC/HP scale with slot level',
       creatures:[
         { n:'Bestial Spirit — Air', spirit:{name:'Bestial Spirit (Air)',type:'Beast',size:'Small',
-            ac:11,acNote:'11 + slot level',hp:20,hpNote:'20 + 5 per slot above 2nd',
+            ac:11,acNote:'11 + slot level',hp:20,hpNote:'20 (Air) + 5 per slot above 2nd',
             speed:'30 ft., fly 60 ft.',str:18,dex:11,con:16,int:4,wis:14,cha:5,
-            cr:'2',languages:'—',senses:'Darkvision 60 ft.',
+            cr:'—',languages:'Understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 12',
             traits:[
               {name:'Flyby',desc:"The spirit doesn't provoke Opportunity Attacks when it flies out of an enemy's reach."},
               {name:'Scaling',desc:'AC = 11 + slot level · HP = 20 + 5 × (slot − 2)'},
             ],
-            actions:[{name:'Maul',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level slashing.'}]
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of Rend attacks equal to half this spell's level (round down)."},
+              {name:'Rend',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level Piercing damage.'},
+            ]
           }
         },
         { n:'Bestial Spirit — Land', spirit:{name:'Bestial Spirit (Land)',type:'Beast',size:'Small',
-            ac:11,acNote:'11 + slot level',hp:20,hpNote:'20 + 5 per slot above 2nd',
-            speed:'30 ft., burrow 30 ft.',str:18,dex:11,con:16,int:4,wis:14,cha:5,
-            cr:'2',languages:'—',senses:'Darkvision 60 ft.',
-            traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 20 + 5 × (slot − 2)'}],
+            ac:11,acNote:'11 + slot level',hp:30,hpNote:'30 (Land/Water) + 5 per slot above 2nd',
+            speed:'30 ft., climb 30 ft.',str:18,dex:11,con:16,int:4,wis:14,cha:5,
+            cr:'—',languages:'Understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 12',
+            traits:[
+              {name:'Pack Tactics',desc:"The spirit has Advantage on an attack roll against a creature if at least one of the spirit's allies is within 5 feet of the creature and the ally doesn't have the Incapacitated condition."},
+              {name:'Scaling',desc:'AC = 11 + slot level · HP = 30 + 5 × (slot − 2)'},
+            ],
             actions:[
-              {name:'Multiattack',desc:'The spirit makes a number of Maul attacks equal to half the spell slot level (round down).'},
-              {name:'Maul',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level bludgeoning, piercing, or slashing.'},
+              {name:'Multiattack',desc:"The spirit makes a number of Rend attacks equal to half this spell's level (round down)."},
+              {name:'Rend',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level Piercing damage.'},
             ]
           }
         },
         { n:'Bestial Spirit — Water', spirit:{name:'Bestial Spirit (Water)',type:'Beast',size:'Small',
-            ac:11,acNote:'11 + slot level',hp:20,hpNote:'20 + 5 per slot above 2nd',
+            ac:11,acNote:'11 + slot level',hp:30,hpNote:'30 (Land/Water) + 5 per slot above 2nd',
             speed:'30 ft., swim 30 ft.',str:18,dex:11,con:16,int:4,wis:14,cha:5,
-            cr:'2',languages:'—',senses:'Darkvision 60 ft., Blindsight 30 ft.',
+            cr:'—',languages:'Understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 12',
             traits:[
-              {name:'Amphibious',desc:'The spirit can breathe air and water.'},
-              {name:'Scaling',desc:'AC = 11 + slot level · HP = 20 + 5 × (slot − 2)'},
+              {name:'Pack Tactics',desc:"The spirit has Advantage on an attack roll against a creature if at least one of the spirit's allies is within 5 feet of the creature and the ally doesn't have the Incapacitated condition."},
+              {name:'Water Breathing',desc:'The spirit can breathe only underwater.'},
+              {name:'Scaling',desc:'AC = 11 + slot level · HP = 30 + 5 × (slot − 2)'},
             ],
             actions:[
-              {name:'Multiattack',desc:'The spirit makes a number of Maul attacks equal to half the spell slot level (round down).'},
-              {name:'Maul',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level piercing.'},
+              {name:'Multiattack',desc:"The spirit makes a number of Rend attacks equal to half this spell's level (round down)."},
+              {name:'Rend',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level Piercing damage.'},
             ]
           }
         },
@@ -12998,36 +13005,41 @@ function renderFamiliars() {
       creatures:[
         { n:'Fey Spirit — Fuming', spirit:{name:'Fey Spirit (Fuming)',type:'Fey',size:'Small',
             ac:12,acNote:'12 + slot level',hp:30,hpNote:'30 + 10 per slot above 3rd',
-            speed:'40 ft.',str:13,dex:16,con:14,int:14,wis:11,cha:16,cr:'3',
-            languages:"Sylvan + caster's languages",senses:'Darkvision 60 ft.',
+            speed:'30 ft., fly 30 ft.',str:13,dex:16,con:14,int:14,wis:11,cha:16,cr:'—',
+            immunities:'Charmed',
+            languages:'Sylvan, understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
             traits:[{name:'Scaling',desc:'AC = 12 + slot level · HP = 30 + 10 × (slot − 3)'}],
             actions:[
-              {name:'Multiattack',desc:'The spirit makes two Fey Strike attacks.'},
-              {name:'Fey Strike',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 3 + slot level slashing + 1d6 psychic.'},
-            ]
+              {name:'Multiattack',desc:"The spirit makes a number of Fey Blade attacks equal to half this spell's level (round down)."},
+              {name:'Fey Blade',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 2d6 + 3 + slot level Force damage.'},
+            ],
+            bonus_actions:[{name:'Fey Step',desc:'The spirit teleports up to 30 feet to an unoccupied space it can see. Fuming effect: The spirit has Advantage on the next attack roll it makes before the end of this turn.'}]
           }
         },
         { n:'Fey Spirit — Mirthful', spirit:{name:'Fey Spirit (Mirthful)',type:'Fey',size:'Small',
             ac:12,acNote:'12 + slot level',hp:30,hpNote:'30 + 10 per slot above 3rd',
-            speed:'40 ft.',str:13,dex:16,con:14,int:14,wis:11,cha:16,cr:'3',
-            languages:"Sylvan + caster's languages",senses:'Darkvision 60 ft.',
+            speed:'30 ft., fly 30 ft.',str:13,dex:16,con:14,int:14,wis:11,cha:16,cr:'—',
+            immunities:'Charmed',
+            languages:'Sylvan, understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
             traits:[{name:'Scaling',desc:'AC = 12 + slot level · HP = 30 + 10 × (slot − 3)'}],
             actions:[
-              {name:'Multiattack',desc:'The spirit makes two Fey Strike attacks.'},
-              {name:'Fey Strike',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 3 + slot level slashing.'},
-              {name:'Fey Step (Recharge 4–6)',desc:'The spirit teleports up to 30 ft. to an unoccupied space it can see, taking one willing creature within 5 ft.'},
-            ]
+              {name:'Multiattack',desc:"The spirit makes a number of Fey Blade attacks equal to half this spell's level (round down)."},
+              {name:'Fey Blade',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 2d6 + 3 + slot level Force damage.'},
+            ],
+            bonus_actions:[{name:'Fey Step',desc:'The spirit teleports up to 30 feet to an unoccupied space it can see. Mirthful effect: WIS save (DC = spell save DC), one creature within 10 feet the spirit can see. Failure: The target is Charmed by you and the spirit for 1 minute or until the target takes any damage.'}]
           }
         },
         { n:'Fey Spirit — Tricksy', spirit:{name:'Fey Spirit (Tricksy)',type:'Fey',size:'Small',
             ac:12,acNote:'12 + slot level',hp:30,hpNote:'30 + 10 per slot above 3rd',
-            speed:'40 ft.',str:13,dex:16,con:14,int:14,wis:11,cha:16,cr:'3',
-            languages:"Sylvan + caster's languages",senses:'Darkvision 60 ft.',
+            speed:'30 ft., fly 30 ft.',str:13,dex:16,con:14,int:14,wis:11,cha:16,cr:'—',
+            immunities:'Charmed',
+            languages:'Sylvan, understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
             traits:[{name:'Scaling',desc:'AC = 12 + slot level · HP = 30 + 10 × (slot − 3)'}],
             actions:[
-              {name:'Fey Strike',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 3 + slot level slashing.'},
-              {name:'Invisibility',desc:'The spirit has the Invisible condition until it attacks or until its Concentration ends.'},
-            ]
+              {name:'Multiattack',desc:"The spirit makes a number of Fey Blade attacks equal to half this spell's level (round down)."},
+              {name:'Fey Blade',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 2d6 + 3 + slot level Force damage.'},
+            ],
+            bonus_actions:[{name:'Fey Step',desc:'The spirit teleports up to 30 feet to an unoccupied space it can see. Tricksy effect: The spirit fills a 10-foot Cube within 5 feet of it with magical Darkness, which lasts until the end of its next turn.'}]
           }
         },
       ]
@@ -13035,32 +13047,44 @@ function renderFamiliars() {
     { spell:'Summon Undead', level:3, icon:'💀', note:'AC/HP scale with slot level',
       creatures:[
         { n:'Undead Spirit — Ghostly', spirit:{name:'Undead Spirit (Ghostly)',type:'Undead',size:'Medium',
-            ac:11,acNote:'11 + slot level',hp:30,hpNote:'30 + 10 per slot above 3rd',
-            speed:'0 ft., fly 40 ft. (hover)',str:6,dex:16,con:15,int:4,wis:10,cha:16,cr:'3',
-            languages:'—',senses:'Darkvision 60 ft.',
+            ac:11,acNote:'11 + slot level',hp:30,hpNote:'30 (Ghostly/Putrid) + 10 per slot above 3rd',
+            speed:'0 ft., fly 40 ft. (hover)',str:12,dex:16,con:15,int:4,wis:10,cha:9,cr:'—',
+            immunities:'Necrotic, Poison; Exhaustion, Frightened, Paralyzed, Poisoned',
+            languages:'Understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
             traits:[
-              {name:'Incorporeal Passage',desc:'The spirit can move through other creatures and objects. It takes 1d10 force damage if it ends its turn inside an object.'},
+              {name:'Incorporeal Passage',desc:'The spirit can move through other creatures and objects as if they were Difficult Terrain. If it ends its turn inside an object, it is shunted to the nearest unoccupied space and takes 1d10 Force damage for every 5 feet traveled.'},
               {name:'Scaling',desc:'AC = 11 + slot level · HP = 30 + 10 × (slot − 3)'},
             ],
-            actions:[{name:'Deathly Touch',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 3 + slot level necrotic. Target makes a WIS save (DC = spell save DC) or has the Frightened condition until the end of your next turn.'}]
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of attacks equal to half this spell's level (round down)."},
+              {name:'Deathly Touch',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 3 + slot level Necrotic, and the target has the Frightened condition until the end of its next turn.'},
+            ]
           }
         },
         { n:'Undead Spirit — Putrid', spirit:{name:'Undead Spirit (Putrid)',type:'Undead',size:'Medium',
-            ac:11,acNote:'11 + slot level',hp:30,hpNote:'30 + 10 per slot above 3rd',
-            speed:'30 ft.',str:16,dex:8,con:15,int:4,wis:10,cha:16,cr:'3',
-            languages:'—',senses:'Darkvision 60 ft.',
-            traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 30 + 10 × (slot − 3)'}],
-            actions:[{name:'Rotting Claw',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 3 + slot level necrotic. Target makes a CON save (DC = spell save DC) or has the Poisoned condition until the end of your next turn.'}]
+            ac:11,acNote:'11 + slot level',hp:30,hpNote:'30 (Ghostly/Putrid) + 10 per slot above 3rd',
+            speed:'30 ft.',str:12,dex:16,con:15,int:4,wis:10,cha:9,cr:'—',
+            immunities:'Necrotic, Poison; Exhaustion, Frightened, Paralyzed, Poisoned',
+            languages:'Understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
+            traits:[
+              {name:'Festering Aura',desc:'CON save (DC = spell save DC), any creature (other than you) that starts its turn within a 5-foot Emanation originating from the spirit. Failure: The creature has the Poisoned condition until the start of its next turn.'},
+              {name:'Scaling',desc:'AC = 11 + slot level · HP = 30 + 10 × (slot − 3)'},
+            ],
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of attacks equal to half this spell's level (round down)."},
+              {name:'Rotting Claw',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 3 + slot level Slashing. If the target has the Poisoned condition, it has the Paralyzed condition until the end of its next turn.'},
+            ]
           }
         },
         { n:'Undead Spirit — Skeletal', spirit:{name:'Undead Spirit (Skeletal)',type:'Undead',size:'Medium',
-            ac:11,acNote:'11 + slot level',hp:30,hpNote:'30 + 10 per slot above 3rd',
-            speed:'30 ft.',str:16,dex:16,con:15,int:4,wis:10,cha:16,cr:'3',
-            languages:'—',senses:'Darkvision 60 ft.',
-            traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 30 + 10 × (slot − 3)'}],
+            ac:11,acNote:'11 + slot level',hp:20,hpNote:'20 (Skeletal) + 10 per slot above 3rd',
+            speed:'30 ft.',str:12,dex:16,con:15,int:4,wis:10,cha:9,cr:'—',
+            immunities:'Necrotic, Poison; Exhaustion, Frightened, Paralyzed, Poisoned',
+            languages:'Understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
+            traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 20 + 10 × (slot − 3)'}],
             actions:[
-              {name:'Multiattack',desc:'The spirit makes two Grave Bolt attacks.'},
-              {name:'Grave Bolt',desc:'Ranged Spell Attack: your spell attack modifier to hit, range 150 ft. Hit: 1d4 + 3 + slot level necrotic.'},
+              {name:'Multiattack',desc:"The spirit makes a number of attacks equal to half this spell's level (round down)."},
+              {name:'Grave Bolt',desc:'Ranged Attack: your spell attack modifier to hit, range 150 ft. Hit: 2d4 + 3 + slot level Necrotic damage.'},
             ]
           }
         },
@@ -13068,39 +13092,64 @@ function renderFamiliars() {
     },
     { spell:'Summon Elemental', level:4, icon:'🌊', note:'AC/HP scale with slot level',
       creatures:[
-        { n:'Elemental Spirit — Air', spirit:{name:'Elemental Spirit (Air)',type:'Elemental',size:'Large',
+        { n:'Elemental Spirit — Air', spirit:{name:'Elemental Spirit (Air)',type:'Elemental',size:'Medium',
             ac:11,acNote:'11 + slot level',hp:50,hpNote:'50 + 10 per slot above 4th',
-            speed:'30 ft., fly 40 ft.',str:18,dex:15,con:17,int:8,wis:10,cha:10,cr:'4',
-            languages:"Auran + caster's languages",senses:'Darkvision 60 ft.',
-            traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 50 + 10 × (slot − 4)'}],
-            actions:[{name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d10 + 4 + slot level bludgeoning + 1d6 thunder.'}]
-          }
-        },
-        { n:'Elemental Spirit — Earth', spirit:{name:'Elemental Spirit (Earth)',type:'Elemental',size:'Large',
-            ac:17,acNote:'17 (natural armor)',hp:50,hpNote:'50 + 10 per slot above 4th',
-            speed:'30 ft., burrow 30 ft.',str:20,dex:8,con:18,int:8,wis:10,cha:5,cr:'4',
-            languages:"Terran + caster's languages",senses:'Darkvision 60 ft., Tremorsense 60 ft.',
-            traits:[{name:'Scaling',desc:'AC fixed 17 · HP = 50 + 10 × (slot − 4)'}],
-            actions:[{name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 2d6 + 5 + slot level bludgeoning.'}]
-          }
-        },
-        { n:'Elemental Spirit — Fire', spirit:{name:'Elemental Spirit (Fire)',type:'Elemental',size:'Large',
-            ac:11,acNote:'11 + slot level',hp:50,hpNote:'50 + 10 per slot above 4th',
-            speed:'40 ft.',str:18,dex:15,con:17,int:6,wis:10,cha:7,cr:'4',
-            languages:"Ignan + caster's languages",senses:'Darkvision 60 ft.',
+            speed:'40 ft., fly 40 ft. (hover)',str:18,dex:15,con:17,int:4,wis:10,cha:16,cr:'—',
+            resistances:'Lightning, Thunder',
+            immunities:'Poison; Exhaustion, Paralyzed, Petrified, Poisoned',
+            languages:'Primordial, understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
             traits:[
-              {name:'Illumination',desc:'The spirit sheds bright light in a 30-foot radius and dim light for an additional 30 feet.'},
+              {name:'Amorphous Form',desc:'The spirit can move through a space as narrow as 1 inch wide without it counting as Difficult Terrain.'},
               {name:'Scaling',desc:'AC = 11 + slot level · HP = 50 + 10 × (slot − 4)'},
             ],
-            actions:[{name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d10 + 4 + slot level bludgeoning + 1d6 fire.'}]
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of Slam attacks equal to half this spell's level (round down)."},
+              {name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d10 + 4 + slot level Lightning damage.'},
+            ]
           }
         },
-        { n:'Elemental Spirit — Water', spirit:{name:'Elemental Spirit (Water)',type:'Elemental',size:'Large',
+        { n:'Elemental Spirit — Earth', spirit:{name:'Elemental Spirit (Earth)',type:'Elemental',size:'Medium',
+            ac:17,acNote:'17 (natural armor)',hp:50,hpNote:'50 + 10 per slot above 4th',
+            speed:'40 ft., burrow 40 ft.',str:18,dex:15,con:17,int:4,wis:10,cha:16,cr:'—',
+            resistances:'Piercing, Slashing',
+            immunities:'Poison; Exhaustion, Paralyzed, Petrified, Poisoned',
+            languages:'Primordial, understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
+            traits:[{name:'Scaling',desc:'AC fixed 17 · HP = 50 + 10 × (slot − 4)'}],
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of Slam attacks equal to half this spell's level (round down)."},
+              {name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d10 + 4 + slot level Bludgeoning damage.'},
+            ]
+          }
+        },
+        { n:'Elemental Spirit — Fire', spirit:{name:'Elemental Spirit (Fire)',type:'Elemental',size:'Medium',
             ac:11,acNote:'11 + slot level',hp:50,hpNote:'50 + 10 per slot above 4th',
-            speed:'30 ft., swim 40 ft.',str:18,dex:14,con:17,int:8,wis:10,cha:3,cr:'4',
-            languages:"Aquan + caster's languages",senses:'Darkvision 60 ft.',
-            traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 50 + 10 × (slot − 4)'}],
-            actions:[{name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 2d6 + 4 + slot level bludgeoning.'}]
+            speed:'40 ft.',str:18,dex:15,con:17,int:4,wis:10,cha:16,cr:'—',
+            immunities:'Fire, Poison; Exhaustion, Paralyzed, Petrified, Poisoned',
+            languages:'Primordial, understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
+            traits:[
+              {name:'Amorphous Form',desc:'The spirit can move through a space as narrow as 1 inch wide without it counting as Difficult Terrain.'},
+              {name:'Scaling',desc:'AC = 11 + slot level · HP = 50 + 10 × (slot − 4)'},
+            ],
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of Slam attacks equal to half this spell's level (round down)."},
+              {name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d10 + 4 + slot level Fire damage.'},
+            ]
+          }
+        },
+        { n:'Elemental Spirit — Water', spirit:{name:'Elemental Spirit (Water)',type:'Elemental',size:'Medium',
+            ac:11,acNote:'11 + slot level',hp:50,hpNote:'50 + 10 per slot above 4th',
+            speed:'40 ft., swim 40 ft.',str:18,dex:15,con:17,int:4,wis:10,cha:16,cr:'—',
+            resistances:'Acid',
+            immunities:'Poison; Exhaustion, Paralyzed, Petrified, Poisoned',
+            languages:'Primordial, understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
+            traits:[
+              {name:'Amorphous Form',desc:'The spirit can move through a space as narrow as 1 inch wide without it counting as Difficult Terrain.'},
+              {name:'Scaling',desc:'AC = 11 + slot level · HP = 50 + 10 × (slot − 4)'},
+            ],
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of Slam attacks equal to half this spell's level (round down)."},
+              {name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d10 + 4 + slot level Cold damage.'},
+            ]
           }
         },
       ]
@@ -13109,29 +13158,44 @@ function renderFamiliars() {
       creatures:[
         { n:'Aberrant Spirit — Beholderkin', spirit:{name:'Aberrant Spirit (Beholderkin)',type:'Aberration',size:'Medium',
             ac:11,acNote:'11 + slot level',hp:40,hpNote:'40 + 10 per slot above 4th',
-            speed:'0 ft., fly 30 ft. (hover)',str:16,dex:10,con:15,int:16,wis:10,cha:6,cr:'4',
-            languages:"Deep Speech + caster's languages",senses:'Darkvision 60 ft.',
+            speed:'0 ft., fly 30 ft. (hover)',str:16,dex:10,con:15,int:16,wis:10,cha:6,cr:'—',
+            immunities:'Psychic',
+            languages:'Deep Speech, understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
             traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 40 + 10 × (slot − 4)'}],
-            actions:[{name:'Eye Ray',desc:'Ranged Spell Attack: your spell attack modifier to hit, range 150 ft. Hit: 1d8 + 3 + slot level psychic.'}]
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of attacks equal to half this spell's level (round down)."},
+              {name:'Eye Ray',desc:'Ranged Attack: your spell attack modifier to hit, range 150 ft. Hit: 1d8 + 3 + slot level Psychic damage.'},
+            ]
           }
         },
-        { n:'Aberrant Spirit — Slaadi', spirit:{name:'Aberrant Spirit (Slaadi)',type:'Aberration',size:'Medium',
+        { n:'Aberrant Spirit — Mind Flayer', spirit:{name:'Aberrant Spirit (Mind Flayer)',type:'Aberration',size:'Medium',
             ac:11,acNote:'11 + slot level',hp:40,hpNote:'40 + 10 per slot above 4th',
-            speed:'30 ft.',str:17,dex:10,con:16,int:6,wis:12,cha:7,cr:'4',
-            languages:"Slaad + caster's languages",senses:'Darkvision 60 ft.',
+            speed:'30 ft.',str:16,dex:10,con:15,int:16,wis:10,cha:6,cr:'—',
+            immunities:'Psychic',
+            languages:'Deep Speech, understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
             traits:[
-              {name:'Regeneration',desc:'The spirit regains 5 HP at the start of its turn if it has at least 1 HP.'},
+              {name:'Whispering Aura',desc:"At the start of each of the spirit's turns, it emits psionic energy if it doesn't have the Incapacitated condition. WIS save (DC = spell save DC), each creature (other than you) within 5 feet. Failure: 2d6 Psychic damage."},
               {name:'Scaling',desc:'AC = 11 + slot level · HP = 40 + 10 × (slot − 4)'},
             ],
-            actions:[{name:'Claws',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 3 + slot level slashing.'}]
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of attacks equal to half this spell's level (round down)."},
+              {name:'Psychic Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 3 + slot level Psychic damage.'},
+            ]
           }
         },
-        { n:'Aberrant Spirit — Star Spawn', spirit:{name:'Aberrant Spirit (Star Spawn)',type:'Aberration',size:'Medium',
+        { n:'Aberrant Spirit — Slaad', spirit:{name:'Aberrant Spirit (Slaad)',type:'Aberration',size:'Medium',
             ac:11,acNote:'11 + slot level',hp:40,hpNote:'40 + 10 per slot above 4th',
-            speed:'30 ft.',str:16,dex:10,con:15,int:16,wis:10,cha:8,cr:'4',
-            languages:"Deep Speech + caster's languages",senses:'Darkvision 60 ft.',
-            traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 40 + 10 × (slot − 4)'}],
-            actions:[{name:'Psychic Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 3 + slot level bludgeoning.'}]
+            speed:'30 ft.',str:16,dex:10,con:15,int:16,wis:10,cha:6,cr:'—',
+            immunities:'Psychic',
+            languages:'Deep Speech, understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
+            traits:[
+              {name:'Regeneration',desc:'The spirit regains 5 Hit Points at the start of its turn if it has at least 1 Hit Point.'},
+              {name:'Scaling',desc:'AC = 11 + slot level · HP = 40 + 10 × (slot − 4)'},
+            ],
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of attacks equal to half this spell's level (round down)."},
+              {name:'Claw',desc:"Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d10 + 3 + slot level Slashing. The target can't regain Hit Points until the start of the spirit's next turn."},
+            ]
           }
         },
       ]
@@ -13139,59 +13203,80 @@ function renderFamiliars() {
     { spell:'Summon Construct', level:4, icon:'⚙️', note:'AC/HP scale with slot level',
       creatures:[
         { n:'Construct Spirit — Clay', spirit:{name:'Construct Spirit (Clay)',type:'Construct',size:'Medium',
-            ac:13,acNote:'13 + slot level',hp:40,hpNote:'40 + 10 per slot above 4th',
-            speed:'30 ft.',str:18,dex:7,con:18,int:6,wis:10,cha:3,cr:'4',
-            languages:'—',senses:'Darkvision 60 ft.',
-            traits:[
-              {name:'Heated Body',desc:'A creature that touches the spirit or hits it with a melee attack takes 1d6 fire damage.'},
-              {name:'Scaling',desc:'AC = 13 + slot level · HP = 40 + 10 × (slot − 4)'},
+            ac:13,acNote:'13 + slot level',hp:40,hpNote:'40 + 15 per slot above 4th',
+            speed:'30 ft.',str:18,dex:10,con:18,int:14,wis:11,cha:5,cr:'—',
+            resistances:'Poison',
+            immunities:'Charmed, Exhaustion, Frightened, Paralyzed, Poisoned',
+            languages:'Understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
+            traits:[{name:'Scaling',desc:'AC = 13 + slot level · HP = 40 + 15 × (slot − 4)'}],
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of Slam attacks equal to half this spell's level (round down)."},
+              {name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level Bludgeoning damage.'},
             ],
-            actions:[{name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level bludgeoning.'}]
+            reactions:[{name:'Berserk Lashing',desc:'Trigger: The spirit takes damage from a creature. Response: The spirit makes a Slam attack against that creature if possible, or moves up to half its Speed toward that creature without provoking Opportunity Attacks.'}]
           }
         },
         { n:'Construct Spirit — Metal', spirit:{name:'Construct Spirit (Metal)',type:'Construct',size:'Medium',
-            ac:13,acNote:'13 + slot level',hp:40,hpNote:'40 + 10 per slot above 4th',
-            speed:'30 ft.',str:19,dex:9,con:18,int:6,wis:10,cha:5,cr:'4',
-            languages:'—',senses:'Darkvision 60 ft.',
+            ac:13,acNote:'13 + slot level',hp:40,hpNote:'40 + 15 per slot above 4th',
+            speed:'30 ft.',str:18,dex:10,con:18,int:14,wis:11,cha:5,cr:'—',
+            resistances:'Poison',
+            immunities:'Charmed, Exhaustion, Frightened, Paralyzed, Poisoned',
+            languages:'Understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
             traits:[
-              {name:'Heated Body',desc:'A creature that touches the spirit or hits it with a melee attack takes 1d6 fire damage.'},
-              {name:'Scaling',desc:'AC = 13 + slot level · HP = 40 + 10 × (slot − 4)'},
+              {name:'Heated Body',desc:'A creature that hits the spirit with a melee attack or that starts its turn in a grapple with the spirit takes 1d10 Fire damage.'},
+              {name:'Scaling',desc:'AC = 13 + slot level · HP = 40 + 15 × (slot − 4)'},
             ],
-            actions:[{name:'Sword',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 4 + slot level slashing.'}]
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of Slam attacks equal to half this spell's level (round down)."},
+              {name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level Bludgeoning damage.'},
+            ]
           }
         },
         { n:'Construct Spirit — Stone', spirit:{name:'Construct Spirit (Stone)',type:'Construct',size:'Medium',
-            ac:13,acNote:'13 + slot level',hp:40,hpNote:'40 + 10 per slot above 4th',
-            speed:'30 ft.',str:19,dex:7,con:18,int:6,wis:10,cha:3,cr:'4',
-            languages:'—',senses:'Darkvision 60 ft.',
+            ac:13,acNote:'13 + slot level',hp:40,hpNote:'40 + 15 per slot above 4th',
+            speed:'30 ft.',str:18,dex:10,con:18,int:14,wis:11,cha:5,cr:'—',
+            resistances:'Poison',
+            immunities:'Charmed, Exhaustion, Frightened, Paralyzed, Poisoned',
+            languages:'Understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 10',
             traits:[
-              {name:'Siege Monster',desc:'The spirit deals double damage to objects and structures.'},
-              {name:'Scaling',desc:'AC = 13 + slot level · HP = 40 + 10 × (slot − 4)'},
+              {name:'Stony Lethargy',desc:'When a creature starts its turn within 10 feet of the spirit, the spirit can target it with magical energy if the spirit can see it. WIS save (DC = spell save DC), the target. Failure: Until the start of its next turn, the target cannot make Opportunity Attacks, and its Speed is halved.'},
+              {name:'Scaling',desc:'AC = 13 + slot level · HP = 40 + 15 × (slot − 4)'},
             ],
-            actions:[{name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level bludgeoning.'}]
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of Slam attacks equal to half this spell's level (round down)."},
+              {name:'Slam',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 4 + slot level Bludgeoning damage.'},
+            ]
           }
         },
       ]
     },
     { spell:'Summon Celestial', level:5, icon:'✨', note:'AC/HP scale with slot level',
       creatures:[
-        { n:'Celestial Spirit — Avenger', spirit:{name:'Celestial Spirit (Avenger)',type:'Celestial',size:'Medium',
+        { n:'Celestial Spirit — Avenger', spirit:{name:'Celestial Spirit (Avenger)',type:'Celestial',size:'Large',
             ac:11,acNote:'11 + slot level',hp:40,hpNote:'40 + 10 per slot above 5th',
-            speed:'30 ft., fly 90 ft.',str:16,dex:14,con:16,int:14,wis:14,cha:16,cr:'5',
-            languages:"Celestial + caster's languages",senses:'Darkvision 120 ft.',
+            speed:'30 ft., fly 40 ft.',str:16,dex:14,con:16,int:10,wis:14,cha:16,cr:'—',
+            resistances:'Radiant',
+            immunities:'Charmed, Frightened',
+            languages:'Celestial, understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 12',
             traits:[{name:'Scaling',desc:'AC = 11 + slot level · HP = 40 + 10 × (slot − 5)'}],
-            actions:[{name:'Radiant Bow',desc:'Ranged Spell Attack: your spell attack modifier to hit, range 150 ft. Hit: 2d6 + 2 + slot level radiant.'}]
+            actions:[
+              {name:'Multiattack',desc:"The spirit makes a number of attacks equal to half this spell's level (round down)."},
+              {name:'Radiant Bow',desc:'Ranged Attack: your spell attack modifier to hit, range 600 ft. Hit: 2d6 + 2 + slot level Radiant damage.'},
+              {name:'Healing Touch (1/Day)',desc:'The spirit touches another creature. The target regains 2d8 + slot level Hit Points.'},
+            ]
           }
         },
-        { n:'Celestial Spirit — Defender', spirit:{name:'Celestial Spirit (Defender)',type:'Celestial',size:'Medium',
-            ac:13,acNote:'13 + slot level',hp:40,hpNote:'40 + 10 per slot above 5th',
-            speed:'30 ft., fly 30 ft. (hover)',str:16,dex:14,con:16,int:14,wis:14,cha:16,cr:'5',
-            languages:"Celestial + caster's languages",senses:'Darkvision 120 ft.',
+        { n:'Celestial Spirit — Defender', spirit:{name:'Celestial Spirit (Defender)',type:'Celestial',size:'Large',
+            ac:13,acNote:'13 + slot level (11 + 2)',hp:40,hpNote:'40 + 10 per slot above 5th',
+            speed:'30 ft., fly 40 ft.',str:16,dex:14,con:16,int:10,wis:14,cha:16,cr:'—',
+            resistances:'Radiant',
+            immunities:'Charmed, Frightened',
+            languages:'Celestial, understands the languages you know',senses:'Darkvision 60 ft., Passive Perception 12',
             traits:[{name:'Scaling',desc:'AC = 13 + slot level · HP = 40 + 10 × (slot − 5)'}],
             actions:[
-              {name:'Multiattack',desc:'The spirit makes two Radiant Mace attacks.'},
-              {name:'Radiant Mace',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 4 + slot level radiant.'},
-              {name:'Healing Touch (1/day)',desc:'The spirit touches a creature. That creature regains 2d8 + slot level HP.'},
+              {name:'Multiattack',desc:"The spirit makes a number of attacks equal to half this spell's level (round down)."},
+              {name:'Radiant Mace',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d10 + 3 + slot level Radiant, and the spirit chooses itself or another creature it can see within 10 feet of the target; the chosen creature gains 1d10 Temporary Hit Points.'},
+              {name:'Healing Touch (1/Day)',desc:'The spirit touches another creature. The target regains 2d8 + slot level Hit Points.'},
             ]
           }
         },
@@ -13200,46 +13285,52 @@ function renderFamiliars() {
     { spell:'Summon Fiend', level:6, icon:'😈', note:'AC/HP scale with slot level',
       creatures:[
         { n:'Fiendish Spirit — Demon', spirit:{name:'Fiendish Spirit (Demon)',type:'Fiend',size:'Large',
-            ac:11,acNote:'11 + slot level',hp:50,hpNote:'50 + 10 per slot above 6th',
-            speed:'40 ft., climb 40 ft.',str:13,dex:16,con:15,int:10,wis:10,cha:16,cr:'6',
-            languages:"Abyssal + caster's languages",senses:'Darkvision 60 ft.',
+            ac:12,acNote:'12 + slot level',hp:50,hpNote:'50 (Demon) + 15 per slot above 6th',
+            speed:'40 ft., climb 40 ft.',str:13,dex:16,con:15,int:10,wis:10,cha:16,cr:'—',
+            resistances:'Fire',
+            immunities:'Poison; Poisoned',
+            languages:'Abyssal, Infernal, Telepathy 60 ft.',senses:'Darkvision 60 ft., Passive Perception 10',
             traits:[
-              {name:'Magic Resistance',desc:'Advantage on saving throws against spells and magical effects.'},
-              {name:'Scaling',desc:'AC = 11 + slot level · HP = 50 + 10 × (slot − 6)'},
+              {name:'Death Throes',desc:'When the spirit drops to 0 Hit Points or the spell ends, the spirit explodes. DEX save (DC = spell save DC), each creature in a 10-foot Emanation. Failure: 2d10 + slot level Fire damage. Success: Half damage.'},
+              {name:'Magic Resistance',desc:'The spirit has Advantage on saving throws against spells and other magical effects.'},
+              {name:'Scaling',desc:'AC = 12 + slot level · HP = 50 + 15 × (slot − 6)'},
             ],
             actions:[
-              {name:'Multiattack',desc:'The spirit makes two Bite attacks.'},
-              {name:'Bite',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d12 + 3 + slot level necrotic.'},
+              {name:'Multiattack',desc:"The spirit makes a number of attacks equal to half this spell's level (round down)."},
+              {name:'Bite',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d12 + 3 + slot level Necrotic damage.'},
             ]
           }
         },
         { n:'Fiendish Spirit — Devil', spirit:{name:'Fiendish Spirit (Devil)',type:'Fiend',size:'Large',
-            ac:12,acNote:'12 + slot level',hp:50,hpNote:'50 + 10 per slot above 6th',
-            speed:'30 ft., fly 40 ft.',str:13,dex:16,con:15,int:10,wis:10,cha:16,cr:'6',
-            languages:"Infernal + caster's languages",senses:'Darkvision 60 ft.',
+            ac:12,acNote:'12 + slot level',hp:40,hpNote:'40 (Devil) + 15 per slot above 6th',
+            speed:'40 ft., fly 60 ft.',str:13,dex:16,con:15,int:10,wis:10,cha:16,cr:'—',
+            resistances:'Fire',
+            immunities:'Poison; Poisoned',
+            languages:'Abyssal, Infernal, Telepathy 60 ft.',senses:'Darkvision 60 ft., Passive Perception 10',
             traits:[
-              {name:'Magic Resistance',desc:'Advantage on saving throws against spells and magical effects.'},
-              {name:'Scaling',desc:'AC = 12 + slot level · HP = 50 + 10 × (slot − 6)'},
+              {name:"Devil's Sight",desc:"Magical Darkness doesn't impede the spirit's Darkvision."},
+              {name:'Magic Resistance',desc:'The spirit has Advantage on saving throws against spells and other magical effects.'},
+              {name:'Scaling',desc:'AC = 12 + slot level · HP = 40 + 15 × (slot − 6)'},
             ],
             actions:[
-              {name:'Multiattack',desc:'The spirit makes two Fiendish Weapon attacks.'},
-              {name:'Fiendish Weapon',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d12 + 3 + slot level fire.'},
-            ],
-            bonus_actions:[{name:'Fiendish Charm',desc:'One humanoid within 30 ft. must succeed on a WIS save (DC = spell save DC) or have the Charmed condition for 1 minute.'}]
+              {name:'Multiattack',desc:"The spirit makes a number of attacks equal to half this spell's level (round down)."},
+              {name:'Fiery Strike',desc:'Melee or Ranged Attack: your spell attack modifier to hit, reach 5 ft. or range 150 ft. Hit: 2d6 + 3 + slot level Fire damage.'},
+            ]
           }
         },
         { n:'Fiendish Spirit — Yugoloth', spirit:{name:'Fiendish Spirit (Yugoloth)',type:'Fiend',size:'Large',
-            ac:11,acNote:'11 + slot level',hp:50,hpNote:'50 + 10 per slot above 6th',
-            speed:'30 ft.',str:13,dex:16,con:15,int:10,wis:10,cha:16,cr:'6',
-            languages:"Abyssal, Infernal + caster's languages",senses:'Darkvision 60 ft.',
+            ac:12,acNote:'12 + slot level',hp:60,hpNote:'60 (Yugoloth) + 15 per slot above 6th',
+            speed:'40 ft.',str:13,dex:16,con:15,int:10,wis:10,cha:16,cr:'—',
+            resistances:'Fire',
+            immunities:'Poison; Poisoned',
+            languages:'Abyssal, Infernal, Telepathy 60 ft.',senses:'Darkvision 60 ft., Passive Perception 10',
             traits:[
-              {name:'Magic Resistance',desc:'Advantage on saving throws against spells and magical effects.'},
-              {name:'Toxic Poison',desc:'A creature Poisoned by this spirit has Disadvantage on all saving throws.'},
-              {name:'Scaling',desc:'AC = 11 + slot level · HP = 50 + 10 × (slot − 6)'},
+              {name:'Magic Resistance',desc:'The spirit has Advantage on saving throws against spells and other magical effects.'},
+              {name:'Scaling',desc:'AC = 12 + slot level · HP = 60 + 15 × (slot − 6)'},
             ],
             actions:[
-              {name:'Multiattack',desc:'The spirit makes two Claws attacks.'},
-              {name:'Claws',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d6 + 3 + slot level slashing + target makes a CON save (DC = spell save DC) or is Poisoned for 1 minute.'},
+              {name:'Multiattack',desc:"The spirit makes a number of attacks equal to half this spell's level (round down)."},
+              {name:'Claws',desc:'Melee Attack: your spell attack modifier to hit, reach 5 ft. Hit: 1d8 + 3 + slot level Slashing. Immediately after the attack hits or misses, the spirit can teleport up to 30 feet to an unoccupied space it can see.'},
             ]
           }
         },
@@ -13301,10 +13392,11 @@ function renderFamiliars() {
       ac: s.ac, acNote: s.acNote || '',
       pvMax: s.hp, pvActuel: s.hp, speed: s.speed,
       for: s.str||10, dex: s.dex||10, con: s.con||10, int: s.int||10, sag: s.wis||10, cha: s.cha||10,
-      savesNote:'', skillsNote:'', vulnerabilities:'', resistances:'', immunities:'',
+      savesNote:'', skillsNote:'', vulnerabilities: s.vulnerabilities||'',
+      resistances: s.resistances||'', immunities: s.immunities||'',
       senses: s.senses||'', languages: s.languages||'—', cr: s.cr||'?',
       traits: toList(s.traits), actions: toList(s.actions),
-      bonusActions:[], reactions:[],
+      bonusActions: toList(s.bonus_actions), reactions: toList(s.reactions),
       notes: `⚠️ ${s.acNote||''} · ${s.hpNote||''}`, _collapsed: false,
     });
     if (typeof _tabDirty !== 'undefined') _tabDirty.familiers = true;
