@@ -2632,6 +2632,8 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
 
     <!-- ══ VB: Sticky top bar (brand + tabs + actions) ══ -->
     <div class="dash-header vb-topbar">
+      <!-- Sidebar toggle -->
+      <button id="btn-sidebar-toggle" class="btn btn-sm" title="Afficher / masquer la barre latérale" style="font-size:1rem;padding:0 0.5rem;flex-shrink:0;">☰</button>
       <!-- Brand -->
       <div class="vb-brand">
         <span class="vb-brand-sigil">✦</span>
@@ -11633,7 +11635,19 @@ document.addEventListener('keydown', e => {
   }, { passive: true });
 })();
 
-/* ── 8. Field Lock Mode ── */
+/* ── 8. Sidebar toggle (bouton ☰ dans la topbar) ── */
+(function () {
+  const btn     = document.getElementById('btn-sidebar-toggle');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  if (!btn || !sidebar) return;
+  btn.addEventListener('click', () => {
+    const isOpen = sidebar.classList.toggle('open');
+    overlay?.classList.toggle('visible', isOpen);
+  });
+})();
+
+/* ── 9. Field Lock Mode ── */
 (function () {
   const btn  = document.getElementById('btn-field-lock');
   const dash = document.getElementById('screen-dashboard');
