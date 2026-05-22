@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link rel="stylesheet" href="css/style.css">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -18,7 +19,7 @@
   --danger:#d94040;--danger-dim:rgba(217,64,64,0.14);--danger-bright:rgba(217,64,64,0.35);
   --heal:#3db87a;--heal-dim:rgba(61,184,122,0.14);
   --warn:#d4843a;
-  --radius:8px;--sidebar-w:280px;--nav-h:54px;
+  --radius:8px;--dm-sidebar-w:280px;--nav-h:54px;
   --shadow:0 2px 12px rgba(0,0,0,0.5);
   --shadow-lg:0 8px 32px rgba(0,0,0,0.7);
   --shadow-gold:0 0 20px rgba(232,201,106,0.1);
@@ -29,7 +30,7 @@ input,select{font-family:inherit;color-scheme:dark;}
 
 /* ── Nav ── */
 #dm-nav{
-  position:fixed;top:0;left:0;right:0;height:var(--nav-h);z-index:300;
+  position:fixed;top:60px;left:var(--sidebar-w,260px);right:0;height:var(--nav-h);z-index:300;
   background:var(--bg-nav);
   border-bottom:1px solid var(--border-bright);
   display:flex;align-items:center;padding:0 1.25rem;gap:0.75rem;
@@ -59,7 +60,7 @@ input,select{font-family:inherit;color-scheme:dark;}
 
 /* ── Auth ── */
 #screen-auth{
-  display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem;
+  display:flex;align-items:center;justify-content:center;min-height:100vh;padding:calc(60px + 2rem) 2rem 2rem;
   background:
     radial-gradient(ellipse 60% 50% at 50% 20%,rgba(232,201,106,0.05) 0%,transparent 100%),
     radial-gradient(ellipse 40% 60% at 80% 80%,rgba(70,80,140,0.06) 0%,transparent 100%);
@@ -100,12 +101,12 @@ input,select{font-family:inherit;color-scheme:dark;}
 .auth-error{color:var(--danger);font-size:0.8rem;text-align:center;margin-top:0.85rem;min-height:1.2em;}
 
 /* ── Layout ── */
-#screen-dm{display:none;padding-top:var(--nav-h);}
-#dm-layout{display:flex;height:calc(100vh - var(--nav-h));}
+#screen-dm{display:none;padding-top:calc(60px + var(--nav-h));margin-left:var(--sidebar-w,260px);}
+#dm-layout{display:flex;height:calc(100vh - 60px - var(--nav-h));}
 
 /* ── Sidebar ── */
 #dm-sidebar{
-  width:var(--sidebar-w);flex-shrink:0;
+  width:var(--dm-sidebar-w);flex-shrink:0;
   background:var(--bg-nav);
   border-right:1px solid var(--border-bright);
   display:flex;flex-direction:column;overflow:hidden;
@@ -1039,13 +1040,16 @@ body.sidebar-open #sidebar-backdrop{display:block;}
   body.compact .panel-header{padding:0.4rem 0.6rem;}
 }
 
-/* ─── Tablette / écran étroit (≤900px) : sidebar devient overlay ─── */
+/* ─── Tablette / écran étroit (≤900px) : sidebar DM devient overlay, wiki sidebar aussi ─── */
 @media(max-width:900px){
   #btn-sidebar-toggle{display:flex;}
   #btn-focus{display:none;}
+  /* Annuler le margin/left du screen-dm — wiki sidebar est en overlay */
+  #screen-dm{margin-left:0;}
+  #dm-nav{left:0;}
   #dm-sidebar{
-    position:fixed;top:var(--nav-h);left:0;bottom:0;
-    width:min(var(--sidebar-w),85vw);z-index:350;
+    position:fixed;top:calc(60px + var(--nav-h));left:0;bottom:0;
+    width:min(var(--dm-sidebar-w),85vw);z-index:350;
     transform:translateX(-100%);
     transition:transform 0.28s cubic-bezier(0.4,0,0.2,1);
     box-shadow:8px 0 48px rgba(0,0,0,0.85);
@@ -1089,6 +1093,11 @@ body.sidebar-open #sidebar-backdrop{display:block;}
 </style>
 </head>
 <body>
+
+<!-- ══ Wiki nav + sidebar (injectés par components.js) ══ -->
+<nav class="top-nav" id="main-nav"></nav>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<aside class="sidebar" id="sidebar"></aside>
 
 <!-- ══ Auth ══ -->
 <div id="screen-auth">
@@ -3377,5 +3386,7 @@ async function commitDrawerSave() {
   }
 }
 </script>
+<script src="js/components.js"></script>
+<script src="js/wiki.js"></script>
 </body>
 </html>
