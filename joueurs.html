@@ -1673,14 +1673,23 @@
   /* Undo toast — remonter au-dessus de la barre basse */
   #undo-toast { bottom: calc(68px + env(safe-area-inset-bottom, 0px)) !important; }
 
-  /* Topbar — empêcher les boutons de déborder hors des 48px */
-  .dash-header.vb-topbar { overflow: hidden !important; }
+  /* Topbar — overflow visible pour que le dropdown du char-selector soit visible */
+  .dash-header.vb-topbar { overflow: visible !important; }
+
+  /* Char selector : prend l'espace disponible entre la marque et les actions */
+  .char-selector { flex: 1 1 0; min-width: 0; }
+  .char-selector-btn { width: 100%; max-width: 100%; }
+  .char-selector-name { max-width: none; }
 
   /* Masquer les éléments non essentiels pour libérer de la place */
   #conn-indicator { display: none !important; }
   .save-badge { display: none !important; }
   #btn-new-char { display: none !important; }
   #btn-logout { display: none !important; }
+  #btn-inspiration { display: none !important; }
+  #btn-undo { display: none !important; }
+  #btn-field-lock { display: none !important; }
+  #dice-tray-btn { display: none !important; }
 }
 
 /* ── Barre d'onglets de sections (mobile/tablette ≤ 1024px) ── */
@@ -2690,6 +2699,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
         <button class="inspiration-btn" id="btn-inspiration" title="Inspiration (avantage sur un jet)">✦</button>
         <button class="btn btn-sm btn-gold" id="btn-new-char" title="New character" onclick="openNewCharModal()" style="font-size:1rem;padding:0 0.55rem;line-height:1;">+</button>
         <button class="btn btn-sm" id="btn-layout-edit" title="Rearrange sections">⠿</button>
+        <button class="btn btn-sm" id="btn-undo" title="Annuler (Ctrl+Z)" disabled style="opacity:0.4;">↩</button>
         <button class="btn btn-sm" id="btn-field-lock" title="Verrouiller les champs (mode affichage)">✏</button>
         <button class="btn btn-sm" id="dice-tray-btn" title="Dice Roller">⚄</button>
         <button class="btn btn-sm" id="btn-install-app" title="Installer l'application" style="display:none;">📲</button>
@@ -2860,6 +2870,12 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
             </div>
             <div class="hp-log-toggle j-hidden" id="hp-log-toggle">▾ Historique</div>
             <div class="hp-log j-hidden" id="hp-log"></div>
+            <!-- Concentration tracker -->
+            <div id="conc-banner" style="display:none;margin-top:8px;padding:5px 8px;background:rgba(160,112,224,0.12);border:1px solid rgba(160,112,224,0.35);border-radius:4px;display:none;align-items:center;gap:6px;">
+              <span style="color:#c090f8;font-size:0.78rem;flex-shrink:0;">◉ Conc.</span>
+              <span id="conc-spell-name" style="color:#e8e0d0;font-size:0.78rem;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">—</span>
+              <button id="conc-break-btn" title="Briser la concentration" style="background:none;border:1px solid rgba(160,112,224,0.4);border-radius:3px;color:#a070e0;cursor:pointer;font-size:0.68rem;padding:1px 5px;flex-shrink:0;line-height:1.4;">✕ Briser</button>
+            </div>
             <div class="vb-vitals-sep"></div>
 
             <!-- ③ Hit Dice + Death Saves -->
@@ -3304,7 +3320,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
         <div class="ration-tracker" id="ration-tracker"></div>
       </div>
       <div class="sheet-section">
-        <div class="sheet-section-title">Currency</div>
+        <div class="sheet-section-title">Currency <button class="btn btn-sm" id="btn-convert-currency" title="Convertir vers la plus grande dénomination possible" style="font-size:0.68rem;padding:0.1rem 0.5rem;margin-left:0.5rem;vertical-align:middle;">⇄ Convertir</button></div>
         <div class="currency-grid">
           <div class="currency-item"><div class="currency-label">PP</div><input type="number" class="field-input" data-currency="pp" min="0" value="0"></div>
           <div class="currency-item"><div class="currency-label">GP</div><input type="number" class="field-input" data-currency="gp" min="0" value="0"></div>
@@ -6220,6 +6236,7 @@ function renderAll() {
   applyCharTheme();
   applyCharBg(C());
   renderHero();
+  updateConcBanner();
   _markAllDirty();
   const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab || 'personnage';
   _renderTab(activeTab);
@@ -8121,6 +8138,7 @@ function renderSpells() {
   });
   tbody.innerHTML = '';
   tbody.appendChild(frag);
+  updateConcBanner();
 }
 
 /* ── Ration Tracker ── */
@@ -8469,6 +8487,94 @@ function renderAttunement() {
 function fillCurrency() {
   const cur = INV().currency || {};
   document.querySelectorAll('[data-currency]').forEach(inp => { inp.value = cur[inp.dataset.currency] || 0; });
+}
+
+/* ══ Conversion de monnaie ══
+   Taux D&D 5e : 1 PP = 10 GP = 20 EP = 100 SP = 1000 CP */
+function convertCurrency() {
+  const inv = activeSlot()?.inventory;
+  if (!inv) return;
+  const cur = inv.currency || (inv.currency = { pp:0, gp:0, ep:0, sp:0, cp:0 });
+  pushUndo(); // snapshot avant la conversion
+  let total = (parseInt(cur.pp)||0)*1000 + (parseInt(cur.gp)||0)*100
+            + (parseInt(cur.ep)||0)*50  + (parseInt(cur.sp)||0)*10
+            + (parseInt(cur.cp)||0);
+  cur.pp = Math.floor(total / 1000); total %= 1000;
+  cur.gp = Math.floor(total / 100);  total %= 100;
+  cur.ep = Math.floor(total / 50);   total %= 50;
+  cur.sp = Math.floor(total / 10);   total %= 10;
+  cur.cp = total;
+  fillCurrency();
+  triggerSave();
+}
+
+/* ══ Concentration tracker ══ */
+function updateConcBanner() {
+  const banner = document.getElementById('conc-banner');
+  if (!banner) return;
+  const spell = (C().spells || []).find(s => s.conc);
+  if (spell) {
+    banner.style.display = 'flex';
+    const nameEl = document.getElementById('conc-spell-name');
+    if (nameEl) nameEl.textContent = spell.name || '(sort inconnu)';
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+/* ══ Système Undo ══ */
+const _undoStack = [];
+const _UNDO_MAX  = 20;
+
+function _snapSlot() {
+  const slot = activeSlot();
+  if (!slot) return null;
+  // Exclure les images (base64 lourdes) — restaurées séparément
+  const c = Object.assign({}, slot.character);
+  const savedBg  = c.bgImage;
+  const savedAvt = c.avatarPng;
+  delete c.bgImage; delete c.avatarPng;
+  return { snap: JSON.stringify({ character: c, inventory: slot.inventory }), bgImage: savedBg, avatarPng: savedAvt };
+}
+
+function pushUndo() {
+  const s = _snapSlot();
+  if (!s) return;
+  // Éviter les doublons consécutifs
+  if (_undoStack.length && _undoStack[_undoStack.length-1].snap === s.snap) return;
+  _undoStack.push(s);
+  if (_undoStack.length > _UNDO_MAX) _undoStack.shift();
+  _updateUndoBtn();
+}
+
+function popUndo() {
+  if (!_undoStack.length) return;
+  const prev = _undoStack.pop();
+  _updateUndoBtn();
+  try {
+    const data = JSON.parse(prev.snap);
+    const slot = activeSlot();
+    if (!slot) return;
+    // Restaurer les images du snapshot courant (non stockées dans undo)
+    data.character.bgImage  = slot.character.bgImage;
+    data.character.avatarPng = slot.character.avatarPng;
+    slot.character = data.character;
+    slot.inventory = data.inventory;
+    renderAll();
+    triggerSave();
+    // Toast bref
+    const badge = document.getElementById('save-badge');
+    if (badge) { const old = badge.textContent; badge.textContent = '↩ Annulé'; setTimeout(() => { badge.textContent = old || ''; }, 1800); }
+  } catch(e) { console.warn('Undo error', e); }
+}
+
+function _updateUndoBtn() {
+  const btn = document.getElementById('btn-undo');
+  if (!btn) return;
+  const has = _undoStack.length > 0;
+  btn.disabled = !has;
+  btn.style.opacity = has ? '1' : '0.4';
+  btn.title = has ? `Annuler (${_undoStack.length} étape${_undoStack.length>1?'s':''}) — Ctrl+Z` : 'Rien à annuler';
 }
 
 /* ── Avatar picker (per-character) ── */
