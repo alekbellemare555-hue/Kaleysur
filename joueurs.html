@@ -1676,20 +1676,24 @@
   /* Topbar — overflow visible pour que le dropdown du char-selector soit visible */
   .dash-header.vb-topbar { overflow: visible !important; }
 
-  /* Char selector : prend l'espace disponible entre la marque et les actions */
+  /* Masquer la marque (libère ~65px) — le char-selector identifie déjà le contexte */
+  .vb-brand { display: none !important; }
+
+  /* Char selector : prend l'espace disponible entre ☰ et les actions */
   .char-selector { flex: 1 1 0; min-width: 0; }
   .char-selector-btn { width: 100%; max-width: 100%; }
   .char-selector-name { max-width: none; }
 
-  /* Masquer les éléments non essentiels pour libérer de la place */
+  /* Actions : compactes sur mobile */
+  .vb-topbar .dash-actions { gap: 4px !important; }
+  .vb-topbar .btn.btn-sm { padding: 0 0.35rem !important; min-width: 30px; font-size: 0.82rem; }
+  .inspiration-btn { padding: 0 0.35rem !important; min-width: 30px; font-size: 0.82rem; }
+
+  /* Masquer uniquement les éléments vraiment inutiles en nav */
   #conn-indicator { display: none !important; }
   .save-badge { display: none !important; }
   #btn-new-char { display: none !important; }
   #btn-logout { display: none !important; }
-  #btn-inspiration { display: none !important; }
-  #btn-undo { display: none !important; }
-  #btn-field-lock { display: none !important; }
-  #dice-tray-btn { display: none !important; }
 }
 
 /* ── Barre d'onglets de sections (mobile/tablette ≤ 1024px) ── */
