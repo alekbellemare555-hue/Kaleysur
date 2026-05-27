@@ -938,6 +938,7 @@
       transition: color .15s, border-color .15s;
       margin-bottom: -1px;
       white-space: nowrap;
+      flex-shrink: 0; /* évite que les boutons rétrécissent sur certains navigateurs */
     }
     .vb-topbar .tab-btn:hover { color: var(--gold); }
     .vb-topbar .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
@@ -1436,6 +1437,9 @@
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
   align-self: stretch;
+  /* Gradient de droite pour signaler qu'il y a d'autres onglets */
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
+  mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
 }
 .vb-tabs::-webkit-scrollbar { display: none; }
 
@@ -1772,6 +1776,13 @@
   /* Masquer outils de réorganisation (inutilisables en mode onglet) */
   #layout-toolbar { display: none !important; }
   #btn-layout-edit { display: none !important; }
+}
+
+/* Tablette (641–900px) : bottom nav visible, tabs topbar masquées */
+@media (max-width: 900px) and (min-width: 641px) {
+  #mobile-bottom-nav { display: flex; }
+  .vb-topbar .vb-tabs { display: none !important; }
+  #screen-dashboard { padding-bottom: calc(58px + env(safe-area-inset-bottom, 0px)); }
 }
 
 /* Mobile : topbar réduite à 48px → ajuster le top de la barre de sections */
