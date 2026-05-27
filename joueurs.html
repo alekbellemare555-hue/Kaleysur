@@ -13181,14 +13181,14 @@ function renderFamiliars() {
         const cached = isNaN(cachedIdx) ? null : _allItems[cachedIdx];
         let data = (cached && cached.hit_points) ? cached : null;
         if (!data) {
-          // Fetch individual creature — v2 d'abord, v1 en fallback
+          // Fetch individual creature — v2 direct, puis v1 (slug stable)
           const key = btn.dataset.compKey;
           if (!key) throw new Error('No key');
           const rv2 = await fetch(`${O5E}/v2/creatures/${key}/`).catch(() => null);
           if (rv2?.ok) {
             data = await rv2.json();
           } else {
-            const rv1 = await fetch(`${O5E}/monsters/${key}/`).catch(() => null);
+            const rv1 = await fetch(`${O5E}/v1/monsters/${key}/`).catch(() => null);
             if (!rv1?.ok) throw new Error(`Not found: ${key}`);
             data = await rv1.json();
           }
@@ -13840,16 +13840,20 @@ function renderFamiliars() {
         chip.textContent = '✓ ' + creature.n;
         setTimeout(() => { chip.classList.remove('done'); chip.innerHTML = `<span class="summon-chip-icon">${grp.icon}</span>${creature.n}<span class="summon-spirit-badge">esprit</span>`; }, 2500);
       } else {
-        // Fetch depuis Open5e — v2 d'abord (clé composée), puis v1 (slug simple)
+        // Fetch depuis Open5e — v1 (slug simple, endpoint stable)
         let data = null;
-        const rv2 = await fetch(`${O5E}/v2/creatures/${creature.k}/`).catch(() => null);
-        if (rv2?.ok) {
-          data = await rv2.json();
-        } else {
-          const rv1 = await fetch(`${O5E}/monsters/${creature.k}/`).catch(() => null);
-          if (!rv1?.ok) throw new Error(`Not found: ${creature.k}`);
+        const rv1 = await fetch(`${O5E}/v1/monsters/${creature.k}/`).catch(() => null);
+        if (rv1?.ok) {
           data = await rv1.json();
+        } else {
+          // Fallback : recherche par nom en v2
+          const rname = await fetch(`${O5E}/v2/creatures/?name=${encodeURIComponent(creature.n)}&limit=1`).catch(() => null);
+          if (rname?.ok) {
+            const js = await rname.json();
+            data = (js.results || [])[0] || null;
+          }
         }
+        if (!data) throw new Error(`Not found: ${creature.k}`);
         _addMonsterAsFamiliar(data);
         chip.classList.remove('importing');
         chip.classList.add('done');
