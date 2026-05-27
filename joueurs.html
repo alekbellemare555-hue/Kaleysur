@@ -938,6 +938,7 @@
       transition: color .15s, border-color .15s;
       margin-bottom: -1px;
       white-space: nowrap;
+      flex-shrink: 0; /* évite que les boutons rétrécissent sur certains navigateurs */
     }
     .vb-topbar .tab-btn:hover { color: var(--gold); }
     .vb-topbar .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
@@ -1436,6 +1437,9 @@
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
   align-self: stretch;
+  /* Gradient de droite pour signaler qu'il y a d'autres onglets */
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
+  mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
 }
 .vb-tabs::-webkit-scrollbar { display: none; }
 
@@ -1772,6 +1776,13 @@
   /* Masquer outils de réorganisation (inutilisables en mode onglet) */
   #layout-toolbar { display: none !important; }
   #btn-layout-edit { display: none !important; }
+}
+
+/* Tablette (641–900px) : bottom nav visible, tabs topbar masquées */
+@media (max-width: 900px) and (min-width: 641px) {
+  #mobile-bottom-nav { display: flex; }
+  .vb-topbar .vb-tabs { display: none !important; }
+  #screen-dashboard { padding-bottom: calc(58px + env(safe-area-inset-bottom, 0px)); }
 }
 
 /* Mobile : topbar réduite à 48px → ajuster le top de la barre de sections */
@@ -3829,6 +3840,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
     <button class="mbn-btn" data-tab="notes"><span class="mbn-icon">✏</span><span class="mbn-label">Notes</span></button>
     <button class="mbn-btn" data-tab="parametres"><span class="mbn-icon">⚙</span><span class="mbn-label">Settings</span></button>
     <button class="mbn-btn" data-tab="familiers"><span class="mbn-icon">🐾</span><span class="mbn-label">Familiars</span></button>
+    <button class="mbn-btn" data-tab="lvlup"><span class="mbn-icon">📈</span><span class="mbn-label">Lvl Plan</span></button>
   </nav>
 
   <!-- ══ VUE FICHE PARTAGÉE (lecture seule) ══ -->
@@ -13169,12 +13181,17 @@ function renderFamiliars() {
         const cached = isNaN(cachedIdx) ? null : _allItems[cachedIdx];
         let data = (cached && cached.hit_points) ? cached : null;
         if (!data) {
-          // Fetch individual creature
+          // Fetch individual creature — v2 d'abord, v1 en fallback
           const key = btn.dataset.compKey;
-          const url = key ? `${O5E}/v2/creatures/${key}/` : null;
-          if (!url) throw new Error('No key');
-          const r = await fetch(url);
-          data = await r.json();
+          if (!key) throw new Error('No key');
+          const rv2 = await fetch(`${O5E}/v2/creatures/${key}/`).catch(() => null);
+          if (rv2?.ok) {
+            data = await rv2.json();
+          } else {
+            const rv1 = await fetch(`${O5E}/monsters/${key}/`).catch(() => null);
+            if (!rv1?.ok) throw new Error(`Not found: ${key}`);
+            data = await rv1.json();
+          }
         }
         _addMonsterAsFamiliar(data);
         btn.textContent = '✓ Imported';
@@ -13823,10 +13840,16 @@ function renderFamiliars() {
         chip.textContent = '✓ ' + creature.n;
         setTimeout(() => { chip.classList.remove('done'); chip.innerHTML = `<span class="summon-chip-icon">${grp.icon}</span>${creature.n}<span class="summon-spirit-badge">esprit</span>`; }, 2500);
       } else {
-        // Fetch depuis Open5e
-        const r = await fetch(`${O5E}/v2/creatures/${creature.k}/`);
-        if (!r.ok) throw new Error();
-        const data = await r.json();
+        // Fetch depuis Open5e — v2 d'abord (clé composée), puis v1 (slug simple)
+        let data = null;
+        const rv2 = await fetch(`${O5E}/v2/creatures/${creature.k}/`).catch(() => null);
+        if (rv2?.ok) {
+          data = await rv2.json();
+        } else {
+          const rv1 = await fetch(`${O5E}/monsters/${creature.k}/`).catch(() => null);
+          if (!rv1?.ok) throw new Error(`Not found: ${creature.k}`);
+          data = await rv1.json();
+        }
         _addMonsterAsFamiliar(data);
         chip.classList.remove('importing');
         chip.classList.add('done');
