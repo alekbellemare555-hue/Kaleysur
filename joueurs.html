@@ -2302,6 +2302,25 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
   color: var(--gold, #c9a96e); flex: 1; letter-spacing: 0.05em;
 }
 .fam-cards-wrap { display: flex; flex-direction: column; gap: 1rem; }
+
+/* ── Mode affichage (lecture seule) ── */
+.fam-cards-wrap.fam-locked input:not(.fam-hp-input),
+.fam-cards-wrap.fam-locked textarea,
+.fam-cards-wrap.fam-locked select {
+  pointer-events: none; cursor: default; resize: none;
+  border-color: transparent !important; background: transparent !important;
+  color: var(--j-text, #e2cfa0);
+}
+.fam-cards-wrap.fam-locked .btn-fam-del,
+.fam-cards-wrap.fam-locked .btn-fam-del-entry,
+.fam-cards-wrap.fam-locked .btn-fam-add-entry { display: none !important; }
+.fam-cards-wrap.fam-locked .fam-toolbar-edit-only { display: none !important; }
+#tab-familiers.fam-tab-locked .fam-toolbar-edit-only { display: none !important; }
+/* Bouton actif (mode affichage ON) */
+#btn-fam-lock.fam-locked-active {
+  background: rgba(201,169,110,0.15); border-color: var(--gold-dark);
+  color: var(--gold);
+}
 .familiar-card {
   background: var(--j-panel, #1a1208);
   border: 1px solid var(--j-border-col, #4a3510);
@@ -3805,8 +3824,9 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
     <div class="tab-panel" id="tab-familiers">
       <div class="fam-toolbar">
         <span class="fam-toolbar-title">⟡ Familiers &amp; Compagnons</span>
-        <button class="btn btn-sm" id="btn-open-compendium-monster" style="background:rgba(201,169,110,0.1);border:1px solid var(--gold-dark);color:var(--gold);">⊕ Compendium</button>
-        <button class="btn btn-sm btn-gold" id="btn-add-familiar">+ Add</button>
+        <button class="btn btn-sm" id="btn-fam-lock" title="Basculer édition / affichage">👁 Afficher</button>
+        <button class="btn btn-sm fam-toolbar-edit-only" id="btn-open-compendium-monster" style="background:rgba(201,169,110,0.1);border:1px solid var(--gold-dark);color:var(--gold);">⊕ Compendium</button>
+        <button class="btn btn-sm btn-gold fam-toolbar-edit-only" id="btn-add-familiar">+ Add</button>
       </div>
       <div class="fam-cards-wrap" id="fam-cards-wrap">
         <div class="fam-empty">No companions. Click <em>+ Add</em> to create a sheet or import from the compendium.</div>
@@ -12616,6 +12636,16 @@ function renderFamiliars() {
     /* open compendium monsters */
     if (e.target.id === 'btn-open-compendium-monster') {
       openCompendium('monsters');
+    }
+    /* toggle édition / affichage */
+    if (e.target.id === 'btn-fam-lock') {
+      const wrap = document.getElementById('fam-cards-wrap');
+      const tab  = document.getElementById('tab-familiers');
+      const btn  = document.getElementById('btn-fam-lock');
+      const isLocked = wrap?.classList.toggle('fam-locked');
+      tab?.classList.toggle('fam-tab-locked', isLocked);
+      btn?.classList.toggle('fam-locked-active', isLocked);
+      if (btn) btn.innerHTML = isLocked ? '✏ Éditer' : '👁 Afficher';
     }
   });
 
