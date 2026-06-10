@@ -5375,18 +5375,19 @@ async function sbUpdateData(username, data, _json) {
   if (!r.ok) throw new Error('Erreur sauvegarde : ' + r.status);
 }
 /* ── Upload d'image vers Supabase Storage (bucket public 'backgrounds') ──
-   Retourne l'URL publique. Les saves ne transportent plus le base64 (~1-2 MB → quelques KB). */
+   Retourne l'URL publique. Les saves ne transportent plus le base64 (~1-2 MB → quelques KB).
+   Nom unique par upload (INSERT pur) : un upsert exigerait une policy SELECT en plus. */
 async function sbUploadImage(path, dataUrl) {
   const blob = await (await fetch(dataUrl)).blob();
-  const safePath = path.split('/').map(encodeURIComponent).join('/');
+  const uniquePath = path.replace(/\.(\w+)$/, `-${Date.now()}.$1`);
+  const safePath = uniquePath.split('/').map(encodeURIComponent).join('/');
   const r = await fetch(`${SB_URL}/storage/v1/object/backgrounds/${safePath}`, {
     method: 'POST',
-    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': blob.type, 'x-upsert': 'true' },
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': blob.type },
     body: blob
   });
   if (!r.ok) throw new Error('Upload échoué : ' + r.status);
-  // ?v= : cache-busting (les URL publiques Storage sont mises en cache par le CDN)
-  return `${SB_URL}/storage/v1/object/public/backgrounds/${safePath}?v=${Date.now()}`;
+  return `${SB_URL}/storage/v1/object/public/backgrounds/${safePath}`;
 }
 
 async function sbUpdatePassword(username, passwordHash) {
