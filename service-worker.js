@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kaleysur-v141';
+const CACHE_NAME = 'kaleysur-v142';
 
 const ASSETS = [
   'index.html',
@@ -15,8 +15,10 @@ const ASSETS = [
   'spells-2024.json',
   'items-faerun-heroes.json',
   'items-faerun-adventures.json',
+  'items-eberron.json',
   'monsters-faerun-heroes.json',
   'monsters-faerun-adventures.json',
+  'monsters-eberron.json',
   'manifest.json',
   'favicon.png',
   'icons/icon-192.png',
@@ -154,12 +156,15 @@ self.addEventListener('install', event => {
   );
 });
 
-/* ── Activation : suppression des anciens caches ── */
+/* ── Activation : suppression des anciens caches ──
+   On préserve les caches persistants (fonts, compendium) qui ne sont pas versionnés avec l'app. */
+const PERSISTENT_CACHES = ['kaleysur-fonts-v1', 'kaleysur-compendium-v1'];
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(
-        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+        keys.filter(k => k !== CACHE_NAME && !PERSISTENT_CACHES.includes(k))
+            .map(k => caches.delete(k))
       )
     ).then(() => self.clients.claim())
   );

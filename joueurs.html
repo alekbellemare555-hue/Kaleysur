@@ -12411,60 +12411,40 @@ function renderFamiliars() {
         <div class="fam-ab-mod">${_famModStr(fam[ab])}</div>
       </div>`).join('');
 
-    const traitsHtml = (fam.traits||[]).map((t,ti) => `
+    const entryHtml = (fk, placeholder) => (fam[fk]||[]).map((t,ti) => `
       <div class="fam-entry">
         <input class="fam-entry-name" type="text" placeholder="Nom…"
-          data-fi="${fi}" data-fk="traits" data-ei="${ti}" data-ek="name" value="${t.name||''}">
-        <textarea class="fam-entry-desc" rows="2" placeholder="Description…"
-          data-fi="${fi}" data-fk="traits" data-ei="${ti}" data-ek="desc">${t.desc||''}</textarea>
-        <button class="btn-fam-del-entry" data-fi="${fi}" data-fk="traits" data-ei="${ti}" title="Delete">✕</button>
+          data-fi="${fi}" data-fk="${fk}" data-ei="${ti}" data-ek="name" value="${esc(t.name)}">
+        <textarea class="fam-entry-desc" rows="2" placeholder="${placeholder}"
+          data-fi="${fi}" data-fk="${fk}" data-ei="${ti}" data-ek="desc">${esc(t.desc)}</textarea>
+        <button class="btn-fam-del-entry" data-fi="${fi}" data-fk="${fk}" data-ei="${ti}" title="Delete">✕</button>
       </div>`).join('');
-    const actionsHtml = (fam.actions||[]).map((a,ai) => `
-      <div class="fam-entry">
-        <input class="fam-entry-name" type="text" placeholder="Nom…"
-          data-fi="${fi}" data-fk="actions" data-ei="${ai}" data-ek="name" value="${a.name||''}">
-        <textarea class="fam-entry-desc" rows="2" placeholder="Description + damage…"
-          data-fi="${fi}" data-fk="actions" data-ei="${ai}" data-ek="desc">${a.desc||''}</textarea>
-        <button class="btn-fam-del-entry" data-fi="${fi}" data-fk="actions" data-ei="${ai}" title="Delete">✕</button>
-      </div>`).join('');
-    const bonusHtml = (fam.bonusActions||[]).map((a,ai) => `
-      <div class="fam-entry">
-        <input class="fam-entry-name" type="text" placeholder="Nom…"
-          data-fi="${fi}" data-fk="bonusActions" data-ei="${ai}" data-ek="name" value="${a.name||''}">
-        <textarea class="fam-entry-desc" rows="2" placeholder="Description…"
-          data-fi="${fi}" data-fk="bonusActions" data-ei="${ai}" data-ek="desc">${a.desc||''}</textarea>
-        <button class="btn-fam-del-entry" data-fi="${fi}" data-fk="bonusActions" data-ei="${ai}" title="Delete">✕</button>
-      </div>`).join('');
-    const reactionsHtml = (fam.reactions||[]).map((a,ai) => `
-      <div class="fam-entry">
-        <input class="fam-entry-name" type="text" placeholder="Nom…"
-          data-fi="${fi}" data-fk="reactions" data-ei="${ai}" data-ek="name" value="${a.name||''}">
-        <textarea class="fam-entry-desc" rows="2" placeholder="Description…"
-          data-fi="${fi}" data-fk="reactions" data-ei="${ai}" data-ek="desc">${a.desc||''}</textarea>
-        <button class="btn-fam-del-entry" data-fi="${fi}" data-fk="reactions" data-ei="${ai}" title="Delete">✕</button>
-      </div>`).join('');
+    const traitsHtml    = entryHtml('traits', 'Description…');
+    const actionsHtml   = entryHtml('actions', 'Description + damage…');
+    const bonusHtml     = entryHtml('bonusActions', 'Description…');
+    const reactionsHtml = entryHtml('reactions', 'Description…');
 
     card.innerHTML = `
       <div class="familiar-card-head" data-fi="${fi}">
         <button class="fam-collapse-btn" data-fi="${fi}" title="Collapse">▾</button>
-        <div class="fam-head-name">${fam.name||'—'}</div>
-        <div class="fam-head-type">${fam.size||''} ${fam.type||''}</div>
+        <div class="fam-head-name">${esc(fam.name)||'—'}</div>
+        <div class="fam-head-type">${esc(fam.size)} ${esc(fam.type)}</div>
         <div class="fam-head-hp">♥ ${fam.pvActuel}/${fam.pvMax}</div>
         <button class="btn-fam-del" data-fi="${fi}" title="Supprimer ce familier">🗑</button>
       </div>
       <div class="fam-body">
         <div class="fam-sb-header">
           <input class="fam-name-input field-input" type="text" placeholder="Nom du familier"
-            data-fi="${fi}" data-fk="name" value="${fam.name||''}">
+            data-fi="${fi}" data-fk="name" value="${esc(fam.name)}">
           <div class="fam-type-line">
             <select class="fam-inline-input" data-fi="${fi}" data-fk="size">
               ${['Très petite','Petite','Moyenne','Grande','Très grande','Gigantesque'].map(s =>
                 `<option${fam.size===s?' selected':''}>${s}</option>`).join('')}
             </select>
             <input class="fam-inline-input" type="text" placeholder="Type (Beast, Fey…)"
-              data-fi="${fi}" data-fk="type" value="${fam.type||''}" style="flex:1;min-width:80px;">
+              data-fi="${fi}" data-fk="type" value="${esc(fam.type)}" style="flex:1;min-width:80px;">
             <input class="fam-inline-input" type="text" placeholder="Alignement"
-              data-fi="${fi}" data-fk="alignment" value="${fam.alignment||''}" style="flex:1;min-width:80px;">
+              data-fi="${fi}" data-fk="alignment" value="${esc(fam.alignment)}" style="flex:1;min-width:80px;">
           </div>
         </div>
         <hr class="fam-divider">
@@ -12475,7 +12455,7 @@ function renderFamiliars() {
               <input class="fam-inline-input" type="number" min="0" max="40"
                 data-fi="${fi}" data-fk="ac" value="${fam.ac||10}" style="width:40px;text-align:center;">
               <input class="fam-inline-input" type="text" placeholder="(armure nat.)"
-                data-fi="${fi}" data-fk="acNote" value="${fam.acNote||''}" style="flex:1;min-width:60px;">
+                data-fi="${fi}" data-fk="acNote" value="${esc(fam.acNote)}" style="flex:1;min-width:60px;">
             </div>
           </div>
           <div class="fam-stat-box">
@@ -12494,7 +12474,7 @@ function renderFamiliars() {
             <div class="fam-stat-label">Vitesse</div>
             <div class="fam-stat-val">
               <input class="fam-inline-input" type="text" placeholder="30 ft."
-                data-fi="${fi}" data-fk="speed" value="${fam.speed||''}" style="width:100%;text-align:center;">
+                data-fi="${fi}" data-fk="speed" value="${esc(fam.speed)}" style="width:100%;text-align:center;">
             </div>
           </div>
         </div>
@@ -12505,35 +12485,35 @@ function renderFamiliars() {
           <div style="display:flex;gap:0.4rem;align-items:center;margin-bottom:0.25rem;">
             <span style="flex-shrink:0;">Jets de sauvegarde :</span>
             <input class="fam-props-input" type="text" placeholder="ex: Dex +4, Con +2"
-              data-fi="${fi}" data-fk="savesNote" value="${fam.savesNote||''}">
+              data-fi="${fi}" data-fk="savesNote" value="${esc(fam.savesNote)}">
           </div>
           <div style="display:flex;gap:0.4rem;align-items:center;margin-bottom:0.25rem;">
             <span style="flex-shrink:0;">Skills:</span>
             <input class="fam-props-input" type="text" placeholder="e.g. Perception +3"
-              data-fi="${fi}" data-fk="skillsNote" value="${fam.skillsNote||''}">
+              data-fi="${fi}" data-fk="skillsNote" value="${esc(fam.skillsNote)}">
           </div>
           <div style="display:flex;gap:0.4rem;align-items:center;margin-bottom:0.25rem;">
             <span style="flex-shrink:0;">Resistances:</span>
             <input class="fam-props-input" type="text" placeholder="e.g. fire, cold"
-              data-fi="${fi}" data-fk="resistances" value="${fam.resistances||''}">
+              data-fi="${fi}" data-fk="resistances" value="${esc(fam.resistances)}">
           </div>
           <div style="display:flex;gap:0.4rem;align-items:center;margin-bottom:0.25rem;">
             <span style="flex-shrink:0;">Immunities:</span>
             <input class="fam-props-input" type="text" placeholder="e.g. poison, charm"
-              data-fi="${fi}" data-fk="immunities" value="${fam.immunities||''}">
+              data-fi="${fi}" data-fk="immunities" value="${esc(fam.immunities)}">
           </div>
           <div style="display:flex;gap:0.4rem;align-items:center;margin-bottom:0.25rem;">
             <span style="flex-shrink:0;">Senses:</span>
             <input class="fam-props-input" type="text" placeholder="Darkvision 60 ft., Passive Perception 12"
-              data-fi="${fi}" data-fk="senses" value="${fam.senses||''}">
+              data-fi="${fi}" data-fk="senses" value="${esc(fam.senses)}">
           </div>
           <div style="display:flex;gap:0.4rem;align-items:center;">
             <span style="flex-shrink:0;">Languages:</span>
             <input class="fam-props-input" type="text" placeholder="—"
-              data-fi="${fi}" data-fk="languages" value="${fam.languages||''}">
+              data-fi="${fi}" data-fk="languages" value="${esc(fam.languages)}">
             <span style="flex-shrink:0;margin-left:0.5rem;">CR:</span>
             <input class="fam-props-input" type="text" placeholder="0"
-              data-fi="${fi}" data-fk="cr" value="${fam.cr||'0'}" style="max-width:50px;">
+              data-fi="${fi}" data-fk="cr" value="${esc(fam.cr)||'0'}" style="max-width:50px;">
           </div>
         </div>
         <hr class="fam-divider">
@@ -12566,7 +12546,7 @@ function renderFamiliars() {
         <hr class="fam-divider">
         <div class="fam-section-title" style="margin-bottom:0.2rem;">Notes</div>
         <textarea class="fam-notes-input" placeholder="Notes libres…"
-          data-fi="${fi}" data-fk="notes">${fam.notes||''}</textarea>
+          data-fi="${fi}" data-fk="notes">${esc(fam.notes)}</textarea>
       </div>`;
     wrap.appendChild(card);
   });
@@ -12575,14 +12555,16 @@ function renderFamiliars() {
 (function () {
   /* ── Familiar event delegation ── */
   document.addEventListener('click', e => {
-    /* collapse/expand */
+    /* collapse/expand — toggle direct sans re-render (préserve scroll/focus) */
     const head = e.target.closest('.familiar-card-head');
     if (head && !e.target.closest('.btn-fam-del')) {
       const fi = parseInt(head.dataset.fi);
       const c = C();
       if (!c.familiars?.[fi]) return;
-      c.familiars[fi]._collapsed = !c.familiars[fi]._collapsed;
-      renderFamiliars(); triggerSave();
+      const collapsed = !c.familiars[fi]._collapsed;
+      c.familiars[fi]._collapsed = collapsed;
+      head.closest('.familiar-card')?.classList.toggle('collapsed', collapsed);
+      _famSave();
       return;
     }
     /* delete familiar */
@@ -12783,11 +12765,42 @@ function renderFamiliars() {
     if (cats.includes(prev)) sel.value = prev;
   }
 
+  /* ── Cache persistant (Cache API, TTL 24h) — évite de re-fetch Open5e à chaque session ── */
+  const COMP_CACHE = 'kaleysur-compendium-v1';
+  const COMP_TTL   = 24 * 60 * 60 * 1000;
+  async function _persistGet(tab) {
+    try {
+      const c = await caches.open(COMP_CACHE);
+      const r = await c.match('__comp__' + tab);
+      if (!r) return null;
+      const { ts, items } = await r.json();
+      return (Date.now() - ts < COMP_TTL && Array.isArray(items)) ? items : null;
+    } catch { return null; }
+  }
+  async function _persistPut(tab, items) {
+    try {
+      const c = await caches.open(COMP_CACHE);
+      await c.put('__comp__' + tab, new Response(
+        JSON.stringify({ ts: Date.now(), items }),
+        { headers: { 'Content-Type': 'application/json' } }
+      ));
+    } catch {}
+  }
+
   async function _loadTab(tab) {
     if (_cache[tab]) {
       _allItems = _cache[tab];
       if (tab === 'equipment') _populateCatFilter();
       _render(); return;
+    }
+    // Cache persistant pour les onglets API (equipment/monsters) — les sorts sont un fichier local déjà rapide
+    if (tab !== 'spells') {
+      const persisted = await _persistGet(tab);
+      if (persisted) {
+        _allItems = _cache[tab] = persisted;
+        if (tab === 'equipment') _populateCatFilter();
+        _render(); return;
+      }
     }
     list().innerHTML = '<div class="comp-loading">Chargement 2024…</div>';
     try {
@@ -12818,6 +12831,7 @@ function renderFamiliars() {
         }
       }
       _cache[tab] = _allItems;
+      if (tab !== 'spells') _persistPut(tab, _allItems); // fire-and-forget
       _render();
     } catch(e) {
       list().innerHTML = '<div class="comp-empty">Impossible de charger le compendium. Vérifiez votre connexion.</div>';
