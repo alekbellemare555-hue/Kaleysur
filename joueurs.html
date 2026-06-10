@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Players · Adventurer's Log — Kaleysur</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://hevwgdsvgepiieuvhclg.supabase.co">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <style>
@@ -2614,7 +2616,8 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
   <meta name="apple-mobile-web-app-title" content="Kaleysur">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel="icon" type="image/png" href="favicon.png">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <!-- defer : la lib n'est utilisée que pour Realtime, lazily après login (getSbClient) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
 
@@ -5355,8 +5358,10 @@ async function sbCreatePlayer(username, passwordHash, data) {
   const r = await sbFetch('/rest/v1/players', { method:'POST', headers:{'Prefer':'return=minimal'}, body: JSON.stringify({ username, password_hash: passwordHash, data }) });
   if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.message || 'Erreur création : ' + r.status); }
 }
-async function sbUpdateData(username, data) {
-  const r = await sbFetch(`/rest/v1/players?username=eq.${encodeURIComponent(username)}`, { method:'PATCH', headers:{'Prefer':'return=minimal'}, body: JSON.stringify({ data }) });
+async function sbUpdateData(username, data, _json) {
+  // _json : JSON pré-stringifié du data (évite un 2e stringify de plusieurs MB sur le hot path)
+  const body = _json ? `{"data":${_json}}` : JSON.stringify({ data });
+  const r = await sbFetch(`/rest/v1/players?username=eq.${encodeURIComponent(username)}`, { method:'PATCH', headers:{'Prefer':'return=minimal'}, body });
   if (!r.ok) throw new Error('Erreur sauvegarde : ' + r.status);
 }
 async function sbUpdatePassword(username, passwordHash) {
@@ -5491,8 +5496,12 @@ function abilScore(key){ return parseInt(C()[key]) || 10; }
 function localKey(u) { return 'kaleysur_data_' + u; }
 
 /* ── Sauvegarde locale systématique (backup) ── */
-function saveLocal(u, data) {
-  try { localStorage.setItem(localKey(u), JSON.stringify({ ts: Date.now(), data })); } catch(e) {}
+function saveLocal(u, data, _json) {
+  // _json : JSON pré-stringifié du data (évite un 2e stringify sur le hot path)
+  try {
+    const payload = _json ? `{"ts":${Date.now()},"data":${_json}}` : JSON.stringify({ ts: Date.now(), data });
+    localStorage.setItem(localKey(u), payload);
+  } catch(e) {}
 }
 
 /* ── Indicateur de connexion ── */
@@ -5511,14 +5520,15 @@ function triggerSave() {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(async () => {
     if (!currentUser || !playerData) return;
-    saveLocal(currentUser, playerData); // backup local toujours
+    const _json = JSON.stringify(playerData); // stringify une seule fois (peut peser plusieurs MB avec images)
+    saveLocal(currentUser, null, _json); // backup local toujours
     if (!navigator.onLine) {
       badge.textContent = '🟠 Local'; badge.className = 'save-badge';
       updateConnIndicator('offline');
       return;
     }
     try {
-      await sbUpdateData(currentUser, playerData);
+      await sbUpdateData(currentUser, null, _json);
       _lastSaveAt = Date.now();
       badge.textContent = 'Saved ✓'; badge.className = 'save-badge ok';
       updateConnIndicator('online');
@@ -10256,9 +10266,13 @@ function _chatSetOnline(ok) {
 }
 
 /* ── Realtime ── */
-function startChatRealtime() {
+function startChatRealtime(_retry = 0) {
   const client = getSbClient();
-  if (!client) { _startChatFallbackPoll(); return; }
+  if (!client) {
+    // Lib supabase (deferred) pas encore chargée → réessayer avant de tomber sur le poll
+    if (_retry < 10) { setTimeout(() => startChatRealtime(_retry + 1), 500); return; }
+    _startChatFallbackPoll(); return;
+  }
   try {
     _chatRealtimeChannel = client.channel('chat-multi-rt')
       .on('postgres_changes', { event:'INSERT', schema:'public', table:'chat_messages' }, payload => {
@@ -11138,7 +11152,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   /* ── Inventaire ── */
-  document.getElementById('inv-search').addEventListener('input', renderInventory);
+  let _invSearchTimer = null;
+  document.getElementById('inv-search').addEventListener('input', () => {
+    clearTimeout(_invSearchTimer);
+    _invSearchTimer = setTimeout(renderInventory, 150);
+  });
   // Category tabs
   document.getElementById('inv-cat-tabs')?.addEventListener('click', e => {
     const tab = e.target.closest('.inv-cat-tab');
@@ -14056,9 +14074,13 @@ function renderFamiliars() {
   });
 })();
 
-function startRealtime(username) {
+function startRealtime(username, _retry = 0) {
   const client = getSbClient();
-  if (!client) return;
+  if (!client) {
+    // Lib supabase (deferred) pas encore chargée → réessayer jusqu'à ~5s
+    if (_retry < 10) setTimeout(() => startRealtime(username, _retry + 1), 500);
+    return;
+  }
   try {
     client.channel('joueur-sync-' + username)
       .on('postgres_changes', {
