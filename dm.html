@@ -1456,6 +1456,8 @@ async function sbGetAllPlayers() {
   return r.json();
 }
 async function sbUpdateData(username, data) {
+  // Bump de révision : permet au verrou optimiste côté joueur de détecter les écritures du DM
+  data._rev = (data._rev || 0) + 1;
   return sbFetch(`/rest/v1/players?username=eq.${encodeURIComponent(username)}`, {
     method:'PATCH', headers:{'Prefer':'return=minimal'}, body: JSON.stringify({data})
   });

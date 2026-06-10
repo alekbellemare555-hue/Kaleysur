@@ -170,31 +170,29 @@ openNewCharModal()        // ouvre la modal de création
 
 ## Service worker
 
-`service-worker.js` — **toujours bumper `CACHE_NAME`** après chaque modification de `joueurs.html` ou assets.
+`service-worker.js` — `CACHE_NAME` est **bumpé automatiquement** par le hook pre-commit (`.githooks/pre-commit.js`) dès qu'un asset est stagé. Le hook vérifie aussi la syntaxe JS des blocs `<script>` des HTML stagés.
 
-```javascript
-const CACHE_NAME = 'kaleysur-vXX';  // incrémenter XX
-```
+⚠️ Le hook nécessite `git config core.hooksPath .githooks` (une fois par clone/worktree).
 
-Stratégie actuelle : network-first pour HTML, cache-first pour assets (CSS/JS/images).
+Stratégie actuelle : network-first pour HTML, cache-first pour assets (CSS/JS/images). Caches persistants préservés entre versions : `kaleysur-fonts-v1`, `kaleysur-compendium-v1` (voir `PERSISTENT_CACHES`).
 
 ---
 
 ## Procédure de deploy
 
-1. Modifier `joueurs.html`
-2. Bumper `CACHE_NAME` dans `service-worker.js` (vXX → vXX+1)
-3. `git add joueurs.html service-worker.js`
-4. `git commit -m "fix/feat: description courte"`
-5. `git push`
+1. Modifier les fichiers
+2. `git add <fichiers>` puis `git commit` — le hook bump le SW et vérifie la syntaxe tout seul
+3. `git push` puis merger la PR vers `main`
 
 ---
 
-## Firebase / Auth
+## Supabase (auth + données + storage)
 
-- Authentification Firebase (email/password)
-- Données stockées dans Firestore : `players/{uid}`
-- `playerData` est chargé au login et sauvegardé via `triggerSave()` (debounced)
+- Table `players` : `{username, password_hash, data}` — login custom côté client (hash comparé dans le navigateur), clé anon publique
+- `playerData` est chargé au login et sauvegardé via `triggerSave()` (debounced 900ms, JSON stringifié une seule fois)
+- **Storage** : bucket public `backgrounds` — les fonds de personnage/page y sont uploadés (INSERT pur, nom unique `{user}/{charId}-bg-{ts}.jpg`, pas d'upsert car pas de policy SELECT). Fallback base64 inline si l'upload échoue. Migration auto des base64 au login (`migrateImagesToStorage`)
+- **Realtime** : sync DM ↔ joueur via `postgres_changes` ; la lib supabase CDN est en `defer` → les `startRealtime*` ont un retry 500ms×10
+- Compendium : module lazy `js/compendium.js` chargé au premier clic (stub `openCompendium` dans joueurs.html)
 
 ---
 

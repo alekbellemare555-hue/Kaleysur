@@ -5370,9 +5370,24 @@ async function sbCreatePlayer(username, passwordHash, data) {
 }
 async function sbUpdateData(username, data, _json) {
   // _json : JSON pré-stringifié du data (évite un 2e stringify de plusieurs MB sur le hot path)
+  // Bump de révision (verrou optimiste) quand on reçoit l'objet directement
+  if (data && !_json) data._rev = (data._rev || 0) + 1;
   const body = _json ? `{"data":${_json}}` : JSON.stringify({ data });
   const r = await sbFetch(`/rest/v1/players?username=eq.${encodeURIComponent(username)}`, { method:'PATCH', headers:{'Prefer':'return=minimal'}, body });
   if (!r.ok) throw new Error('Erreur sauvegarde : ' + r.status);
+}
+/* ── Sauvegarde avec verrou optimiste : le PATCH ne passe que si la révision distante
+   correspond à celle qu'on connaît. Retourne 'ok' ou 'conflict' (écriture concurrente
+   depuis un autre appareil / l'admin DM). ── */
+async function sbUpdateDataGuarded(username, _json, prevRev) {
+  const revCond = (prevRev === undefined || prevRev === null) ? 'is.null' : `eq.${prevRev}`;
+  const r = await sbFetch(
+    `/rest/v1/players?username=eq.${encodeURIComponent(username)}&data->>_rev=${revCond}&select=username`,
+    { method:'PATCH', headers:{'Prefer':'return=representation'}, body: `{"data":${_json}}` }
+  );
+  if (!r.ok) throw new Error('Erreur sauvegarde : ' + r.status);
+  const rows = await r.json();
+  return rows.length ? 'ok' : 'conflict';
 }
 /* ── Upload d'image vers Supabase Storage (bucket public 'backgrounds') ──
    Retourne l'URL publique. Les saves ne transportent plus le base64 (~1-2 MB → quelques KB).
@@ -5546,6 +5561,8 @@ function triggerSave() {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(async () => {
     if (!currentUser || !playerData) return;
+    const prevRev = playerData._rev ?? null;
+    playerData._rev = (prevRev || 0) + 1;
     const _json = JSON.stringify(playerData); // stringify une seule fois (peut peser plusieurs MB avec images)
     saveLocal(currentUser, null, _json); // backup local toujours
     if (!navigator.onLine) {
@@ -5554,7 +5571,21 @@ function triggerSave() {
       return;
     }
     try {
-      await sbUpdateData(currentUser, null, _json);
+      const res = await sbUpdateDataGuarded(currentUser, _json, prevRev);
+      if (res === 'conflict') {
+        // Écriture concurrente (autre appareil / admin DM) : on recharge le distant
+        // plutôt que de l'écraser silencieusement.
+        try {
+          const row = await sbGetPlayer(currentUser);
+          if (row?.data) {
+            Object.assign(playerData, row.data);
+            renderAll(); updateHpBar(); renderHero();
+          }
+        } catch {}
+        badge.textContent = '⚠ Synchronisé depuis un autre appareil'; badge.className = 'save-badge err';
+        setTimeout(() => { badge.textContent = ''; badge.className = 'save-badge'; }, 4000);
+        return;
+      }
       _lastSaveAt = Date.now();
       badge.textContent = 'Saved ✓'; badge.className = 'save-badge ok';
       updateConnIndicator('online');
