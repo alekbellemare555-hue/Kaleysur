@@ -5,8 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kaleysur — DM Screen</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://hevwgdsvgepiieuvhclg.supabase.co">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<!-- defer : la lib n'est utilisée qu'après login (startRealtime) -->
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="stylesheet" href="css/style.css">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -1513,8 +1516,12 @@ document.getElementById('btn-logout').addEventListener('click', () => {
 /* ══════════════════════════════════════════
    Realtime
 ══════════════════════════════════════════ */
-function startRealtime() {
-  if (!window.supabase) return;
+function startRealtime(_retry = 0) {
+  if (!window.supabase) {
+    // Lib supabase (deferred) pas encore chargée → réessayer jusqu'à ~5s
+    if (_retry < 10) setTimeout(() => startRealtime(_retry + 1), 500);
+    return;
+  }
   try {
     const client = window.supabase.createClient(SB_URL, SB_KEY);
     client.channel('dm-players-sync')
@@ -2972,8 +2979,11 @@ document.getElementById('dm-chat-input')?.addEventListener('keydown', e => {
 });
 
 /* ── Realtime toutes rooms ── */
-function startDmChatRealtime() {
-  if (!window.supabase) return;
+function startDmChatRealtime(_retry = 0) {
+  if (!window.supabase) {
+    if (_retry < 10) setTimeout(() => startDmChatRealtime(_retry + 1), 500);
+    return;
+  }
   try {
     const client = window.supabase.createClient(SB_URL, SB_KEY);
     client.channel('dm-chat-watch')
