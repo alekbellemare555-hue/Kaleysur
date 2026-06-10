@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kaleysur-v143';
+const CACHE_NAME = 'kaleysur-v144';
 
 const ASSETS = [
   'index.html',
@@ -11,6 +11,7 @@ const ASSETS = [
   'css/style.css',
   'js/components.js',
   'js/wiki.js',
+  'js/compendium.js',
   'search-index.json',
   'spells-2024.json',
   'items-faerun-heroes.json',
