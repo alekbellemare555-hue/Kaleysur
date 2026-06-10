@@ -694,6 +694,8 @@ body.wiki-sidebar-hidden #screen-dm{margin-left:0;transition:margin-left 0.3s ea
 }
 #init-roll-all:hover{background:rgba(232,201,106,0.22);box-shadow:0 0 16px rgba(232,201,106,0.2);color:#fff;}
 #init-clear{color:var(--text-mid);font-size:0.72rem;padding:0.24rem 0.65rem;border-radius:6px;background:none;border:1px solid var(--border-bright);transition:all 0.12s;}
+#init-add-new{color:var(--gold);font-size:0.72rem;padding:0.24rem 0.65rem;border-radius:6px;background:none;border:1px solid var(--border-gold);transition:all 0.12s;font-family:'Cinzel',serif;}
+#init-add-new:hover{background:rgba(232,201,106,0.15);}
 #init-clear:hover{color:var(--danger);border-color:var(--danger-bright);background:var(--danger-dim);}
 #init-chips{display:flex;gap:0.65rem;padding:0.65rem 1.4rem 1rem;overflow-x:auto;flex-wrap:nowrap;}
 #init-chips::-webkit-scrollbar{height:4px;}
@@ -1249,6 +1251,7 @@ body.sidebar-open #sidebar-backdrop{display:block;}
           <button class="init-ctrl" id="init-next" title="Tour suivant">▶</button>
           <div class="init-sep"></div>
           <button id="init-roll-all">🎲 Lancer tous</button>
+          <button id="init-add-new" title="Ajoute les panneaux ouverts absents de l'initiative, sans toucher à l'ordre en cours">＋ Nouveaux</button>
           <button id="init-clear">Effacer</button>
         </div>
         <div id="init-chips"></div>
@@ -1383,6 +1386,7 @@ function saveDmState() {
       openPanels: savedPanels,
       expandedPlayers: [...expandedPlayers],
       compactMode,
+      panelNotes: _panelNotes,
       initState: {
         ...initState,
         // Ne pas persister les joueurs dans l'initiative — seulement monstres et NPCs
@@ -1402,6 +1406,7 @@ function restoreDmState() {
     if (s.localFriendlies) localFriendlies  = s.localFriendlies;
     if (s.friendlyCounter != null) friendlyCounter = s.friendlyCounter;
     if (s.expandedPlayers) expandedPlayers = new Set(s.expandedPlayers);
+    if (s.panelNotes) Object.assign(_panelNotes, s.panelNotes);
     if (typeof s.compactMode === 'boolean') {
       compactMode = s.compactMode;
       document.body.classList.toggle('compact', compactMode);
@@ -1518,6 +1523,11 @@ document.getElementById('btn-logout').addEventListener('click', () => {
 /* ══════════════════════════════════════════
    Realtime
 ══════════════════════════════════════════ */
+let _sbClient = null;
+function getSbClient() {
+  if (!_sbClient && window.supabase) _sbClient = window.supabase.createClient(SB_URL, SB_KEY);
+  return _sbClient;
+}
 function startRealtime(_retry = 0) {
   if (!window.supabase) {
     // Lib supabase (deferred) pas encore chargée → réessayer jusqu'à ~5s
@@ -1525,7 +1535,7 @@ function startRealtime(_retry = 0) {
     return;
   }
   try {
-    const client = window.supabase.createClient(SB_URL, SB_KEY);
+    const client = getSbClient();
     client.channel('dm-players-sync')
       .on('postgres_changes', {
         event: 'UPDATE',
@@ -1547,8 +1557,10 @@ function startRealtime(_retry = 0) {
       })
       .subscribe(status => {
         if (status === 'SUBSCRIBED') {
+          _rtHealthy = true;
           document.getElementById('poll-indicator').textContent = '⚡ Realtime';
         } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          _rtHealthy = false;
           document.getElementById('poll-indicator').textContent = '⚠ Polling';
         }
       });
@@ -1570,7 +1582,13 @@ async function refreshAllPlayers() {
   document.getElementById('poll-indicator').textContent =
     '✓ ' + new Date().toLocaleTimeString('fr',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 }
-async function pollPlayers() { await refreshAllPlayers(); }
+let _rtHealthy = false;
+async function pollPlayers() {
+  // Le Realtime pousse déjà chaque changement — inutile de re-télécharger tous les
+  // joueurs toutes les 60s quand il est connecté. Le poll ne sert que de secours.
+  if (_rtHealthy) return;
+  await refreshAllPlayers();
+}
 document.getElementById('btn-refresh').addEventListener('click', refreshAllPlayers);
 
 /* ══════════════════════════════════════════
@@ -1586,7 +1604,11 @@ document.getElementById('btn-compact').addEventListener('click', () => {
 /* ══════════════════════════════════════════
    Sidebar — Players
 ══════════════════════════════════════════ */
-document.getElementById('player-search').addEventListener('input', renderSidebar);
+let _playerSearchTimer = null;
+document.getElementById('player-search').addEventListener('input', () => {
+  clearTimeout(_playerSearchTimer);
+  _playerSearchTimer = setTimeout(renderSidebar, 150);
+});
 
 function renderPartyBar() {
   const bar = document.getElementById('party-bar');
@@ -2080,6 +2102,7 @@ function renderPlayerPanel(panel, key) {
 }
 
 const _panelNotes = {};
+let _panelNotesTimer = null;
 
 function attachPlayerPanelEvents(panel, key, username, charId) {
   panel.querySelector('[data-close]')?.addEventListener('click', () => closePanel(key));
@@ -2120,9 +2143,11 @@ function attachPlayerPanelEvents(panel, key, username, charId) {
     });
   });
 
-  // Notes DM locales
+  // Notes DM locales — persistées dans le dmState (localStorage), debounce 600ms
   panel.querySelector('[data-dm-notes]')?.addEventListener('input', e => {
     _panelNotes[key] = e.target.value;
+    clearTimeout(_panelNotesTimer);
+    _panelNotesTimer = setTimeout(saveDmState, 600);
   });
 
   panel.querySelector('[data-key].rest-long')?.addEventListener('click', () => longRest(username, charId, key));
@@ -2675,54 +2700,78 @@ document.getElementById('init-clear').addEventListener('click', () => {
   renderInitChips();
   saveDmState();
 });
+document.getElementById('init-add-new').addEventListener('click', addNewCombatants);
 
-function buildInitCombatants(roll = false) {
-  initState.combatants = [];
+/* ── Raccourcis clavier (initiative ouverte, hors champs de saisie) ──
+   → ou Espace : tour suivant · ← : tour précédent */
+document.addEventListener('keydown', e => {
+  if (!initState.open || !initState.combatants.length) return;
+  const el = document.activeElement;
+  if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable)) return;
+  if (e.key === 'ArrowRight' || e.key === ' ') {
+    e.preventDefault();
+    document.getElementById('init-next').click();
+  } else if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    document.getElementById('init-prev').click();
+  }
+});
 
-  // Players with open panels
+/* Énumère tous les combattants éligibles (panneaux ouverts), avec roll d'initiative optionnel.
+   `skip` : Set d'ids à exclure (utilisé par l'ajout incrémental). */
+function enumerateOpenCombatants(roll = false, skip = null) {
+  const out = [];
+  const rollInit = mod => roll ? Math.floor(Math.random() * 20) + 1 + mod : mod;
+
   allPlayers.forEach(player => {
     if (player.username === ADMIN_USER) return;
     const data = player.data || {};
     Object.entries(data.characters || {}).forEach(([cid, slot]) => {
       const key = 'p::' + player.username + '::' + cid;
-      if (!openPanels[key]) return;
+      if (!openPanels[key] || skip?.has(key)) return;
       const c = slot.character || {};
-      const initMod = parseInt(c.initiative) || 0;
-      const initVal = roll ? Math.floor(Math.random() * 20) + 1 + initMod : initMod;
-      initState.combatants.push({
+      out.push({
         id: key, label: slot.name || player.username,
         avatar: data.avatar || '⚔', type: 'player',
-        initVal, hp: parseInt(c.pvActuel)||0, hpMax: parseInt(c.pvMax)||0
+        initVal: rollInit(parseInt(c.initiative) || 0),
+        hp: parseInt(c.pvActuel)||0, hpMax: parseInt(c.pvMax)||0
       });
     });
   });
-
-  // Local monsters with open panels
   Object.values(localMonsters).forEach(m => {
     const key = 'm::' + m.id;
-    if (!openPanels[key]) return;
-    const initVal = roll ? Math.floor(Math.random() * 20) + 1 + (parseInt(m.initiative)||0) : (parseInt(m.initiative)||0);
-    initState.combatants.push({
-      id: key, label: m.name, avatar: m.avatar, type: 'monster',
-      initVal, hp: m.hp, hpMax: m.hpMax
-    });
+    if (!openPanels[key] || skip?.has(key)) return;
+    out.push({ id: key, label: m.name, avatar: m.avatar, type: 'monster',
+      initVal: rollInit(parseInt(m.initiative)||0), hp: m.hp, hpMax: m.hpMax });
   });
-
-  // Friendly NPCs with open panels
   Object.values(localFriendlies).forEach(f => {
     const key = 'f::' + f.id;
-    if (!openPanels[key]) return;
-    const initVal = roll ? Math.floor(Math.random() * 20) + 1 + (parseInt(f.initiative)||0) : (parseInt(f.initiative)||0);
-    initState.combatants.push({
-      id: key, label: f.name, avatar: f.avatar, type: 'friendly',
-      initVal, hp: f.hp, hpMax: f.hpMax
-    });
+    if (!openPanels[key] || skip?.has(key)) return;
+    out.push({ id: key, label: f.name, avatar: f.avatar, type: 'friendly',
+      initVal: rollInit(parseInt(f.initiative)||0), hp: f.hp, hpMax: f.hpMax });
   });
+  return out;
+}
 
-  // Sort descending
+function buildInitCombatants(roll = false) {
+  initState.combatants = enumerateOpenCombatants(roll);
   initState.combatants.sort((a, b) => b.initVal - a.initVal);
   if (initState.currentIdx >= initState.combatants.length) initState.currentIdx = 0;
   renderInitChips();
+}
+
+/* Ajout en cours de combat : insère les nouveaux panneaux ouverts dans l'ordre
+   existant (roll individuel) sans re-roller ni perdre le tour en cours. */
+function addNewCombatants() {
+  const existing = new Set(initState.combatants.map(c => c.id));
+  const added = enumerateOpenCombatants(true, existing);
+  if (!added.length) return;
+  const curId = initState.combatants[initState.currentIdx]?.id;
+  initState.combatants.push(...added);
+  initState.combatants.sort((a, b) => b.initVal - a.initVal);
+  if (curId) initState.currentIdx = initState.combatants.findIndex(c => c.id === curId);
+  renderInitChips();
+  saveDmState();
 }
 
 function renderInitChips() {
@@ -2987,7 +3036,7 @@ function startDmChatRealtime(_retry = 0) {
     return;
   }
   try {
-    const client = window.supabase.createClient(SB_URL, SB_KEY);
+    const client = getSbClient();
     client.channel('dm-chat-watch')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, payload => {
         const m = payload.new;
