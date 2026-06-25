@@ -809,6 +809,22 @@ body.compact #player-panels-grid,body.compact #monster-panels-grid{grid-template
   0%,100%{border-color:var(--danger);box-shadow:0 0 24px rgba(217,64,64,0.3);}
   50%{border-color:rgba(217,64,64,0.3);box-shadow:none;}
 }
+/* ── Triage visuel : état du personnage en un coup d'œil ── */
+.combat-panel.panel-bloodied{border-left:3px solid rgba(230,150,40,0.75);}
+.combat-panel.panel-dying{border-color:rgba(217,64,64,0.6)!important;border-left:3px solid var(--danger);animation:dying-pulse 1.9s ease-in-out infinite;}
+.combat-panel.panel-dying .panel-header{background:linear-gradient(135deg,rgba(95,18,18,0.92) 0%,rgba(52,10,10,0.7) 100%)!important;}
+@keyframes dying-pulse{
+  0%,100%{box-shadow:0 0 0 1px rgba(217,64,64,0.25),0 6px 22px rgba(0,0,0,0.5);}
+  50%{box-shadow:0 0 16px rgba(217,64,64,0.4),0 6px 22px rgba(0,0,0,0.5);}
+}
+/* ── Tour actif : le panneau du combattant courant ressort ── */
+.combat-panel.panel-active-turn{border-color:var(--gold)!important;box-shadow:0 0 0 1px var(--gold),0 0 22px rgba(232,201,106,0.22),0 6px 22px rgba(0,0,0,0.5)!important;transform:translateY(-2px);}
+.combat-panel.panel-active-turn .panel-header::before{content:'◆ TOUR';position:absolute;top:5px;right:9px;font-size:0.48rem;letter-spacing:0.12em;color:var(--gold);font-family:'Cinzel',serif;font-weight:700;z-index:2;}
+/* ── Jets de mort compacts (toujours visibles si à terre) ── */
+.death-compact{display:flex;align-items:center;gap:0.4rem;padding:0.42rem 0.9rem;background:rgba(95,18,18,0.28);border-bottom:1px solid var(--border);}
+.dc-label{font-size:0.62rem;letter-spacing:0.04em;color:var(--danger-bright);font-family:'Cinzel',serif;text-transform:uppercase;margin-right:auto;}
+.dc-dots{display:inline-flex;gap:0.28rem;}
+.dc-sep{color:var(--text-dim);font-size:0.7rem;}
 /* Compact panel mode (monsters/friendlies default) */
 .combat-panel.panel-compact .panel-body { display: none; }
 .combat-panel.panel-compact { cursor: pointer; }
@@ -847,6 +863,8 @@ body.compact #player-panels-grid,body.compact #monster-panels-grid{grid-template
 .pact.danger:hover{color:var(--danger);border-color:var(--danger-bright);background:var(--danger-dim);}
 .pact.rest-long{font-size:0.58rem;width:auto;padding:0 0.45rem;}
 .pact.rest-long:hover{color:var(--heal);border-color:rgba(61,184,122,0.4);background:var(--heal-dim);}
+.pact[data-sheet]{color:var(--gold-dark);border-color:var(--border-gold);background:var(--gold-glow);}
+.pact[data-sheet]:hover{color:var(--gold);border-color:var(--gold);background:rgba(232,201,106,0.18);}
 
 /* HP section */
 .panel-hp{padding:0.75rem 0.9rem;border-bottom:1px solid var(--border);}
@@ -1998,6 +2016,10 @@ function renderPlayerPanel(panel, key) {
   }
   prevHp[key] = pvAct;
 
+  // Triage visuel : à terre (0 PV) ou ensanglanté (≤50%)
+  panel.classList.toggle('panel-dying', dead);
+  panel.classList.toggle('panel-bloodied', !dead && pvMax > 0 && pct <= 50);
+
   // Spell slots
   const slots  = c.emplacementsSort || {};
   const used   = c.emplacementsUtilises || {};
@@ -2044,6 +2066,13 @@ function renderPlayerPanel(panel, key) {
         </div>
       </div>
     </div>
+
+    ${dead ? `<div class="death-compact">
+      <span class="dc-label">💀 Jets de mort</span>
+      <span class="dc-dots">${[0,1,2].map(i=>`<span class="ds-dot${i<succ?' s':''}" data-ds="s" data-i="${i}" title="Réussite ${i+1}"></span>`).join('')}</span>
+      <span class="dc-sep">·</span>
+      <span class="dc-dots">${[0,1,2].map(i=>`<span class="ds-dot${i<fail?' f':''}" data-ds="f" data-i="${i}" title="Échec ${i+1}"></span>`).join('')}</span>
+    </div>` : ''}
 
     ${(Array.isArray(c.conditions) && c.conditions.length) ? `
     <div class="panel-cond-mini">
@@ -2850,6 +2879,16 @@ function renderInitChips() {
     });
     chips.appendChild(chip);
   });
+  syncActivePanelHighlight();
+}
+
+/* Met en valeur le panneau du combattant dont c'est le tour (ou aucun si init fermée). */
+function syncActivePanelHighlight() {
+  document.querySelectorAll('.combat-panel.panel-active-turn')
+    .forEach(p => p.classList.remove('panel-active-turn'));
+  if (!initState.open) return;
+  const ct = initState.combatants[initState.currentIdx];
+  if (ct) document.getElementById('panel-' + ct.id)?.classList.add('panel-active-turn');
 }
 
 function removeInitCombatant(key) {
