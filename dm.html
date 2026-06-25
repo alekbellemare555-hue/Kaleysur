@@ -719,12 +719,17 @@ body.wiki-sidebar-hidden #screen-dm{margin-left:0;transition:margin-left 0.3s ea
   animation:bounce-arrow 1s ease-in-out infinite;
 }
 @keyframes bounce-arrow{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(-3px);}}
-.init-chip.dead{opacity:0.25;filter:grayscale(1);}
+.init-chip.dead{opacity:0.5;filter:grayscale(0.7);}
+.init-chip.dead{border-color:rgba(217,64,64,0.4);}
+/* Si c'est le tour d'un combattant à terre (jets de mort), le tour actif prime sur le grisé */
+.init-chip.active-turn.dead{opacity:1;filter:none;}
 .chip-avatar{font-size:1.3rem;line-height:1;}
 .chip-name{font-size:0.66rem;color:var(--text-mid);white-space:nowrap;max-width:72px;overflow:hidden;text-overflow:ellipsis;letter-spacing:0.02em;}
 .init-chip.active-turn .chip-name{color:var(--gold);}
 .chip-hp-bar{height:5px;background:rgba(255,255,255,0.08);border-radius:3px;width:100%;overflow:hidden;}
 .chip-hp-fill{height:100%;border-radius:3px;transition:width 0.3s;}
+.chip-hp-txt{font-size:0.58rem;color:var(--text-dim);font-family:'Cinzel',serif;line-height:1;letter-spacing:0.02em;}
+.init-chip.dead .chip-hp-txt{color:var(--danger-bright);}
 .init-chip-inp{width:42px;background:rgba(0,0,0,0.5);border:1px solid var(--border-gold);color:var(--gold);border-radius:5px;padding:0.14rem 0.25rem;font-size:0.8rem;text-align:center;font-family:'Cinzel',serif;}
 .init-chip-inp:focus{outline:none;border-color:var(--gold);box-shadow:0 0 8px rgba(232,201,106,0.2);}
 
@@ -2788,11 +2793,13 @@ function renderInitChips() {
 
     const chip = document.createElement('div');
     chip.className = 'init-chip' + (active ? ' active-turn' : '') + (dead ? ' dead' : '') + (ct.delayed ? ' delayed' : '');
+    const hpTxt = ct.hpMax > 0 ? (dead ? '💀 0' : `${ct.hp}/${ct.hpMax}`) : '—';
     chip.innerHTML = `
       <span class="chip-avatar">${ct.avatar}</span>
       <input class="init-chip-inp" type="number" value="${ct.initVal}" title="Modifier initiative">
       <span class="chip-name">${esc(ct.label)}</span>
       <div class="chip-hp-bar"><div class="chip-hp-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>
+      <span class="chip-hp-txt">${hpTxt}</span>
       <button class="chip-delay-btn" title="${ct.delayed ? 'Reprendre' : 'Passer (delay)'}">⏸</button>`;
 
     chip.addEventListener('click', e => {
