@@ -901,6 +901,25 @@ body.compact #player-panels-grid,body.compact #monster-panels-grid{grid-template
 .pbadge{font-size:0.57rem;padding:0.05rem 0.32rem;border-radius:3px;background:rgba(232,201,106,0.07);border:1px solid rgba(232,201,106,0.15);color:var(--text-dim);font-family:'Cinzel',serif;letter-spacing:0.02em;}
 .pbadge-conc{background:rgba(128,80,200,0.12)!important;border-color:rgba(128,80,200,0.3)!important;color:#a080e0!important;}
 .pbadge-insp{background:rgba(240,208,80,0.1)!important;border-color:rgba(240,208,80,0.3)!important;color:#f0c020!important;}
+.pbadge-pp{background:rgba(90,160,210,0.12)!important;border-color:rgba(90,160,210,0.3)!important;color:#7ab8e0!important;}
+
+/* ── Référence MJ (drawer, lecture seule) ── */
+.ds-ref-pp{display:flex;align-items:center;justify-content:space-between;background:rgba(90,160,210,0.08);border:1px solid rgba(90,160,210,0.25);border-radius:6px;padding:0.45rem 0.7rem;margin-bottom:0.6rem;}
+.ds-ref-pp-label{font-size:0.78rem;color:#7ab8e0;font-weight:600;}
+.ds-ref-pp-val{font-family:'Cinzel',serif;font-size:1.25rem;font-weight:700;color:#7ab8e0;}
+.ds-ref-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:0.3rem;margin-bottom:0.6rem;}
+.ds-ref-cell{display:flex;flex-direction:column;align-items:center;gap:1px;background:rgba(0,0,0,0.2);border:1px solid var(--border);border-radius:5px;padding:0.32rem 0.1rem;}
+.ds-ref-cell.prof{border-color:var(--border-gold);background:var(--gold-glow);}
+.ds-ref-k{font-size:0.56rem;letter-spacing:0.05em;color:var(--text-dim);font-family:'Cinzel',serif;}
+.ds-ref-cell.prof .ds-ref-k{color:var(--gold-dark);}
+.ds-ref-v{font-family:'Cinzel',serif;font-size:0.92rem;color:var(--text);}
+.ds-ref-cell.prof .ds-ref-v{color:var(--gold);}
+.ds-ref-skills{display:flex;flex-wrap:wrap;gap:0.3rem;}
+.ds-ref-skill{display:inline-flex;align-items:center;gap:0.3rem;background:rgba(0,0,0,0.2);border:1px solid var(--border-bright);border-radius:12px;padding:0.18rem 0.55rem;font-size:0.72rem;}
+.ds-ref-skill.exp{border-color:var(--border-gold);background:var(--gold-glow);}
+.ds-ref-skill-name{color:var(--text-mid);}
+.ds-ref-skill.exp .ds-ref-skill-name{color:var(--gold);}
+.ds-ref-skill-val{font-family:'Cinzel',serif;color:var(--text);font-size:0.74rem;}
 /* Compact HP row */
 .panel-hp-compact{padding:0.5rem 0.85rem;border-bottom:1px solid var(--border);}
 .php-bar{height:7px;background:rgba(0,0,0,0.4);border-radius:4px;overflow:hidden;margin-bottom:0.42rem;border:1px solid var(--border);}
@@ -1991,6 +2010,7 @@ function renderPlayerPanel(panel, key) {
         <div class="panel-char-name">${esc(charName)}</div>
         <div class="panel-badges">
           ${c.ca !== undefined ? `<span class="pbadge">AC ${c.ca}</span>` : ''}
+          <span class="pbadge pbadge-pp" title="Perception passive">👁 ${dmCalc(c).passivePerc}</span>
           ${c.initiative !== undefined ? `<span class="pbadge">${fmtInit(c.initiative)} Init</span>` : ''}
           ${c.vitesse ? `<span class="pbadge">${esc(String(c.vitesse))} ft</span>` : ''}
           ${c.concentration ? `<span class="pbadge pbadge-conc">🎯 ${esc(String(c.concentration).slice(0,12))}</span>` : ''}
@@ -1998,6 +2018,7 @@ function renderPlayerPanel(panel, key) {
         </div>
       </div>
       <div class="panel-acts">
+        <button class="pact" data-sheet="${esc(key)}" title="Ouvrir la fiche complète">📋</button>
         <button class="pact${c.inspiration?' insp-on':''}" data-insp="${esc(key)}" title="Inspiration">⭐</button>
         <button class="pact rest-long" data-key="${esc(key)}" title="Long Rest">☀</button>
         <button class="pact pdet${_panelExpanded.has(key)?' expanded':''}" data-expand="${esc(key)}" title="Details">▾</button>
@@ -2106,6 +2127,7 @@ let _panelNotesTimer = null;
 
 function attachPlayerPanelEvents(panel, key, username, charId) {
   panel.querySelector('[data-close]')?.addEventListener('click', () => closePanel(key));
+  panel.querySelector('[data-sheet]')?.addEventListener('click', () => openSheetForKey(key));
 
   // Expand/collapse details
   panel.querySelector('[data-expand]')?.addEventListener('click', () => {
@@ -3075,6 +3097,59 @@ function fmtInit(v) {
 }
 
 /* ══════════════════════════════════════════
+   DM Reference — calculs partagés (saves, skills, perception passive)
+   Modèle identique à joueurs.html : scores c.for/dex/…, prof saves c.saveFor…,
+   prof skills c.<key> (0/1/2), PB = ceil(niveauTotal/4)+1, Jack of All Trades.
+   N.B. les modificateurs actifs (c.mods) ne sont pas appliqués ici — base seule.
+══════════════════════════════════════════ */
+const DM_SKILLS = [
+  {key:'athletisme',attr:'for',label:'Athletics'},
+  {key:'acrobaties',attr:'dex',label:'Acrobatics'},
+  {key:'discret',attr:'dex',label:'Stealth'},
+  {key:'prestidig',attr:'dex',label:'Sleight of Hand'},
+  {key:'arcanes',attr:'int',label:'Arcana'},
+  {key:'histoire',attr:'int',label:'History'},
+  {key:'investigation',attr:'int',label:'Investigation'},
+  {key:'nature',attr:'int',label:'Nature'},
+  {key:'religion',attr:'int',label:'Religion'},
+  {key:'animaux',attr:'sag',label:'Animal Handling'},
+  {key:'perspicacite',attr:'sag',label:'Insight'},
+  {key:'medecine',attr:'sag',label:'Medicine'},
+  {key:'perception',attr:'sag',label:'Perception'},
+  {key:'survie',attr:'sag',label:'Survival'},
+  {key:'duperie',attr:'cha',label:'Deception'},
+  {key:'intimidation',attr:'cha',label:'Intimidation'},
+  {key:'performance',attr:'cha',label:'Performance'},
+  {key:'persuasion',attr:'cha',label:'Persuasion'},
+];
+const DM_SAVES = [
+  {key:'saveFor',attr:'for',label:'FOR'},{key:'saveDex',attr:'dex',label:'DEX'},
+  {key:'saveCon',attr:'con',label:'CON'},{key:'saveInt',attr:'int',label:'INT'},
+  {key:'saveSag',attr:'sag',label:'SAG'},{key:'saveCha',attr:'cha',label:'CHA'},
+];
+function dmMod(score){ return Math.floor(((parseInt(score)||10)-10)/2); }
+function dmFmt(n){ return (n>=0?'+':'')+n; }
+function dmCalc(c){
+  c = c || {};
+  const classes = (c.classes && c.classes.length) ? c.classes : [{niveau: parseInt(c.niveau)||1}];
+  const lvl = classes.reduce((s,cl)=>s+(parseInt(cl.niveau)||1),0);
+  const pb  = Math.ceil(lvl/4)+1;
+  const jat = !!c.jackOfAllTrades, half = Math.floor(pb/2);
+  const skill = sk => {
+    const prof = Math.min(2, Math.max(0, parseInt(c[sk.key]) || (c[sk.key]===true?1:0)));
+    const jatB = (jat && prof===0) ? half : 0;
+    return { prof, val: dmMod(c[sk.attr]) + prof*pb + jatB };
+  };
+  return {
+    pb, totalLevel: lvl,
+    save: sv => ({ prof: !!c[sv.key], val: dmMod(c[sv.attr]) + (c[sv.key]?pb:0) }),
+    skill,
+    passivePerc: 10 + skill({key:'perception',attr:'sag'}).val,
+    profSkills: DM_SKILLS.map(sk=>({sk, ...skill(sk)})).filter(x=>x.prof>0),
+  };
+}
+
+/* ══════════════════════════════════════════
    Init
 ══════════════════════════════════════════ */
 (function init() {
@@ -3097,15 +3172,25 @@ let _drawerChar    = null;
 let _drawerSection = 'perso'; // 'perso' | 'inventaire'
 let _drawerSaveTimer = null;
 
-document.getElementById('btn-open-drawer').addEventListener('click', openDrawer);
+document.getElementById('btn-open-drawer').addEventListener('click', () => openDrawer());
 document.getElementById('btn-close-drawer').addEventListener('click', closeDrawer);
 document.getElementById('drawer-backdrop').addEventListener('click', closeDrawer);
 
-function openDrawer() {
+function openDrawer(username, charId, section) {
+  // Cible optionnelle : ouvre directement la fiche d'un joueur/perso depuis un panneau
+  if (username) _drawerPlayer = username;
+  if (charId)   _drawerChar   = charId;
+  if (section)  _drawerSection = section;
   document.getElementById('player-drawer').classList.add('open');
   document.getElementById('drawer-backdrop').classList.add('open');
   document.getElementById('btn-open-drawer').classList.add('active');
   renderDrawerTabs();
+}
+/* Ouvre la fiche complète depuis une clé de panneau joueur 'p::user::charId' */
+function openSheetForKey(key) {
+  const parts = key.split('::');
+  if (parts[0] !== 'p') return;
+  openDrawer(parts[1], parts[2], 'perso');
 }
 
 function closeDrawer() {
@@ -3273,6 +3358,26 @@ function renderDrawerBody() {
         <div class="ds-field"><label class="ds-label">Or legacy</label><input class="ds-input center" type="number" data-field="gold" value="${esc(fv('gold','0'))}"></div>
       </div>
     </div>
+    ${(() => {
+      // ── Référence MJ : valeurs calculées (lecture seule) pour mener le jeu ──
+      const dc = dmCalc(c);
+      return `
+      <div class="ds-section ds-ref">
+        <div class="ds-section-title">🎲 Référence MJ
+          <span style="font-size:0.7rem;color:var(--text-dim);font-weight:400;margin-left:auto;">PB +${dc.pb} · Niv. ${dc.totalLevel}</span>
+        </div>
+        <div class="ds-ref-pp">
+          <span class="ds-ref-pp-label">👁 Perception passive</span>
+          <span class="ds-ref-pp-val">${dc.passivePerc}</span>
+        </div>
+        <div class="ds-ref-grid">
+          ${DM_SAVES.map(sv => { const s = dc.save(sv); return `<div class="ds-ref-cell${s.prof?' prof':''}"><span class="ds-ref-k">${sv.label}</span><span class="ds-ref-v">${dmFmt(s.val)}</span></div>`; }).join('')}
+        </div>
+        ${dc.profSkills.length ? `<div class="ds-ref-skills">
+          ${dc.profSkills.map(x => `<span class="ds-ref-skill${x.prof===2?' exp':''}"><span class="ds-ref-skill-name">${x.sk.label}${x.prof===2?' ★':''}</span><span class="ds-ref-skill-val">${dmFmt(x.val)}</span></span>`).join('')}
+        </div>` : `<div style="font-size:0.74rem;color:var(--text-dim);font-style:italic;">Aucune maîtrise de compétence.</div>`}
+      </div>`;
+    })()}
     ${(c.attaques||[]).length ? `
     <div class="ds-section">
       <div class="ds-section-title">⚔ Attaques</div>

@@ -444,6 +444,9 @@ if (hamburger && sidebar && overlay) {
   const sidebar = document.getElementById('sidebar');
   if (!sidebar) return;
 
+  // Pas d'index de recherche chargé (ex. page DM) → pas de bouton aléatoire
+  if (!Array.isArray(SEARCH_INDEX) || !SEARCH_INDEX.length) return;
+
   // Ne cibler que les vraies pages HTML (pas les ancres #fragment)
   const pages = SEARCH_INDEX
     .filter(p => p.url.endsWith('.html') && !p.url.includes('#'))
