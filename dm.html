@@ -758,24 +758,6 @@ body.wiki-sidebar-hidden #screen-dm{margin-left:0;transition:margin-left 0.3s ea
 #monster-panels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:0.9rem;}
 body.compact #player-panels-grid,body.compact #monster-panels-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.6rem;}
 
-/* ── Party HP bar ── */
-#party-bar{display:flex;flex-wrap:wrap;gap:0.45rem;padding-bottom:0.9rem;}
-#party-bar:empty{display:none;padding:0;}
-.pbar-chip{
-  background:var(--bg-card);border:1px solid var(--border-bright);border-radius:6px;
-  padding:0.35rem 0.6rem;cursor:pointer;display:flex;align-items:center;gap:0.45rem;
-  transition:all 0.15s;flex:1;min-width:110px;max-width:190px;
-}
-.pbar-chip:hover{border-color:var(--border-gold);background:var(--gold-glow);}
-.pbar-chip.pbar-open{border-color:rgba(232,201,106,0.35);background:rgba(232,201,106,0.05);}
-.pbar-avatar{font-size:0.95rem;width:18px;text-align:center;flex-shrink:0;line-height:1;}
-.pbar-info{flex:1;min-width:0;}
-.pbar-name{font-size:0.62rem;font-family:'Cinzel',serif;color:var(--text-mid);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:0.02em;}
-.pbar-hprow{display:flex;align-items:baseline;gap:3px;margin-top:1px;}
-.pbar-hp{font-size:0.78rem;font-weight:700;color:var(--text);}
-.pbar-hpmax{font-size:0.62rem;color:var(--text-dim);}
-.pbar-bar{height:3px;background:rgba(0,0,0,0.45);border-radius:2px;overflow:hidden;margin-top:4px;}
-.pbar-fill{height:100%;border-radius:2px;transition:width 0.4s,background 0.4s;}
 
 /* Empty state */
 #empty-state{
@@ -1296,7 +1278,6 @@ body.sidebar-open #sidebar-backdrop{display:block;}
 
       <!-- Panels -->
       <div id="panels-area">
-        <div id="party-bar"></div>
         <div id="empty-state">
           <div class="empty-icon">⚔</div>
           <p>Sélectionne un personnage dans la barre latérale<br>pour ouvrir un panneau de combat.</p>
@@ -1647,52 +1628,7 @@ document.getElementById('player-search').addEventListener('input', () => {
   _playerSearchTimer = setTimeout(renderSidebar, 150);
 });
 
-function renderPartyBar() {
-  const bar = document.getElementById('party-bar');
-  if (!bar) return;
-  const players = allPlayers.filter(p => p.username !== ADMIN_USER);
-  if (!players.length) { bar.innerHTML = ''; return; }
-  bar.innerHTML = players.map(player => {
-    const data    = player.data || {};
-    const activeId= data.activeCharId;
-    const slot    = activeId ? data.characters?.[activeId] : null;
-    const c       = slot?.character || {};
-    const pvAct   = parseInt(c.pvActuel) || 0;
-    const pvMax   = parseInt(c.pvMax)    || 0;
-    const pct     = pvMax > 0 ? Math.max(0, Math.min(100, pvAct/pvMax*100)) : 0;
-    const dead    = pvAct <= 0 && pvMax > 0;
-    const avatar  = data.avatar || '⚔';
-    const charName= slot?.name || player.username;
-    const key     = activeId ? 'p::' + player.username + '::' + activeId : '';
-    const isOpen  = key && !!openPanels[key];
-    return `<div class="pbar-chip${isOpen?' pbar-open':''}" data-pbar-key="${esc(key)}">
-      <span class="pbar-avatar">${esc(avatar)}</span>
-      <div class="pbar-info">
-        <div class="pbar-name">${esc(charName)}</div>
-        <div class="pbar-hprow">
-          <span class="pbar-hp" style="${dead?'color:var(--danger);':''}">${pvAct}</span>
-          <span class="pbar-hpmax">/ ${pvMax||'—'}</span>
-          ${pvAct <= 0 && pvMax > 0 ? '<span style="font-size:0.7rem;margin-left:2px;">💀</span>' : ''}
-        </div>
-        ${pvMax > 0 ? `<div class="pbar-bar"><div class="pbar-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>` : ''}
-      </div>
-    </div>`;
-  }).join('');
-  bar.querySelectorAll('[data-pbar-key]').forEach(chip => {
-    chip.addEventListener('click', () => {
-      const key = chip.dataset.pbarKey;
-      if (!key) return;
-      if (openPanels[key]) {
-        document.getElementById('panel-' + key)?.scrollIntoView({ behavior:'smooth', block:'nearest' });
-      } else {
-        openPanel(key);
-      }
-    });
-  });
-}
-
 function renderSidebar() {
-  renderPartyBar();
   const q = document.getElementById('player-search').value.trim().toLowerCase();
   const list = document.getElementById('player-list');
   const filtered = allPlayers.filter(p => p.username !== ADMIN_USER && p.username.includes(q));
