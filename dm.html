@@ -114,6 +114,11 @@ input,select{font-family:inherit;color-scheme:dark;}
   background:var(--bg-nav);
   border-right:1px solid var(--border-bright);
   display:flex;flex-direction:column;overflow:hidden;
+  transition:width 0.25s ease, border-color 0.25s ease;
+}
+/* Panneau joueurs réduit (desktop) — largeur 0, le contenu principal s'étend */
+@media(min-width:901px){
+  body.dm-sidebar-collapsed #dm-sidebar{width:0;border-right-color:transparent;}
 }
 #sidebar-top{
   padding:0.9rem 1rem 0.7rem;
@@ -1012,7 +1017,8 @@ body.compact .panel-char-sub{display:none;}
 .btn-danger:hover{background:linear-gradient(135deg,#d04040 0%,#a03030 100%);}
 
 /* ══ Responsive / Tablette ══ */
-#btn-sidebar-toggle{display:none;align-items:center;justify-content:center;font-size:1.2rem;padding:0 0.65rem;min-width:44px;min-height:44px;}
+#btn-sidebar-toggle{display:flex;align-items:center;justify-content:center;font-size:1.05rem;padding:0 0.6rem;}
+@media(max-width:900px){#btn-sidebar-toggle{font-size:1.2rem;min-width:44px;min-height:44px;padding:0 0.65rem;}}
 #sidebar-backdrop{
   display:none;position:fixed;inset:0;z-index:349;
   background:rgba(0,0,0,0.55);backdrop-filter:blur(2px);
@@ -1154,7 +1160,7 @@ body.sidebar-open #sidebar-backdrop{display:block;}
 <div id="screen-dm">
   <nav id="dm-nav">
     <button id="btn-wiki-sidebar-toggle" class="nav-btn" title="Afficher/masquer la navigation wiki">⚜</button>
-    <button id="btn-sidebar-toggle" class="nav-btn" title="Menu joueurs">☰</button>
+    <button id="btn-sidebar-toggle" class="nav-btn" title="Réduire / afficher le panneau joueurs">☰</button>
     <span class="brand">DM Screen<span class="brand-sep"></span><span class="brand-sub">Kaleysur</span></span>
     <button id="btn-init-open" class="nav-btn">⚔ Initiative</button>
     <button id="btn-compact" class="nav-btn" title="Vue compacte">⊞ Compact</button>
@@ -1409,6 +1415,7 @@ function saveDmState() {
       openPanels: savedPanels,
       expandedPlayers: [...expandedPlayers],
       compactMode,
+      sidebarCollapsed: document.body.classList.contains('dm-sidebar-collapsed'),
       panelNotes: _panelNotes,
       initState: {
         ...initState,
@@ -1434,6 +1441,10 @@ function restoreDmState() {
       compactMode = s.compactMode;
       document.body.classList.toggle('compact', compactMode);
       document.getElementById('btn-compact')?.classList.toggle('active', compactMode);
+    }
+    if (s.sidebarCollapsed && window.innerWidth > 900) {
+      document.body.classList.add('dm-sidebar-collapsed');
+      document.getElementById('btn-sidebar-toggle')?.classList.add('active');
     }
     if (s.initState) {
       Object.assign(initState, s.initState);
@@ -2897,7 +2908,15 @@ document.getElementById('btn-wiki-sidebar-toggle').addEventListener('click', () 
 function openSidebar() { document.body.classList.add('sidebar-open'); }
 function closeSidebar() { document.body.classList.remove('sidebar-open'); }
 document.getElementById('btn-sidebar-toggle').addEventListener('click', () => {
-  document.body.classList.toggle('sidebar-open');
+  if (window.innerWidth <= 900) {
+    // Mobile/tablette : overlay coulissant
+    document.body.classList.toggle('sidebar-open');
+  } else {
+    // Desktop : réduire / afficher le panneau joueurs
+    const collapsed = document.body.classList.toggle('dm-sidebar-collapsed');
+    document.getElementById('btn-sidebar-toggle').classList.toggle('active', collapsed);
+    saveDmState();
+  }
 });
 document.getElementById('sidebar-backdrop').addEventListener('click', closeSidebar);
 
