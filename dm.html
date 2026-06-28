@@ -1450,7 +1450,7 @@ function restoreDmState() {
       Object.assign(initState, s.initState);
       document.getElementById('init-bar').className = initState.open ? 'open' : 'collapsed';
       document.getElementById('btn-init-open')?.classList.toggle('active', initState.open);
-      document.getElementById('init-round-label').textContent = 'Round ' + (initState.round || 1);
+      document.getElementById('init-round-label').textContent = 'Tour ' + (initState.round || 1);
     }
     // Re-open panels
     if (s.openPanels) {
@@ -2229,6 +2229,7 @@ function renderMonsterPanel(panel, key) {
   const id = key.replace('m::', '');
   const m  = localMonsters[id];
   if (!m) { panel.remove(); delete openPanels[key]; updateEmptyState(); return; }
+  if (!Array.isArray(m.conditions)) m.conditions = []; // sécurité (ancien état localStorage)
 
   const pct  = m.hpMax > 0 ? Math.max(0, Math.min(100, m.hp / m.hpMax * 100)) : 0;
   const dead = m.hp <= 0 && m.hpMax > 0;
@@ -2309,7 +2310,7 @@ function renderMonsterPanel(panel, key) {
 
   panel.querySelector('[data-clone]')?.addEventListener('click', () => {
     const newId = 'monster-' + (++monsterCounter);
-    localMonsters[newId] = { ...m, id: newId, hp: m.hpMax };
+    localMonsters[newId] = { ...m, id: newId, hp: m.hpMax, conditions: [] };
     renderMonsterSidebar();
     openPanel('m::' + newId);
     const initVal = Math.floor(Math.random() * 20) + 1 + (parseInt(m.initiative)||0);
@@ -2423,6 +2424,7 @@ function renderFriendlyPanel(panel, key) {
   const id = key.replace('f::', '');
   const f  = localFriendlies[id];
   if (!f) { panel.remove(); delete openPanels[key]; updateEmptyState(); return; }
+  if (!Array.isArray(f.conditions)) f.conditions = []; // sécurité (ancien état localStorage)
 
   const pct  = f.hpMax > 0 ? Math.max(0, Math.min(100, f.hp / f.hpMax * 100)) : 0;
   const dead = f.hp <= 0 && f.hpMax > 0;
