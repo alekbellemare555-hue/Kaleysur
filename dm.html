@@ -1582,8 +1582,8 @@ function startRealtime(_retry = 0) {
         const idx = allPlayers.findIndex(p => p.username === row.username);
         if (idx !== -1) allPlayers[idx].data = row.data;
         else allPlayers.push({ username: row.username, data: row.data });
-        // Ne re-render que les panels du joueur modifié
-        renderSidebar();
+        // Mise à jour ciblée (barre HP sidebar + panels du joueur) plutôt que tout reconstruire
+        updateSidebarPlayerHp(row.username);
         Object.keys(openPanels).filter(k => k.startsWith('p::' + row.username + '::')).forEach(k => updatePanel(k));
         renderInitChips();
         document.getElementById('poll-indicator').textContent =
@@ -1669,7 +1669,7 @@ function renderSidebar() {
     item.dataset.username = player.username;
     item.innerHTML = `
       <div class="player-head">
-        <span class="player-avatar">${avatar}</span>
+        <span class="player-avatar">${esc(avatar)}</span>
         <div class="player-info">
           <div class="player-name">${esc(player.username)}</div>
           <div class="player-hp-mini"><div class="player-hp-mini-bar" style="width:${hpPct}%;background:${hpColor(hpPct)};"></div></div>
@@ -1705,6 +1705,21 @@ function renderSidebar() {
     });
     list.appendChild(item);
   });
+}
+
+/* Mise à jour ciblée de la barre HP d'un joueur dans la sidebar (sans tout reconstruire).
+   Appelée sur chaque push Realtime — évite de rebâtir toute la liste + ré-attacher les
+   listeners à chaque point de vie perdu. Fallback rebuild complet si l'élément est absent
+   (nouveau joueur ou changement de structure). */
+function updateSidebarPlayerHp(username) {
+  const item = document.querySelector(`.player-item[data-username="${(window.CSS && CSS.escape) ? CSS.escape(username) : username}"]`);
+  if (!item) { renderSidebar(); return; }
+  const data     = allPlayers.find(p => p.username === username)?.data;
+  const activeId = data?.activeCharId;
+  const c        = activeId ? data.characters?.[activeId]?.character : null;
+  const pct      = c ? Math.max(0, Math.min(100, (c.pvActuel||0) / Math.max(1, c.pvMax||1) * 100)) : 0;
+  const bar      = item.querySelector('.player-hp-mini-bar');
+  if (bar) { bar.style.width = pct + '%'; bar.style.background = hpColor(pct); }
 }
 
 /* ══════════════════════════════════════════
@@ -1865,7 +1880,7 @@ function renderMonsterSidebar() {
     const isOpen = !!openPanels[key];
     return `<div class="monster-sidebar-entry${isOpen?' open':''}" data-mkey="${esc(key)}">
       <span class="m-dot"></span>
-      <span>${m.avatar} ${esc(m.name)}</span>
+      <span>${esc(m.avatar)} ${esc(m.name)}</span>
       <span style="margin-left:auto;font-size:0.68rem;">${m.hp}/${m.hpMax}</span>
     </div>`;
   }).join('');
@@ -1979,7 +1994,7 @@ function renderPlayerPanel(panel, key) {
 
   panel.innerHTML = `
     <div class="panel-header">
-      <span class="panel-avatar">${avatar}</span>
+      <span class="panel-avatar">${esc(avatar)}</span>
       <div class="panel-title">
         <div class="panel-char-name">${esc(charName)}</div>
         <div class="panel-badges">
@@ -2225,34 +2240,42 @@ function attachPlayerPanelEvents(panel, key, username, charId) {
 }
 
 /* ── Monster panel ── */
-function renderMonsterPanel(panel, key) {
-  const id = key.replace('m::', '');
-  const m  = localMonsters[id];
-  if (!m) { panel.remove(); delete openPanels[key]; updateEmptyState(); return; }
-  if (!Array.isArray(m.conditions)) m.conditions = []; // sécurité (ancien état localStorage)
+/* Panneau monstre (kind 'm') et PNJ amical (kind 'f') partagent la même structure.
+   Seuls diffèrent le store, le préfixe d'ID, et deux libellés (AC/CA, mort). */
+const ENTITY_KIND = {
+  m: { type:'monster',  prefix:'m::', deadLabel:'Éliminé', acLabel:'CA',
+       store:() => localMonsters,    sidebar:() => renderMonsterSidebar(),  nextId:() => 'monster-'  + (++monsterCounter) },
+  f: { type:'friendly', prefix:'f::', deadLabel:'Down',    acLabel:'AC',
+       store:() => localFriendlies,  sidebar:() => renderFriendlySidebar(), nextId:() => 'friendly-' + (++friendlyCounter) },
+};
 
-  const pct  = m.hpMax > 0 ? Math.max(0, Math.min(100, m.hp / m.hpMax * 100)) : 0;
-  const dead = m.hp <= 0 && m.hpMax > 0;
-  const isExpanded = _expandedMonsterPanels.has(key);
+function renderCombatantPanel(panel, key, kind) {
+  const cfg = ENTITY_KIND[kind];
+  const id  = key.slice(3); // retire 'm::' / 'f::'
+  const e   = cfg.store()[id];
+  if (!e) { panel.remove(); delete openPanels[key]; updateEmptyState(); return; }
+  if (!Array.isArray(e.conditions)) e.conditions = []; // sécurité (ancien état localStorage)
 
-  panel.classList.toggle('panel-compact', !isExpanded);
+  const pct  = e.hpMax > 0 ? Math.max(0, Math.min(100, e.hp / e.hpMax * 100)) : 0;
+  const dead = e.hp <= 0 && e.hpMax > 0;
+  panel.classList.toggle('panel-compact', !_expandedMonsterPanels.has(key));
 
   panel.innerHTML = `
     <div class="panel-header" style="cursor:pointer;" data-toggle-panel="${esc(key)}">
-      <span class="panel-avatar">${m.avatar}</span>
+      <span class="panel-avatar">${esc(e.avatar)}</span>
       <div class="panel-title">
-        <input class="panel-name-input" data-rename-monster="${esc(id)}" value="${esc(m.name)}" title="Double-click to rename" onclick="event.stopPropagation()">
+        <input class="panel-name-input" data-rename="${esc(id)}" value="${esc(e.name)}" title="Renommer" onclick="event.stopPropagation()">
         <div class="panel-compact-info">
-          <span>AC ${m.ac}</span>
+          <span>AC ${e.ac}</span>
           <span>·</span>
-          <span class="panel-compact-hp" style="color:${dead?'var(--danger)':'var(--text)'};">${m.hp}<span style="color:var(--text-dim);font-size:0.72rem;">/${m.hpMax}</span></span>
+          <span class="panel-compact-hp" style="color:${dead?'var(--danger)':'var(--text)'};">${e.hp}<span style="color:var(--text-dim);font-size:0.72rem;">/${e.hpMax}</span></span>
           ${dead ? `<span style="color:var(--danger);">💀</span>` : ''}
         </div>
       </div>
       <div class="panel-acts">
         <span class="panel-expand-arrow">▶</span>
-        <button class="pact" data-clone="${esc(key)}" title="Duplicate" onclick="event.stopPropagation()">⎘</button>
-        <button class="pact danger" data-close="${esc(key)}" title="Delete" onclick="event.stopPropagation()">🗑</button>
+        <button class="pact" data-clone="${esc(key)}" title="Dupliquer" onclick="event.stopPropagation()">⎘</button>
+        <button class="pact danger" data-close="${esc(key)}" title="Supprimer" onclick="event.stopPropagation()">🗑</button>
       </div>
     </div>
     <div class="panel-mini-bar"><div class="panel-mini-bar-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>
@@ -2260,9 +2283,9 @@ function renderMonsterPanel(panel, key) {
       <div class="panel-hp">
         <div class="hp-bar-wrap"><div class="hp-bar-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>
         <div class="hp-row">
-          <span class="hp-num" style="color:${dead?'var(--danger)':'var(--text)'};">${m.hp}</span>
-          <span class="hp-max">/ ${m.hpMax} HP</span>
-          ${dead ? `<span style="color:var(--danger);font-size:0.72rem;margin-left:auto;">💀 Éliminé</span>` : ''}
+          <span class="hp-num" style="color:${dead?'var(--danger)':'var(--text)'};">${e.hp}</span>
+          <span class="hp-max">/ ${e.hpMax} HP</span>
+          ${dead ? `<span style="color:var(--danger);font-size:0.72rem;margin-left:auto;">💀 ${cfg.deadLabel}</span>` : ''}
         </div>
         <div class="hp-controls">
           <button class="hp-qbtn m" data-delta="-10">−10</button>
@@ -2275,23 +2298,23 @@ function renderMonsterPanel(panel, key) {
         </div>
       </div>
       <div class="panel-stats">
-        <div class="stat-cell"><div class="stat-val">${m.ac}</div><div class="stat-lbl">CA</div></div>
-        <div class="stat-cell"><div class="stat-val">${fmtInit(m.initiative)}</div><div class="stat-lbl">Init.</div></div>
+        <div class="stat-cell"><div class="stat-val">${e.ac}</div><div class="stat-lbl">${cfg.acLabel}</div></div>
+        <div class="stat-cell"><div class="stat-val">${fmtInit(e.initiative)}</div><div class="stat-lbl">Init.</div></div>
         <div class="stat-cell">
-          <input type="number" class="hp-inp" id="maxhp-${esc(key)}" value="${m.hpMax}" style="width:55px;margin:0 auto;" title="HP Max">
+          <input type="number" class="hp-inp" id="maxhp-${esc(key)}" value="${e.hpMax}" style="width:55px;margin:0 auto;" title="HP Max">
           <div class="stat-lbl">HP Max</div>
         </div>
       </div>
       <div class="panel-cond">
         <div class="sec-label">Conditions</div>
         <div class="cond-badges">
-          ${m.conditions.map(cond =>
+          ${e.conditions.map(cond =>
             `<span class="cond-badge" data-remove-cond="${esc(cond)}">${esc(cond)} <span class="cond-x">✕</span></span>`
           ).join('')}
           <div class="cond-picker">
             <button class="cond-add-btn">+ Condition</button>
             <div class="cond-menu" id="cmenu-${esc(key)}">
-              ${ALL_CONDITIONS.filter(co => !m.conditions.includes(co)).map(co =>
+              ${ALL_CONDITIONS.filter(co => !e.conditions.includes(co)).map(co =>
                 `<div class="cond-opt" data-add-cond="${esc(co)}">${esc(co)}</div>`
               ).join('')}
             </div>
@@ -2301,79 +2324,74 @@ function renderMonsterPanel(panel, key) {
     </div>`;
 
   // Toggle expand on header click
-  panel.querySelector('[data-toggle-panel]')?.addEventListener('click', (e) => {
-    if (e.target.closest('.pact') || e.target.closest('.panel-name-input')) return;
+  panel.querySelector('[data-toggle-panel]')?.addEventListener('click', (ev) => {
+    if (ev.target.closest('.pact') || ev.target.closest('.panel-name-input')) return;
     if (_expandedMonsterPanels.has(key)) _expandedMonsterPanels.delete(key);
     else _expandedMonsterPanels.add(key);
     updatePanel(key);
   });
 
+  // Clone / duplicate
   panel.querySelector('[data-clone]')?.addEventListener('click', () => {
-    const newId = 'monster-' + (++monsterCounter);
-    localMonsters[newId] = { ...m, id: newId, hp: m.hpMax, conditions: [] };
-    renderMonsterSidebar();
-    openPanel('m::' + newId);
-    const initVal = Math.floor(Math.random() * 20) + 1 + (parseInt(m.initiative)||0);
-    initState.combatants.push({ id: 'm::' + newId, label: m.name, avatar: m.avatar, type: 'monster', initVal, hp: m.hpMax, hpMax: m.hpMax, delayed: false });
+    const newId  = cfg.nextId();
+    const newKey = cfg.prefix + newId;
+    cfg.store()[newId] = { ...e, id: newId, hp: e.hpMax, conditions: [] };
+    cfg.sidebar();
+    openPanel(newKey);
+    const initVal = Math.floor(Math.random() * 20) + 1 + (parseInt(e.initiative)||0);
+    initState.combatants.push({ id: newKey, label: e.name, avatar: e.avatar, type: cfg.type, initVal, hp: e.hpMax, hpMax: e.hpMax, delayed: false });
     initState.combatants.sort((a, b) => b.initVal - a.initVal);
     renderInitChips();
     saveDmState();
   });
 
+  // Close / delete
   panel.querySelector('[data-close]')?.addEventListener('click', () => {
-    delete localMonsters[id];
+    delete cfg.store()[id];
     _expandedMonsterPanels.delete(key);
     closePanel(key);
-    renderMonsterSidebar();
+    cfg.sidebar();
     removeInitCombatant(key);
     saveDmState();
   });
 
+  // HP quick buttons
   panel.querySelectorAll('.hp-qbtn').forEach(btn => {
     btn.addEventListener('click', () => {
-      m.hp = Math.max(0, Math.min(m.hpMax, m.hp + parseInt(btn.dataset.delta)));
-      updatePanel(key);
-      renderMonsterSidebar();
-      renderInitChips();
-      saveDmState();
+      e.hp = Math.max(0, Math.min(e.hpMax, e.hp + parseInt(btn.dataset.delta)));
+      updatePanel(key); cfg.sidebar(); renderInitChips(); saveDmState();
     });
   });
   panel.querySelector('[data-apply]')?.addEventListener('click', () => {
     const inp = document.getElementById('hpinp-' + key);
     const v   = parseInt(inp?.value);
     if (!isNaN(v) && v !== 0) {
-      m.hp = Math.max(0, Math.min(m.hpMax, m.hp + v));
-      if(inp) inp.value = '';
-      updatePanel(key);
-      renderMonsterSidebar();
-      renderInitChips();
-      saveDmState();
+      e.hp = Math.max(0, Math.min(e.hpMax, e.hp + v));
+      if (inp) inp.value = '';
+      updatePanel(key); cfg.sidebar(); renderInitChips(); saveDmState();
     }
   });
-  panel.querySelector('.hp-inp')?.addEventListener('keydown', e => {
-    if(e.key==='Enter') panel.querySelector('[data-apply]')?.click();
+  panel.querySelector('.hp-inp')?.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter') panel.querySelector('[data-apply]')?.click();
   });
 
-  // HP Max edit (only in expanded state)
+  // HP Max edit (expanded state)
   const maxInp = document.getElementById('maxhp-' + key);
   if (maxInp) {
     maxInp.addEventListener('change', () => {
       const v = Math.max(1, parseInt(maxInp.value) || 1);
-      m.hpMax = v; m.hp = Math.min(m.hp, v);
-      updatePanel(key);
-      renderMonsterSidebar();
-      saveDmState();
+      e.hpMax = v; e.hp = Math.min(e.hp, v);
+      updatePanel(key); cfg.sidebar(); saveDmState();
     });
   }
 
   // Rename
-  const nameInp = panel.querySelector('[data-rename-monster]');
+  const nameInp = panel.querySelector('[data-rename]');
   if (nameInp) {
     nameInp.addEventListener('change', () => {
-      const newName = nameInp.value.trim() || m.name;
-      m.name = newName;
-      nameInp.value = newName;
-      renderMonsterSidebar();
+      const newName = nameInp.value.trim() || e.name;
+      e.name = newName; nameInp.value = newName;
+      cfg.sidebar();
       const initC = initState.combatants.find(c => c.id === key);
       if (initC) { initC.label = newName; renderInitChips(); }
       saveDmState();
@@ -2383,21 +2401,22 @@ function renderMonsterPanel(panel, key) {
   // Conditions
   panel.querySelectorAll('[data-remove-cond]').forEach(el => {
     el.addEventListener('click', () => {
-      m.conditions = m.conditions.filter(c => c !== el.dataset.removeCond);
+      e.conditions = e.conditions.filter(c => c !== el.dataset.removeCond);
       updatePanel(key); saveDmState();
     });
   });
   panel.querySelectorAll('.cond-add-btn').forEach(btn => {
-    btn.addEventListener('click', e => { e.stopPropagation(); closeAllMenus(); document.getElementById('cmenu-' + key)?.classList.add('open'); });
+    btn.addEventListener('click', ev => { ev.stopPropagation(); closeAllMenus(); document.getElementById('cmenu-' + key)?.classList.add('open'); });
   });
   panel.querySelectorAll('[data-add-cond]').forEach(el => {
-    el.addEventListener('click', e => {
-      e.stopPropagation();
+    el.addEventListener('click', ev => {
+      ev.stopPropagation();
       document.getElementById('cmenu-' + key)?.classList.remove('open');
-      if (!m.conditions.includes(el.dataset.addCond)) { m.conditions.push(el.dataset.addCond); updatePanel(key); saveDmState(); }
+      if (!e.conditions.includes(el.dataset.addCond)) { e.conditions.push(el.dataset.addCond); updatePanel(key); saveDmState(); }
     });
   });
 }
+function renderMonsterPanel(panel, key)  { renderCombatantPanel(panel, key, 'm'); }
 
 /* ══════════════════════════════════════════
    Friendly NPCs — Render & Logic
@@ -2411,7 +2430,7 @@ function renderFriendlySidebar() {
     const isOpen = !!openPanels[key];
     return `<div class="friendly-sidebar-entry${isOpen?' open':''}" data-fkey="${esc(key)}">
       <span class="f-dot"></span>
-      <span>${f.avatar} ${esc(f.name)}</span>
+      <span>${esc(f.avatar)} ${esc(f.name)}</span>
       <span style="margin-left:auto;font-size:0.68rem;">${f.hp}/${f.hpMax}</span>
     </div>`;
   }).join('');
@@ -2420,177 +2439,7 @@ function renderFriendlySidebar() {
   });
 }
 
-function renderFriendlyPanel(panel, key) {
-  const id = key.replace('f::', '');
-  const f  = localFriendlies[id];
-  if (!f) { panel.remove(); delete openPanels[key]; updateEmptyState(); return; }
-  if (!Array.isArray(f.conditions)) f.conditions = []; // sécurité (ancien état localStorage)
-
-  const pct  = f.hpMax > 0 ? Math.max(0, Math.min(100, f.hp / f.hpMax * 100)) : 0;
-  const dead = f.hp <= 0 && f.hpMax > 0;
-  const isExpanded = _expandedMonsterPanels.has(key);
-
-  panel.classList.toggle('panel-compact', !isExpanded);
-
-  panel.innerHTML = `
-    <div class="panel-header" style="cursor:pointer;" data-toggle-panel="${esc(key)}">
-      <span class="panel-avatar">${f.avatar}</span>
-      <div class="panel-title">
-        <input class="panel-name-input" data-rename-friendly="${esc(id)}" value="${esc(f.name)}" title="Edit to rename" onclick="event.stopPropagation()">
-        <div class="panel-compact-info">
-          <span>AC ${f.ac}</span>
-          <span>·</span>
-          <span class="panel-compact-hp" style="color:${dead?'var(--danger)':'var(--text)'};">${f.hp}<span style="color:var(--text-dim);font-size:0.72rem;">/${f.hpMax}</span></span>
-          ${dead ? `<span style="color:var(--danger);">💀</span>` : ''}
-        </div>
-      </div>
-      <div class="panel-acts">
-        <span class="panel-expand-arrow">▶</span>
-        <button class="pact" data-clone-friendly="${esc(key)}" title="Duplicate" onclick="event.stopPropagation()">⎘</button>
-        <button class="pact danger" data-close-friendly="${esc(key)}" title="Delete" onclick="event.stopPropagation()">🗑</button>
-      </div>
-    </div>
-    <div class="panel-mini-bar"><div class="panel-mini-bar-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>
-    <div class="panel-body">
-      <div class="panel-hp">
-        <div class="hp-bar-wrap"><div class="hp-bar-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>
-        <div class="hp-row">
-          <span class="hp-num" style="color:${dead?'var(--danger)':'var(--text)'};">${f.hp}</span>
-          <span class="hp-max">/ ${f.hpMax} HP</span>
-          ${dead ? `<span style="color:var(--danger);font-size:0.72rem;margin-left:auto;">💀 Down</span>` : ''}
-        </div>
-        <div class="hp-controls">
-          <button class="hp-qbtn m" data-delta="-10">−10</button>
-          <button class="hp-qbtn m" data-delta="-5">−5</button>
-          <button class="hp-qbtn m" data-delta="-1">−1</button>
-          <input type="number" class="hp-inp" placeholder="±HP" id="hpinp-${esc(key)}">
-          <button class="hp-qbtn p" data-delta="+1">+1</button>
-          <button class="hp-qbtn p" data-delta="+5">+5</button>
-          <button class="hp-apply" data-apply-friendly="${esc(key)}">✓</button>
-        </div>
-      </div>
-      <div class="panel-stats">
-        <div class="stat-cell"><div class="stat-val">${f.ac}</div><div class="stat-lbl">AC</div></div>
-        <div class="stat-cell"><div class="stat-val">${fmtInit(f.initiative)}</div><div class="stat-lbl">Init.</div></div>
-        <div class="stat-cell">
-          <input type="number" class="hp-inp" id="maxhp-${esc(key)}" value="${f.hpMax}" style="width:55px;margin:0 auto;" title="HP Max">
-          <div class="stat-lbl">HP Max</div>
-        </div>
-      </div>
-      <div class="panel-cond">
-        <div class="sec-label">Conditions</div>
-        <div class="cond-badges">
-          ${f.conditions.map(cond =>
-            `<span class="cond-badge" data-rm-fcond="${esc(cond)}">${esc(cond)} <span class="cond-x">✕</span></span>`
-          ).join('')}
-          <div class="cond-picker">
-            <button class="cond-add-btn">+ Condition</button>
-            <div class="cond-menu" id="cmenu-${esc(key)}">
-              ${ALL_CONDITIONS.filter(co => !f.conditions.includes(co)).map(co =>
-                `<div class="cond-opt" data-add-fcond="${esc(co)}">${esc(co)}</div>`
-              ).join('')}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>`;
-
-  // Toggle expand on header click
-  panel.querySelector('[data-toggle-panel]')?.addEventListener('click', (e) => {
-    if (e.target.closest('.pact') || e.target.closest('.panel-name-input')) return;
-    if (_expandedMonsterPanels.has(key)) _expandedMonsterPanels.delete(key);
-    else _expandedMonsterPanels.add(key);
-    updatePanel(key);
-  });
-
-  panel.querySelector('[data-clone-friendly]')?.addEventListener('click', () => {
-    const newId = 'friendly-' + (++friendlyCounter);
-    localFriendlies[newId] = { ...f, id: newId, hp: f.hpMax, conditions: [] };
-    renderFriendlySidebar();
-    openPanel('f::' + newId);
-    const initVal = Math.floor(Math.random() * 20) + 1 + (parseInt(f.initiative)||0);
-    initState.combatants.push({ id: 'f::' + newId, label: f.name, avatar: f.avatar, type: 'friendly', initVal, hp: f.hpMax, hpMax: f.hpMax, delayed: false });
-    initState.combatants.sort((a, b) => b.initVal - a.initVal);
-    renderInitChips();
-    saveDmState();
-  });
-
-  panel.querySelector('[data-close-friendly]')?.addEventListener('click', () => {
-    delete localFriendlies[id];
-    _expandedMonsterPanels.delete(key);
-    closePanel(key);
-    renderFriendlySidebar();
-    removeInitCombatant(key);
-    saveDmState();
-  });
-
-  panel.querySelectorAll('.hp-qbtn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      f.hp = Math.max(0, Math.min(f.hpMax, f.hp + parseInt(btn.dataset.delta)));
-      updatePanel(key);
-      renderFriendlySidebar();
-      renderInitChips();
-      saveDmState();
-    });
-  });
-
-  panel.querySelector('[data-apply-friendly]')?.addEventListener('click', () => {
-    const inp = document.getElementById('hpinp-' + key);
-    const v   = parseInt(inp?.value);
-    if (!isNaN(v) && v !== 0) {
-      f.hp = Math.max(0, Math.min(f.hpMax, f.hp + v));
-      if (inp) inp.value = '';
-      updatePanel(key);
-      renderFriendlySidebar();
-      renderInitChips();
-      saveDmState();
-    }
-  });
-  panel.querySelector('.hp-inp')?.addEventListener('keydown', e => {
-    if (e.key === 'Enter') panel.querySelector('[data-apply-friendly]')?.click();
-  });
-
-  const maxInp = document.getElementById('maxhp-' + key);
-  if (maxInp) {
-    maxInp.addEventListener('change', () => {
-      const v = Math.max(1, parseInt(maxInp.value) || 1);
-      f.hpMax = v; f.hp = Math.min(f.hp, v);
-      updatePanel(key);
-      renderFriendlySidebar();
-      saveDmState();
-    });
-  }
-
-  const nameInp = panel.querySelector('[data-rename-friendly]');
-  if (nameInp) {
-    nameInp.addEventListener('change', () => {
-      const newName = nameInp.value.trim() || f.name;
-      f.name = newName;
-      nameInp.value = newName;
-      renderFriendlySidebar();
-      const initC = initState.combatants.find(c => c.id === key);
-      if (initC) { initC.label = newName; renderInitChips(); }
-      saveDmState();
-    });
-  }
-
-  panel.querySelectorAll('[data-rm-fcond]').forEach(el => {
-    el.addEventListener('click', () => {
-      f.conditions = f.conditions.filter(c => c !== el.dataset.rmFcond);
-      updatePanel(key); saveDmState();
-    });
-  });
-  panel.querySelectorAll('.cond-add-btn').forEach(btn => {
-    btn.addEventListener('click', e => { e.stopPropagation(); closeAllMenus(); document.getElementById('cmenu-' + key)?.classList.add('open'); });
-  });
-  panel.querySelectorAll('[data-add-fcond]').forEach(el => {
-    el.addEventListener('click', e => {
-      e.stopPropagation();
-      document.getElementById('cmenu-' + key)?.classList.remove('open');
-      if (!f.conditions.includes(el.dataset.addFcond)) { f.conditions.push(el.dataset.addFcond); updatePanel(key); saveDmState(); }
-    });
-  });
-}
+function renderFriendlyPanel(panel, key) { renderCombatantPanel(panel, key, 'f'); }
 
 /* ══════════════════════════════════════════
    Mutations — Players
@@ -2808,7 +2657,7 @@ function renderInitChips() {
     chip.className = 'init-chip' + (active ? ' active-turn' : '') + (dead ? ' dead' : '') + (ct.delayed ? ' delayed' : '');
     const hpTxt = ct.hpMax > 0 ? (dead ? '💀 0' : `${ct.hp}/${ct.hpMax}`) : '—';
     chip.innerHTML = `
-      <span class="chip-avatar">${ct.avatar}</span>
+      <span class="chip-avatar">${esc(ct.avatar)}</span>
       <input class="init-chip-inp" type="number" value="${ct.initVal}" title="Modifier initiative">
       <span class="chip-name">${esc(ct.label)}</span>
       <div class="chip-hp-bar"><div class="chip-hp-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>
