@@ -933,6 +933,8 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 // --- Chat widget (chargé uniquement si connecté) --------
 (function loadChat() {
   if (!localStorage.getItem('kaleysur_user')) return;
+  // Pages avec leur propre chat intégré (fiche joueur, DM screen) : ne pas doubler
+  if (document.getElementById('chat-fab') || document.getElementById('dm-chat-input')) return;
   var s = document.createElement('script');
   s.src = getWikiRoot() + 'js/chat.js';
   document.body.appendChild(s);

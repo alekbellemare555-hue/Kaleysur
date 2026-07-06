@@ -2494,10 +2494,31 @@ function longRest(username, charId, key) {
   schedulePlayerSave(username, data);
 }
 
+const _pendingSaves = {};
 function schedulePlayerSave(username, data) {
+  _pendingSaves[username] = data;
   clearTimeout(saveTimers[username]);
-  saveTimers[username] = setTimeout(() => sbUpdateData(username, data), 800);
+  saveTimers[username] = setTimeout(() => { delete _pendingSaves[username]; sbUpdateData(username, data); }, 800);
 }
+/* Flush à la fermeture : les éditions DM encore dans la fenêtre de debounce (800ms)
+   partent en keepalive au lieu d'être perdues. */
+function flushPendingPlayerSaves() {
+  Object.entries(_pendingSaves).forEach(([u, data]) => {
+    clearTimeout(saveTimers[u]);
+    delete _pendingSaves[u];
+    data._rev = (data._rev || 0) + 1;
+    try {
+      fetch(`${SB_URL}/rest/v1/players?username=eq.${encodeURIComponent(u)}`, {
+        method: 'PATCH', headers: { ...SB_HDR, 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ data }), keepalive: true
+      }).catch(() => {});
+    } catch {}
+  });
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') flushPendingPlayerSaves();
+});
+window.addEventListener('pagehide', flushPendingPlayerSaves);
 
 /* ══════════════════════════════════════════
    Initiative Tracker
