@@ -1544,11 +1544,16 @@
   #spell-tbody .spell-lvl-header td { display:block; padding:4px 0 2px; }
   #spell-tbody .exp-row { display:flex !important; align-items:center; gap:6px; padding:7px 10px; border:1px solid var(--j-border-col,#2a1f0d); border-radius:4px; background:var(--j-panel,#1a1308); }
   #spell-tbody .exp-row td { padding:0; display:flex; align-items:center; }
+  /* Colonnes réelles : 1=★préparé 2=niveau 3=nom 4=dégâts 5=type 6=portée 7=action 8=conc 9=▾ 10=✕ */
   #spell-tbody .exp-row td:nth-child(1) { flex:0 0 32px; }
-  #spell-tbody .exp-row td:nth-child(2) { flex:1; min-width:0; }
-  /* Masquer dégâts, type, portée, action — accessibles via expand ▾ */
-  #spell-tbody .exp-row td:nth-child(3),#spell-tbody .exp-row td:nth-child(4),
-  #spell-tbody .exp-row td:nth-child(5),#spell-tbody .exp-row td:nth-child(6) { display:none !important; }
+  /* Niveau : redondant sur mobile (les sorts sont groupés par en-têtes de niveau) */
+  #spell-tbody .exp-row td:nth-child(2) { display:none !important; }
+  /* Nom : prend toute la largeur disponible */
+  #spell-tbody .exp-row td:nth-child(3) { flex:1; min-width:0; }
+  #spell-tbody .exp-row td:nth-child(3) .atk-inp { width:100%; }
+  /* Masquer dégâts, type, portée, action — visibles dans la description via ▾ */
+  #spell-tbody .exp-row td:nth-child(4),#spell-tbody .exp-row td:nth-child(5),
+  #spell-tbody .exp-row td:nth-child(6),#spell-tbody .exp-row td:nth-child(7) { display:none !important; }
   #spell-tbody .exp-desc-row td { display:block; }
 }
 
