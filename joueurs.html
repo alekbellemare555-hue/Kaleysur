@@ -1958,6 +1958,16 @@
 .dice-btn:hover { background:rgba(201,162,39,0.18); }
 .dice-tray-modifier { display:flex; align-items:center; gap:0.35rem; margin-top:0.15rem; font-size:0.75rem; color:#888; }
 .dice-tray-modifier input { width:48px; background:var(--j-input,#0a0703); border:1px solid var(--j-border-col,#3a2810); color:var(--j-text,#e2cfa0); font-size:0.82rem; text-align:center; padding:0.2rem; border-radius:2px; }
+/* ── Historique des jets ── */
+#roll-history { max-height:170px; overflow-y:auto; display:flex; flex-direction:column; gap:2px; scrollbar-width:thin; }
+.rh-row { display:flex; align-items:center; gap:0.45rem; font-size:0.72rem; padding:2px 4px; border-radius:3px; }
+.rh-row:nth-child(odd) { background:rgba(255,255,255,0.03); }
+.rh-time { color:#555; font-size:0.62rem; flex-shrink:0; }
+.rh-label { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--j-text,#e2cfa0); }
+.rh-total { font-family:'Cinzel',serif; color:var(--gold); flex-shrink:0; }
+.rh-total.nat20 { color:#e8c84a; text-shadow:0 0 8px rgba(232,200,74,0.5); }
+.rh-total.nat1 { color:var(--danger); }
+.rh-empty { color:#555; font-size:0.7rem; font-style:italic; }
 /* ── ADV / DIS roll mode ── */
 .dice-roll-mode { display:flex; gap:3px; margin-top:0.35rem; }
 .drm-btn { flex:1; padding:0.22rem 0.3rem; font-family:'Cinzel',serif; font-size:0.65rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; background:rgba(255,255,255,0.03); border:1px solid var(--j-border-col,#3a2810); color:#555; cursor:pointer; transition:all 0.15s; border-radius:2px; }
@@ -2790,6 +2800,8 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
         <button class="drm-btn norm active" id="drm-norm" title="Normal">NORM</button>
         <button class="drm-btn dis"  id="drm-dis"  title="Disadvantage — 2d20 keep lowest">DIS</button>
       </div>
+      <div class="dice-tray-title" style="margin-top:0.4rem;">Historique</div>
+      <div id="roll-history"><div class="rh-empty">Aucun jet pour l'instant.</div></div>
     </div>
 
     <!-- char-cards gardé caché (rendu mais non affiché, sert au JS existant) -->
@@ -11046,11 +11058,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (diceBtn) {
       const atk = (C().attaques || [])[parseInt(diceBtn.dataset.atk)];
       if (!atk?.degats) return;
-      const res = rollDiceExpr(atk.degats);
-      showDiceRoll((atk.name || 'Damage') + ' · ' + atk.degats, 0);
-      document.getElementById('dice-d20').textContent = res.total;
-      document.getElementById('dice-d20').className = 'dice-toast-d20';
-      document.getElementById('dice-total').textContent = res.detail !== String(res.total) ? res.detail : '';
+      showDamageRoll((atk.name || 'Damage') + ' · ' + atk.degats, rollDiceExpr(atk.degats));
     }
   });
   document.getElementById('attack-tbody').addEventListener('change', e => {
@@ -11330,11 +11338,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (sDice) {
       const s = (C().spells || [])[parseInt(sDice.dataset.spellDice)];
       if (!s?.degat) return;
-      const res = rollDiceExpr(s.degat);
-      showDiceRoll((s.name || 'Sort') + ' · ' + s.degat, 0);
-      document.getElementById('dice-d20').textContent = res.total;
-      document.getElementById('dice-d20').className = 'dice-toast-d20';
-      document.getElementById('dice-total').textContent = res.detail !== String(res.total) ? res.detail : '';
+      showDamageRoll((s.name || 'Sort') + ' · ' + s.degat, rollDiceExpr(s.degat));
       return;
     }
   });
@@ -12287,6 +12291,23 @@ document.addEventListener('keydown', e => {
     t.classList.add('visible');
     clearTimeout(_diceTimer);
     _diceTimer = setTimeout(() => t.classList.remove('visible'), 2800);
+    window._logRoll?.(label + (bonus !== 0 ? ` (${bonus >= 0 ? '+' : ''}${bonus})` : ''), total, roll === 20 ? 'nat20' : roll === 1 ? 'nat1' : '');
+  };
+
+  /* Affichage d'un résultat déjà calculé (dégâts, dés du tray) — évite le hack
+     "showDiceRoll puis override du DOM" qui faussait le partage 📤 et consommait
+     l'inspiration sur de simples jets de dégâts. */
+  window.showDamageRoll = function(label, res, cls = '') {
+    const d20El = document.getElementById('dice-d20');
+    document.getElementById('dice-label').textContent = label;
+    d20El.textContent = res.total;
+    d20El.className = 'dice-toast-d20' + cls;
+    document.getElementById('dice-total').textContent = res.detail !== String(res.total) ? res.detail : '';
+    _lastShareText = '🎲 ' + label + ' → **' + res.total + '**';
+    t.classList.add('visible');
+    clearTimeout(_diceTimer);
+    _diceTimer = setTimeout(() => t.classList.remove('visible'), 2800);
+    window._logRoll?.(label, res.total, cls.trim());
   };
 
   // Délégation sur tout le document
@@ -12316,12 +12337,32 @@ document.getElementById('dice-tray')?.addEventListener('click', e => {
   const sides = parseInt(btn.dataset.sides);
   const mod = parseInt(document.getElementById('dice-tray-mod')?.value) || 0;
   const roll = Math.floor(Math.random() * sides) + 1;
-  showDiceRoll('d' + sides, mod);
-  // Override d20 display with actual die value
-  document.getElementById('dice-d20').textContent = roll;
-  document.getElementById('dice-d20').className = 'dice-toast-d20' + (sides === 20 && roll === 20 ? ' nat20' : sides === 20 && roll === 1 ? ' nat1' : '');
-  document.getElementById('dice-total').textContent = mod !== 0 ? `${roll} ${mod >= 0 ? '+' : ''}${mod} = ${roll + mod}` : '';
+  // Affichage direct : ne passe plus par showDiceRoll (qui consommait l'inspiration
+  // et lançait un d20 fantôme faussant le partage 📤)
+  showDamageRoll(
+    'd' + sides + (mod !== 0 ? ` ${mod >= 0 ? '+' : ''}${mod}` : ''),
+    { total: roll + mod, detail: mod !== 0 ? `${roll} ${mod >= 0 ? '+' : ''}${mod} = ${roll + mod}` : String(roll) },
+    sides === 20 && roll === 20 ? ' nat20' : sides === 20 && roll === 1 ? ' nat1' : ''
+  );
 });
+
+/* ── 11b. Historique des jets (30 derniers, session en cours) ── */
+const _rollLog = [];
+window._logRoll = function(label, total, cls) {
+  _rollLog.unshift({ label, total, cls: cls || '', at: new Date() });
+  if (_rollLog.length > 30) _rollLog.pop();
+  renderRollHistory();
+};
+function renderRollHistory() {
+  const box = document.getElementById('roll-history');
+  if (!box) return;
+  box.innerHTML = _rollLog.length ? _rollLog.map(r => `
+    <div class="rh-row">
+      <span class="rh-time">${r.at.toTimeString().slice(0,5)}</span>
+      <span class="rh-label" title="${esc(r.label)}">${esc(r.label)}</span>
+      <span class="rh-total${r.cls ? ' ' + r.cls : ''}">${esc(String(r.total))}</span>
+    </div>`).join('') : '<div class="rh-empty">Aucun jet pour l\'instant.</div>';
+}
 
 /* ── 12. Skill search filter ── */
 document.getElementById('skill-filter')?.addEventListener('input', () => { if (playerData) renderSkills(); });
@@ -12378,10 +12419,7 @@ document.addEventListener('dblclick', e => {
   const res = rollDiceExpr(expr);
   const nameEl = el.closest('tr')?.querySelector('[data-ak="name"],[data-sk="name"]');
   const name = nameEl?.value || 'Damage';
-  showDiceRoll(name + ' · ' + expr, 0);
-  document.getElementById('dice-d20').textContent = res.total;
-  document.getElementById('dice-d20').className = 'dice-toast-d20';
-  document.getElementById('dice-total').textContent = res.detail !== String(res.total) ? res.detail : '';
+  showDamageRoll(name + ' · ' + expr, res);
 });
 
 /* ── 15. ADV / DIS roll mode + inspiration auto-advantage ── */
@@ -12424,6 +12462,7 @@ window._rollMode = 'normal';
       t.classList.add('visible');
       clearTimeout(window._diceTimerAdv);
       window._diceTimerAdv = setTimeout(() => t.classList.remove('visible'), 3200);
+      window._logRoll?.((mode === 'adv' ? '⬆ ' : '⬇ ') + label + ` (${r1},${r2})` + (bonusNum !== 0 ? ` ${bonusNum >= 0 ? '+' : ''}${bonusNum}` : ''), total, roll === 20 ? 'nat20' : roll === 1 ? 'nat1' : '');
     } else {
       _orig(label, bonus);
     }
