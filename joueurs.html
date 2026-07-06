@@ -5370,9 +5370,24 @@ async function sbCreatePlayer(username, passwordHash, data) {
 }
 async function sbUpdateData(username, data, _json) {
   // _json : JSON pré-stringifié du data (évite un 2e stringify de plusieurs MB sur le hot path)
+  // Bump de révision (verrou optimiste) quand on reçoit l'objet directement
+  if (data && !_json) data._rev = (data._rev || 0) + 1;
   const body = _json ? `{"data":${_json}}` : JSON.stringify({ data });
   const r = await sbFetch(`/rest/v1/players?username=eq.${encodeURIComponent(username)}`, { method:'PATCH', headers:{'Prefer':'return=minimal'}, body });
   if (!r.ok) throw new Error('Erreur sauvegarde : ' + r.status);
+}
+/* ── Sauvegarde avec verrou optimiste : le PATCH ne passe que si la révision distante
+   correspond à celle qu'on connaît. Retourne 'ok' ou 'conflict' (écriture concurrente
+   depuis un autre appareil / l'admin DM). ── */
+async function sbUpdateDataGuarded(username, _json, prevRev) {
+  const revCond = (prevRev === undefined || prevRev === null) ? 'is.null' : `eq.${prevRev}`;
+  const r = await sbFetch(
+    `/rest/v1/players?username=eq.${encodeURIComponent(username)}&data->>_rev=${revCond}&select=username`,
+    { method:'PATCH', headers:{'Prefer':'return=representation'}, body: `{"data":${_json}}` }
+  );
+  if (!r.ok) throw new Error('Erreur sauvegarde : ' + r.status);
+  const rows = await r.json();
+  return rows.length ? 'ok' : 'conflict';
 }
 /* ── Upload d'image vers Supabase Storage (bucket public 'backgrounds') ──
    Retourne l'URL publique. Les saves ne transportent plus le base64 (~1-2 MB → quelques KB).
@@ -5546,6 +5561,8 @@ function triggerSave() {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(async () => {
     if (!currentUser || !playerData) return;
+    const prevRev = playerData._rev ?? null;
+    playerData._rev = (prevRev || 0) + 1;
     const _json = JSON.stringify(playerData); // stringify une seule fois (peut peser plusieurs MB avec images)
     saveLocal(currentUser, null, _json); // backup local toujours
     if (!navigator.onLine) {
@@ -5554,7 +5571,21 @@ function triggerSave() {
       return;
     }
     try {
-      await sbUpdateData(currentUser, null, _json);
+      const res = await sbUpdateDataGuarded(currentUser, _json, prevRev);
+      if (res === 'conflict') {
+        // Écriture concurrente (autre appareil / admin DM) : on recharge le distant
+        // plutôt que de l'écraser silencieusement.
+        try {
+          const row = await sbGetPlayer(currentUser);
+          if (row?.data) {
+            Object.assign(playerData, row.data);
+            renderAll(); updateHpBar(); renderHero();
+          }
+        } catch {}
+        badge.textContent = '⚠ Synchronisé depuis un autre appareil'; badge.className = 'save-badge err';
+        setTimeout(() => { badge.textContent = ''; badge.className = 'save-badge'; }, 4000);
+        return;
+      }
       _lastSaveAt = Date.now();
       badge.textContent = 'Saved ✓'; badge.className = 'save-badge ok';
       updateConnIndicator('online');
@@ -5565,6 +5596,36 @@ function triggerSave() {
     }
   }, 900);
 }
+
+/* ── Flush immédiat à la fermeture / mise en arrière-plan ──
+   Sans ça, toute modification faite dans la fenêtre de debounce (900ms) est perdue
+   si l'utilisateur ferme l'onglet ou verrouille son téléphone — pas même le backup
+   localStorage n'a le temps de s'écrire. */
+function flushPendingSave() {
+  if (!currentUser || !playerData) return;
+  if (_saveScheduledAt <= _lastSaveAt) return; // rien en attente
+  clearTimeout(saveTimer);
+  const prevRev = playerData._rev ?? null;
+  playerData._rev = (prevRev || 0) + 1;
+  const _json = JSON.stringify(playerData);
+  saveLocal(currentUser, null, _json); // synchrone — survit à la fermeture de la page
+  _lastSaveAt = Date.now();
+  if (!navigator.onLine) return;
+  // keepalive : le navigateur laisse la requête aboutir même si la page se ferme
+  const revCond = (prevRev === undefined || prevRev === null) ? 'is.null' : `eq.${prevRev}`;
+  try {
+    fetch(`${SB_URL}/rest/v1/players?username=eq.${encodeURIComponent(currentUser)}&data->>_rev=${revCond}`, {
+      method: 'PATCH',
+      headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
+      body: `{"data":${_json}}`,
+      keepalive: true
+    }).catch(() => {});
+  } catch {}
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') flushPendingSave();
+});
+window.addEventListener('pagehide', flushPendingSave);
 
 /* ── Populate sous-classe dropdown ── */
 function populateSubclassSelect(classe) {
@@ -6232,7 +6293,7 @@ function renderMulticlasses() {
       </select>
       <input type="number" class="field-input mc-niveau-inp" value="${cl.niveau||1}" min="1" max="20" title="Level" style="text-align:center;">
       ${idx === 0 ? '<span class="mc-primary-badge">Primary</span>' : '<button class="mc-remove-btn btn btn-sm btn-danger" type="button">✕</button>'}
-      ${isCustom ? `<input type="text" class="field-input mc-custom-sub" placeholder="Custom subclass…" value="${cl.customSousClasse||cl.sousClasse||''}">` : ''}
+      ${isCustom ? `<input type="text" class="field-input mc-custom-sub" placeholder="Custom subclass…" value="${esc(cl.customSousClasse||cl.sousClasse||'')}">` : ''}
     `;
     container.appendChild(row);
     const classSel  = row.querySelector('.mc-classe-sel');
@@ -6572,7 +6633,7 @@ function renderMods() {
     row.className = 'mod-row' + (m.on ? '' : ' off');
     row.innerHTML = `
       <input type="checkbox" class="mod-toggle" data-mi="${i}" ${m.on ? 'checked' : ''} title="Enable/disable">
-      <input type="text" class="mod-name-input" data-mi="${i}" data-mk="name" value="${m.name||''}" placeholder="e.g. Sword +1, Bless…">
+      <input type="text" class="mod-name-input" data-mi="${i}" data-mk="name" value="${esc(m.name||'')}" placeholder="e.g. Sword +1, Bless…">
       <select class="mod-target-select" data-mi="${i}" data-mk="cible">
         ${MOD_TARGETS.map(t => `<option value="${t.v}"${m.cible===t.v?' selected':''}>${t.l}</option>`).join('')}
       </select>
@@ -8549,8 +8610,8 @@ function renderInventory() {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td><input class="inv-inp" style="width:50px;text-align:center;" data-item="${i}" data-ik="qty"   type="number" value="${item.qty||1}" min="0"></td>
-      <td><input class="inv-inp" data-item="${i}" data-ik="name"  value="${item.name||''}"  placeholder="Nom de l'objet"></td>
-      <td><input class="inv-inp" data-item="${i}" data-ik="notes" value="${item.notes||''}" placeholder="Description"></td>
+      <td><input class="inv-inp" data-item="${i}" data-ik="name"  value="${esc(item.name||'')}"  placeholder="Nom de l'objet"></td>
+      <td><input class="inv-inp" data-item="${i}" data-ik="notes" value="${esc(item.notes||'')}" placeholder="Description"></td>
       <td><select class="inv-inp" style="padding:0.18rem 0.25rem;font-size:0.74rem;" data-item="${i}" data-ik="cat">${selOpts}</select></td>
       <td><button class="atk-del" data-del-item="${i}" title="Delete">✕</button></td>
     `;
@@ -8907,7 +8968,7 @@ function renderAdminCharBar() {
   const chars = adminEditData.characters || {};
   let html = '<label style="font-size:0.78rem;color:#888;">Character:</label><select id="admin-char-select" class="field-input" style="max-width:220px;">';
   Object.entries(chars).forEach(([id, slot]) => {
-    html += `<option value="${id}" ${id === adminEditCharId ? 'selected' : ''}>${slot.name || 'Unnamed'}</option>`;
+    html += `<option value="${esc(id)}" ${id === adminEditCharId ? 'selected' : ''}>${esc(slot.name || 'Unnamed')}</option>`;
   });
   html += '</select>';
   bar.innerHTML = html;

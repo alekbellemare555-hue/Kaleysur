@@ -1,0 +1,3 @@
+#!/bin/sh
+# Pre-commit Kaleysur : bump auto du cache SW + vérification syntaxe JS
+node .githooks/pre-commit.js || exit 1

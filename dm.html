@@ -114,6 +114,11 @@ input,select{font-family:inherit;color-scheme:dark;}
   background:var(--bg-nav);
   border-right:1px solid var(--border-bright);
   display:flex;flex-direction:column;overflow:hidden;
+  transition:width 0.25s ease, border-color 0.25s ease;
+}
+/* Panneau joueurs réduit (desktop) — largeur 0, le contenu principal s'étend */
+@media(min-width:901px){
+  body.dm-sidebar-collapsed #dm-sidebar{width:0;border-right-color:transparent;}
 }
 #sidebar-top{
   padding:0.9rem 1rem 0.7rem;
@@ -694,6 +699,8 @@ body.wiki-sidebar-hidden #screen-dm{margin-left:0;transition:margin-left 0.3s ea
 }
 #init-roll-all:hover{background:rgba(232,201,106,0.22);box-shadow:0 0 16px rgba(232,201,106,0.2);color:#fff;}
 #init-clear{color:var(--text-mid);font-size:0.72rem;padding:0.24rem 0.65rem;border-radius:6px;background:none;border:1px solid var(--border-bright);transition:all 0.12s;}
+#init-add-new{color:var(--gold);font-size:0.72rem;padding:0.24rem 0.65rem;border-radius:6px;background:none;border:1px solid var(--border-gold);transition:all 0.12s;font-family:'Cinzel',serif;}
+#init-add-new:hover{background:rgba(232,201,106,0.15);}
 #init-clear:hover{color:var(--danger);border-color:var(--danger-bright);background:var(--danger-dim);}
 #init-chips{display:flex;gap:0.65rem;padding:0.65rem 1.4rem 1rem;overflow-x:auto;flex-wrap:nowrap;}
 #init-chips::-webkit-scrollbar{height:4px;}
@@ -717,12 +724,17 @@ body.wiki-sidebar-hidden #screen-dm{margin-left:0;transition:margin-left 0.3s ea
   animation:bounce-arrow 1s ease-in-out infinite;
 }
 @keyframes bounce-arrow{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(-3px);}}
-.init-chip.dead{opacity:0.25;filter:grayscale(1);}
+.init-chip.dead{opacity:0.5;filter:grayscale(0.7);}
+.init-chip.dead{border-color:rgba(217,64,64,0.4);}
+/* Si c'est le tour d'un combattant à terre (jets de mort), le tour actif prime sur le grisé */
+.init-chip.active-turn.dead{opacity:1;filter:none;}
 .chip-avatar{font-size:1.3rem;line-height:1;}
 .chip-name{font-size:0.66rem;color:var(--text-mid);white-space:nowrap;max-width:72px;overflow:hidden;text-overflow:ellipsis;letter-spacing:0.02em;}
 .init-chip.active-turn .chip-name{color:var(--gold);}
 .chip-hp-bar{height:5px;background:rgba(255,255,255,0.08);border-radius:3px;width:100%;overflow:hidden;}
 .chip-hp-fill{height:100%;border-radius:3px;transition:width 0.3s;}
+.chip-hp-txt{font-size:0.58rem;color:var(--text-dim);font-family:'Cinzel',serif;line-height:1;letter-spacing:0.02em;}
+.init-chip.dead .chip-hp-txt{color:var(--danger-bright);}
 .init-chip-inp{width:42px;background:rgba(0,0,0,0.5);border:1px solid var(--border-gold);color:var(--gold);border-radius:5px;padding:0.14rem 0.25rem;font-size:0.8rem;text-align:center;font-family:'Cinzel',serif;}
 .init-chip-inp:focus{outline:none;border-color:var(--gold);box-shadow:0 0 8px rgba(232,201,106,0.2);}
 
@@ -756,24 +768,6 @@ body.wiki-sidebar-hidden #screen-dm{margin-left:0;transition:margin-left 0.3s ea
 #monster-panels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:0.9rem;}
 body.compact #player-panels-grid,body.compact #monster-panels-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.6rem;}
 
-/* ── Party HP bar ── */
-#party-bar{display:flex;flex-wrap:wrap;gap:0.45rem;padding-bottom:0.9rem;}
-#party-bar:empty{display:none;padding:0;}
-.pbar-chip{
-  background:var(--bg-card);border:1px solid var(--border-bright);border-radius:6px;
-  padding:0.35rem 0.6rem;cursor:pointer;display:flex;align-items:center;gap:0.45rem;
-  transition:all 0.15s;flex:1;min-width:110px;max-width:190px;
-}
-.pbar-chip:hover{border-color:var(--border-gold);background:var(--gold-glow);}
-.pbar-chip.pbar-open{border-color:rgba(232,201,106,0.35);background:rgba(232,201,106,0.05);}
-.pbar-avatar{font-size:0.95rem;width:18px;text-align:center;flex-shrink:0;line-height:1;}
-.pbar-info{flex:1;min-width:0;}
-.pbar-name{font-size:0.62rem;font-family:'Cinzel',serif;color:var(--text-mid);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:0.02em;}
-.pbar-hprow{display:flex;align-items:baseline;gap:3px;margin-top:1px;}
-.pbar-hp{font-size:0.78rem;font-weight:700;color:var(--text);}
-.pbar-hpmax{font-size:0.62rem;color:var(--text-dim);}
-.pbar-bar{height:3px;background:rgba(0,0,0,0.45);border-radius:2px;overflow:hidden;margin-top:4px;}
-.pbar-fill{height:100%;border-radius:2px;transition:width 0.4s,background 0.4s;}
 
 /* Empty state */
 #empty-state{
@@ -807,6 +801,22 @@ body.compact #player-panels-grid,body.compact #monster-panels-grid{grid-template
   0%,100%{border-color:var(--danger);box-shadow:0 0 24px rgba(217,64,64,0.3);}
   50%{border-color:rgba(217,64,64,0.3);box-shadow:none;}
 }
+/* ── Triage visuel : état du personnage en un coup d'œil ── */
+.combat-panel.panel-bloodied{border-left:3px solid rgba(230,150,40,0.75);}
+.combat-panel.panel-dying{border-color:rgba(217,64,64,0.6)!important;border-left:3px solid var(--danger);animation:dying-pulse 1.9s ease-in-out infinite;}
+.combat-panel.panel-dying .panel-header{background:linear-gradient(135deg,rgba(95,18,18,0.92) 0%,rgba(52,10,10,0.7) 100%)!important;}
+@keyframes dying-pulse{
+  0%,100%{box-shadow:0 0 0 1px rgba(217,64,64,0.25),0 6px 22px rgba(0,0,0,0.5);}
+  50%{box-shadow:0 0 16px rgba(217,64,64,0.4),0 6px 22px rgba(0,0,0,0.5);}
+}
+/* ── Tour actif : le panneau du combattant courant ressort ── */
+.combat-panel.panel-active-turn{border-color:var(--gold)!important;box-shadow:0 0 0 1px var(--gold),0 0 22px rgba(232,201,106,0.22),0 6px 22px rgba(0,0,0,0.5)!important;transform:translateY(-2px);}
+.combat-panel.panel-active-turn .panel-header::before{content:'◆ TOUR';position:absolute;top:5px;right:9px;font-size:0.48rem;letter-spacing:0.12em;color:var(--gold);font-family:'Cinzel',serif;font-weight:700;z-index:2;}
+/* ── Jets de mort compacts (toujours visibles si à terre) ── */
+.death-compact{display:flex;align-items:center;gap:0.4rem;padding:0.42rem 0.9rem;background:rgba(95,18,18,0.28);border-bottom:1px solid var(--border);}
+.dc-label{font-size:0.62rem;letter-spacing:0.04em;color:var(--danger-bright);font-family:'Cinzel',serif;text-transform:uppercase;margin-right:auto;}
+.dc-dots{display:inline-flex;gap:0.28rem;}
+.dc-sep{color:var(--text-dim);font-size:0.7rem;}
 /* Compact panel mode (monsters/friendlies default) */
 .combat-panel.panel-compact .panel-body { display: none; }
 .combat-panel.panel-compact { cursor: pointer; }
@@ -845,6 +855,8 @@ body.compact #player-panels-grid,body.compact #monster-panels-grid{grid-template
 .pact.danger:hover{color:var(--danger);border-color:var(--danger-bright);background:var(--danger-dim);}
 .pact.rest-long{font-size:0.58rem;width:auto;padding:0 0.45rem;}
 .pact.rest-long:hover{color:var(--heal);border-color:rgba(61,184,122,0.4);background:var(--heal-dim);}
+.pact[data-sheet]{color:var(--gold-dark);border-color:var(--border-gold);background:var(--gold-glow);}
+.pact[data-sheet]:hover{color:var(--gold);border-color:var(--gold);background:rgba(232,201,106,0.18);}
 
 /* HP section */
 .panel-hp{padding:0.75rem 0.9rem;border-bottom:1px solid var(--border);}
@@ -899,6 +911,25 @@ body.compact #player-panels-grid,body.compact #monster-panels-grid{grid-template
 .pbadge{font-size:0.57rem;padding:0.05rem 0.32rem;border-radius:3px;background:rgba(232,201,106,0.07);border:1px solid rgba(232,201,106,0.15);color:var(--text-dim);font-family:'Cinzel',serif;letter-spacing:0.02em;}
 .pbadge-conc{background:rgba(128,80,200,0.12)!important;border-color:rgba(128,80,200,0.3)!important;color:#a080e0!important;}
 .pbadge-insp{background:rgba(240,208,80,0.1)!important;border-color:rgba(240,208,80,0.3)!important;color:#f0c020!important;}
+.pbadge-pp{background:rgba(90,160,210,0.12)!important;border-color:rgba(90,160,210,0.3)!important;color:#7ab8e0!important;}
+
+/* ── Référence MJ (drawer, lecture seule) ── */
+.ds-ref-pp{display:flex;align-items:center;justify-content:space-between;background:rgba(90,160,210,0.08);border:1px solid rgba(90,160,210,0.25);border-radius:6px;padding:0.45rem 0.7rem;margin-bottom:0.6rem;}
+.ds-ref-pp-label{font-size:0.78rem;color:#7ab8e0;font-weight:600;}
+.ds-ref-pp-val{font-family:'Cinzel',serif;font-size:1.25rem;font-weight:700;color:#7ab8e0;}
+.ds-ref-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:0.3rem;margin-bottom:0.6rem;}
+.ds-ref-cell{display:flex;flex-direction:column;align-items:center;gap:1px;background:rgba(0,0,0,0.2);border:1px solid var(--border);border-radius:5px;padding:0.32rem 0.1rem;}
+.ds-ref-cell.prof{border-color:var(--border-gold);background:var(--gold-glow);}
+.ds-ref-k{font-size:0.56rem;letter-spacing:0.05em;color:var(--text-dim);font-family:'Cinzel',serif;}
+.ds-ref-cell.prof .ds-ref-k{color:var(--gold-dark);}
+.ds-ref-v{font-family:'Cinzel',serif;font-size:0.92rem;color:var(--text);}
+.ds-ref-cell.prof .ds-ref-v{color:var(--gold);}
+.ds-ref-skills{display:flex;flex-wrap:wrap;gap:0.3rem;}
+.ds-ref-skill{display:inline-flex;align-items:center;gap:0.3rem;background:rgba(0,0,0,0.2);border:1px solid var(--border-bright);border-radius:12px;padding:0.18rem 0.55rem;font-size:0.72rem;}
+.ds-ref-skill.exp{border-color:var(--border-gold);background:var(--gold-glow);}
+.ds-ref-skill-name{color:var(--text-mid);}
+.ds-ref-skill.exp .ds-ref-skill-name{color:var(--gold);}
+.ds-ref-skill-val{font-family:'Cinzel',serif;color:var(--text);font-size:0.74rem;}
 /* Compact HP row */
 .panel-hp-compact{padding:0.5rem 0.85rem;border-bottom:1px solid var(--border);}
 .php-bar{height:7px;background:rgba(0,0,0,0.4);border-radius:4px;overflow:hidden;margin-bottom:0.42rem;border:1px solid var(--border);}
@@ -986,7 +1017,8 @@ body.compact .panel-char-sub{display:none;}
 .btn-danger:hover{background:linear-gradient(135deg,#d04040 0%,#a03030 100%);}
 
 /* ══ Responsive / Tablette ══ */
-#btn-sidebar-toggle{display:none;align-items:center;justify-content:center;font-size:1.2rem;padding:0 0.65rem;min-width:44px;min-height:44px;}
+#btn-sidebar-toggle{display:flex;align-items:center;justify-content:center;font-size:1.05rem;padding:0 0.6rem;}
+@media(max-width:900px){#btn-sidebar-toggle{font-size:1.2rem;min-width:44px;min-height:44px;padding:0 0.65rem;}}
 #sidebar-backdrop{
   display:none;position:fixed;inset:0;z-index:349;
   background:rgba(0,0,0,0.55);backdrop-filter:blur(2px);
@@ -1128,7 +1160,7 @@ body.sidebar-open #sidebar-backdrop{display:block;}
 <div id="screen-dm">
   <nav id="dm-nav">
     <button id="btn-wiki-sidebar-toggle" class="nav-btn" title="Afficher/masquer la navigation wiki">⚜</button>
-    <button id="btn-sidebar-toggle" class="nav-btn" title="Menu joueurs">☰</button>
+    <button id="btn-sidebar-toggle" class="nav-btn" title="Réduire / afficher le panneau joueurs">☰</button>
     <span class="brand">DM Screen<span class="brand-sep"></span><span class="brand-sub">Kaleysur</span></span>
     <button id="btn-init-open" class="nav-btn">⚔ Initiative</button>
     <button id="btn-compact" class="nav-btn" title="Vue compacte">⊞ Compact</button>
@@ -1249,6 +1281,7 @@ body.sidebar-open #sidebar-backdrop{display:block;}
           <button class="init-ctrl" id="init-next" title="Tour suivant">▶</button>
           <div class="init-sep"></div>
           <button id="init-roll-all">🎲 Lancer tous</button>
+          <button id="init-add-new" title="Ajoute les panneaux ouverts absents de l'initiative, sans toucher à l'ordre en cours">＋ Nouveaux</button>
           <button id="init-clear">Effacer</button>
         </div>
         <div id="init-chips"></div>
@@ -1256,7 +1289,6 @@ body.sidebar-open #sidebar-backdrop{display:block;}
 
       <!-- Panels -->
       <div id="panels-area">
-        <div id="party-bar"></div>
         <div id="empty-state">
           <div class="empty-icon">⚔</div>
           <p>Sélectionne un personnage dans la barre latérale<br>pour ouvrir un panneau de combat.</p>
@@ -1383,6 +1415,8 @@ function saveDmState() {
       openPanels: savedPanels,
       expandedPlayers: [...expandedPlayers],
       compactMode,
+      sidebarCollapsed: document.body.classList.contains('dm-sidebar-collapsed'),
+      panelNotes: _panelNotes,
       initState: {
         ...initState,
         // Ne pas persister les joueurs dans l'initiative — seulement monstres et NPCs
@@ -1402,16 +1436,21 @@ function restoreDmState() {
     if (s.localFriendlies) localFriendlies  = s.localFriendlies;
     if (s.friendlyCounter != null) friendlyCounter = s.friendlyCounter;
     if (s.expandedPlayers) expandedPlayers = new Set(s.expandedPlayers);
+    if (s.panelNotes) Object.assign(_panelNotes, s.panelNotes);
     if (typeof s.compactMode === 'boolean') {
       compactMode = s.compactMode;
       document.body.classList.toggle('compact', compactMode);
       document.getElementById('btn-compact')?.classList.toggle('active', compactMode);
     }
+    if (s.sidebarCollapsed && window.innerWidth > 900) {
+      document.body.classList.add('dm-sidebar-collapsed');
+      document.getElementById('btn-sidebar-toggle')?.classList.add('active');
+    }
     if (s.initState) {
       Object.assign(initState, s.initState);
       document.getElementById('init-bar').className = initState.open ? 'open' : 'collapsed';
       document.getElementById('btn-init-open')?.classList.toggle('active', initState.open);
-      document.getElementById('init-round-label').textContent = 'Round ' + (initState.round || 1);
+      document.getElementById('init-round-label').textContent = 'Tour ' + (initState.round || 1);
     }
     // Re-open panels
     if (s.openPanels) {
@@ -1456,6 +1495,8 @@ async function sbGetAllPlayers() {
   return r.json();
 }
 async function sbUpdateData(username, data) {
+  // Bump de révision : permet au verrou optimiste côté joueur de détecter les écritures du DM
+  data._rev = (data._rev || 0) + 1;
   return sbFetch(`/rest/v1/players?username=eq.${encodeURIComponent(username)}`, {
     method:'PATCH', headers:{'Prefer':'return=minimal'}, body: JSON.stringify({data})
   });
@@ -1516,6 +1557,11 @@ document.getElementById('btn-logout').addEventListener('click', () => {
 /* ══════════════════════════════════════════
    Realtime
 ══════════════════════════════════════════ */
+let _sbClient = null;
+function getSbClient() {
+  if (!_sbClient && window.supabase) _sbClient = window.supabase.createClient(SB_URL, SB_KEY);
+  return _sbClient;
+}
 function startRealtime(_retry = 0) {
   if (!window.supabase) {
     // Lib supabase (deferred) pas encore chargée → réessayer jusqu'à ~5s
@@ -1523,7 +1569,7 @@ function startRealtime(_retry = 0) {
     return;
   }
   try {
-    const client = window.supabase.createClient(SB_URL, SB_KEY);
+    const client = getSbClient();
     client.channel('dm-players-sync')
       .on('postgres_changes', {
         event: 'UPDATE',
@@ -1536,8 +1582,8 @@ function startRealtime(_retry = 0) {
         const idx = allPlayers.findIndex(p => p.username === row.username);
         if (idx !== -1) allPlayers[idx].data = row.data;
         else allPlayers.push({ username: row.username, data: row.data });
-        // Ne re-render que les panels du joueur modifié
-        renderSidebar();
+        // Mise à jour ciblée (barre HP sidebar + panels du joueur) plutôt que tout reconstruire
+        updateSidebarPlayerHp(row.username);
         Object.keys(openPanels).filter(k => k.startsWith('p::' + row.username + '::')).forEach(k => updatePanel(k));
         renderInitChips();
         document.getElementById('poll-indicator').textContent =
@@ -1545,8 +1591,10 @@ function startRealtime(_retry = 0) {
       })
       .subscribe(status => {
         if (status === 'SUBSCRIBED') {
+          _rtHealthy = true;
           document.getElementById('poll-indicator').textContent = '⚡ Realtime';
         } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          _rtHealthy = false;
           document.getElementById('poll-indicator').textContent = '⚠ Polling';
         }
       });
@@ -1568,7 +1616,13 @@ async function refreshAllPlayers() {
   document.getElementById('poll-indicator').textContent =
     '✓ ' + new Date().toLocaleTimeString('fr',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 }
-async function pollPlayers() { await refreshAllPlayers(); }
+let _rtHealthy = false;
+async function pollPlayers() {
+  // Le Realtime pousse déjà chaque changement — inutile de re-télécharger tous les
+  // joueurs toutes les 60s quand il est connecté. Le poll ne sert que de secours.
+  if (_rtHealthy) return;
+  await refreshAllPlayers();
+}
 document.getElementById('btn-refresh').addEventListener('click', refreshAllPlayers);
 
 /* ══════════════════════════════════════════
@@ -1584,54 +1638,13 @@ document.getElementById('btn-compact').addEventListener('click', () => {
 /* ══════════════════════════════════════════
    Sidebar — Players
 ══════════════════════════════════════════ */
-document.getElementById('player-search').addEventListener('input', renderSidebar);
-
-function renderPartyBar() {
-  const bar = document.getElementById('party-bar');
-  if (!bar) return;
-  const players = allPlayers.filter(p => p.username !== ADMIN_USER);
-  if (!players.length) { bar.innerHTML = ''; return; }
-  bar.innerHTML = players.map(player => {
-    const data    = player.data || {};
-    const activeId= data.activeCharId;
-    const slot    = activeId ? data.characters?.[activeId] : null;
-    const c       = slot?.character || {};
-    const pvAct   = parseInt(c.pvActuel) || 0;
-    const pvMax   = parseInt(c.pvMax)    || 0;
-    const pct     = pvMax > 0 ? Math.max(0, Math.min(100, pvAct/pvMax*100)) : 0;
-    const dead    = pvAct <= 0 && pvMax > 0;
-    const avatar  = data.avatar || '⚔';
-    const charName= slot?.name || player.username;
-    const key     = activeId ? 'p::' + player.username + '::' + activeId : '';
-    const isOpen  = key && !!openPanels[key];
-    return `<div class="pbar-chip${isOpen?' pbar-open':''}" data-pbar-key="${esc(key)}">
-      <span class="pbar-avatar">${esc(avatar)}</span>
-      <div class="pbar-info">
-        <div class="pbar-name">${esc(charName)}</div>
-        <div class="pbar-hprow">
-          <span class="pbar-hp" style="${dead?'color:var(--danger);':''}">${pvAct}</span>
-          <span class="pbar-hpmax">/ ${pvMax||'—'}</span>
-          ${pvAct <= 0 && pvMax > 0 ? '<span style="font-size:0.7rem;margin-left:2px;">💀</span>' : ''}
-        </div>
-        ${pvMax > 0 ? `<div class="pbar-bar"><div class="pbar-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>` : ''}
-      </div>
-    </div>`;
-  }).join('');
-  bar.querySelectorAll('[data-pbar-key]').forEach(chip => {
-    chip.addEventListener('click', () => {
-      const key = chip.dataset.pbarKey;
-      if (!key) return;
-      if (openPanels[key]) {
-        document.getElementById('panel-' + key)?.scrollIntoView({ behavior:'smooth', block:'nearest' });
-      } else {
-        openPanel(key);
-      }
-    });
-  });
-}
+let _playerSearchTimer = null;
+document.getElementById('player-search').addEventListener('input', () => {
+  clearTimeout(_playerSearchTimer);
+  _playerSearchTimer = setTimeout(renderSidebar, 150);
+});
 
 function renderSidebar() {
-  renderPartyBar();
   const q = document.getElementById('player-search').value.trim().toLowerCase();
   const list = document.getElementById('player-list');
   const filtered = allPlayers.filter(p => p.username !== ADMIN_USER && p.username.includes(q));
@@ -1656,7 +1669,7 @@ function renderSidebar() {
     item.dataset.username = player.username;
     item.innerHTML = `
       <div class="player-head">
-        <span class="player-avatar">${avatar}</span>
+        <span class="player-avatar">${esc(avatar)}</span>
         <div class="player-info">
           <div class="player-name">${esc(player.username)}</div>
           <div class="player-hp-mini"><div class="player-hp-mini-bar" style="width:${hpPct}%;background:${hpColor(hpPct)};"></div></div>
@@ -1692,6 +1705,21 @@ function renderSidebar() {
     });
     list.appendChild(item);
   });
+}
+
+/* Mise à jour ciblée de la barre HP d'un joueur dans la sidebar (sans tout reconstruire).
+   Appelée sur chaque push Realtime — évite de rebâtir toute la liste + ré-attacher les
+   listeners à chaque point de vie perdu. Fallback rebuild complet si l'élément est absent
+   (nouveau joueur ou changement de structure). */
+function updateSidebarPlayerHp(username) {
+  const item = document.querySelector(`.player-item[data-username="${(window.CSS && CSS.escape) ? CSS.escape(username) : username}"]`);
+  if (!item) { renderSidebar(); return; }
+  const data     = allPlayers.find(p => p.username === username)?.data;
+  const activeId = data?.activeCharId;
+  const c        = activeId ? data.characters?.[activeId]?.character : null;
+  const pct      = c ? Math.max(0, Math.min(100, (c.pvActuel||0) / Math.max(1, c.pvMax||1) * 100)) : 0;
+  const bar      = item.querySelector('.player-hp-mini-bar');
+  if (bar) { bar.style.width = pct + '%'; bar.style.background = hpColor(pct); }
 }
 
 /* ══════════════════════════════════════════
@@ -1852,7 +1880,7 @@ function renderMonsterSidebar() {
     const isOpen = !!openPanels[key];
     return `<div class="monster-sidebar-entry${isOpen?' open':''}" data-mkey="${esc(key)}">
       <span class="m-dot"></span>
-      <span>${m.avatar} ${esc(m.name)}</span>
+      <span>${esc(m.avatar)} ${esc(m.name)}</span>
       <span style="margin-left:auto;font-size:0.68rem;">${m.hp}/${m.hpMax}</span>
     </div>`;
   }).join('');
@@ -1955,6 +1983,10 @@ function renderPlayerPanel(panel, key) {
   }
   prevHp[key] = pvAct;
 
+  // Triage visuel : à terre (0 PV) ou ensanglanté (≤50%)
+  panel.classList.toggle('panel-dying', dead);
+  panel.classList.toggle('panel-bloodied', !dead && pvMax > 0 && pct <= 50);
+
   // Spell slots
   const slots  = c.emplacementsSort || {};
   const used   = c.emplacementsUtilises || {};
@@ -1962,11 +1994,12 @@ function renderPlayerPanel(panel, key) {
 
   panel.innerHTML = `
     <div class="panel-header">
-      <span class="panel-avatar">${avatar}</span>
+      <span class="panel-avatar">${esc(avatar)}</span>
       <div class="panel-title">
         <div class="panel-char-name">${esc(charName)}</div>
         <div class="panel-badges">
           ${c.ca !== undefined ? `<span class="pbadge">AC ${c.ca}</span>` : ''}
+          <span class="pbadge pbadge-pp" title="Perception passive">👁 ${dmCalc(c).passivePerc}</span>
           ${c.initiative !== undefined ? `<span class="pbadge">${fmtInit(c.initiative)} Init</span>` : ''}
           ${c.vitesse ? `<span class="pbadge">${esc(String(c.vitesse))} ft</span>` : ''}
           ${c.concentration ? `<span class="pbadge pbadge-conc">🎯 ${esc(String(c.concentration).slice(0,12))}</span>` : ''}
@@ -1974,6 +2007,7 @@ function renderPlayerPanel(panel, key) {
         </div>
       </div>
       <div class="panel-acts">
+        <button class="pact" data-sheet="${esc(key)}" title="Ouvrir la fiche complète">📋</button>
         <button class="pact${c.inspiration?' insp-on':''}" data-insp="${esc(key)}" title="Inspiration">⭐</button>
         <button class="pact rest-long" data-key="${esc(key)}" title="Long Rest">☀</button>
         <button class="pact pdet${_panelExpanded.has(key)?' expanded':''}" data-expand="${esc(key)}" title="Details">▾</button>
@@ -1999,6 +2033,13 @@ function renderPlayerPanel(panel, key) {
         </div>
       </div>
     </div>
+
+    ${dead ? `<div class="death-compact">
+      <span class="dc-label">💀 Jets de mort</span>
+      <span class="dc-dots">${[0,1,2].map(i=>`<span class="ds-dot${i<succ?' s':''}" data-ds="s" data-i="${i}" title="Réussite ${i+1}"></span>`).join('')}</span>
+      <span class="dc-sep">·</span>
+      <span class="dc-dots">${[0,1,2].map(i=>`<span class="ds-dot${i<fail?' f':''}" data-ds="f" data-i="${i}" title="Échec ${i+1}"></span>`).join('')}</span>
+    </div>` : ''}
 
     ${(Array.isArray(c.conditions) && c.conditions.length) ? `
     <div class="panel-cond-mini">
@@ -2078,9 +2119,11 @@ function renderPlayerPanel(panel, key) {
 }
 
 const _panelNotes = {};
+let _panelNotesTimer = null;
 
 function attachPlayerPanelEvents(panel, key, username, charId) {
   panel.querySelector('[data-close]')?.addEventListener('click', () => closePanel(key));
+  panel.querySelector('[data-sheet]')?.addEventListener('click', () => openSheetForKey(key));
 
   // Expand/collapse details
   panel.querySelector('[data-expand]')?.addEventListener('click', () => {
@@ -2118,9 +2161,11 @@ function attachPlayerPanelEvents(panel, key, username, charId) {
     });
   });
 
-  // Notes DM locales
+  // Notes DM locales — persistées dans le dmState (localStorage), debounce 600ms
   panel.querySelector('[data-dm-notes]')?.addEventListener('input', e => {
     _panelNotes[key] = e.target.value;
+    clearTimeout(_panelNotesTimer);
+    _panelNotesTimer = setTimeout(saveDmState, 600);
   });
 
   panel.querySelector('[data-key].rest-long')?.addEventListener('click', () => longRest(username, charId, key));
@@ -2195,33 +2240,42 @@ function attachPlayerPanelEvents(panel, key, username, charId) {
 }
 
 /* ── Monster panel ── */
-function renderMonsterPanel(panel, key) {
-  const id = key.replace('m::', '');
-  const m  = localMonsters[id];
-  if (!m) { panel.remove(); delete openPanels[key]; updateEmptyState(); return; }
+/* Panneau monstre (kind 'm') et PNJ amical (kind 'f') partagent la même structure.
+   Seuls diffèrent le store, le préfixe d'ID, et deux libellés (AC/CA, mort). */
+const ENTITY_KIND = {
+  m: { type:'monster',  prefix:'m::', deadLabel:'Éliminé', acLabel:'CA',
+       store:() => localMonsters,    sidebar:() => renderMonsterSidebar(),  nextId:() => 'monster-'  + (++monsterCounter) },
+  f: { type:'friendly', prefix:'f::', deadLabel:'Down',    acLabel:'AC',
+       store:() => localFriendlies,  sidebar:() => renderFriendlySidebar(), nextId:() => 'friendly-' + (++friendlyCounter) },
+};
 
-  const pct  = m.hpMax > 0 ? Math.max(0, Math.min(100, m.hp / m.hpMax * 100)) : 0;
-  const dead = m.hp <= 0 && m.hpMax > 0;
-  const isExpanded = _expandedMonsterPanels.has(key);
+function renderCombatantPanel(panel, key, kind) {
+  const cfg = ENTITY_KIND[kind];
+  const id  = key.slice(3); // retire 'm::' / 'f::'
+  const e   = cfg.store()[id];
+  if (!e) { panel.remove(); delete openPanels[key]; updateEmptyState(); return; }
+  if (!Array.isArray(e.conditions)) e.conditions = []; // sécurité (ancien état localStorage)
 
-  panel.classList.toggle('panel-compact', !isExpanded);
+  const pct  = e.hpMax > 0 ? Math.max(0, Math.min(100, e.hp / e.hpMax * 100)) : 0;
+  const dead = e.hp <= 0 && e.hpMax > 0;
+  panel.classList.toggle('panel-compact', !_expandedMonsterPanels.has(key));
 
   panel.innerHTML = `
     <div class="panel-header" style="cursor:pointer;" data-toggle-panel="${esc(key)}">
-      <span class="panel-avatar">${m.avatar}</span>
+      <span class="panel-avatar">${esc(e.avatar)}</span>
       <div class="panel-title">
-        <input class="panel-name-input" data-rename-monster="${esc(id)}" value="${esc(m.name)}" title="Double-click to rename" onclick="event.stopPropagation()">
+        <input class="panel-name-input" data-rename="${esc(id)}" value="${esc(e.name)}" title="Renommer" onclick="event.stopPropagation()">
         <div class="panel-compact-info">
-          <span>AC ${m.ac}</span>
+          <span>AC ${e.ac}</span>
           <span>·</span>
-          <span class="panel-compact-hp" style="color:${dead?'var(--danger)':'var(--text)'};">${m.hp}<span style="color:var(--text-dim);font-size:0.72rem;">/${m.hpMax}</span></span>
+          <span class="panel-compact-hp" style="color:${dead?'var(--danger)':'var(--text)'};">${e.hp}<span style="color:var(--text-dim);font-size:0.72rem;">/${e.hpMax}</span></span>
           ${dead ? `<span style="color:var(--danger);">💀</span>` : ''}
         </div>
       </div>
       <div class="panel-acts">
         <span class="panel-expand-arrow">▶</span>
-        <button class="pact" data-clone="${esc(key)}" title="Duplicate" onclick="event.stopPropagation()">⎘</button>
-        <button class="pact danger" data-close="${esc(key)}" title="Delete" onclick="event.stopPropagation()">🗑</button>
+        <button class="pact" data-clone="${esc(key)}" title="Dupliquer" onclick="event.stopPropagation()">⎘</button>
+        <button class="pact danger" data-close="${esc(key)}" title="Supprimer" onclick="event.stopPropagation()">🗑</button>
       </div>
     </div>
     <div class="panel-mini-bar"><div class="panel-mini-bar-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>
@@ -2229,9 +2283,9 @@ function renderMonsterPanel(panel, key) {
       <div class="panel-hp">
         <div class="hp-bar-wrap"><div class="hp-bar-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>
         <div class="hp-row">
-          <span class="hp-num" style="color:${dead?'var(--danger)':'var(--text)'};">${m.hp}</span>
-          <span class="hp-max">/ ${m.hpMax} HP</span>
-          ${dead ? `<span style="color:var(--danger);font-size:0.72rem;margin-left:auto;">💀 Éliminé</span>` : ''}
+          <span class="hp-num" style="color:${dead?'var(--danger)':'var(--text)'};">${e.hp}</span>
+          <span class="hp-max">/ ${e.hpMax} HP</span>
+          ${dead ? `<span style="color:var(--danger);font-size:0.72rem;margin-left:auto;">💀 ${cfg.deadLabel}</span>` : ''}
         </div>
         <div class="hp-controls">
           <button class="hp-qbtn m" data-delta="-10">−10</button>
@@ -2244,23 +2298,23 @@ function renderMonsterPanel(panel, key) {
         </div>
       </div>
       <div class="panel-stats">
-        <div class="stat-cell"><div class="stat-val">${m.ac}</div><div class="stat-lbl">CA</div></div>
-        <div class="stat-cell"><div class="stat-val">${fmtInit(m.initiative)}</div><div class="stat-lbl">Init.</div></div>
+        <div class="stat-cell"><div class="stat-val">${e.ac}</div><div class="stat-lbl">${cfg.acLabel}</div></div>
+        <div class="stat-cell"><div class="stat-val">${fmtInit(e.initiative)}</div><div class="stat-lbl">Init.</div></div>
         <div class="stat-cell">
-          <input type="number" class="hp-inp" id="maxhp-${esc(key)}" value="${m.hpMax}" style="width:55px;margin:0 auto;" title="HP Max">
+          <input type="number" class="hp-inp" id="maxhp-${esc(key)}" value="${e.hpMax}" style="width:55px;margin:0 auto;" title="HP Max">
           <div class="stat-lbl">HP Max</div>
         </div>
       </div>
       <div class="panel-cond">
         <div class="sec-label">Conditions</div>
         <div class="cond-badges">
-          ${m.conditions.map(cond =>
+          ${e.conditions.map(cond =>
             `<span class="cond-badge" data-remove-cond="${esc(cond)}">${esc(cond)} <span class="cond-x">✕</span></span>`
           ).join('')}
           <div class="cond-picker">
             <button class="cond-add-btn">+ Condition</button>
             <div class="cond-menu" id="cmenu-${esc(key)}">
-              ${ALL_CONDITIONS.filter(co => !m.conditions.includes(co)).map(co =>
+              ${ALL_CONDITIONS.filter(co => !e.conditions.includes(co)).map(co =>
                 `<div class="cond-opt" data-add-cond="${esc(co)}">${esc(co)}</div>`
               ).join('')}
             </div>
@@ -2270,79 +2324,74 @@ function renderMonsterPanel(panel, key) {
     </div>`;
 
   // Toggle expand on header click
-  panel.querySelector('[data-toggle-panel]')?.addEventListener('click', (e) => {
-    if (e.target.closest('.pact') || e.target.closest('.panel-name-input')) return;
+  panel.querySelector('[data-toggle-panel]')?.addEventListener('click', (ev) => {
+    if (ev.target.closest('.pact') || ev.target.closest('.panel-name-input')) return;
     if (_expandedMonsterPanels.has(key)) _expandedMonsterPanels.delete(key);
     else _expandedMonsterPanels.add(key);
     updatePanel(key);
   });
 
+  // Clone / duplicate
   panel.querySelector('[data-clone]')?.addEventListener('click', () => {
-    const newId = 'monster-' + (++monsterCounter);
-    localMonsters[newId] = { ...m, id: newId, hp: m.hpMax };
-    renderMonsterSidebar();
-    openPanel('m::' + newId);
-    const initVal = Math.floor(Math.random() * 20) + 1 + (parseInt(m.initiative)||0);
-    initState.combatants.push({ id: 'm::' + newId, label: m.name, avatar: m.avatar, type: 'monster', initVal, hp: m.hpMax, hpMax: m.hpMax, delayed: false });
+    const newId  = cfg.nextId();
+    const newKey = cfg.prefix + newId;
+    cfg.store()[newId] = { ...e, id: newId, hp: e.hpMax, conditions: [] };
+    cfg.sidebar();
+    openPanel(newKey);
+    const initVal = Math.floor(Math.random() * 20) + 1 + (parseInt(e.initiative)||0);
+    initState.combatants.push({ id: newKey, label: e.name, avatar: e.avatar, type: cfg.type, initVal, hp: e.hpMax, hpMax: e.hpMax, delayed: false });
     initState.combatants.sort((a, b) => b.initVal - a.initVal);
     renderInitChips();
     saveDmState();
   });
 
+  // Close / delete
   panel.querySelector('[data-close]')?.addEventListener('click', () => {
-    delete localMonsters[id];
+    delete cfg.store()[id];
     _expandedMonsterPanels.delete(key);
     closePanel(key);
-    renderMonsterSidebar();
+    cfg.sidebar();
     removeInitCombatant(key);
     saveDmState();
   });
 
+  // HP quick buttons
   panel.querySelectorAll('.hp-qbtn').forEach(btn => {
     btn.addEventListener('click', () => {
-      m.hp = Math.max(0, Math.min(m.hpMax, m.hp + parseInt(btn.dataset.delta)));
-      updatePanel(key);
-      renderMonsterSidebar();
-      renderInitChips();
-      saveDmState();
+      e.hp = Math.max(0, Math.min(e.hpMax, e.hp + parseInt(btn.dataset.delta)));
+      updatePanel(key); cfg.sidebar(); renderInitChips(); saveDmState();
     });
   });
   panel.querySelector('[data-apply]')?.addEventListener('click', () => {
     const inp = document.getElementById('hpinp-' + key);
     const v   = parseInt(inp?.value);
     if (!isNaN(v) && v !== 0) {
-      m.hp = Math.max(0, Math.min(m.hpMax, m.hp + v));
-      if(inp) inp.value = '';
-      updatePanel(key);
-      renderMonsterSidebar();
-      renderInitChips();
-      saveDmState();
+      e.hp = Math.max(0, Math.min(e.hpMax, e.hp + v));
+      if (inp) inp.value = '';
+      updatePanel(key); cfg.sidebar(); renderInitChips(); saveDmState();
     }
   });
-  panel.querySelector('.hp-inp')?.addEventListener('keydown', e => {
-    if(e.key==='Enter') panel.querySelector('[data-apply]')?.click();
+  panel.querySelector('.hp-inp')?.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter') panel.querySelector('[data-apply]')?.click();
   });
 
-  // HP Max edit (only in expanded state)
+  // HP Max edit (expanded state)
   const maxInp = document.getElementById('maxhp-' + key);
   if (maxInp) {
     maxInp.addEventListener('change', () => {
       const v = Math.max(1, parseInt(maxInp.value) || 1);
-      m.hpMax = v; m.hp = Math.min(m.hp, v);
-      updatePanel(key);
-      renderMonsterSidebar();
-      saveDmState();
+      e.hpMax = v; e.hp = Math.min(e.hp, v);
+      updatePanel(key); cfg.sidebar(); saveDmState();
     });
   }
 
   // Rename
-  const nameInp = panel.querySelector('[data-rename-monster]');
+  const nameInp = panel.querySelector('[data-rename]');
   if (nameInp) {
     nameInp.addEventListener('change', () => {
-      const newName = nameInp.value.trim() || m.name;
-      m.name = newName;
-      nameInp.value = newName;
-      renderMonsterSidebar();
+      const newName = nameInp.value.trim() || e.name;
+      e.name = newName; nameInp.value = newName;
+      cfg.sidebar();
       const initC = initState.combatants.find(c => c.id === key);
       if (initC) { initC.label = newName; renderInitChips(); }
       saveDmState();
@@ -2352,21 +2401,22 @@ function renderMonsterPanel(panel, key) {
   // Conditions
   panel.querySelectorAll('[data-remove-cond]').forEach(el => {
     el.addEventListener('click', () => {
-      m.conditions = m.conditions.filter(c => c !== el.dataset.removeCond);
+      e.conditions = e.conditions.filter(c => c !== el.dataset.removeCond);
       updatePanel(key); saveDmState();
     });
   });
   panel.querySelectorAll('.cond-add-btn').forEach(btn => {
-    btn.addEventListener('click', e => { e.stopPropagation(); closeAllMenus(); document.getElementById('cmenu-' + key)?.classList.add('open'); });
+    btn.addEventListener('click', ev => { ev.stopPropagation(); closeAllMenus(); document.getElementById('cmenu-' + key)?.classList.add('open'); });
   });
   panel.querySelectorAll('[data-add-cond]').forEach(el => {
-    el.addEventListener('click', e => {
-      e.stopPropagation();
+    el.addEventListener('click', ev => {
+      ev.stopPropagation();
       document.getElementById('cmenu-' + key)?.classList.remove('open');
-      if (!m.conditions.includes(el.dataset.addCond)) { m.conditions.push(el.dataset.addCond); updatePanel(key); saveDmState(); }
+      if (!e.conditions.includes(el.dataset.addCond)) { e.conditions.push(el.dataset.addCond); updatePanel(key); saveDmState(); }
     });
   });
 }
+function renderMonsterPanel(panel, key)  { renderCombatantPanel(panel, key, 'm'); }
 
 /* ══════════════════════════════════════════
    Friendly NPCs — Render & Logic
@@ -2380,7 +2430,7 @@ function renderFriendlySidebar() {
     const isOpen = !!openPanels[key];
     return `<div class="friendly-sidebar-entry${isOpen?' open':''}" data-fkey="${esc(key)}">
       <span class="f-dot"></span>
-      <span>${f.avatar} ${esc(f.name)}</span>
+      <span>${esc(f.avatar)} ${esc(f.name)}</span>
       <span style="margin-left:auto;font-size:0.68rem;">${f.hp}/${f.hpMax}</span>
     </div>`;
   }).join('');
@@ -2389,176 +2439,7 @@ function renderFriendlySidebar() {
   });
 }
 
-function renderFriendlyPanel(panel, key) {
-  const id = key.replace('f::', '');
-  const f  = localFriendlies[id];
-  if (!f) { panel.remove(); delete openPanels[key]; updateEmptyState(); return; }
-
-  const pct  = f.hpMax > 0 ? Math.max(0, Math.min(100, f.hp / f.hpMax * 100)) : 0;
-  const dead = f.hp <= 0 && f.hpMax > 0;
-  const isExpanded = _expandedMonsterPanels.has(key);
-
-  panel.classList.toggle('panel-compact', !isExpanded);
-
-  panel.innerHTML = `
-    <div class="panel-header" style="cursor:pointer;" data-toggle-panel="${esc(key)}">
-      <span class="panel-avatar">${f.avatar}</span>
-      <div class="panel-title">
-        <input class="panel-name-input" data-rename-friendly="${esc(id)}" value="${esc(f.name)}" title="Edit to rename" onclick="event.stopPropagation()">
-        <div class="panel-compact-info">
-          <span>AC ${f.ac}</span>
-          <span>·</span>
-          <span class="panel-compact-hp" style="color:${dead?'var(--danger)':'var(--text)'};">${f.hp}<span style="color:var(--text-dim);font-size:0.72rem;">/${f.hpMax}</span></span>
-          ${dead ? `<span style="color:var(--danger);">💀</span>` : ''}
-        </div>
-      </div>
-      <div class="panel-acts">
-        <span class="panel-expand-arrow">▶</span>
-        <button class="pact" data-clone-friendly="${esc(key)}" title="Duplicate" onclick="event.stopPropagation()">⎘</button>
-        <button class="pact danger" data-close-friendly="${esc(key)}" title="Delete" onclick="event.stopPropagation()">🗑</button>
-      </div>
-    </div>
-    <div class="panel-mini-bar"><div class="panel-mini-bar-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>
-    <div class="panel-body">
-      <div class="panel-hp">
-        <div class="hp-bar-wrap"><div class="hp-bar-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>
-        <div class="hp-row">
-          <span class="hp-num" style="color:${dead?'var(--danger)':'var(--text)'};">${f.hp}</span>
-          <span class="hp-max">/ ${f.hpMax} HP</span>
-          ${dead ? `<span style="color:var(--danger);font-size:0.72rem;margin-left:auto;">💀 Down</span>` : ''}
-        </div>
-        <div class="hp-controls">
-          <button class="hp-qbtn m" data-delta="-10">−10</button>
-          <button class="hp-qbtn m" data-delta="-5">−5</button>
-          <button class="hp-qbtn m" data-delta="-1">−1</button>
-          <input type="number" class="hp-inp" placeholder="±HP" id="hpinp-${esc(key)}">
-          <button class="hp-qbtn p" data-delta="+1">+1</button>
-          <button class="hp-qbtn p" data-delta="+5">+5</button>
-          <button class="hp-apply" data-apply-friendly="${esc(key)}">✓</button>
-        </div>
-      </div>
-      <div class="panel-stats">
-        <div class="stat-cell"><div class="stat-val">${f.ac}</div><div class="stat-lbl">AC</div></div>
-        <div class="stat-cell"><div class="stat-val">${fmtInit(f.initiative)}</div><div class="stat-lbl">Init.</div></div>
-        <div class="stat-cell">
-          <input type="number" class="hp-inp" id="maxhp-${esc(key)}" value="${f.hpMax}" style="width:55px;margin:0 auto;" title="HP Max">
-          <div class="stat-lbl">HP Max</div>
-        </div>
-      </div>
-      <div class="panel-cond">
-        <div class="sec-label">Conditions</div>
-        <div class="cond-badges">
-          ${f.conditions.map(cond =>
-            `<span class="cond-badge" data-rm-fcond="${esc(cond)}">${esc(cond)} <span class="cond-x">✕</span></span>`
-          ).join('')}
-          <div class="cond-picker">
-            <button class="cond-add-btn">+ Condition</button>
-            <div class="cond-menu" id="cmenu-${esc(key)}">
-              ${ALL_CONDITIONS.filter(co => !f.conditions.includes(co)).map(co =>
-                `<div class="cond-opt" data-add-fcond="${esc(co)}">${esc(co)}</div>`
-              ).join('')}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>`;
-
-  // Toggle expand on header click
-  panel.querySelector('[data-toggle-panel]')?.addEventListener('click', (e) => {
-    if (e.target.closest('.pact') || e.target.closest('.panel-name-input')) return;
-    if (_expandedMonsterPanels.has(key)) _expandedMonsterPanels.delete(key);
-    else _expandedMonsterPanels.add(key);
-    updatePanel(key);
-  });
-
-  panel.querySelector('[data-clone-friendly]')?.addEventListener('click', () => {
-    const newId = 'friendly-' + (++friendlyCounter);
-    localFriendlies[newId] = { ...f, id: newId, hp: f.hpMax, conditions: [] };
-    renderFriendlySidebar();
-    openPanel('f::' + newId);
-    const initVal = Math.floor(Math.random() * 20) + 1 + (parseInt(f.initiative)||0);
-    initState.combatants.push({ id: 'f::' + newId, label: f.name, avatar: f.avatar, type: 'friendly', initVal, hp: f.hpMax, hpMax: f.hpMax, delayed: false });
-    initState.combatants.sort((a, b) => b.initVal - a.initVal);
-    renderInitChips();
-    saveDmState();
-  });
-
-  panel.querySelector('[data-close-friendly]')?.addEventListener('click', () => {
-    delete localFriendlies[id];
-    _expandedMonsterPanels.delete(key);
-    closePanel(key);
-    renderFriendlySidebar();
-    removeInitCombatant(key);
-    saveDmState();
-  });
-
-  panel.querySelectorAll('.hp-qbtn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      f.hp = Math.max(0, Math.min(f.hpMax, f.hp + parseInt(btn.dataset.delta)));
-      updatePanel(key);
-      renderFriendlySidebar();
-      renderInitChips();
-      saveDmState();
-    });
-  });
-
-  panel.querySelector('[data-apply-friendly]')?.addEventListener('click', () => {
-    const inp = document.getElementById('hpinp-' + key);
-    const v   = parseInt(inp?.value);
-    if (!isNaN(v) && v !== 0) {
-      f.hp = Math.max(0, Math.min(f.hpMax, f.hp + v));
-      if (inp) inp.value = '';
-      updatePanel(key);
-      renderFriendlySidebar();
-      renderInitChips();
-      saveDmState();
-    }
-  });
-  panel.querySelector('.hp-inp')?.addEventListener('keydown', e => {
-    if (e.key === 'Enter') panel.querySelector('[data-apply-friendly]')?.click();
-  });
-
-  const maxInp = document.getElementById('maxhp-' + key);
-  if (maxInp) {
-    maxInp.addEventListener('change', () => {
-      const v = Math.max(1, parseInt(maxInp.value) || 1);
-      f.hpMax = v; f.hp = Math.min(f.hp, v);
-      updatePanel(key);
-      renderFriendlySidebar();
-      saveDmState();
-    });
-  }
-
-  const nameInp = panel.querySelector('[data-rename-friendly]');
-  if (nameInp) {
-    nameInp.addEventListener('change', () => {
-      const newName = nameInp.value.trim() || f.name;
-      f.name = newName;
-      nameInp.value = newName;
-      renderFriendlySidebar();
-      const initC = initState.combatants.find(c => c.id === key);
-      if (initC) { initC.label = newName; renderInitChips(); }
-      saveDmState();
-    });
-  }
-
-  panel.querySelectorAll('[data-rm-fcond]').forEach(el => {
-    el.addEventListener('click', () => {
-      f.conditions = f.conditions.filter(c => c !== el.dataset.rmFcond);
-      updatePanel(key); saveDmState();
-    });
-  });
-  panel.querySelectorAll('.cond-add-btn').forEach(btn => {
-    btn.addEventListener('click', e => { e.stopPropagation(); closeAllMenus(); document.getElementById('cmenu-' + key)?.classList.add('open'); });
-  });
-  panel.querySelectorAll('[data-add-fcond]').forEach(el => {
-    el.addEventListener('click', e => {
-      e.stopPropagation();
-      document.getElementById('cmenu-' + key)?.classList.remove('open');
-      if (!f.conditions.includes(el.dataset.addFcond)) { f.conditions.push(el.dataset.addFcond); updatePanel(key); saveDmState(); }
-    });
-  });
-}
+function renderFriendlyPanel(panel, key) { renderCombatantPanel(panel, key, 'f'); }
 
 /* ══════════════════════════════════════════
    Mutations — Players
@@ -2613,10 +2494,31 @@ function longRest(username, charId, key) {
   schedulePlayerSave(username, data);
 }
 
+const _pendingSaves = {};
 function schedulePlayerSave(username, data) {
+  _pendingSaves[username] = data;
   clearTimeout(saveTimers[username]);
-  saveTimers[username] = setTimeout(() => sbUpdateData(username, data), 800);
+  saveTimers[username] = setTimeout(() => { delete _pendingSaves[username]; sbUpdateData(username, data); }, 800);
 }
+/* Flush à la fermeture : les éditions DM encore dans la fenêtre de debounce (800ms)
+   partent en keepalive au lieu d'être perdues. */
+function flushPendingPlayerSaves() {
+  Object.entries(_pendingSaves).forEach(([u, data]) => {
+    clearTimeout(saveTimers[u]);
+    delete _pendingSaves[u];
+    data._rev = (data._rev || 0) + 1;
+    try {
+      fetch(`${SB_URL}/rest/v1/players?username=eq.${encodeURIComponent(u)}`, {
+        method: 'PATCH', headers: { ...SB_HDR, 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ data }), keepalive: true
+      }).catch(() => {});
+    } catch {}
+  });
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') flushPendingPlayerSaves();
+});
+window.addEventListener('pagehide', flushPendingPlayerSaves);
 
 /* ══════════════════════════════════════════
    Initiative Tracker
@@ -2673,54 +2575,78 @@ document.getElementById('init-clear').addEventListener('click', () => {
   renderInitChips();
   saveDmState();
 });
+document.getElementById('init-add-new').addEventListener('click', addNewCombatants);
 
-function buildInitCombatants(roll = false) {
-  initState.combatants = [];
+/* ── Raccourcis clavier (initiative ouverte, hors champs de saisie) ──
+   → ou Espace : tour suivant · ← : tour précédent */
+document.addEventListener('keydown', e => {
+  if (!initState.open || !initState.combatants.length) return;
+  const el = document.activeElement;
+  if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable)) return;
+  if (e.key === 'ArrowRight' || e.key === ' ') {
+    e.preventDefault();
+    document.getElementById('init-next').click();
+  } else if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    document.getElementById('init-prev').click();
+  }
+});
 
-  // Players with open panels
+/* Énumère tous les combattants éligibles (panneaux ouverts), avec roll d'initiative optionnel.
+   `skip` : Set d'ids à exclure (utilisé par l'ajout incrémental). */
+function enumerateOpenCombatants(roll = false, skip = null) {
+  const out = [];
+  const rollInit = mod => roll ? Math.floor(Math.random() * 20) + 1 + mod : mod;
+
   allPlayers.forEach(player => {
     if (player.username === ADMIN_USER) return;
     const data = player.data || {};
     Object.entries(data.characters || {}).forEach(([cid, slot]) => {
       const key = 'p::' + player.username + '::' + cid;
-      if (!openPanels[key]) return;
+      if (!openPanels[key] || skip?.has(key)) return;
       const c = slot.character || {};
-      const initMod = parseInt(c.initiative) || 0;
-      const initVal = roll ? Math.floor(Math.random() * 20) + 1 + initMod : initMod;
-      initState.combatants.push({
+      out.push({
         id: key, label: slot.name || player.username,
         avatar: data.avatar || '⚔', type: 'player',
-        initVal, hp: parseInt(c.pvActuel)||0, hpMax: parseInt(c.pvMax)||0
+        initVal: rollInit(parseInt(c.initiative) || 0),
+        hp: parseInt(c.pvActuel)||0, hpMax: parseInt(c.pvMax)||0
       });
     });
   });
-
-  // Local monsters with open panels
   Object.values(localMonsters).forEach(m => {
     const key = 'm::' + m.id;
-    if (!openPanels[key]) return;
-    const initVal = roll ? Math.floor(Math.random() * 20) + 1 + (parseInt(m.initiative)||0) : (parseInt(m.initiative)||0);
-    initState.combatants.push({
-      id: key, label: m.name, avatar: m.avatar, type: 'monster',
-      initVal, hp: m.hp, hpMax: m.hpMax
-    });
+    if (!openPanels[key] || skip?.has(key)) return;
+    out.push({ id: key, label: m.name, avatar: m.avatar, type: 'monster',
+      initVal: rollInit(parseInt(m.initiative)||0), hp: m.hp, hpMax: m.hpMax });
   });
-
-  // Friendly NPCs with open panels
   Object.values(localFriendlies).forEach(f => {
     const key = 'f::' + f.id;
-    if (!openPanels[key]) return;
-    const initVal = roll ? Math.floor(Math.random() * 20) + 1 + (parseInt(f.initiative)||0) : (parseInt(f.initiative)||0);
-    initState.combatants.push({
-      id: key, label: f.name, avatar: f.avatar, type: 'friendly',
-      initVal, hp: f.hp, hpMax: f.hpMax
-    });
+    if (!openPanels[key] || skip?.has(key)) return;
+    out.push({ id: key, label: f.name, avatar: f.avatar, type: 'friendly',
+      initVal: rollInit(parseInt(f.initiative)||0), hp: f.hp, hpMax: f.hpMax });
   });
+  return out;
+}
 
-  // Sort descending
+function buildInitCombatants(roll = false) {
+  initState.combatants = enumerateOpenCombatants(roll);
   initState.combatants.sort((a, b) => b.initVal - a.initVal);
   if (initState.currentIdx >= initState.combatants.length) initState.currentIdx = 0;
   renderInitChips();
+}
+
+/* Ajout en cours de combat : insère les nouveaux panneaux ouverts dans l'ordre
+   existant (roll individuel) sans re-roller ni perdre le tour en cours. */
+function addNewCombatants() {
+  const existing = new Set(initState.combatants.map(c => c.id));
+  const added = enumerateOpenCombatants(true, existing);
+  if (!added.length) return;
+  const curId = initState.combatants[initState.currentIdx]?.id;
+  initState.combatants.push(...added);
+  initState.combatants.sort((a, b) => b.initVal - a.initVal);
+  if (curId) initState.currentIdx = initState.combatants.findIndex(c => c.id === curId);
+  renderInitChips();
+  saveDmState();
 }
 
 function renderInitChips() {
@@ -2750,11 +2676,13 @@ function renderInitChips() {
 
     const chip = document.createElement('div');
     chip.className = 'init-chip' + (active ? ' active-turn' : '') + (dead ? ' dead' : '') + (ct.delayed ? ' delayed' : '');
+    const hpTxt = ct.hpMax > 0 ? (dead ? '💀 0' : `${ct.hp}/${ct.hpMax}`) : '—';
     chip.innerHTML = `
-      <span class="chip-avatar">${ct.avatar}</span>
+      <span class="chip-avatar">${esc(ct.avatar)}</span>
       <input class="init-chip-inp" type="number" value="${ct.initVal}" title="Modifier initiative">
       <span class="chip-name">${esc(ct.label)}</span>
       <div class="chip-hp-bar"><div class="chip-hp-fill" style="width:${pct}%;background:${hpColor(pct)};"></div></div>
+      <span class="chip-hp-txt">${hpTxt}</span>
       <button class="chip-delay-btn" title="${ct.delayed ? 'Reprendre' : 'Passer (delay)'}">⏸</button>`;
 
     chip.addEventListener('click', e => {
@@ -2777,6 +2705,16 @@ function renderInitChips() {
     });
     chips.appendChild(chip);
   });
+  syncActivePanelHighlight();
+}
+
+/* Met en valeur le panneau du combattant dont c'est le tour (ou aucun si init fermée). */
+function syncActivePanelHighlight() {
+  document.querySelectorAll('.combat-panel.panel-active-turn')
+    .forEach(p => p.classList.remove('panel-active-turn'));
+  if (!initState.open) return;
+  const ct = initState.combatants[initState.currentIdx];
+  if (ct) document.getElementById('panel-' + ct.id)?.classList.add('panel-active-turn');
 }
 
 function removeInitCombatant(key) {
@@ -2842,7 +2780,15 @@ document.getElementById('btn-wiki-sidebar-toggle').addEventListener('click', () 
 function openSidebar() { document.body.classList.add('sidebar-open'); }
 function closeSidebar() { document.body.classList.remove('sidebar-open'); }
 document.getElementById('btn-sidebar-toggle').addEventListener('click', () => {
-  document.body.classList.toggle('sidebar-open');
+  if (window.innerWidth <= 900) {
+    // Mobile/tablette : overlay coulissant
+    document.body.classList.toggle('sidebar-open');
+  } else {
+    // Desktop : réduire / afficher le panneau joueurs
+    const collapsed = document.body.classList.toggle('dm-sidebar-collapsed');
+    document.getElementById('btn-sidebar-toggle').classList.toggle('active', collapsed);
+    saveDmState();
+  }
 });
 document.getElementById('sidebar-backdrop').addEventListener('click', closeSidebar);
 
@@ -2985,7 +2931,7 @@ function startDmChatRealtime(_retry = 0) {
     return;
   }
   try {
-    const client = window.supabase.createClient(SB_URL, SB_KEY);
+    const client = getSbClient();
     client.channel('dm-chat-watch')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, payload => {
         const m = payload.new;
@@ -3024,6 +2970,59 @@ function fmtInit(v) {
 }
 
 /* ══════════════════════════════════════════
+   DM Reference — calculs partagés (saves, skills, perception passive)
+   Modèle identique à joueurs.html : scores c.for/dex/…, prof saves c.saveFor…,
+   prof skills c.<key> (0/1/2), PB = ceil(niveauTotal/4)+1, Jack of All Trades.
+   N.B. les modificateurs actifs (c.mods) ne sont pas appliqués ici — base seule.
+══════════════════════════════════════════ */
+const DM_SKILLS = [
+  {key:'athletisme',attr:'for',label:'Athletics'},
+  {key:'acrobaties',attr:'dex',label:'Acrobatics'},
+  {key:'discret',attr:'dex',label:'Stealth'},
+  {key:'prestidig',attr:'dex',label:'Sleight of Hand'},
+  {key:'arcanes',attr:'int',label:'Arcana'},
+  {key:'histoire',attr:'int',label:'History'},
+  {key:'investigation',attr:'int',label:'Investigation'},
+  {key:'nature',attr:'int',label:'Nature'},
+  {key:'religion',attr:'int',label:'Religion'},
+  {key:'animaux',attr:'sag',label:'Animal Handling'},
+  {key:'perspicacite',attr:'sag',label:'Insight'},
+  {key:'medecine',attr:'sag',label:'Medicine'},
+  {key:'perception',attr:'sag',label:'Perception'},
+  {key:'survie',attr:'sag',label:'Survival'},
+  {key:'duperie',attr:'cha',label:'Deception'},
+  {key:'intimidation',attr:'cha',label:'Intimidation'},
+  {key:'performance',attr:'cha',label:'Performance'},
+  {key:'persuasion',attr:'cha',label:'Persuasion'},
+];
+const DM_SAVES = [
+  {key:'saveFor',attr:'for',label:'FOR'},{key:'saveDex',attr:'dex',label:'DEX'},
+  {key:'saveCon',attr:'con',label:'CON'},{key:'saveInt',attr:'int',label:'INT'},
+  {key:'saveSag',attr:'sag',label:'SAG'},{key:'saveCha',attr:'cha',label:'CHA'},
+];
+function dmMod(score){ return Math.floor(((parseInt(score)||10)-10)/2); }
+function dmFmt(n){ return (n>=0?'+':'')+n; }
+function dmCalc(c){
+  c = c || {};
+  const classes = (c.classes && c.classes.length) ? c.classes : [{niveau: parseInt(c.niveau)||1}];
+  const lvl = classes.reduce((s,cl)=>s+(parseInt(cl.niveau)||1),0);
+  const pb  = Math.ceil(lvl/4)+1;
+  const jat = !!c.jackOfAllTrades, half = Math.floor(pb/2);
+  const skill = sk => {
+    const prof = Math.min(2, Math.max(0, parseInt(c[sk.key]) || (c[sk.key]===true?1:0)));
+    const jatB = (jat && prof===0) ? half : 0;
+    return { prof, val: dmMod(c[sk.attr]) + prof*pb + jatB };
+  };
+  return {
+    pb, totalLevel: lvl,
+    save: sv => ({ prof: !!c[sv.key], val: dmMod(c[sv.attr]) + (c[sv.key]?pb:0) }),
+    skill,
+    passivePerc: 10 + skill({key:'perception',attr:'sag'}).val,
+    profSkills: DM_SKILLS.map(sk=>({sk, ...skill(sk)})).filter(x=>x.prof>0),
+  };
+}
+
+/* ══════════════════════════════════════════
    Init
 ══════════════════════════════════════════ */
 (function init() {
@@ -3046,15 +3045,25 @@ let _drawerChar    = null;
 let _drawerSection = 'perso'; // 'perso' | 'inventaire'
 let _drawerSaveTimer = null;
 
-document.getElementById('btn-open-drawer').addEventListener('click', openDrawer);
+document.getElementById('btn-open-drawer').addEventListener('click', () => openDrawer());
 document.getElementById('btn-close-drawer').addEventListener('click', closeDrawer);
 document.getElementById('drawer-backdrop').addEventListener('click', closeDrawer);
 
-function openDrawer() {
+function openDrawer(username, charId, section) {
+  // Cible optionnelle : ouvre directement la fiche d'un joueur/perso depuis un panneau
+  if (username) _drawerPlayer = username;
+  if (charId)   _drawerChar   = charId;
+  if (section)  _drawerSection = section;
   document.getElementById('player-drawer').classList.add('open');
   document.getElementById('drawer-backdrop').classList.add('open');
   document.getElementById('btn-open-drawer').classList.add('active');
   renderDrawerTabs();
+}
+/* Ouvre la fiche complète depuis une clé de panneau joueur 'p::user::charId' */
+function openSheetForKey(key) {
+  const parts = key.split('::');
+  if (parts[0] !== 'p') return;
+  openDrawer(parts[1], parts[2], 'perso');
 }
 
 function closeDrawer() {
@@ -3222,6 +3231,26 @@ function renderDrawerBody() {
         <div class="ds-field"><label class="ds-label">Or legacy</label><input class="ds-input center" type="number" data-field="gold" value="${esc(fv('gold','0'))}"></div>
       </div>
     </div>
+    ${(() => {
+      // ── Référence MJ : valeurs calculées (lecture seule) pour mener le jeu ──
+      const dc = dmCalc(c);
+      return `
+      <div class="ds-section ds-ref">
+        <div class="ds-section-title">🎲 Référence MJ
+          <span style="font-size:0.7rem;color:var(--text-dim);font-weight:400;margin-left:auto;">PB +${dc.pb} · Niv. ${dc.totalLevel}</span>
+        </div>
+        <div class="ds-ref-pp">
+          <span class="ds-ref-pp-label">👁 Perception passive</span>
+          <span class="ds-ref-pp-val">${dc.passivePerc}</span>
+        </div>
+        <div class="ds-ref-grid">
+          ${DM_SAVES.map(sv => { const s = dc.save(sv); return `<div class="ds-ref-cell${s.prof?' prof':''}"><span class="ds-ref-k">${sv.label}</span><span class="ds-ref-v">${dmFmt(s.val)}</span></div>`; }).join('')}
+        </div>
+        ${dc.profSkills.length ? `<div class="ds-ref-skills">
+          ${dc.profSkills.map(x => `<span class="ds-ref-skill${x.prof===2?' exp':''}"><span class="ds-ref-skill-name">${x.sk.label}${x.prof===2?' ★':''}</span><span class="ds-ref-skill-val">${dmFmt(x.val)}</span></span>`).join('')}
+        </div>` : `<div style="font-size:0.74rem;color:var(--text-dim);font-style:italic;">Aucune maîtrise de compétence.</div>`}
+      </div>`;
+    })()}
     ${(c.attaques||[]).length ? `
     <div class="ds-section">
       <div class="ds-section-title">⚔ Attaques</div>

@@ -444,6 +444,9 @@ if (hamburger && sidebar && overlay) {
   const sidebar = document.getElementById('sidebar');
   if (!sidebar) return;
 
+  // Pas d'index de recherche chargé (ex. page DM) → pas de bouton aléatoire
+  if (!Array.isArray(SEARCH_INDEX) || !SEARCH_INDEX.length) return;
+
   // Ne cibler que les vraies pages HTML (pas les ancres #fragment)
   const pages = SEARCH_INDEX
     .filter(p => p.url.endsWith('.html') && !p.url.includes('#'))
@@ -930,6 +933,8 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 // --- Chat widget (chargé uniquement si connecté) --------
 (function loadChat() {
   if (!localStorage.getItem('kaleysur_user')) return;
+  // Pages avec leur propre chat intégré (fiche joueur, DM screen) : ne pas doubler
+  if (document.getElementById('chat-fab') || document.getElementById('dm-chat-input')) return;
   var s = document.createElement('script');
   s.src = getWikiRoot() + 'js/chat.js';
   document.body.appendChild(s);
