@@ -242,6 +242,14 @@
     .atk-dmg-wrap .atk-inp { flex:1; min-width:0; }
     .atk-dice-btn { background:none; border:none; cursor:pointer; font-size:0.85rem; padding:0 3px; line-height:1; color:#555; transition:color 0.12s; flex-shrink:0; }
     .atk-dice-btn:hover { color:var(--gold); }
+    /* ── Bouton lancer un sort (consomme un emplacement) ── */
+    .spell-cast-btn { background:rgba(201,169,110,0.08); border:1px solid var(--j-border-col,#4a3510); border-radius:4px; cursor:pointer; font-size:0.8rem; padding:1px 6px; line-height:1.3; color:var(--gold-dark,#8a6e1a); transition:all 0.12s; flex-shrink:0; }
+    .spell-cast-btn:hover { color:var(--gold,#c9a227); border-color:var(--gold-dark,#8a6e1a); background:rgba(201,169,110,0.15); }
+    /* ── Badges méta d'un sort déplié (mobile) ── */
+    .spell-meta-mobile { display:none; }
+    .spell-meta-badge { font-size:0.68rem; padding:0.16rem 0.5rem; border:1px solid var(--j-border-col,#4a3510); border-radius:10px; color:var(--j-text,#e2cfa0); background:rgba(0,0,0,0.25); font-family:inherit; }
+    button.spell-meta-badge { cursor:pointer; transition:all 0.12s; }
+    button.spell-meta-badge:hover { border-color:var(--gold-dark,#8a6e1a); color:var(--gold,#c9a227); }
 
     /* ── Inventaire ── */
     .inv-controls { display:flex; gap:0.5rem; margin-bottom:0.75rem; flex-wrap:wrap; }
@@ -1551,6 +1559,9 @@
   /* Nom : prend toute la largeur disponible */
   #spell-tbody .exp-row td:nth-child(3) { flex:1; min-width:0; }
   #spell-tbody .exp-row td:nth-child(3) .atk-inp { width:100%; }
+  #spell-tbody .exp-row td:nth-child(3) .atk-dmg-wrap { width:100%; }
+  /* Badges méta (action · portée · dégâts · conc) visibles dans le déplié ▾ */
+  .spell-meta-mobile { display:flex; flex-wrap:wrap; gap:0.3rem; margin-bottom:0.4rem; }
   /* Masquer dégâts, type, portée, action — visibles dans la description via ▾ */
   #spell-tbody .exp-row td:nth-child(4),#spell-tbody .exp-row td:nth-child(5),
   #spell-tbody .exp-row td:nth-child(6),#spell-tbody .exp-row td:nth-child(7) { display:none !important; }
@@ -7834,9 +7845,10 @@ function doLongRest() {
   // PV max
   c.pvActuel = c.pvMax || 0;
   c.pvTemp = 0;
-  // Conditions off + clear concentration
+  // Conditions off + fin de la concentration active
+  // (on ne touche PAS à s.conc : c'est la propriété "sort de concentration" des sorts)
   c.conditions = [];
-  (c.spells || []).forEach(s => { s.conc = false; });
+  c.concentration = '';
   // Death saves remis à zéro
   c.mortSucces = 0; c.mortEchecs = 0;
   // Exhaustion -1 level
@@ -8271,22 +8283,31 @@ function renderSpells() {
         ? `<td style="text-align:center;"><span style="color:#555;font-size:0.7rem;" title="Cantrips are always available">✦</span></td>`
         : `<td style="text-align:center;"><button class="spell-prep-btn${isPrepared?' prepared':''}" data-prep-spell="${i}" title="${isPrepared?'Prepared — click to unprepare':'Not prepared — click to prepare'}">${isPrepared?'★':'☆'}</button></td>`;
 
+      const castBtn  = !isCantrip ? `<button class="spell-cast-btn" data-cast-spell="${i}" title="Lancer le sort (consomme un emplacement niv.${esc(s.level||'1')}+)">⚡</button>` : '';
+      const spellDice = s.degat ? `<button class="atk-dice-btn" data-spell-dice="${i}" title="Lancer ${esc(s.degat)}">🎲</button>` : '';
       tr.innerHTML = prepCell
         + `<td style="text-align:center;"><input class="atk-inp" data-spell="${i}" data-sk="level" value="${esc(s.level||'0')}" placeholder="0" style="width:38px;text-align:center;font-size:0.78rem;"></td>`
-        + `<td><input class="atk-inp" data-spell="${i}" data-sk="name" value="${esc(s.name||'')}" placeholder="Spell name"></td>`
-        + `<td><input class="atk-inp" data-spell="${i}" data-sk="degat" value="${esc(s.degat||'')}" placeholder="2d6" style="font-size:0.75rem;"></td>`
+        + `<td><div class="atk-dmg-wrap"><input class="atk-inp" data-spell="${i}" data-sk="name" value="${esc(s.name||'')}" placeholder="Spell name">${castBtn}</div></td>`
+        + `<td><div class="atk-dmg-wrap"><input class="atk-inp" data-spell="${i}" data-sk="degat" value="${esc(s.degat||'')}" placeholder="2d6" style="font-size:0.75rem;">${spellDice}</div></td>`
         + `<td><input class="atk-inp" data-spell="${i}" data-sk="typeDegat" value="${esc(s.typeDegat||'')}" placeholder="fire…" style="font-size:0.75rem;"></td>`
         + `<td><input class="atk-inp" data-spell="${i}" data-sk="portee" value="${esc(s.portee||'')}" placeholder="30ft" style="font-size:0.75rem;"></td>`
         + `<td><input class="atk-inp" data-spell="${i}" data-sk="action" value="${esc(s.action||'')}" placeholder="Action" style="font-size:0.75rem;"></td>`
-        + `<td style="text-align:center;"><button class="spell-conc-btn${isConc?' active':''}" data-conc-spell="${i}" title="Concentration">◉</button></td>`
+        + `<td style="text-align:center;"><button class="spell-conc-btn${isConc?' active':''}" data-conc-spell="${i}" title="Sort de concentration (propriété)">◉</button></td>`
         + `<td style="text-align:center;"><button class="exp-toggle${s._open?' open':''}" data-spell-toggle="${i}" title="Description">▾</button></td>`
         + `<td><button class="atk-del" data-del-spell="${i}" title="Delete">✕</button></td>`;
       frag.appendChild(tr);
 
       if (s._open) {
+        // Badges méta — surtout pour mobile où dégâts/portée/action sont masqués en colonnes
+        const metaBits = [
+          s.action ? `<span class="spell-meta-badge">⏱ ${esc(s.action)}</span>` : '',
+          s.portee ? `<span class="spell-meta-badge">⦾ ${esc(s.portee)}</span>` : '',
+          s.degat  ? `<button class="spell-meta-badge" data-spell-dice="${i}" title="Lancer les dégâts">⚔ ${esc(s.degat)}${s.typeDegat ? ' ' + esc(s.typeDegat) : ''} 🎲</button>` : '',
+          s.conc   ? `<span class="spell-meta-badge" style="color:#c090f8;border-color:rgba(160,112,224,0.4);">◉ Concentration</span>` : ''
+        ].filter(Boolean).join('');
         const dr = document.createElement('tr');
         dr.className = 'exp-desc-row';
-        dr.innerHTML = `<td colspan="10"><textarea class="exp-desc-area" data-spell="${i}" data-sk="desc" placeholder="Description, components, duration…">${esc(s.desc||'')}</textarea></td>`;
+        dr.innerHTML = `<td colspan="10">${metaBits ? `<div class="spell-meta-mobile">${metaBits}</div>` : ''}<textarea class="exp-desc-area" data-spell="${i}" data-sk="desc" placeholder="Description, components, duration…">${esc(s.desc||'')}</textarea></td>`;
         frag.appendChild(dr);
       }
     });
@@ -8663,18 +8684,65 @@ function convertCurrency() {
   triggerSave();
 }
 
-/* ══ Concentration tracker ══ */
+/* ══ Concentration tracker ══
+   s.conc = propriété du sort (c'est un sort de concentration).
+   c.concentration = nom du sort sur lequel on se concentre ACTIVEMENT
+   (affiché ici en bandeau, et côté DM via le badge 🎯). */
 function updateConcBanner() {
   const banner = document.getElementById('conc-banner');
   if (!banner) return;
-  const spell = (C().spells || []).find(s => s.conc);
-  if (spell) {
+  const active = C().concentration;
+  if (active) {
     banner.style.display = 'flex';
     const nameEl = document.getElementById('conc-spell-name');
-    if (nameEl) nameEl.textContent = spell.name || '(sort inconnu)';
+    if (nameEl) nameEl.textContent = active;
   } else {
     banner.style.display = 'none';
   }
+}
+
+function breakConcentration(save = true) {
+  const c = C();
+  c.concentration = '';
+  c.conditions = (c.conditions || []).filter(x => x !== 'Concentrating');
+  updateConcBanner(); renderConditions();
+  if (save) triggerSave();
+}
+document.getElementById('conc-break-btn')?.addEventListener('click', () => breakConcentration());
+
+/* ── ⚡ Lancer un sort : consomme un emplacement du bon niveau (ou supérieur),
+   gère la concentration, met à jour la grille de slots. ── */
+function castSpell(i) {
+  const c = C();
+  const s = (c.spells || [])[i];
+  if (!s) return;
+  const lvl = parseInt(s.level) || 0;
+  if (lvl < 1) return; // cantrips : rien à consommer
+  c.emplacementsSort = c.emplacementsSort || {};
+  c.emplacementsUtilises = c.emplacementsUtilises || {};
+  // Premier niveau >= lvl avec un emplacement disponible
+  let castLvl = 0;
+  for (let L = lvl; L <= 9; L++) {
+    const max  = parseInt(c.emplacementsSort[L]) || 0;
+    const used = parseInt(c.emplacementsUtilises[L]) || 0;
+    if (max - used > 0) { castLvl = L; break; }
+  }
+  if (!castLvl) { showToast(`✗ Aucun emplacement disponible (niv.${lvl}+)`); return; }
+  if (castLvl > lvl && !confirm(`Aucun emplacement niv.${lvl} disponible.\nUtiliser un emplacement de niveau ${castLvl} ?`)) return;
+  // Concentration : proposer de remplacer si un autre sort est actif
+  if (s.conc) {
+    if (c.concentration && c.concentration !== s.name &&
+        !confirm(`Concentration en cours sur « ${c.concentration} ».\nLa remplacer par « ${s.name || 'ce sort'} » ?`)) return;
+    c.concentration = s.name || 'Sort';
+    const conds = c.conditions || [];
+    if (!conds.includes('Concentrating')) conds.push('Concentrating');
+    c.conditions = conds;
+    renderConditions();
+  }
+  c.emplacementsUtilises[castLvl] = (parseInt(c.emplacementsUtilises[castLvl]) || 0) + 1;
+  const max = parseInt(c.emplacementsSort[castLvl]) || 0;
+  renderSpellSlots(); updateConcBanner(); triggerSave();
+  showToast(`✨ ${s.name || 'Sort'} — emplacement niv.${castLvl} utilisé (${Math.max(0, max - c.emplacementsUtilises[castLvl])}/${max} restants)`);
 }
 
 /* ══ Système Undo ══ */
@@ -11241,22 +11309,33 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (sp) sp.prepared = sp.prepared === false ? true : false;
       renderSpells(); updateSpellCalcs(); triggerSave(); return;
     }
-    // Concentration button
+    // Concentration : toggle de la PROPRIÉTÉ du sort (sort de concentration oui/non).
+    // La concentration ACTIVE est gérée par castSpell / breakConcentration (c.concentration).
     const concBtn = e.target.closest('[data-conc-spell]');
     if (concBtn) {
       const idx = parseInt(concBtn.dataset.concSpell);
-      const spells = C().spells || [];
-      const wasConc = !!spells[idx]?.conc;
-      spells.forEach(s => { s.conc = false; });
-      if (!wasConc) {
-        if (spells[idx]) spells[idx].conc = true;
-        const conds = C().conditions || [];
-        if (!conds.includes('Concentrating')) conds.push('Concentrating');
-        C().conditions = conds;
-      } else {
-        C().conditions = (C().conditions || []).filter(c => c !== 'Concentrating');
-      }
-      renderSpells(); renderConditions(); triggerSave();
+      const sp = (C().spells || [])[idx];
+      if (!sp) return;
+      sp.conc = !sp.conc;
+      // Si on retire la propriété du sort sur lequel on se concentrait → briser
+      if (!sp.conc && C().concentration === sp.name) breakConcentration(false);
+      renderSpells(); triggerSave();
+      return;
+    }
+    // ⚡ Lancer le sort (consomme un emplacement + concentration)
+    const castB = e.target.closest('[data-cast-spell]');
+    if (castB) { castSpell(parseInt(castB.dataset.castSpell)); return; }
+    // 🎲 Dés de dégâts du sort
+    const sDice = e.target.closest('[data-spell-dice]');
+    if (sDice) {
+      const s = (C().spells || [])[parseInt(sDice.dataset.spellDice)];
+      if (!s?.degat) return;
+      const res = rollDiceExpr(s.degat);
+      showDiceRoll((s.name || 'Sort') + ' · ' + s.degat, 0);
+      document.getElementById('dice-d20').textContent = res.total;
+      document.getElementById('dice-d20').className = 'dice-toast-d20';
+      document.getElementById('dice-total').textContent = res.detail !== String(res.total) ? res.detail : '';
+      return;
     }
   });
 
