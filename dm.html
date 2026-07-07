@@ -1497,9 +1497,11 @@ async function sbGetAllPlayers() {
 async function sbUpdateData(username, data) {
   // Bump de révision : permet au verrou optimiste côté joueur de détecter les écritures du DM
   data._rev = (data._rev || 0) + 1;
-  return sbFetch(`/rest/v1/players?username=eq.${encodeURIComponent(username)}`, {
+  const r = await sbFetch(`/rest/v1/players?username=eq.${encodeURIComponent(username)}`, {
     method:'PATCH', headers:{'Prefer':'return=minimal'}, body: JSON.stringify({data})
   });
+  if (!r.ok) throw new Error('Sauvegarde échouée : HTTP ' + r.status);
+  return r;
 }
 
 /* ══════════════════════════════════════════
@@ -2495,10 +2497,47 @@ function longRest(username, charId, key) {
 }
 
 const _pendingSaves = {};
+const _saveRetries  = {};
 function schedulePlayerSave(username, data) {
   _pendingSaves[username] = data;
   clearTimeout(saveTimers[username]);
-  saveTimers[username] = setTimeout(() => { delete _pendingSaves[username]; sbUpdateData(username, data); }, 800);
+  saveTimers[username] = setTimeout(() => _commitPlayerSave(username, data), 800);
+}
+/* Sauvegarde avec feedback : 3 tentatives espacées de 4s, puis toast d'échec.
+   Sans ça, une édition de panneau (PV, condition…) qui échouait partait en silence. */
+function _commitPlayerSave(username, data) {
+  delete _pendingSaves[username];
+  sbUpdateData(username, data).then(() => {
+    _saveRetries[username] = 0;
+  }).catch(() => {
+    const n = (_saveRetries[username] || 0) + 1;
+    _saveRetries[username] = n;
+    if (n < 3) {
+      dmToast(`⚠ Sauvegarde de ${username} échouée — nouvel essai…`, true);
+      _pendingSaves[username] = data;
+      saveTimers[username] = setTimeout(() => _commitPlayerSave(username, data), 4000);
+    } else {
+      _saveRetries[username] = 0;
+      dmToast(`✗ Impossible de sauvegarder ${username} — vérifie la connexion puis refais la modification`, true);
+      document.getElementById('poll-indicator').textContent = '⚠ Sauvegarde KO';
+    }
+  });
+}
+/* Toast DM (vert = info, rouge = erreur) */
+function dmToast(msg, isError = false) {
+  let t = document.getElementById('dm-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'dm-toast';
+    t.style.cssText = 'position:fixed;bottom:1.4rem;left:50%;transform:translateX(-50%);padding:0.5rem 1.2rem;border-radius:6px;font-size:0.82rem;z-index:9999;transition:opacity 0.4s;pointer-events:none;';
+    document.body.appendChild(t);
+  }
+  t.style.background  = isError ? 'rgba(70,15,15,0.97)' : 'rgba(20,40,22,0.97)';
+  t.style.border      = '1px solid ' + (isError ? 'var(--danger, #d94040)' : 'rgba(61,184,122,0.5)');
+  t.style.color       = isError ? '#f0a0a0' : '#8aba8a';
+  t.textContent = msg; t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.opacity = '0'; }, isError ? 5000 : 2600);
 }
 /* Flush à la fermeture : les éditions DM encore dans la fenêtre de debounce (800ms)
    partent en keepalive au lieu d'être perdues. */
