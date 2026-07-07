@@ -2582,7 +2582,8 @@ document.getElementById('init-add-new').addEventListener('click', addNewCombatan
 document.addEventListener('keydown', e => {
   if (!initState.open || !initState.combatants.length) return;
   const el = document.activeElement;
-  if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable)) return;
+  if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable
+      || el.getAttribute('role') === 'button')) return; // pips/dots focusés : Espace les active, pas le tour
   if (e.key === 'ArrowRight' || e.key === ' ') {
     e.preventDefault();
     document.getElementById('init-next').click();
@@ -2722,6 +2723,46 @@ function removeInitCombatant(key) {
   if (initState.currentIdx >= initState.combatants.length) initState.currentIdx = Math.max(0, initState.combatants.length - 1);
   renderInitChips();
 }
+
+/* ══════════════════════════════════════════
+   Accessibilité — enhancer générique
+   title → aria-label sur les boutons-icônes (📋 ⭐ ☀ ▾ ✕ ⎘ 🗑 ⏸ …) +
+   contrôles non-natifs (jets de mort, pips de ressources, badges de
+   conditions) focusables et activables au clavier. Le MutationObserver
+   couvre les re-renders des panneaux.
+══════════════════════════════════════════ */
+(function () {
+  const CLICKABLE = '.ds-dot, .res-pip, .cond-badge';
+  function enhance(root) {
+    if (!root.querySelectorAll) return;
+    root.querySelectorAll('button[title]:not([aria-label])').forEach(b =>
+      b.setAttribute('aria-label', b.title));
+    root.querySelectorAll(CLICKABLE).forEach(el => {
+      if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
+      if (!el.hasAttribute('role')) el.setAttribute('role', 'button');
+      if (!el.hasAttribute('aria-label')) {
+        const label = el.title || (el.classList.contains('cond-badge')
+          ? 'Retirer : ' + el.textContent.replace('✕', '').trim()
+          : el.textContent.trim());
+        if (label) el.setAttribute('aria-label', label);
+      }
+    });
+  }
+  enhance(document);
+  // Re-scan complet débouncé : couvre innerHTML et classes réassignées.
+  // Converge — enhance ne touche que les attributs absents.
+  let _a11yTimer = null;
+  new MutationObserver(() => {
+    clearTimeout(_a11yTimer);
+    _a11yTimer = setTimeout(() => enhance(document), 250);
+  }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+  document.addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches?.(CLICKABLE)) {
+      e.preventDefault();
+      e.target.click();
+    }
+  });
+})();
 
 /* ══════════════════════════════════════════
    Close menus on outside click
