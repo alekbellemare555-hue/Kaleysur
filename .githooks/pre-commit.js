@@ -36,7 +36,18 @@ if (errors) {
   process.exit(1);
 }
 
-/* ── 2. Bump auto du SW ── */
+/* ── 2. Smoke-tests des calculs purs (joueurs.html + dm.html) ──
+   Ne tourne que si un des deux fichiers est stagé — sinon rien n'a pu casser. */
+if (staged.some(f => f === 'joueurs.html' || f === 'dm.html')) {
+  try {
+    execSync(`node "${__dirname}/smoke-tests.js"`, { stdio: 'inherit' });
+  } catch {
+    console.error('Commit annulé (smoke-tests).');
+    process.exit(1);
+  }
+}
+
+/* ── 3. Bump auto du SW ── */
 const ASSET_RE = /^(joueurs\.html|dm\.html|index\.html|carte\.html|chronologie\.html|calendrier\.html|editeur-carte\.html|css\/|js\/|img\/|icons\/|lore\/|astoryem\/|ayakan\/|musiyav\/)|\.json$/;
 const assetsStaged = staged.some(f => ASSET_RE.test(f) && f !== 'manifest.json');
 
