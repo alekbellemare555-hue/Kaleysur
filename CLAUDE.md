@@ -170,7 +170,7 @@ openNewCharModal()        // ouvre la modal de création
 
 ## Service worker
 
-`service-worker.js` — `CACHE_NAME` est **bumpé automatiquement** par le hook pre-commit (`.githooks/pre-commit.js`) dès qu'un asset est stagé. Le hook vérifie aussi la syntaxe JS des blocs `<script>` des HTML stagés.
+`service-worker.js` — `CACHE_NAME` est **bumpé automatiquement** par le hook pre-commit (`.githooks/pre-commit.js`) dès qu'un asset est stagé. Le hook vérifie aussi la syntaxe JS des blocs `<script>` des HTML stagés, et exécute `.githooks/smoke-tests.js` (~240 assertions sur les calculs purs : PB, mods, slots multiclasse, rollDiceExpr, dmCalc) quand joueurs.html ou dm.html est stagé.
 
 ⚠️ Le hook nécessite `git config core.hooksPath .githooks` (une fois par clone/worktree).
 

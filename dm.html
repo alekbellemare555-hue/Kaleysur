@@ -1497,9 +1497,11 @@ async function sbGetAllPlayers() {
 async function sbUpdateData(username, data) {
   // Bump de révision : permet au verrou optimiste côté joueur de détecter les écritures du DM
   data._rev = (data._rev || 0) + 1;
-  return sbFetch(`/rest/v1/players?username=eq.${encodeURIComponent(username)}`, {
+  const r = await sbFetch(`/rest/v1/players?username=eq.${encodeURIComponent(username)}`, {
     method:'PATCH', headers:{'Prefer':'return=minimal'}, body: JSON.stringify({data})
   });
+  if (!r.ok) throw new Error('Sauvegarde échouée : HTTP ' + r.status);
+  return r;
 }
 
 /* ══════════════════════════════════════════
@@ -2495,10 +2497,47 @@ function longRest(username, charId, key) {
 }
 
 const _pendingSaves = {};
+const _saveRetries  = {};
 function schedulePlayerSave(username, data) {
   _pendingSaves[username] = data;
   clearTimeout(saveTimers[username]);
-  saveTimers[username] = setTimeout(() => { delete _pendingSaves[username]; sbUpdateData(username, data); }, 800);
+  saveTimers[username] = setTimeout(() => _commitPlayerSave(username, data), 800);
+}
+/* Sauvegarde avec feedback : 3 tentatives espacées de 4s, puis toast d'échec.
+   Sans ça, une édition de panneau (PV, condition…) qui échouait partait en silence. */
+function _commitPlayerSave(username, data) {
+  delete _pendingSaves[username];
+  sbUpdateData(username, data).then(() => {
+    _saveRetries[username] = 0;
+  }).catch(() => {
+    const n = (_saveRetries[username] || 0) + 1;
+    _saveRetries[username] = n;
+    if (n < 3) {
+      dmToast(`⚠ Sauvegarde de ${username} échouée — nouvel essai…`, true);
+      _pendingSaves[username] = data;
+      saveTimers[username] = setTimeout(() => _commitPlayerSave(username, data), 4000);
+    } else {
+      _saveRetries[username] = 0;
+      dmToast(`✗ Impossible de sauvegarder ${username} — vérifie la connexion puis refais la modification`, true);
+      document.getElementById('poll-indicator').textContent = '⚠ Sauvegarde KO';
+    }
+  });
+}
+/* Toast DM (vert = info, rouge = erreur) */
+function dmToast(msg, isError = false) {
+  let t = document.getElementById('dm-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'dm-toast';
+    t.style.cssText = 'position:fixed;bottom:1.4rem;left:50%;transform:translateX(-50%);padding:0.5rem 1.2rem;border-radius:6px;font-size:0.82rem;z-index:9999;transition:opacity 0.4s;pointer-events:none;';
+    document.body.appendChild(t);
+  }
+  t.style.background  = isError ? 'rgba(70,15,15,0.97)' : 'rgba(20,40,22,0.97)';
+  t.style.border      = '1px solid ' + (isError ? 'var(--danger, #d94040)' : 'rgba(61,184,122,0.5)');
+  t.style.color       = isError ? '#f0a0a0' : '#8aba8a';
+  t.textContent = msg; t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.opacity = '0'; }, isError ? 5000 : 2600);
 }
 /* Flush à la fermeture : les éditions DM encore dans la fenêtre de debounce (800ms)
    partent en keepalive au lieu d'être perdues. */
@@ -2582,7 +2621,8 @@ document.getElementById('init-add-new').addEventListener('click', addNewCombatan
 document.addEventListener('keydown', e => {
   if (!initState.open || !initState.combatants.length) return;
   const el = document.activeElement;
-  if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable)) return;
+  if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable
+      || el.getAttribute('role') === 'button')) return; // pips/dots focusés : Espace les active, pas le tour
   if (e.key === 'ArrowRight' || e.key === ' ') {
     e.preventDefault();
     document.getElementById('init-next').click();
@@ -2722,6 +2762,46 @@ function removeInitCombatant(key) {
   if (initState.currentIdx >= initState.combatants.length) initState.currentIdx = Math.max(0, initState.combatants.length - 1);
   renderInitChips();
 }
+
+/* ══════════════════════════════════════════
+   Accessibilité — enhancer générique
+   title → aria-label sur les boutons-icônes (📋 ⭐ ☀ ▾ ✕ ⎘ 🗑 ⏸ …) +
+   contrôles non-natifs (jets de mort, pips de ressources, badges de
+   conditions) focusables et activables au clavier. Le MutationObserver
+   couvre les re-renders des panneaux.
+══════════════════════════════════════════ */
+(function () {
+  const CLICKABLE = '.ds-dot, .res-pip, .cond-badge';
+  function enhance(root) {
+    if (!root.querySelectorAll) return;
+    root.querySelectorAll('button[title]:not([aria-label])').forEach(b =>
+      b.setAttribute('aria-label', b.title));
+    root.querySelectorAll(CLICKABLE).forEach(el => {
+      if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
+      if (!el.hasAttribute('role')) el.setAttribute('role', 'button');
+      if (!el.hasAttribute('aria-label')) {
+        const label = el.title || (el.classList.contains('cond-badge')
+          ? 'Retirer : ' + el.textContent.replace('✕', '').trim()
+          : el.textContent.trim());
+        if (label) el.setAttribute('aria-label', label);
+      }
+    });
+  }
+  enhance(document);
+  // Re-scan complet débouncé : couvre innerHTML et classes réassignées.
+  // Converge — enhance ne touche que les attributs absents.
+  let _a11yTimer = null;
+  new MutationObserver(() => {
+    clearTimeout(_a11yTimer);
+    _a11yTimer = setTimeout(() => enhance(document), 250);
+  }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+  document.addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches?.(CLICKABLE)) {
+      e.preventDefault();
+      e.target.click();
+    }
+  });
+})();
 
 /* ══════════════════════════════════════════
    Close menus on outside click

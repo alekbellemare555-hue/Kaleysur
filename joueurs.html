@@ -242,6 +242,14 @@
     .atk-dmg-wrap .atk-inp { flex:1; min-width:0; }
     .atk-dice-btn { background:none; border:none; cursor:pointer; font-size:0.85rem; padding:0 3px; line-height:1; color:#555; transition:color 0.12s; flex-shrink:0; }
     .atk-dice-btn:hover { color:var(--gold); }
+    /* ── Bouton lancer un sort (consomme un emplacement) ── */
+    .spell-cast-btn { background:rgba(201,169,110,0.08); border:1px solid var(--j-border-col,#4a3510); border-radius:4px; cursor:pointer; font-size:0.8rem; padding:1px 6px; line-height:1.3; color:var(--gold-dark,#8a6e1a); transition:all 0.12s; flex-shrink:0; }
+    .spell-cast-btn:hover { color:var(--gold,#c9a227); border-color:var(--gold-dark,#8a6e1a); background:rgba(201,169,110,0.15); }
+    /* ── Badges méta d'un sort déplié (mobile) ── */
+    .spell-meta-mobile { display:none; }
+    .spell-meta-badge { font-size:0.68rem; padding:0.16rem 0.5rem; border:1px solid var(--j-border-col,#4a3510); border-radius:10px; color:var(--j-text,#e2cfa0); background:rgba(0,0,0,0.25); font-family:inherit; }
+    button.spell-meta-badge { cursor:pointer; transition:all 0.12s; }
+    button.spell-meta-badge:hover { border-color:var(--gold-dark,#8a6e1a); color:var(--gold,#c9a227); }
 
     /* ── Inventaire ── */
     .inv-controls { display:flex; gap:0.5rem; margin-bottom:0.75rem; flex-wrap:wrap; }
@@ -1544,11 +1552,19 @@
   #spell-tbody .spell-lvl-header td { display:block; padding:4px 0 2px; }
   #spell-tbody .exp-row { display:flex !important; align-items:center; gap:6px; padding:7px 10px; border:1px solid var(--j-border-col,#2a1f0d); border-radius:4px; background:var(--j-panel,#1a1308); }
   #spell-tbody .exp-row td { padding:0; display:flex; align-items:center; }
+  /* Colonnes réelles : 1=★préparé 2=niveau 3=nom 4=dégâts 5=type 6=portée 7=action 8=conc 9=▾ 10=✕ */
   #spell-tbody .exp-row td:nth-child(1) { flex:0 0 32px; }
-  #spell-tbody .exp-row td:nth-child(2) { flex:1; min-width:0; }
-  /* Masquer dégâts, type, portée, action — accessibles via expand ▾ */
-  #spell-tbody .exp-row td:nth-child(3),#spell-tbody .exp-row td:nth-child(4),
-  #spell-tbody .exp-row td:nth-child(5),#spell-tbody .exp-row td:nth-child(6) { display:none !important; }
+  /* Niveau : redondant sur mobile (les sorts sont groupés par en-têtes de niveau) */
+  #spell-tbody .exp-row td:nth-child(2) { display:none !important; }
+  /* Nom : prend toute la largeur disponible */
+  #spell-tbody .exp-row td:nth-child(3) { flex:1; min-width:0; }
+  #spell-tbody .exp-row td:nth-child(3) .atk-inp { width:100%; }
+  #spell-tbody .exp-row td:nth-child(3) .atk-dmg-wrap { width:100%; }
+  /* Badges méta (action · portée · dégâts · conc) visibles dans le déplié ▾ */
+  .spell-meta-mobile { display:flex; flex-wrap:wrap; gap:0.3rem; margin-bottom:0.4rem; }
+  /* Masquer dégâts, type, portée, action — visibles dans la description via ▾ */
+  #spell-tbody .exp-row td:nth-child(4),#spell-tbody .exp-row td:nth-child(5),
+  #spell-tbody .exp-row td:nth-child(6),#spell-tbody .exp-row td:nth-child(7) { display:none !important; }
   #spell-tbody .exp-desc-row td { display:block; }
 }
 
@@ -1942,6 +1958,16 @@
 .dice-btn:hover { background:rgba(201,162,39,0.18); }
 .dice-tray-modifier { display:flex; align-items:center; gap:0.35rem; margin-top:0.15rem; font-size:0.75rem; color:#888; }
 .dice-tray-modifier input { width:48px; background:var(--j-input,#0a0703); border:1px solid var(--j-border-col,#3a2810); color:var(--j-text,#e2cfa0); font-size:0.82rem; text-align:center; padding:0.2rem; border-radius:2px; }
+/* ── Historique des jets ── */
+#roll-history { max-height:170px; overflow-y:auto; display:flex; flex-direction:column; gap:2px; scrollbar-width:thin; }
+.rh-row { display:flex; align-items:center; gap:0.45rem; font-size:0.72rem; padding:2px 4px; border-radius:3px; }
+.rh-row:nth-child(odd) { background:rgba(255,255,255,0.03); }
+.rh-time { color:#555; font-size:0.62rem; flex-shrink:0; }
+.rh-label { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--j-text,#e2cfa0); }
+.rh-total { font-family:'Cinzel',serif; color:var(--gold); flex-shrink:0; }
+.rh-total.nat20 { color:#e8c84a; text-shadow:0 0 8px rgba(232,200,74,0.5); }
+.rh-total.nat1 { color:var(--danger); }
+.rh-empty { color:#555; font-size:0.7rem; font-style:italic; }
 /* ── ADV / DIS roll mode ── */
 .dice-roll-mode { display:flex; gap:3px; margin-top:0.35rem; }
 .drm-btn { flex:1; padding:0.22rem 0.3rem; font-family:'Cinzel',serif; font-size:0.65rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; background:rgba(255,255,255,0.03); border:1px solid var(--j-border-col,#3a2810); color:#555; cursor:pointer; transition:all 0.15s; border-radius:2px; }
@@ -2774,6 +2800,8 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
         <button class="drm-btn norm active" id="drm-norm" title="Normal">NORM</button>
         <button class="drm-btn dis"  id="drm-dis"  title="Disadvantage — 2d20 keep lowest">DIS</button>
       </div>
+      <div class="dice-tray-title" style="margin-top:0.4rem;">Historique</div>
+      <div id="roll-history"><div class="rh-empty">Aucun jet pour l'instant.</div></div>
     </div>
 
     <!-- char-cards gardé caché (rendu mais non affiché, sert au JS existant) -->
@@ -7829,9 +7857,10 @@ function doLongRest() {
   // PV max
   c.pvActuel = c.pvMax || 0;
   c.pvTemp = 0;
-  // Conditions off + clear concentration
+  // Conditions off + fin de la concentration active
+  // (on ne touche PAS à s.conc : c'est la propriété "sort de concentration" des sorts)
   c.conditions = [];
-  (c.spells || []).forEach(s => { s.conc = false; });
+  c.concentration = '';
   // Death saves remis à zéro
   c.mortSucces = 0; c.mortEchecs = 0;
   // Exhaustion -1 level
@@ -8266,22 +8295,31 @@ function renderSpells() {
         ? `<td style="text-align:center;"><span style="color:#555;font-size:0.7rem;" title="Cantrips are always available">✦</span></td>`
         : `<td style="text-align:center;"><button class="spell-prep-btn${isPrepared?' prepared':''}" data-prep-spell="${i}" title="${isPrepared?'Prepared — click to unprepare':'Not prepared — click to prepare'}">${isPrepared?'★':'☆'}</button></td>`;
 
+      const castBtn  = !isCantrip ? `<button class="spell-cast-btn" data-cast-spell="${i}" title="Lancer le sort (consomme un emplacement niv.${esc(s.level||'1')}+)">⚡</button>` : '';
+      const spellDice = s.degat ? `<button class="atk-dice-btn" data-spell-dice="${i}" title="Lancer ${esc(s.degat)}">🎲</button>` : '';
       tr.innerHTML = prepCell
         + `<td style="text-align:center;"><input class="atk-inp" data-spell="${i}" data-sk="level" value="${esc(s.level||'0')}" placeholder="0" style="width:38px;text-align:center;font-size:0.78rem;"></td>`
-        + `<td><input class="atk-inp" data-spell="${i}" data-sk="name" value="${esc(s.name||'')}" placeholder="Spell name"></td>`
-        + `<td><input class="atk-inp" data-spell="${i}" data-sk="degat" value="${esc(s.degat||'')}" placeholder="2d6" style="font-size:0.75rem;"></td>`
+        + `<td><div class="atk-dmg-wrap"><input class="atk-inp" data-spell="${i}" data-sk="name" value="${esc(s.name||'')}" placeholder="Spell name">${castBtn}</div></td>`
+        + `<td><div class="atk-dmg-wrap"><input class="atk-inp" data-spell="${i}" data-sk="degat" value="${esc(s.degat||'')}" placeholder="2d6" style="font-size:0.75rem;">${spellDice}</div></td>`
         + `<td><input class="atk-inp" data-spell="${i}" data-sk="typeDegat" value="${esc(s.typeDegat||'')}" placeholder="fire…" style="font-size:0.75rem;"></td>`
         + `<td><input class="atk-inp" data-spell="${i}" data-sk="portee" value="${esc(s.portee||'')}" placeholder="30ft" style="font-size:0.75rem;"></td>`
         + `<td><input class="atk-inp" data-spell="${i}" data-sk="action" value="${esc(s.action||'')}" placeholder="Action" style="font-size:0.75rem;"></td>`
-        + `<td style="text-align:center;"><button class="spell-conc-btn${isConc?' active':''}" data-conc-spell="${i}" title="Concentration">◉</button></td>`
+        + `<td style="text-align:center;"><button class="spell-conc-btn${isConc?' active':''}" data-conc-spell="${i}" title="Sort de concentration (propriété)">◉</button></td>`
         + `<td style="text-align:center;"><button class="exp-toggle${s._open?' open':''}" data-spell-toggle="${i}" title="Description">▾</button></td>`
         + `<td><button class="atk-del" data-del-spell="${i}" title="Delete">✕</button></td>`;
       frag.appendChild(tr);
 
       if (s._open) {
+        // Badges méta — surtout pour mobile où dégâts/portée/action sont masqués en colonnes
+        const metaBits = [
+          s.action ? `<span class="spell-meta-badge">⏱ ${esc(s.action)}</span>` : '',
+          s.portee ? `<span class="spell-meta-badge">⦾ ${esc(s.portee)}</span>` : '',
+          s.degat  ? `<button class="spell-meta-badge" data-spell-dice="${i}" title="Lancer les dégâts">⚔ ${esc(s.degat)}${s.typeDegat ? ' ' + esc(s.typeDegat) : ''} 🎲</button>` : '',
+          s.conc   ? `<span class="spell-meta-badge" style="color:#c090f8;border-color:rgba(160,112,224,0.4);">◉ Concentration</span>` : ''
+        ].filter(Boolean).join('');
         const dr = document.createElement('tr');
         dr.className = 'exp-desc-row';
-        dr.innerHTML = `<td colspan="10"><textarea class="exp-desc-area" data-spell="${i}" data-sk="desc" placeholder="Description, components, duration…">${esc(s.desc||'')}</textarea></td>`;
+        dr.innerHTML = `<td colspan="10">${metaBits ? `<div class="spell-meta-mobile">${metaBits}</div>` : ''}<textarea class="exp-desc-area" data-spell="${i}" data-sk="desc" placeholder="Description, components, duration…">${esc(s.desc||'')}</textarea></td>`;
         frag.appendChild(dr);
       }
     });
@@ -8658,18 +8696,65 @@ function convertCurrency() {
   triggerSave();
 }
 
-/* ══ Concentration tracker ══ */
+/* ══ Concentration tracker ══
+   s.conc = propriété du sort (c'est un sort de concentration).
+   c.concentration = nom du sort sur lequel on se concentre ACTIVEMENT
+   (affiché ici en bandeau, et côté DM via le badge 🎯). */
 function updateConcBanner() {
   const banner = document.getElementById('conc-banner');
   if (!banner) return;
-  const spell = (C().spells || []).find(s => s.conc);
-  if (spell) {
+  const active = C().concentration;
+  if (active) {
     banner.style.display = 'flex';
     const nameEl = document.getElementById('conc-spell-name');
-    if (nameEl) nameEl.textContent = spell.name || '(sort inconnu)';
+    if (nameEl) nameEl.textContent = active;
   } else {
     banner.style.display = 'none';
   }
+}
+
+function breakConcentration(save = true) {
+  const c = C();
+  c.concentration = '';
+  c.conditions = (c.conditions || []).filter(x => x !== 'Concentrating');
+  updateConcBanner(); renderConditions();
+  if (save) triggerSave();
+}
+document.getElementById('conc-break-btn')?.addEventListener('click', () => breakConcentration());
+
+/* ── ⚡ Lancer un sort : consomme un emplacement du bon niveau (ou supérieur),
+   gère la concentration, met à jour la grille de slots. ── */
+function castSpell(i) {
+  const c = C();
+  const s = (c.spells || [])[i];
+  if (!s) return;
+  const lvl = parseInt(s.level) || 0;
+  if (lvl < 1) return; // cantrips : rien à consommer
+  c.emplacementsSort = c.emplacementsSort || {};
+  c.emplacementsUtilises = c.emplacementsUtilises || {};
+  // Premier niveau >= lvl avec un emplacement disponible
+  let castLvl = 0;
+  for (let L = lvl; L <= 9; L++) {
+    const max  = parseInt(c.emplacementsSort[L]) || 0;
+    const used = parseInt(c.emplacementsUtilises[L]) || 0;
+    if (max - used > 0) { castLvl = L; break; }
+  }
+  if (!castLvl) { showToast(`✗ Aucun emplacement disponible (niv.${lvl}+)`); return; }
+  if (castLvl > lvl && !confirm(`Aucun emplacement niv.${lvl} disponible.\nUtiliser un emplacement de niveau ${castLvl} ?`)) return;
+  // Concentration : proposer de remplacer si un autre sort est actif
+  if (s.conc) {
+    if (c.concentration && c.concentration !== s.name &&
+        !confirm(`Concentration en cours sur « ${c.concentration} ».\nLa remplacer par « ${s.name || 'ce sort'} » ?`)) return;
+    c.concentration = s.name || 'Sort';
+    const conds = c.conditions || [];
+    if (!conds.includes('Concentrating')) conds.push('Concentrating');
+    c.conditions = conds;
+    renderConditions();
+  }
+  c.emplacementsUtilises[castLvl] = (parseInt(c.emplacementsUtilises[castLvl]) || 0) + 1;
+  const max = parseInt(c.emplacementsSort[castLvl]) || 0;
+  renderSpellSlots(); updateConcBanner(); triggerSave();
+  showToast(`✨ ${s.name || 'Sort'} — emplacement niv.${castLvl} utilisé (${Math.max(0, max - c.emplacementsUtilises[castLvl])}/${max} restants)`);
 }
 
 /* ══ Système Undo ══ */
@@ -10973,11 +11058,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (diceBtn) {
       const atk = (C().attaques || [])[parseInt(diceBtn.dataset.atk)];
       if (!atk?.degats) return;
-      const res = rollDiceExpr(atk.degats);
-      showDiceRoll((atk.name || 'Damage') + ' · ' + atk.degats, 0);
-      document.getElementById('dice-d20').textContent = res.total;
-      document.getElementById('dice-d20').className = 'dice-toast-d20';
-      document.getElementById('dice-total').textContent = res.detail !== String(res.total) ? res.detail : '';
+      showDamageRoll((atk.name || 'Damage') + ' · ' + atk.degats, rollDiceExpr(atk.degats));
     }
   });
   document.getElementById('attack-tbody').addEventListener('change', e => {
@@ -11236,22 +11317,29 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (sp) sp.prepared = sp.prepared === false ? true : false;
       renderSpells(); updateSpellCalcs(); triggerSave(); return;
     }
-    // Concentration button
+    // Concentration : toggle de la PROPRIÉTÉ du sort (sort de concentration oui/non).
+    // La concentration ACTIVE est gérée par castSpell / breakConcentration (c.concentration).
     const concBtn = e.target.closest('[data-conc-spell]');
     if (concBtn) {
       const idx = parseInt(concBtn.dataset.concSpell);
-      const spells = C().spells || [];
-      const wasConc = !!spells[idx]?.conc;
-      spells.forEach(s => { s.conc = false; });
-      if (!wasConc) {
-        if (spells[idx]) spells[idx].conc = true;
-        const conds = C().conditions || [];
-        if (!conds.includes('Concentrating')) conds.push('Concentrating');
-        C().conditions = conds;
-      } else {
-        C().conditions = (C().conditions || []).filter(c => c !== 'Concentrating');
-      }
-      renderSpells(); renderConditions(); triggerSave();
+      const sp = (C().spells || [])[idx];
+      if (!sp) return;
+      sp.conc = !sp.conc;
+      // Si on retire la propriété du sort sur lequel on se concentrait → briser
+      if (!sp.conc && C().concentration === sp.name) breakConcentration(false);
+      renderSpells(); triggerSave();
+      return;
+    }
+    // ⚡ Lancer le sort (consomme un emplacement + concentration)
+    const castB = e.target.closest('[data-cast-spell]');
+    if (castB) { castSpell(parseInt(castB.dataset.castSpell)); return; }
+    // 🎲 Dés de dégâts du sort
+    const sDice = e.target.closest('[data-spell-dice]');
+    if (sDice) {
+      const s = (C().spells || [])[parseInt(sDice.dataset.spellDice)];
+      if (!s?.degat) return;
+      showDamageRoll((s.name || 'Sort') + ' · ' + s.degat, rollDiceExpr(s.degat));
+      return;
     }
   });
 
@@ -12203,6 +12291,23 @@ document.addEventListener('keydown', e => {
     t.classList.add('visible');
     clearTimeout(_diceTimer);
     _diceTimer = setTimeout(() => t.classList.remove('visible'), 2800);
+    window._logRoll?.(label + (bonus !== 0 ? ` (${bonus >= 0 ? '+' : ''}${bonus})` : ''), total, roll === 20 ? 'nat20' : roll === 1 ? 'nat1' : '');
+  };
+
+  /* Affichage d'un résultat déjà calculé (dégâts, dés du tray) — évite le hack
+     "showDiceRoll puis override du DOM" qui faussait le partage 📤 et consommait
+     l'inspiration sur de simples jets de dégâts. */
+  window.showDamageRoll = function(label, res, cls = '') {
+    const d20El = document.getElementById('dice-d20');
+    document.getElementById('dice-label').textContent = label;
+    d20El.textContent = res.total;
+    d20El.className = 'dice-toast-d20' + cls;
+    document.getElementById('dice-total').textContent = res.detail !== String(res.total) ? res.detail : '';
+    _lastShareText = '🎲 ' + label + ' → **' + res.total + '**';
+    t.classList.add('visible');
+    clearTimeout(_diceTimer);
+    _diceTimer = setTimeout(() => t.classList.remove('visible'), 2800);
+    window._logRoll?.(label, res.total, cls.trim());
   };
 
   // Délégation sur tout le document
@@ -12232,12 +12337,68 @@ document.getElementById('dice-tray')?.addEventListener('click', e => {
   const sides = parseInt(btn.dataset.sides);
   const mod = parseInt(document.getElementById('dice-tray-mod')?.value) || 0;
   const roll = Math.floor(Math.random() * sides) + 1;
-  showDiceRoll('d' + sides, mod);
-  // Override d20 display with actual die value
-  document.getElementById('dice-d20').textContent = roll;
-  document.getElementById('dice-d20').className = 'dice-toast-d20' + (sides === 20 && roll === 20 ? ' nat20' : sides === 20 && roll === 1 ? ' nat1' : '');
-  document.getElementById('dice-total').textContent = mod !== 0 ? `${roll} ${mod >= 0 ? '+' : ''}${mod} = ${roll + mod}` : '';
+  // Affichage direct : ne passe plus par showDiceRoll (qui consommait l'inspiration
+  // et lançait un d20 fantôme faussant le partage 📤)
+  showDamageRoll(
+    'd' + sides + (mod !== 0 ? ` ${mod >= 0 ? '+' : ''}${mod}` : ''),
+    { total: roll + mod, detail: mod !== 0 ? `${roll} ${mod >= 0 ? '+' : ''}${mod} = ${roll + mod}` : String(roll) },
+    sides === 20 && roll === 20 ? ' nat20' : sides === 20 && roll === 1 ? ' nat1' : ''
+  );
 });
+
+/* ── 11b. Historique des jets (30 derniers, session en cours) ── */
+const _rollLog = [];
+window._logRoll = function(label, total, cls) {
+  _rollLog.unshift({ label, total, cls: cls || '', at: new Date() });
+  if (_rollLog.length > 30) _rollLog.pop();
+  renderRollHistory();
+};
+function renderRollHistory() {
+  const box = document.getElementById('roll-history');
+  if (!box) return;
+  box.innerHTML = _rollLog.length ? _rollLog.map(r => `
+    <div class="rh-row">
+      <span class="rh-time">${r.at.toTimeString().slice(0,5)}</span>
+      <span class="rh-label" title="${esc(r.label)}">${esc(r.label)}</span>
+      <span class="rh-total${r.cls ? ' ' + r.cls : ''}">${esc(String(r.total))}</span>
+    </div>`).join('') : '<div class="rh-empty">Aucun jet pour l\'instant.</div>';
+}
+
+/* ── 11c. Accessibilité — enhancer générique ──
+   1) Copie title → aria-label sur les boutons-icônes qui n'en ont pas (✦ ↩ ✏ ⚄ ⚡ 🎲 ◉ …)
+   2) Rend les contrôles non-natifs (roll-triggers, death-dots) focusables et
+      activables au clavier (Enter/Espace).
+   Un MutationObserver couvre les re-renders — aucun template à modifier. */
+(function () {
+  const CLICKABLE = '.roll-trigger, .death-dot';
+  function enhance(root) {
+    if (!root.querySelectorAll) return;
+    root.querySelectorAll('button[title]:not([aria-label])').forEach(b =>
+      b.setAttribute('aria-label', b.title));
+    root.querySelectorAll(CLICKABLE).forEach(el => {
+      if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
+      if (!el.hasAttribute('role')) el.setAttribute('role', 'button');
+      if (!el.hasAttribute('aria-label')) {
+        const label = el.dataset.rollLabel || el.title;
+        if (label) el.setAttribute('aria-label', label);
+      }
+    });
+  }
+  enhance(document);
+  // Re-scan complet débouncé : couvre les innerHTML ET les classes assignées sur des
+  // éléments existants (ex. hero). Converge — enhance ne touche que les attributs absents.
+  let _a11yTimer = null;
+  new MutationObserver(() => {
+    clearTimeout(_a11yTimer);
+    _a11yTimer = setTimeout(() => enhance(document), 250);
+  }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+  document.addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches?.(CLICKABLE)) {
+      e.preventDefault();
+      e.target.click();
+    }
+  });
+})();
 
 /* ── 12. Skill search filter ── */
 document.getElementById('skill-filter')?.addEventListener('input', () => { if (playerData) renderSkills(); });
@@ -12294,10 +12455,7 @@ document.addEventListener('dblclick', e => {
   const res = rollDiceExpr(expr);
   const nameEl = el.closest('tr')?.querySelector('[data-ak="name"],[data-sk="name"]');
   const name = nameEl?.value || 'Damage';
-  showDiceRoll(name + ' · ' + expr, 0);
-  document.getElementById('dice-d20').textContent = res.total;
-  document.getElementById('dice-d20').className = 'dice-toast-d20';
-  document.getElementById('dice-total').textContent = res.detail !== String(res.total) ? res.detail : '';
+  showDamageRoll(name + ' · ' + expr, res);
 });
 
 /* ── 15. ADV / DIS roll mode + inspiration auto-advantage ── */
@@ -12340,6 +12498,7 @@ window._rollMode = 'normal';
       t.classList.add('visible');
       clearTimeout(window._diceTimerAdv);
       window._diceTimerAdv = setTimeout(() => t.classList.remove('visible'), 3200);
+      window._logRoll?.((mode === 'adv' ? '⬆ ' : '⬇ ') + label + ` (${r1},${r2})` + (bonusNum !== 0 ? ` ${bonusNum >= 0 ? '+' : ''}${bonusNum}` : ''), total, roll === 20 ? 'nat20' : roll === 1 ? 'nat1' : '');
     } else {
       _orig(label, bonus);
     }
