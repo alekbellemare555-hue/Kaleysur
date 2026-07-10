@@ -222,6 +222,33 @@ input,select{font-family:inherit;color-scheme:dark;}
 .panel-name-input:focus{border-bottom-color:var(--gold);background:rgba(232,201,106,0.06);}
 
 /* ── Friendly NPC sidebar ── */
+/* ── Bibliothèque de rencontres ── */
+#encounter-section{border-top:1px solid var(--border-bright);padding:0.6rem 0.8rem 0.55rem;}
+#encounter-section-title{
+  font-family:'Cinzel',serif;color:var(--gold);font-size:0.65rem;
+  letter-spacing:0.12em;text-transform:uppercase;
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:0.5rem;padding-bottom:0.35rem;border-bottom:1px solid var(--border);
+}
+#btn-save-encounter{
+  background:var(--gold-glow);border:1px solid var(--border-gold);
+  color:var(--gold);font-size:0.65rem;padding:0.15rem 0.5rem;border-radius:4px;transition:all 0.1s;
+}
+#btn-save-encounter:hover{background:rgba(232,201,106,0.18);box-shadow:0 0 8px rgba(232,201,106,0.15);}
+#encounter-list{display:flex;flex-direction:column;gap:0.2rem;}
+.enc-entry{
+  display:flex;align-items:center;gap:0.4rem;padding:0.3rem 0.45rem;
+  font-size:0.74rem;color:var(--text-mid);border-left:2px solid transparent;
+  border-radius:0 4px 4px 0;transition:all 0.12s;
+}
+.enc-entry:hover{background:var(--gold-glow);border-left-color:var(--gold-dark);}
+.enc-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.enc-count{font-size:0.65rem;color:var(--text-dim);flex-shrink:0;}
+.enc-btn{background:none;border:1px solid var(--border-bright);border-radius:4px;color:var(--text-dim);font-size:0.68rem;padding:0.1rem 0.4rem;transition:all 0.12s;flex-shrink:0;}
+.enc-btn.launch:hover{color:var(--gold);border-color:var(--border-gold);background:var(--gold-glow);}
+.enc-btn.del:hover{color:var(--danger);border-color:var(--danger-bright);background:var(--danger-dim);}
+.enc-empty{font-size:0.7rem;color:var(--text-dim);font-style:italic;}
+
 #friendly-section{border-top:1px solid var(--border-bright);padding:0.6rem 0.8rem 0.55rem;}
 #friendly-section-title{
   display:flex;align-items:center;justify-content:space-between;
@@ -766,7 +793,10 @@ body.wiki-sidebar-hidden #screen-dm{margin-left:0;transition:margin-left 0.3s ea
 }
 #player-panels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:0.9rem;}
 #monster-panels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:0.9rem;}
-body.compact #player-panels-grid,body.compact #monster-panels-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.6rem;}
+#combat-panels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:0.9rem;}
+body.compact #player-panels-grid,body.compact #monster-panels-grid,body.compact #combat-panels-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.6rem;}
+.combat-section-header .panels-section-label{color:var(--gold);text-shadow:0 0 12px rgba(232,201,106,0.25);}
+.combat-section-header{border-bottom-color:var(--border-gold);}
 
 
 /* Empty state */
@@ -1257,6 +1287,15 @@ body.sidebar-open #sidebar-backdrop{display:block;}
         </div>
       </div>
 
+      <!-- Encounters (bibliothèque de rencontres préparées) -->
+      <div id="encounter-section">
+        <div id="encounter-section-title">
+          <span>📜 Rencontres</span>
+          <button id="btn-save-encounter" title="Sauvegarder les monstres/PNJ dont le panneau est ouvert comme rencontre réutilisable">💾 Sauver</button>
+        </div>
+        <div id="encounter-list"></div>
+      </div>
+
       <!-- References -->
       <div id="ref-section" class="collapsed">
         <div id="ref-section-header">
@@ -1292,6 +1331,14 @@ body.sidebar-open #sidebar-backdrop{display:block;}
         <div id="empty-state">
           <div class="empty-icon">⚔</div>
           <p>Sélectionne un personnage dans la barre latérale<br>pour ouvrir un panneau de combat.</p>
+        </div>
+        <div id="combat-panels-section" style="display:none;">
+          <div class="panels-section-header combat-section-header">
+            <span class="panels-section-icon">⚔</span>
+            <span class="panels-section-label">Combat — ordre d'initiative</span>
+            <span class="panels-section-count" id="combat-panels-count"></span>
+          </div>
+          <div id="combat-panels-grid"></div>
         </div>
         <div id="player-panels-section" style="display:none;">
           <div class="panels-section-header">
@@ -1380,6 +1427,7 @@ let _expandedMonsterPanels = new Set(); // monster/friendly panels with full det
 let expandedPlayers= new Set();
 let localMonsters  = {};       // id → {id,name,avatar,hpMax,hp,ac,initiative,conditions}
 let localFriendlies= {};       // id → {id,name,avatar,hpMax,hp,ac,initiative,conditions}
+let encounters     = {};       // id → {id,name,monsters:[tpl],friendlies:[tpl]} — bibliothèque de rencontres
 let monsterCounter = 0;
 let friendlyCounter= 0;
 let pollTimer      = null;
@@ -1417,6 +1465,7 @@ function saveDmState() {
       compactMode,
       sidebarCollapsed: document.body.classList.contains('dm-sidebar-collapsed'),
       panelNotes: _panelNotes,
+      encounters,
       initState: {
         ...initState,
         // Ne pas persister les joueurs dans l'initiative — seulement monstres et NPCs
@@ -1437,6 +1486,7 @@ function restoreDmState() {
     if (s.friendlyCounter != null) friendlyCounter = s.friendlyCounter;
     if (s.expandedPlayers) expandedPlayers = new Set(s.expandedPlayers);
     if (s.panelNotes) Object.assign(_panelNotes, s.panelNotes);
+    if (s.encounters) { encounters = s.encounters; renderEncounters(); }
     if (typeof s.compactMode === 'boolean') {
       compactMode = s.compactMode;
       document.body.classList.toggle('compact', compactMode);
@@ -1821,6 +1871,87 @@ function createFriendly() {
   saveDmState();
 }
 
+/* ══════════════════════════════════════════
+   Bibliothèque de rencontres — prépare tes combats avant la session,
+   lance-les d'un clic (invoque les créatures + roll d'initiative).
+══════════════════════════════════════════ */
+function saveCurrentEncounter() {
+  const openM = Object.keys(openPanels).filter(k => k.startsWith('m::')).map(k => localMonsters[k.slice(3)]).filter(Boolean);
+  const openF = Object.keys(openPanels).filter(k => k.startsWith('f::')).map(k => localFriendlies[k.slice(3)]).filter(Boolean);
+  if (!openM.length && !openF.length) {
+    dmToast('Ouvre d\'abord les panneaux des monstres/PNJ à inclure dans la rencontre', true);
+    return;
+  }
+  const name = prompt('Nom de la rencontre :', '');
+  if (!name || !name.trim()) return;
+  const tpl = e => ({ name: e.name, avatar: e.avatar, hpMax: e.hpMax, ac: e.ac, initiative: parseInt(e.initiative) || 0 });
+  const id = 'enc-' + Date.now();
+  encounters[id] = { id, name: name.trim(), monsters: openM.map(tpl), friendlies: openF.map(tpl) };
+  renderEncounters();
+  saveDmState();
+  dmToast(`💾 « ${name.trim()} » sauvegardée (${openM.length + openF.length} créature${openM.length + openF.length > 1 ? 's' : ''})`);
+}
+
+function launchEncounter(id) {
+  const enc = encounters[id];
+  if (!enc) return;
+  const spawn = (tplList, store, prefix, nextId, type) => {
+    tplList.forEach(tpl => {
+      const nid = nextId();
+      store[nid] = { ...tpl, id: nid, hp: tpl.hpMax, conditions: [] };
+      openPanel(prefix + nid);
+      const initVal = Math.floor(Math.random() * 20) + 1 + (parseInt(tpl.initiative) || 0);
+      initState.combatants.push({ id: prefix + nid, label: tpl.name, avatar: tpl.avatar, type, initVal, hp: tpl.hpMax, hpMax: tpl.hpMax, delayed: false });
+    });
+  };
+  spawn(enc.monsters   || [], localMonsters,   'm::', () => 'monster-'  + (++monsterCounter),  'monster');
+  spawn(enc.friendlies || [], localFriendlies, 'f::', () => 'friendly-' + (++friendlyCounter), 'friendly');
+  initState.combatants.sort((a, b) => b.initVal - a.initVal);
+  if (!initState.open) {
+    initState.open = true;
+    document.getElementById('init-bar').className = 'open';
+    document.getElementById('btn-init-open').classList.add('active');
+  }
+  renderMonsterSidebar();
+  renderFriendlySidebar();
+  renderInitChips();
+  saveDmState();
+  dmToast(`⚔ « ${enc.name} » lancée !`);
+}
+
+function deleteEncounter(id) {
+  const enc = encounters[id];
+  if (!enc || !confirm(`Supprimer la rencontre « ${enc.name} » ?`)) return;
+  delete encounters[id];
+  renderEncounters();
+  saveDmState();
+}
+
+function renderEncounters() {
+  const list = document.getElementById('encounter-list');
+  if (!list) return;
+  const ids = Object.keys(encounters);
+  if (!ids.length) {
+    list.innerHTML = '<div class="enc-empty">Aucune rencontre. Ouvre des panneaux de monstres puis 💾 Sauver.</div>';
+    return;
+  }
+  list.innerHTML = ids.map(id => {
+    const e = encounters[id];
+    const n = (e.monsters?.length || 0) + (e.friendlies?.length || 0);
+    const detail = [...(e.monsters || []), ...(e.friendlies || [])].map(t => t.avatar).join('');
+    return `<div class="enc-entry">
+      <span class="enc-name" title="${esc(e.name)} — ${esc(detail)}">${esc(e.name)}</span>
+      <span class="enc-count">×${n}</span>
+      <button class="enc-btn launch" data-launch-enc="${esc(id)}" title="Lancer la rencontre (invoque tout + initiative)">▶</button>
+      <button class="enc-btn del" data-del-enc="${esc(id)}" title="Supprimer">✕</button>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('[data-launch-enc]').forEach(b => b.addEventListener('click', () => launchEncounter(b.dataset.launchEnc)));
+  list.querySelectorAll('[data-del-enc]').forEach(b => b.addEventListener('click', () => deleteEncounter(b.dataset.delEnc)));
+}
+document.getElementById('btn-save-encounter')?.addEventListener('click', saveCurrentEncounter);
+renderEncounters();
+
 /* ── References section ── */
 (function initReferences() {
   const header = document.getElementById('ref-section-header');
@@ -1928,17 +2059,55 @@ function closePanel(key) {
 }
 
 function updateEmptyState() {
-  const keys = Object.keys(openPanels);
-  const playerKeys   = keys.filter(k => !k.startsWith('m::') && !k.startsWith('f::'));
-  const monsterKeys  = keys.filter(k => k.startsWith('m::'));
-  const friendlyKeys = keys.filter(k => k.startsWith('f::'));
-  document.getElementById('empty-state').style.display = keys.length ? 'none' : '';
-  document.getElementById('player-panels-section').style.display   = playerKeys.length   ? '' : 'none';
-  document.getElementById('monster-panels-section').style.display  = monsterKeys.length  ? '' : 'none';
-  document.getElementById('friendly-panels-section').style.display = friendlyKeys.length ? '' : 'none';
-  document.getElementById('player-panels-count').textContent   = playerKeys.length   || '';
-  document.getElementById('monster-panels-count').textContent  = monsterKeys.length  || '';
-  document.getElementById('friendly-panels-count').textContent = friendlyKeys.length || '';
+  // Compte les enfants réels des grilles : en mode combat, les panneaux des
+  // combattants vivent dans la grille combat, plus dans leur section d'origine.
+  const count = id => document.getElementById(id).children.length;
+  const pc = count('player-panels-grid'), mc = count('monster-panels-grid'),
+        fc = count('friendly-panels-grid'), cc = count('combat-panels-grid');
+  document.getElementById('empty-state').style.display = Object.keys(openPanels).length ? 'none' : '';
+  document.getElementById('combat-panels-section').style.display   = cc ? '' : 'none';
+  document.getElementById('player-panels-section').style.display   = pc ? '' : 'none';
+  document.getElementById('monster-panels-section').style.display  = mc ? '' : 'none';
+  document.getElementById('friendly-panels-section').style.display = fc ? '' : 'none';
+  document.getElementById('combat-panels-count').textContent   = cc || '';
+  document.getElementById('player-panels-count').textContent   = pc || '';
+  document.getElementById('monster-panels-count').textContent  = mc || '';
+  document.getElementById('friendly-panels-count').textContent = fc || '';
+}
+
+/* ══ Mode combat : les panneaux des combattants sont regroupés dans une grille
+   unique triée par ordre d'initiative — le MJ n'a plus à scanner trois sections
+   pour trouver à qui c'est le tour. Fin du combat → chacun retourne dans sa section. ══ */
+function returnPanelToSection(key) {
+  const el = document.getElementById('panel-' + key);
+  if (!el) return;
+  const gridId = key.startsWith('m::') ? 'monster-panels-grid'
+               : key.startsWith('f::') ? 'friendly-panels-grid' : 'player-panels-grid';
+  const grid = document.getElementById(gridId);
+  if (el.parentElement !== grid) grid.appendChild(el);
+}
+
+function syncCombatLayout() {
+  const combatOn   = initState.open && initState.combatants.length > 0;
+  const combatGrid = document.getElementById('combat-panels-grid');
+  document.body.classList.toggle('combat-mode', combatOn);
+  if (combatOn) {
+    // Ordre souhaité = ordre d'initiative (combatants déjà triés par initVal desc)
+    const desired = initState.combatants.map(ct => 'panel-' + ct.id)
+      .filter(id => document.getElementById(id));
+    const current = [...combatGrid.children].map(el => el.id);
+    // Ne réordonner que si nécessaire — un appendChild fait perdre le focus d'un input en cours d'édition
+    if (JSON.stringify(desired) !== JSON.stringify(current)) {
+      desired.forEach(id => combatGrid.appendChild(document.getElementById(id)));
+    }
+    // Panneaux ouverts hors initiative → dans leur section d'origine
+    Object.keys(openPanels).forEach(k => {
+      if (!initState.combatants.some(ct => ct.id === k)) returnPanelToSection(k);
+    });
+  } else {
+    [...combatGrid.children].forEach(el => returnPanelToSection(el.id.replace('panel-', '')));
+  }
+  updateEmptyState();
 }
 
 function refreshOpenPanels() {
@@ -2567,6 +2736,8 @@ document.getElementById('btn-init-open').addEventListener('click', () => {
   document.getElementById('init-bar').className = initState.open ? 'open' : 'collapsed';
   document.getElementById('btn-init-open').classList.toggle('active', initState.open);
   if (initState.open && !initState.combatants.length) buildInitCombatants();
+  syncCombatLayout();
+  syncActivePanelHighlight();
   saveDmState();
 });
 document.getElementById('init-toggle').addEventListener('click', () => {
@@ -2574,6 +2745,8 @@ document.getElementById('init-toggle').addEventListener('click', () => {
   document.getElementById('init-bar').className = initState.open ? 'open' : 'collapsed';
   document.getElementById('btn-init-open').classList.toggle('active', initState.open);
   document.getElementById('init-toggle').querySelector('.arrow').style.transform = initState.open ? 'rotate(90deg)' : '';
+  syncCombatLayout();
+  syncActivePanelHighlight();
   saveDmState();
 });
 document.getElementById('init-next').addEventListener('click', () => {
@@ -2745,6 +2918,7 @@ function renderInitChips() {
     });
     chips.appendChild(chip);
   });
+  syncCombatLayout();
   syncActivePanelHighlight();
 }
 
