@@ -2480,6 +2480,105 @@ function ok(cond, label) {
   }
 }
 
+/* ══════════ Plaques 3D du calendrier (tools/calendrier-3d.js) ══════════ */
+{
+  /* Le générateur se charge depuis la version stagée, comme tout le reste : le
+     shebang doit sauter, new Function ne l'avale pas. */
+  const moduleFactice = { exports: {} };
+  new Function('require', 'module', '__dirname',
+    staged('tools/calendrier-3d.js').replace(/^#![^\n]*\n/, '')
+  )(require, moduleFactice, 'tools');
+  const G = moduleFactice.exports;
+
+  /* La police se valide toute seule au chargement : dix-sept glyphes déformés
+     étaient passés tant qu'un rembourrage silencieux corrigeait la taille. Si
+     le module se charge, c'est que les 39 glyphes font bien 7 rangs de 5. */
+  ok(Object.keys(G.GLYPHES).length >= 39, 'police : les glyphes sont là');
+  eq(G.pixelsGlyphe('1').length, 12, 'police : le 1 a ses douze pixels');
+  ok(G.pixelsGlyphe('É').length > G.pixelsGlyphe('E').length,
+     'police : É porte bien un accent de plus que E');
+  eq(G.pixelsGlyphe('@'), null, 'police : un caractère inconnu ne dessine rien');
+
+  const cal = G.analyser(staged('calendrier.html'));
+
+  /* Le générateur LIT le calendrier du site. Si ces chiffres bougent, c'est le
+     monde qui a changé et les plaques doivent suivre — pas l'inverse. */
+  eq(cal.mois.length, 9, 'calendrier : 9 mois');
+  eq(cal.total, 333, 'calendrier : 333 jours');
+  eq(cal.semaine.length, 9, 'calendrier : semaine de 9 jours');
+  eq(cal.lunes.length, 3, 'calendrier : 3 lunes');
+  eq(cal.semaine.length % cal.lunes.length, 0,
+     'calendrier : la semaine se divise en lunes — toute la grille en dépend');
+
+  /* Les décalages de début de mois sont ce qui place chaque jour dans sa
+     colonne. Le site les calcule de son côté (MONTH_STARTS) : les deux doivent
+     tomber pareil, sinon la plaque imprimée contredit la page. */
+  const depuisLaPage = G.litteral(staged('calendrier.html'), 'MONTHS')
+    .reduce((acc, m) => { acc.out.push(acc.cum % 9); acc.cum += m.days; return acc; },
+            { cum: 0, out: [] }).out;
+  eq(cal.mois.map(m => m.depart), depuisLaPage, 'calendrier : décalages de mois');
+
+  /* Le Zénith est au jour absolu 190, et la page le décrit comme « 3 Soillse ».
+     C'est le seul jour marqué du calendrier : s'il atterrit ailleurs, le cercle
+     gravé se retrouve sur le mauvais chiffre. */
+  const soillse = cal.mois[5];
+  eq(soillse.name, 'Soillse', 'Zénith : le mois attendu');
+  eq(190 - soillse.premierJourAbsolu + 1, 3, 'Zénith : troisième jour de Soillse');
+
+  /* Chaque jour du mois doit occuper une case, une seule, et dans la grille. */
+  cal.mois.forEach((m, i) => {
+    const cases = new Set();
+    const lignes = Math.ceil((m.depart + m.days) / 9);
+    for (let j = 1; j <= m.days; j++) {
+      const idx = m.depart + j - 1;
+      const col = idx % 9, ligne = Math.floor(idx / 9);
+      ok(ligne < lignes, m.name + ' : le jour ' + j + ' déborde de la grille');
+      ok(!cases.has(idx), m.name + ' : deux jours dans la même case');
+      cases.add(idx);
+    }
+    eq(cases.size, m.days, m.name + ' : ' + m.days + ' cases occupées');
+  });
+
+  /* Géométrie : on ne génère que deux mois par mode. Le contrôle est identique
+     pour tous et chaque plaque coûte une seconde — Réolta est le mois le plus
+     long (41 jours, 5 lignes), Soillse le plus court et le seul à porter un
+     jour marqué. Les deux cas particuliers sont donc couverts. */
+  [['saillant', {}], ['creusé', { creux: true }]].forEach(([mode, opts]) => {
+    [0, 5].forEach(i => {
+      const p = G.plaque(cal, i, opts);
+      const v = G.verifier(p);
+      ok(v.ok, p.mois.name + ' (' + mode + ') : ' + (v.ennuis.join(' · ') || 'ok'));
+      eq(p.maille.tri.length % 12, 0, p.mois.name + ' (' + mode + ') : maillage en boîtes');
+      ok(p.L <= 220 && p.H <= 220, p.mois.name + ' : tient sur un plateau de 220 mm');
+      ok(p.maille.tri.length > 1000, p.mois.name + ' (' + mode + ') : la plaque n\'est pas vide');
+
+      /* Le STL binaire annonce son compte de triangles à l'octet 80. Un fichier
+         qui ment là-dessus s'ouvre sur une pièce tronquée. */
+      const buf = p.maille.stl('test');
+      eq(buf.readUInt32LE(80), p.maille.tri.length, p.mois.name + ' : en-tête STL');
+      eq(buf.length, 84 + p.maille.tri.length * 50, p.mois.name + ' : taille du fichier STL');
+    });
+  });
+
+  /* Les contrôles doivent ATTRAPER, pas seulement passer : un test de maillage
+     qui ne casse jamais ne protège de rien. On casse donc exprès. */
+  {
+    const p = G.plaque(cal, 0, {});
+    const t = p.maille.tri[0];
+    p.maille.tri[0] = [t[0], t[2], t[1]];
+    ok(!G.verifier(p).ok, 'contrôle : une face retournée est refusée');
+  }
+  {
+    const p = G.plaque(cal, 0, {});
+    p.maille.tri.splice(20, 1);
+    ok(!G.verifier(p).ok, 'contrôle : une face manquante est refusée');
+  }
+  ok(!G.verifier(G.plaque(cal, 0, { relief: 0 })).ok,
+     'contrôle : un relief nul est refusé — la plaque sortirait vierge');
+  ok(!G.verifier(G.plaque(cal, 0, { cellule: 26 })).ok,
+     'contrôle : une plaque plus grande que le plateau est signalée');
+}
+
 /* ══════════ Verdict ══════════ */
 if (failures.length) {
   console.error(`✗ Smoke-tests : ${failures.length} échec(s) sur ${assertions} assertions`);

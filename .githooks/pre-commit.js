@@ -26,7 +26,10 @@ for (const f of staged) {
         catch (e) { console.error(`✗ ${f} — bloc <script> ${i}: ${e.message}`); errors++; }
       });
     } else if (/\.js$/.test(f) && f !== 'service-worker.js') {
-      try { new Function(stagedContent(f)); }
+      /* Node tolère un shebang en tête d'un script exécutable, new Function non :
+         sans ce retrait, un outil en ligne de commande parfaitement valide se
+         faisait refuser au commit. */
+      try { new Function(stagedContent(f).replace(/^#![^\n]*\n/, '')); }
       catch (e) { console.error(`✗ ${f}: ${e.message}`); errors++; }
     }
   } catch { /* fichier supprimé/binaire : ignorer */ }
@@ -63,7 +66,10 @@ if (errors) {
    dans cette liste, changer une table de classe ne déclenchait plus rien. */
 const TESTE = ['joueurs.html', 'dm.html', 'js/rules-2024.js', 'js/compendium.js',
                'spells-2024.json', 'service-worker.js', 'css/style.css', 'js/theme.js',
-               '.githooks/smoke-tests.js'];
+               '.githooks/smoke-tests.js',
+               // Le générateur de plaques 3D lit calendrier.html : changer l'un
+               // sans vérifier l'autre donne des plaques qui contredisent le site.
+               'calendrier.html', 'tools/calendrier-3d.js'];
 if (staged.some(f => TESTE.includes(f))) {
   try {
     execSync(`node "${__dirname}/smoke-tests.js"`, { stdio: 'inherit' });
