@@ -52,6 +52,16 @@ function ok(cond, label) {
     extract(J, 'function getClasses(c)'),
     extract(J, 'function getTotalLevel(c)'),
     extract(R, 'const MULTICLASS_SLOTS'),
+    extract(R, 'const FULL_CASTER_SLOTS'),
+    extract(R, 'const HALF_CASTER_SLOTS'),
+    extract(R, 'const THIRD_CASTER_SLOTS'),
+    extract(R, 'const WARLOCK_SLOTS'),
+    extract(R, 'const ARTIFICER_SLOTS'),
+    extract(R, 'const LANCEURS'),
+    extract(R, 'function typeLanceur(classe, sousClasse)'),
+    extract(R, 'function emplacementsClasse(classe, sousClasse, niveau)'),
+    extract(R, 'function niveauLanceurEffectif(classes)'),
+    extract(R, 'function emplacementsPersonnage(classes)'),
     extract(J, 'function computeMulticlassSlots(c)'),
     extract(R, 'const STARTING_ARMOR'),
     extract(R, 'const STARTING_WEAPONS'),
@@ -131,6 +141,74 @@ function ok(cond, label) {
   eq(getTotalLevel({ niveau: 7 }), 7, 'getTotalLevel legacy');
   eq(getTotalLevel({}), 1, 'getTotalLevel vide');
 
+
+  /* ── Qui lance quoi : une seule table, trois ecrans ──
+     La fiche, l'onglet plan et le multiclassement avaient chacun leur copie de
+     la liste des lanceurs, et elles avaient diverge : le Psion etait complet
+     d'un cote, demi-lanceur de l'autre, si bien que le meme personnage
+     affichait deux tables selon l'ecran. */
+  eq(typeLanceur('Psion', ''), 'complet', 'Psion : lanceur complet, partout');
+  eq(typeLanceur('Wizard', ''), 'complet', 'Magicien : lanceur complet');
+  eq(typeLanceur('Paladin', 'Oath of Devotion'), 'demi', 'Paladin : demi-lanceur');
+  eq(typeLanceur('Ranger', 'Hunter'), 'demi', 'Rodeur : demi-lanceur');
+  eq(typeLanceur('Warlock', ''), 'pacte', 'Occultiste : magie de pacte');
+  eq(typeLanceur('Artificer', ''), 'artificier', 'Artificier : sa propre table');
+  eq(typeLanceur('Fighter', 'Champion'), null, 'Champion : aucun sort');
+  eq(typeLanceur('Rogue', 'Thief'), null, 'Voleur : aucun sort');
+  /* La sous-classe seule fait la difference ici. */
+  eq(typeLanceur('Fighter', 'Eldritch Knight'), 'tiers', 'Chevalier Occulte : tiers-lanceur');
+  eq(typeLanceur('Rogue', 'Arcane Trickster'), 'tiers', 'Filou Arcanique : tiers-lanceur');
+  eq(typeLanceur('', ''), null, 'pas de classe, pas de sorts');
+
+  /* ── Le demi-lanceur 2024 lance des sorts des le niveau 1 ──
+     C'est le seul ecart avec la table 2014. Un 0 ici veut dire que la table
+     2014 est revenue. */
+  eq(emplacementsClasse('Paladin', '', 1), [2,0,0,0,0,0,0,0,0], 'Paladin 1 : 2 emplacements (2024)');
+  eq(emplacementsClasse('Ranger', '', 1), [2,0,0,0,0,0,0,0,0], 'Rodeur 1 : 2 emplacements (2024)');
+  eq(emplacementsClasse('Paladin', '', 5), [4,2,0,0,0,0,0,0,0], 'Paladin 5');
+  eq(emplacementsClasse('Paladin', '', 20), [4,3,3,3,2,0,0,0,0], 'Paladin 20 : plafonne au niveau 5 de sort');
+
+  /* ── Le tiers-lanceur a sa propre table ──
+     Elle n'est PAS la table multiclasse au tiers du niveau : un Chevalier
+     Occulte 7 a 4 emplacements de niveau 1 et 2 de niveau 2, alors que la regle
+     multiclasse (floor(7/3) = 2) n'en donnerait que 3 de niveau 1. Confondre
+     les deux est l'erreur naturelle. */
+  eq(emplacementsClasse('Fighter', 'Eldritch Knight', 2), [0,0,0,0,0,0,0,0,0], 'Chevalier Occulte 2 : rien avant le niveau 3');
+  eq(emplacementsClasse('Fighter', 'Eldritch Knight', 3), [2,0,0,0,0,0,0,0,0], 'Chevalier Occulte 3 : les premiers');
+  eq(emplacementsClasse('Fighter', 'Eldritch Knight', 7), [4,2,0,0,0,0,0,0,0], 'Chevalier Occulte 7 : 4/2, pas la table multiclasse');
+  eq(emplacementsClasse('Rogue', 'Arcane Trickster', 20), [4,3,3,1,0,0,0,0,0], 'Filou Arcanique 20');
+  eq(emplacementsClasse('Fighter', 'Champion', 20), null, 'Champion 20 : toujours aucun sort');
+
+  /* ── Multiclassement : 2024 arrondit AU SUPERIEUR les demi-lanceurs ──
+     Niveaux impairs uniquement : c'est la que floor et ceil different. */
+  eq(niveauLanceurEffectif([{classe:'Paladin', niveau:5}]), 3, 'Paladin 5 : ceil(5/2) = 3, pas 2');
+  eq(niveauLanceurEffectif([{classe:'Ranger', niveau:3}]), 2, 'Rodeur 3 : ceil(3/2) = 2, pas 1');
+  eq(niveauLanceurEffectif([{classe:'Paladin', niveau:5}, {classe:'Wizard', niveau:5}]), 8,
+     'Paladin 5 + Magicien 5 : 3 + 5 = 8');
+  eq(niveauLanceurEffectif([{classe:'Fighter', sousClasse:'Eldritch Knight', niveau:9}]), 3,
+     'Chevalier Occulte 9 : floor(9/3) = 3, le tiers arrondit a l\'inferieur');
+  eq(niveauLanceurEffectif([{classe:'Fighter', sousClasse:'Eldritch Knight', niveau:8}]), 2,
+     'Chevalier Occulte 8 : floor(8/3) = 2');
+  eq(niveauLanceurEffectif([{classe:'Fighter', sousClasse:'Champion', niveau:20}]), 0,
+     'Champion 20 : ne compte pas');
+  eq(niveauLanceurEffectif([{classe:'Warlock', niveau:10}]), 0,
+     'Occultiste : la magie de pacte ne se combine pas');
+
+  /* ── Mono ou multi : deux mecanismes, pas un ──
+     Un seul lanceur utilise SA table de classe. Passer par la table multiclasse
+     donnerait un resultat faux pour un tiers-lanceur. */
+  eq(emplacementsPersonnage([{classe:'Fighter', sousClasse:'Eldritch Knight', niveau:7}]),
+     [4,2,0,0,0,0,0,0,0], 'Chevalier Occulte seul : sa table de classe');
+  eq(emplacementsPersonnage([{classe:'Paladin', sousClasse:'', niveau:5}]),
+     [4,2,0,0,0,0,0,0,0], 'Paladin seul : sa table de classe');
+  eq(emplacementsPersonnage([{classe:'Fighter', sousClasse:'Champion', niveau:20}]), null,
+     'aucun lanceur : aucun emplacement');
+  eq(emplacementsPersonnage([{classe:'Warlock', sousClasse:'', niveau:5}]), null,
+     'Occultiste seul : magie de pacte, affichee a part');
+  /* Un niveau a zero ne doit pas compter comme une classe. */
+  eq(emplacementsPersonnage([{classe:'Wizard', sousClasse:'', niveau:0}]), null,
+     'une classe a zero niveau ne lance rien');
+
   // Emplacements de sorts multiclasse (PHB)
   eq(computeMulticlassSlots({ classes: [{ classe: 'Wizard', niveau: 5 }] }),
      [4,3,2,0,0,0,0,0,0], 'slots Wizard 5');
@@ -159,14 +237,41 @@ function ok(cond, label) {
           STARTING_SPELLS, LANGUAGES, TOOL_CHOICES, MULTICLASS_PREREQ, STARTING_ARMOR,
           FEATURE_CHOICES, estUA, nomUA, sourceUA, titreUA,
           CANTRIPS_KNOWN, CLASS_RESOURCES, infoUA, UA_SUBCLASSES,
-          SUBCLASS_RENOMMEES, SOURCE_LIVRE, livreSource, donsDisponibles } =
+          SUBCLASS_RENOMMEES, SOURCE_LIVRE, livreSource, donsDisponibles,
+          /* typeLanceur n'est pas repris ici : les declarations de fonction
+             d'un eval direct fuient deja dans cette portee, et le redeclarer en
+             const provoquerait un conflit de nom au chargement. */
+          LANCEURS } =
     new Function(R + '; return { CLASS_DATA, SPECIES_DATA, BACKGROUND_DATA, GENERAL_FEATS,'
       + ' ORIGIN_FEATS, STARTING_EQUIP, DND_CLASSES, SUBCLASS_DATA, PREPARED_SPELLS,'
       + ' STARTING_SPELLS, LANGUAGES, TOOL_CHOICES, MULTICLASS_PREREQ, STARTING_ARMOR,'
       + ' FEATURE_CHOICES, estUA, nomUA, sourceUA, titreUA,'
       + ' CANTRIPS_KNOWN, CLASS_RESOURCES, infoUA, UA_SUBCLASSES,'
       + ' SUBCLASS_RENOMMEES, SOURCE_LIVRE, livreSource, donsDisponibles,'
+      + ' LANCEURS,'
       + ' SPELL_PREP_STYLE };')();
+  /* L'invariant qui empeche la divergence de revenir : une classe ne peut pas
+     figurer dans deux categories. C'est exactement ce qui s'etait produit — le
+     Psion etait a la fois complet et demi-lanceur, et chaque ecran attrapait
+     celle qu'il testait en premier. L'ordre de typeLanceur rend aujourd'hui le
+     doublon inoffensif, mais il reste un piege arme pour la prochaine lecture. */
+  {
+    const vues = new Map();
+    ['complet', 'demi', 'pacte', 'artificier'].forEach(type =>
+      LANCEURS[type].forEach(cls => {
+        ok(!vues.has(cls), `LANCEURS : « ${cls} » est a la fois ${vues.get(cls)} et ${type}`);
+        vues.set(cls, type);
+      }));
+    /* Toute classe connue doit etre classee, sinon ses emplacements disparaissent
+       en silence le jour ou on en ajoute une. */
+    Object.keys(CLASS_DATA).forEach(cls => {
+      const sous = Object.keys(SUBCLASS_DATA[cls] || {});
+      const lance = !!typeLanceur(cls, '') || sous.some(sc => typeLanceur(cls, sc));
+      const attendu = !!(PREPARED_SPELLS[cls] || CANTRIPS_KNOWN[cls] || cls === 'Warlock');
+      if (attendu) ok(lance, `${cls} : prepare des sorts mais n'est classe nulle part`);
+    });
+  }
+
   const SKILL_KEYS = extract(J, 'const SKILLS = [')
     .match(/key:'([a-z]+)'/g).map(s => s.slice(5, -1));
 
@@ -384,6 +489,81 @@ function ok(cond, label) {
     keys.forEach(k => ok(['for','dex','con','int','sag','cha'].includes(k),
       `don « ${name} » : clé « ${k} » invalide`));
   });
+
+
+  /* ── PV saisis a la main a la montee de niveau ── */
+  {
+    const auNiveau = (hp) => {
+      const c = hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:4}], con:14, pvMax:36, pvActuel:36 });
+      applyLevelUp(c, planLevelUp(c, 'Fighter'), { hp });
+      return c.pvMax - 36;
+    };
+
+    /* Le contrat : ce qui est saisi est ce qui est applique. Pas de plafond au
+       maximum du de — un MJ qui accorde un forfait a le droit, et le refuser
+       obligerait a corriger la fiche juste apres. */
+    eq(auNiveau(11), 11, 'PV saisis : 11 appliques tels quels');
+    eq(auNiveau(1), 1, 'PV saisis : le minimum de 1 passe');
+    eq(auNiveau(99), 99, 'PV saisis : aucun plafond, le MJ decide');
+
+    /* Les valeurs qui ne veulent rien dire retombent sur la moyenne plutot que
+       d'offrir un niveau a 1 PV par inadvertance. */
+    const moyenne = planLevelUp(
+      hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:4}], con:14 }), 'Fighter').avgHp;
+    eq(auNiveau(0), moyenne, 'PV saisis : zero retombe sur la moyenne');
+    eq(auNiveau(''), moyenne, 'PV saisis : vide retombe sur la moyenne');
+    eq(auNiveau(undefined), moyenne, 'PV saisis : absent retombe sur la moyenne');
+    eq(auNiveau(-5), 1, 'PV saisis : un negatif ne retire pas de PV');
+
+    /* Les PV courants suivent les PV max : on monte de niveau repose. */
+    {
+      const c = hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:4}], con:14, pvMax:36, pvActuel:30 });
+      applyLevelUp(c, planLevelUp(c, 'Fighter'), { hp:11 });
+      eq(c.pvMax, 47, 'PV max apres saisie');
+      eq(c.pvActuel, 41, 'PV courants suivent le gain');
+      eq(c.nbDeVie, 3, 'un de de vie de plus');
+    }
+
+    /* Le plan de niveaux garde la trace du nombre saisi : sans ca, rouvrir
+       l'onglet plan afficherait une ligne vide pour ce niveau. */
+    {
+      const c = hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:4}], con:14, pvMax:36, pvActuel:36 });
+      applyLevelUp(c, planLevelUp(c, 'Fighter'), { hp:11 });
+      eq(c.levelPlan.rows[4].hp, 11, 'le plan de niveaux retient les PV saisis');
+    }
+  }
+
+  /* ── Cablage du champ de PV (lecture du source) ── */
+  {
+    /* « // Sous-classe » apparait deux fois dans le fichier : on borne la
+       recherche de la fin APRES le debut, sinon le bloc ressort vide et toutes
+       les assertions qui suivent passent a cote sans rien dire. */
+    const debutHp = J.indexOf("$('lvlup-hp-row').innerHTML");
+    const bloc = J.slice(debutHp, J.indexOf('// Sous-classe', debutHp));
+    ok(/id="lvlup-hp-input"/.test(bloc), 'PV : le champ de saisie existe');
+    ok(/type="number"/.test(bloc), 'PV : champ numerique');
+    ok(/min="1"/.test(bloc), 'PV : pas de valeur negative au clavier');
+
+    /* La regression exacte deja rencontree : le gestionnaire de frappe doit
+       lire le champ sans le reecrire, sinon on ne peut plus l'effacer pour
+       retaper — « 12 » passait par un « 1 » aussitot fige. */
+    const frappe = bloc.slice(bloc.indexOf("addEventListener('input'"));
+    ok(/ecrire:\s*false/.test(frappe.slice(0, 200)),
+       'PV : la frappe ne reecrit pas le champ');
+    ok(/addEventListener\('blur'/.test(bloc),
+       'PV : la sortie du champ remet la derniere valeur valable');
+
+    /* Les deux boutons passent par la meme porte que la frappe : sans ca, deux
+       verites concurrentes pour une seule valeur. */
+    const poses = bloc.match(/poserHp\(/g) || [];
+    ok(poses.length >= 4, 'PV : moyenne, jet, frappe et sortie passent tous par poserHp');
+    ok(!/lvlup-hp-pick/.test(bloc), 'PV : plus de valeur figee non modifiable');
+
+    /* L'avertissement de borne doit rester un avertissement : s'il devenait une
+       correction, le forfait du MJ serait ecrase en silence. */
+    ok(/kept as entered/.test(bloc), 'PV : hors bornes, la valeur est conservee');
+  }
+
 
   // PV : moyenne PHB = dé/2 + 1, plus CON, plus le bonus d'espèce
   {

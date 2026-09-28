@@ -2868,6 +2868,22 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
 .lvlup-hp-detail { font-size: 0.72rem; color: #7a7a8a; margin-top: 0.4rem; line-height: 1.45; }
 .lvlup-hp-detail strong { color: var(--gold, #c9a227); }
 .lvlup-hp-pick { font-family: 'Cinzel', serif; color: var(--gold, #c9a227); font-size: 0.85rem; margin-left: 0.3rem; }
+.lvlup-hp-manual { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; color: var(--text-dim, #7a7a8a); margin-left: 0.2rem; }
+.lvlup-hp-input {
+  width: 3.4rem; padding: 0.25rem 0.35rem; text-align: center;
+  font-family: 'Cinzel', serif; font-size: 0.85rem;
+  color: var(--gold, #c9a227);
+  background: var(--j-input, #110d07);
+  border: 1px solid var(--j-border-col, #4a3510); border-radius: 4px;
+}
+.lvlup-hp-input:focus { outline: none; border-color: var(--gold, #c9a227); }
+/* Les fleches natives volent la moitie d'un champ deja etroit, et le pouce les
+   rate sur telephone : les boutons Average et Roll jouent ce role. */
+.lvlup-hp-input::-webkit-outer-spin-button,
+.lvlup-hp-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.lvlup-hp-input { -moz-appearance: textfield; appearance: textfield; }
+.lvlup-hp-warn { color: var(--gold, #c9a227); display: block; margin-top: 0.25rem; }
+.lvlup-hp-warn .ic { width: 0.8em; height: 0.8em; vertical-align: -0.1em; }
 .lvlup-asi-tabs { display: flex; gap: 0.3rem; margin-bottom: 0.55rem; }
 .lvlup-tab {
   flex: 1; font-size: 0.74rem; padding: 0.28rem 0.5rem; border-radius: 4px; cursor: pointer;
@@ -5198,8 +5214,6 @@ function renderClassFeatures() {
   title.textContent = validClasses.map(cl => cl.classe + ' ' + cl.niveau).join(' / ') + ' — Class Features';
 
   /* ── Spell slots note (multiclass or single) ── */
-  const FULL_CAST  = ['Bard','Cleric','Druid','Psion','Sorcerer','Wizard'];
-  const HALF_CAST  = ['Paladin','Psion','Ranger'];
   const ordinals   = ['1st','2nd','3rd','4th','5th','6th','7th','8th','9th'];
 
   if (classes.length > 1) {
@@ -5224,11 +5238,9 @@ function renderClassFeatures() {
     // Single class
     const classe = validClasses[0].classe;
     const niveau = Math.max(1, Math.min(20, parseInt(validClasses[0].niveau) || 1));
-    let slotTable = null;
-    if (FULL_CAST.includes(classe))      slotTable = FULL_CASTER_SLOTS[niveau];
-    else if (HALF_CAST.includes(classe)) slotTable = HALF_CASTER_SLOTS[niveau];
-    else if (classe === 'Warlock')       slotTable = WARLOCK_SLOTS[niveau];
-    else if (classe === 'Artificer')     slotTable = ARTIFICER_SLOTS[niveau];
+    /* La sous-classe compte : c'est elle qui fait du Guerrier un Chevalier
+       Occulte, et donc un lanceur. */
+    const slotTable = emplacementsClasse(classe, validClasses[0].sousClasse, niveau);
     if (slotTable) {
       const parts = slotTable.map((s,i) => s > 0 ? `${s} × ${ordinals[i]}` : null).filter(Boolean);
       if (parts.length) {
@@ -6140,20 +6152,11 @@ function syncClassesToLegacy(c) {
   }
 }
 
+/* Les emplacements d'un personnage, mono ou multiclasse.
+   La logique vit dans js/rules-2024.js : trois ecrans la partageaient en trois
+   copies, et elles avaient fini par se contredire sur le Psion. */
 function computeMulticlassSlots(c) {
-  const classes = getClasses(c);
-  const FULL_C  = ['Bard','Cleric','Druid','Psion','Sorcerer','Wizard'];
-  const HALF_C  = ['Paladin','Psion','Ranger','Artificer'];
-  let eff = 0;
-  let hasCaster = false;
-  classes.forEach(cl => {
-    const lvl = parseInt(cl.niveau) || 1;
-    if (FULL_C.includes(cl.classe))      { eff += lvl;                    hasCaster = true; }
-    else if (HALF_C.includes(cl.classe)) { eff += Math.floor(lvl / 2);    hasCaster = true; }
-    // Warlock: pact magic, not combined; others: no spellcasting
-  });
-  if (!hasCaster || eff < 1) return null;
-  return MULTICLASS_SLOTS[Math.min(eff, 20)] || null;
+  return emplacementsPersonnage(getClasses(c));
 }
 
 function renderMulticlasses() {
@@ -8280,32 +8283,18 @@ function renderLvlupTab() {
   }
 
   /* ── Per-row calculations ── */
-  const FULL_CAST_CLS  = ['Bard','Cleric','Druid','Psion','Sorcerer','Wizard'];
-  const HALF_CAST_CLS  = ['Paladin','Psion','Ranger'];
   const KNOWN_SPL_CLS  = ['Bard','Ranger','Sorcerer','Warlock'];
   const ordinals = ['','1st','2nd','3rd','4th','5th','6th','7th','8th','9th'];
 
   // Helper: compute spell slots at a given running class-count map
+  /* Le plan ne connait que des noms de classe, pas les sous-classes : il lit
+     celle du personnage pour savoir si un Guerrier est Chevalier Occulte. */
   function slotsForCounts(clsCount) {
-    const unique = Object.keys(clsCount);
-    if (unique.length === 0) return null;
-    if (unique.length === 1) {
-      const cls = unique[0]; const lv = clsCount[cls];
-      if (cls === 'Warlock')   return WARLOCK_SLOTS[Math.min(lv,20)];
-      if (cls === 'Artificer') return ARTIFICER_SLOTS[Math.min(lv,20)];
-      if (HALF_CAST_CLS.includes(cls)) return HALF_CASTER_SLOTS[Math.min(lv,20)];
-      if (FULL_CAST_CLS.includes(cls)) return FULL_CASTER_SLOTS[Math.min(lv,20)];
-      return null;
-    }
-    // Multiclass caster level
-    let cL = 0;
-    for (const [cl, n] of Object.entries(clsCount)) {
-      if (FULL_CAST_CLS.includes(cl))       cL += n;
-      else if (HALF_CAST_CLS.includes(cl))  cL += Math.floor(n / 2);
-      else if (cl === 'Artificer')           cL += Math.ceil(n / 2);
-      // Warlock pact slots handled separately; not contributed to combined slots
-    }
-    return cL > 0 ? MULTICLASS_SLOTS[Math.min(cL, 20)] : null;
+    const sousDe = {};
+    (charClasses || []).forEach(cl => { if (cl.classe) sousDe[cl.classe] = cl.sousClasse; });
+    const classes = Object.entries(clsCount)
+      .map(([classe, niveau]) => ({ classe, niveau, sousClasse: sousDe[classe] || '' }));
+    return emplacementsPersonnage(classes);
   }
 
   const rowData = rows.map((row, i) => {
@@ -13873,18 +13862,56 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
     $('lvlup-hp-row').innerHTML =
       `<button class="btn btn-sm btn-gold" id="lvlup-hp-avg">⊘ Average (+${plan.avgHp})</button>
        <button class="btn btn-sm" id="lvlup-hp-roll">${ic('die')} Roll ${plan.hitDie}</button>
-       <span class="lvlup-hp-pick" id="lvlup-hp-pick">+${chosenHp} PV</span>`;
-    $('lvlup-hp-detail').innerHTML =
-      `${plan.hitDie} ${plan.conMod < 0 ? '−' : '+'} <strong>${Math.abs(plan.conMod)}</strong> CON`
-      + (plan.speciesHp ? ` + <strong>${plan.speciesHp}</strong> species` : '')
-      + ` — between ${plan.minHp} and ${plan.maxHp} HP.`;
-    $('lvlup-hp-avg').addEventListener('click', () => { chosenHp = plan.avgHp; $('lvlup-hp-pick').textContent = `+${chosenHp} PV`; });
+       <label class="lvlup-hp-manual">
+         <span>or</span>
+         <input type="number" id="lvlup-hp-input" class="lvlup-hp-input"
+                min="1" step="1" inputmode="numeric" value="${chosenHp}"
+                aria-label="Hit points gained at this level">
+         <span>HP</span>
+       </label>`;
+
+    /* Le detail se recalcule a chaque changement : il porte l'avertissement de
+       borne, qui depend de la valeur saisie. */
+    const detailHp = () => {
+      const base = `${plan.hitDie} ${plan.conMod < 0 ? '−' : '+'} <strong>${Math.abs(plan.conMod)}</strong> CON`
+        + (plan.speciesHp ? ` + <strong>${plan.speciesHp}</strong> species` : '')
+        + ` — between ${plan.minHp} and ${plan.maxHp} HP.`;
+      /* Hors bornes : on le signale, on ne l'interdit pas. Un MJ qui accorde un
+         forfait a le droit, et le refuser obligerait a corriger la fiche apres
+         coup — exactement ce que ce champ evite. */
+      const hors = chosenHp < plan.minHp || chosenHp > plan.maxHp;
+      return base + (hors
+        ? ` <span class="lvlup-hp-warn">${ic('warn')} +${chosenHp} is outside what ${plan.hitDie} can roll — kept as entered.</span>`
+        : '');
+    };
+    $('lvlup-hp-detail').innerHTML = detailHp();
+
+    /* Une seule valeur de reference, chosenHp ; le champ n'en est que
+       l'affichage. `ecrire` distingue les deux sens : les boutons imposent une
+       valeur au champ, la frappe ne fait que la lire.
+
+       Sans cette distinction, reecrire le champ a chaque touche empechait de
+       l'effacer pour retaper — « 12 » passait par un « 1 » aussitot fige. */
+    const poserHp = (n, { ecrire = true } = {}) => {
+      const v = parseInt(n, 10);
+      if (Number.isFinite(v) && v >= 1) chosenHp = v;
+      const inp = $('lvlup-hp-input');
+      if (ecrire && inp) inp.value = chosenHp;
+      $('lvlup-hp-detail').innerHTML = detailHp();
+    };
+
+    $('lvlup-hp-avg').addEventListener('click', () => poserHp(plan.avgHp));
     $('lvlup-hp-roll').addEventListener('click', () => {
       const r = rollDiceExpr(plan.hitDie);
-      chosenHp = Math.max(1, r.total + plan.conMod + plan.speciesHp);
       showDamageRoll(`HP level ${plan.totalAfter} · ${plan.hitDie}`, r);
-      $('lvlup-hp-pick').textContent = `+${chosenHp} PV`;
+      poserHp(r.total + plan.conMod + plan.speciesHp);
     });
+    /* Pendant la frappe le champ reste libre : un champ vide ou a zero ne
+       change pas chosenHp, il attend la suite de la saisie. */
+    $('lvlup-hp-input').addEventListener('input', e => poserHp(e.target.value, { ecrire: false }));
+    /* En sortant, le champ retrouve la derniere valeur valable — celle qui sera
+       reellement appliquee. */
+    $('lvlup-hp-input').addEventListener('blur', () => poserHp(chosenHp));
 
     // Sous-classe
     const subBlock = $('lvlup-sub-block');

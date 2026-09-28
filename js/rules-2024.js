@@ -119,14 +119,28 @@ const FULL_CASTER_SLOTS = {
   16:[4,3,3,3,2,1,1,1,0], 17:[4,3,3,3,2,1,1,1,1], 18:[4,3,3,3,3,1,1,1,1],
   19:[4,3,3,3,3,2,1,1,1], 20:[4,3,3,3,3,2,2,1,1]
 };
+/* Paladin et Rodeur. En 2024 ils lancent des sorts des le niveau 1 : c'est le
+   seul ecart avec la table 2014, qui commencait au niveau 2. */
 const HALF_CASTER_SLOTS = {
-  1:[0,0,0,0,0,0,0,0,0], 2:[2,0,0,0,0,0,0,0,0], 3:[3,0,0,0,0,0,0,0,0],
+  1:[2,0,0,0,0,0,0,0,0], 2:[2,0,0,0,0,0,0,0,0], 3:[3,0,0,0,0,0,0,0,0],
   4:[3,0,0,0,0,0,0,0,0], 5:[4,2,0,0,0,0,0,0,0], 6:[4,2,0,0,0,0,0,0,0],
   7:[4,3,0,0,0,0,0,0,0], 8:[4,3,0,0,0,0,0,0,0], 9:[4,3,2,0,0,0,0,0,0],
   10:[4,3,2,0,0,0,0,0,0], 11:[4,3,3,0,0,0,0,0,0], 12:[4,3,3,0,0,0,0,0,0],
   13:[4,3,3,1,0,0,0,0,0], 14:[4,3,3,1,0,0,0,0,0], 15:[4,3,3,2,0,0,0,0,0],
   16:[4,3,3,2,0,0,0,0,0], 17:[4,3,3,3,1,0,0,0,0], 18:[4,3,3,3,1,0,0,0,0],
   19:[4,3,3,3,2,0,0,0,0], 20:[4,3,3,3,2,0,0,0,0]
+};
+/* Chevalier Occulte et Filou Arcanique. Identique en 2014 et en 2024.
+   A ne pas confondre avec leur apport au multiclassement, qui est le tiers du
+   niveau arrondi a l'inferieur : les deux ne donnent pas le meme resultat. */
+const THIRD_CASTER_SLOTS = {
+  1:[0,0,0,0,0,0,0,0,0], 2:[0,0,0,0,0,0,0,0,0], 3:[2,0,0,0,0,0,0,0,0],
+  4:[3,0,0,0,0,0,0,0,0], 5:[3,0,0,0,0,0,0,0,0], 6:[3,0,0,0,0,0,0,0,0],
+  7:[4,2,0,0,0,0,0,0,0], 8:[4,2,0,0,0,0,0,0,0], 9:[4,2,0,0,0,0,0,0,0],
+  10:[4,3,0,0,0,0,0,0,0], 11:[4,3,0,0,0,0,0,0,0], 12:[4,3,0,0,0,0,0,0,0],
+  13:[4,3,2,0,0,0,0,0,0], 14:[4,3,2,0,0,0,0,0,0], 15:[4,3,2,0,0,0,0,0,0],
+  16:[4,3,3,0,0,0,0,0,0], 17:[4,3,3,0,0,0,0,0,0], 18:[4,3,3,0,0,0,0,0,0],
+  19:[4,3,3,1,0,0,0,0,0], 20:[4,3,3,1,0,0,0,0,0]
 };
 const WARLOCK_SLOTS = {
   1:[1,0,0,0,0,0,0,0,0], 2:[2,0,0,0,0,0,0,0,0], 3:[0,2,0,0,0,0,0,0,0],
@@ -159,6 +173,84 @@ const MULTICLASS_SLOTS = {
   16:[4,3,3,3,2,1,1,1,0],17:[4,3,3,3,2,1,1,1,1],18:[4,3,3,3,3,1,1,1,1],
   19:[4,3,3,3,3,2,1,1,1],20:[4,3,3,3,3,2,2,1,1]
 };
+
+/* ════════════════════════════════════════════════════════════
+   QUI LANCE QUOI — source unique
+   Trois ecrans decidaient chacun de leur cote, avec trois listes recopiees, et
+   elles avaient divergé sur le Psion. Tout passe par ici desormais.
+   ════════════════════════════════════════════════════════════ */
+
+/* Qui lance quoi, en une table. Regroupee en un seul objet plutot qu'en
+   plusieurs tableaux : le harnais de smoke-tests extrait les litteraux par
+   appariement d'accolades et ne sait pas lire un tableau isole — la table
+   serait alors recopiee dans les tests, ce qui ramenerait l'ecart qu'on vient
+   de supprimer. */
+const LANCEURS = {
+  complet:    ['Bard', 'Cleric', 'Druid', 'Psion', 'Sorcerer', 'Wizard'],
+  demi:       ['Paladin', 'Ranger'],
+  pacte:      ['Warlock'],
+  artificier: ['Artificer'],
+  /* Ces sous-classes rendent lanceuse une classe qui ne l'est pas. */
+  tiers:      { Fighter: ['Eldritch Knight'], Rogue: ['Arcane Trickster'] },
+};
+
+/** 'complet' | 'demi' | 'tiers' | 'pacte' | 'artificier' | null */
+function typeLanceur(classe, sousClasse) {
+  if (!classe) return null;
+  for (const type of ['pacte', 'artificier', 'complet', 'demi']) {
+    if (LANCEURS[type].includes(classe)) return type;
+  }
+  if ((LANCEURS.tiers[classe] || []).includes(sousClasse)) return 'tiers';
+  return null;
+}
+
+/** La table de la classe elle-meme, pour un personnage qui n'a qu'elle. */
+function emplacementsClasse(classe, sousClasse, niveau) {
+  const n = Math.max(1, Math.min(20, parseInt(niveau, 10) || 1));
+  switch (typeLanceur(classe, sousClasse)) {
+    case 'complet':    return FULL_CASTER_SLOTS[n];
+    case 'demi':       return HALF_CASTER_SLOTS[n];
+    case 'tiers':      return THIRD_CASTER_SLOTS[n];
+    case 'pacte':      return WARLOCK_SLOTS[n];
+    case 'artificier': return ARTIFICER_SLOTS[n];
+    default:           return null;
+  }
+}
+
+/** Niveau de lanceur effectif pour la table multiclasse.
+    2024 : Paladin et Rodeur comptent pour la moitie ARRONDIE AU SUPERIEUR. */
+function niveauLanceurEffectif(classes) {
+  let eff = 0;
+  for (const cl of classes || []) {
+    const n = parseInt(cl.niveau, 10) || 0;
+    if (n <= 0) continue;
+    switch (typeLanceur(cl.classe, cl.sousClasse)) {
+      case 'complet':    eff += n; break;
+      case 'demi':       eff += Math.ceil(n / 2); break;
+      case 'artificier': eff += Math.ceil(n / 2); break;
+      case 'tiers':      eff += Math.floor(n / 3); break;
+      /* La Magie de Pacte ne se combine pas : elle s'affiche a part. */
+    }
+  }
+  return eff;
+}
+
+/** Les emplacements d'un personnage, mono ou multiclasse.
+    Un seul lanceur non-occultiste utilise SA table de classe, pas la table
+    multiclasse : pour un demi-lanceur les deux coincident, mais pour un
+    tiers-lanceur elles divergent nettement. */
+function emplacementsPersonnage(classes) {
+  const lanceurs = (classes || []).filter(cl =>
+    (parseInt(cl.niveau, 10) || 0) > 0 && typeLanceur(cl.classe, cl.sousClasse));
+  const horsPacte = lanceurs.filter(cl => typeLanceur(cl.classe, cl.sousClasse) !== 'pacte');
+  if (!horsPacte.length) return null;
+  if (horsPacte.length === 1) {
+    const cl = horsPacte[0];
+    return emplacementsClasse(cl.classe, cl.sousClasse, cl.niveau);
+  }
+  const eff = niveauLanceurEffectif(horsPacte);
+  return eff > 0 ? (MULTICLASS_SLOTS[Math.min(eff, 20)] || null) : null;
+}
 
 /* ════════════════════════════════════════════════════════════
    D&D 2024 CLASS DATA  (PHB, base classes)
