@@ -84,7 +84,9 @@ function ok(cond, label) {
     extract(R, 'const FEATURE_CHOICES'),
     extract(J, 'function featureOptions(featureName, className)'),
     extract(J, 'function featureChoicesAt(className, subclassName, level)'),
-    extract(J, 'function getFeatureChoice(c, featureName)'),
+    extract(J, 'function cleChoix(className, featureName)'),
+    extract(J, 'function getFeatureChoice(c, featureName, className)'),
+    extract(J, 'function migrerChoixCapacites(c)'),
     extract(J, 'function setFeatureChoice(c, featureName, className, selection)'),
     extract(J, 'function pendingFeatureChoices(c)'),
     extract(J, 'function cantripsAt(className, level)'),
@@ -565,6 +567,104 @@ function ok(cond, label) {
   }
 
 
+
+  /* ── Le style de combat ne s'ecrase plus en multiclasse ── */
+  {
+    /* Le scenario d'origine : un Guerrier/Rodeur a deux styles de combat.
+       Ranges sous le seul nom de la capacite, le second effacait le premier et
+       le joueur perdait un choix sans aucun signe. */
+    const gr = { classes: [{ classe:'Fighter', sousClasse:'Champion', niveau:5 },
+                           { classe:'Ranger',  sousClasse:'Hunter',   niveau:3 }] };
+    setFeatureChoice(gr, 'Fighting Style', 'Fighter', ['Defense']);
+    setFeatureChoice(gr, 'Fighting Style', 'Ranger', ['Archery']);
+    eq(getFeatureChoice(gr, 'Fighting Style', 'Fighter'), ['Defense'],
+       'multiclasse : le Guerrier garde son style');
+    eq(getFeatureChoice(gr, 'Fighting Style', 'Ranger'), ['Archery'],
+       'multiclasse : le Rodeur garde le sien');
+
+    /* La cle porte la classe : c'est ce qui rend les deux possibles. */
+    ok(Object.keys(gr.featureChoices).every(k => k.includes('::')),
+       'les cles portent la classe');
+
+    /* Effacer un choix ne doit pas emporter celui de l'autre classe. */
+    setFeatureChoice(gr, 'Fighting Style', 'Fighter', []);
+    eq(getFeatureChoice(gr, 'Fighting Style', 'Fighter'), [], 'choix du Guerrier efface');
+    eq(getFeatureChoice(gr, 'Fighting Style', 'Ranger'), ['Archery'],
+       'celui du Rodeur survit a l\'effacement de l\'autre');
+  }
+
+  /* ── Les fiches ecrites avant le changement de cle ── */
+  {
+    /* Une fiche existante range son choix sous le nom nu. Elle doit rester
+       lisible AVANT migration : une migration qui ne tourne pas ne doit pas
+       faire disparaitre un choix deja fait. */
+    const vieux = { classes: [{ classe:'Fighter', sousClasse:'Champion', niveau:5 }],
+                    featureChoices: { 'Fighting Style': ['Defense'] } };
+    eq(getFeatureChoice(vieux, 'Fighting Style', 'Fighter'), ['Defense'],
+       'ancienne cle : encore lue avant migration');
+
+    ok(migrerChoixCapacites(vieux), 'migration : elle a quelque chose a faire');
+    eq(getFeatureChoice(vieux, 'Fighting Style', 'Fighter'), ['Defense'],
+       'apres migration : le choix est toujours la');
+    eq(vieux.featureChoices['Fighter::Fighting Style'], ['Defense'],
+       'apres migration : range sous la classe');
+    eq(vieux.featureChoices['Fighting Style'], undefined,
+       'apres migration : l\'ancienne cle a disparu');
+    ok(!migrerChoixCapacites(vieux), 'migration : rien a refaire au second passage');
+
+    /* Une entree qui ne correspond a aucune classe du personnage est laissee
+       en place plutot que jetee — on ne detruit pas ce qu'on ne comprend pas. */
+    const orphelin = { classes: [{ classe:'Wizard', sousClasse:'', niveau:3 }],
+                       featureChoices: { 'Fighting Style': ['Defense'] } };
+    migrerChoixCapacites(orphelin);
+    eq(orphelin.featureChoices['Fighting Style'], ['Defense'],
+       'entree sans classe proprietaire : conservee, pas jetee');
+  }
+
+  /* ── Monter la CON releve les PV deja gagnes ── */
+  {
+    /* Le scenario : un Guerrier 7 passe au 8 et met son ASI en CON.
+       Le modificateur passe de +2 a +3, donc chaque niveau deja pris vaut un
+       point de vie de plus. Sans rattrapage, huit points disparaissaient. */
+    const g = hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:7}],
+                     con:14, pvMax:60, pvActuel:60 });
+    const plan = planLevelUp(g, 'Fighter');
+    const gain = plan.avgHp;                 /* calcule avec l'ancien modificateur */
+    applyLevelUp(g, plan, { asiMode:'abil', asiA:'con', asiB:'' });
+    eq(g.con, 16, 'CON montee de 2');
+    /* +gain pour le niveau, puis +1 par niveau du total (le nouveau compris). */
+    eq(g.pvMax, 60 + gain + 8, 'PV max : le niveau plus le rattrapage sur 8 niveaux');
+    eq(g.pvActuel, 60 + gain + 8, 'PV courants suivent');
+
+    /* Une CON qui monte sans changer de modificateur ne doit rien rattraper :
+       14 a 15, c'est toujours +2. */
+    const h2 = hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:7}],
+                      con:14, pvMax:60, pvActuel:60 });
+    const p2 = planLevelUp(h2, 'Fighter');
+    const g2 = p2.avgHp;
+    applyLevelUp(h2, p2, { asiMode:'abil', asiA:'con', asiB:'dex' });
+    eq(h2.con, 15, 'CON montee de 1');
+    eq(h2.pvMax, 60 + g2, 'modificateur inchange : aucun rattrapage');
+
+    /* Le +1 d'un don compte pareil : c'est le modificateur qui decide, pas le
+       chemin par lequel la caracteristique a monte. */
+    const h3 = hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:7}],
+                      con:15, pvMax:60, pvActuel:60 });
+    const p3 = planLevelUp(h3, 'Fighter');
+    const g3 = p3.avgHp;
+    applyLevelUp(h3, p3, { asiMode:'feat', feat:'Durable', featAbil:'con' });
+    eq(h3.con, 16, 'don : CON a 16');
+    eq(h3.pvMax, 60 + g3 + 8, 'don : rattrapage aussi');
+
+    /* Le journal doit le dire, sinon le joueur voit ses PV bouger sans savoir
+       pourquoi. */
+    const h4 = hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:7}],
+                      con:14, pvMax:60, pvActuel:60 });
+    const r4 = applyLevelUp(h4, planLevelUp(h4, 'Fighter'),
+                            { asiMode:'abil', asiA:'con', asiB:'' });
+    ok(r4.log.some(x => /rétroactif/.test(x)), 'le rattrapage est noté dans le journal');
+  }
+
   // PV : moyenne PHB = dé/2 + 1, plus CON, plus le bonus d'espèce
   {
     const c = hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:1}], con:14 });
@@ -803,7 +903,7 @@ function ok(cond, label) {
     {
       const c3 = { classes: [{ classe: 'Fighter', sousClasse: 'Champion', niveau: 7 }] };
       eq(setFeatureChoice(c3, 'Fighting Style', 'Fighter', ['Defense']), ['Defense'], 'choix valide retenu');
-      eq(getFeatureChoice(c3, 'Fighting Style'), ['Defense'], 'choix relu correctement');
+      eq(getFeatureChoice(c3, 'Fighting Style', 'Fighter'), ['Defense'], 'choix relu correctement');
       eq(setFeatureChoice(c3, 'Fighting Style', 'Fighter', ['OptionBidon']), [],
          'option inexistante refusee');
       eq(setFeatureChoice(c3, 'Fighting Style', 'Paladin', ['Archery']), [],
@@ -839,7 +939,7 @@ function ok(cond, label) {
       // Et applyLevelUp l'enregistre
       const r2 = applyLevelUp(p2, planLevelUp(p2, 'Paladin'),
                               { featureChoices: { 'Fighting Style': ['Dueling'] } });
-      eq(getFeatureChoice(p2, 'Fighting Style'), ['Dueling'], 'choix enregistre a la montee');
+      eq(getFeatureChoice(p2, 'Fighting Style', 'Paladin'), ['Dueling'], 'choix enregistre a la montee');
       ok(r2.log.some(x => /Fighting Style/.test(x)), 'choix note dans le journal');
     }
   }

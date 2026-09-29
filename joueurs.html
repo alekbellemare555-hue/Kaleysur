@@ -5158,7 +5158,7 @@ function autoFillClass(classe) {
 function featureChoiceChips(featureName, className) {
   const opt = featureOptions(featureName, className);
   if (!opt) return '';
-  const pris = getFeatureChoice(C(), featureName);
+  const pris = getFeatureChoice(C(), featureName, className);
   const plein = pris.length >= opt.pick;
   const manque = opt.pick - pris.length;
   return `<div class="cf-fc">`
@@ -5183,7 +5183,7 @@ function bindFeatureChoiceChips(root) {
     const nom = chip.dataset.cffeat, cls = chip.dataset.cfcls, o = chip.dataset.cfopt;
     const opt = featureOptions(nom, cls);
     if (!opt) return;
-    const pris = getFeatureChoice(C(), nom).slice();
+    const pris = getFeatureChoice(C(), nom, cls).slice();
     const i = pris.indexOf(o);
     if (i >= 0) pris.splice(i, 1);
     else if (pris.length < opt.pick) pris.push(o);
@@ -6131,7 +6131,11 @@ function migrateToMulticlass(c) {
   // renderAll() passe ici avant tout rendu : c'est le bon endroit pour rattraper
   // un nom de sous-classe périmé, une seule fois, avant que quoi que ce soit
   // s'en serve.
-  if (migrerNomsSousClasse(c)) triggerSave();
+  let migre = migrerNomsSousClasse(c);
+  /* Meme raison : rattraper la forme ancienne une seule fois, avant que quoi
+     que ce soit s'en serve. */
+  if (migrerChoixCapacites(c)) migre = true;
+  if (migre) triggerSave();
 }
 
 function getClasses(c) {
@@ -8892,10 +8896,21 @@ function featureChoicesAt(className, subclassName, level) {
   return out;
 }
 
-/* Choix enregistres sur le personnage : { 'Fighting Style': ['Defense'] } */
-function getFeatureChoice(c, featureName) {
+/* Choix enregistres sur le personnage : { 'Fighter::Fighting Style': ['Defense'] }
+
+   La cle porte la classe. Deux classes peuvent donner la meme capacite a choix
+   — un Guerrier/Rodeur a deux styles de combat — et les ranger sous le seul nom
+   faisait que le second effacait le premier, en silence. */
+function cleChoix(className, featureName) {
+  return (className || '?') + '::' + featureName;
+}
+
+/* La lecture accepte encore l'ancienne cle : si la migration n'a pas tourne, ou
+   a rate, un choix deja fait doit rester visible plutot que disparaitre. */
+function getFeatureChoice(c, featureName, className) {
   const all = c?.featureChoices;
-  const v = all && all[featureName];
+  if (!all) return [];
+  const v = all[cleChoix(className, featureName)] ?? all[featureName];
   return Array.isArray(v) ? v : (v ? [v] : []);
 }
 
@@ -8906,9 +8921,32 @@ function setFeatureChoice(c, featureName, className, selection) {
   if (!opt || !c) return [];
   const valides = (selection || []).filter(x => opt.options.includes(x)).slice(0, opt.pick);
   c.featureChoices = c.featureChoices || {};
-  if (valides.length) c.featureChoices[featureName] = valides;
-  else delete c.featureChoices[featureName];
+  const cle = cleChoix(className, featureName);
+  if (valides.length) c.featureChoices[cle] = valides;
+  else delete c.featureChoices[cle];
+  /* L'ancienne cle nue disparait des qu'on reecrit : sinon elle reviendrait
+     masquer le nouveau choix a la lecture suivante. */
+  delete c.featureChoices[featureName];
   return valides;
+}
+
+/* Reprend les fiches ecrites avant que la cle porte la classe.
+   On rattache chaque ancien choix a la premiere classe du personnage qui offre
+   vraiment cette capacite — l'ancienne forme n'en gardait qu'un de toute facon,
+   donc il n'y a rien a repartir. */
+function migrerChoixCapacites(c) {
+  const all = c?.featureChoices;
+  if (!all) return false;
+  let change = false;
+  for (const cle of Object.keys(all)) {
+    if (cle.includes('::')) continue;
+    const proprio = getClasses(c).find(cl => featureOptions(cle, cl.classe));
+    if (proprio) all[cleChoix(proprio.classe, cle)] = all[cle];
+    /* Sans classe proprietaire, l'entree ne correspond a rien de jouable : on
+       la laisse en place plutot que de la jeter, la lecture la trouvera encore. */
+    if (proprio) { delete all[cle]; change = true; }
+  }
+  return change;
 }
 
 /* Capacites a choix encore vides, tous niveaux atteints confondus.
@@ -8919,7 +8957,7 @@ function pendingFeatureChoices(c) {
     const lvl = parseInt(cl.niveau) || 1;
     for (let n = 1; n <= lvl; n++) {
       featureChoicesAt(cl.classe, cl.sousClasse, n).forEach(f => {
-        const fait = getFeatureChoice(c, f.name).length;
+        const fait = getFeatureChoice(c, f.name, cl.classe).length;
         if (fait < f.pick) out.push({ name: f.name, classe: cl.classe, niveau: n, pick: f.pick, fait });
       });
     }
@@ -9062,6 +9100,10 @@ function applyLevelUp(c, plan, choices) {
     return { ok:false, error:`Unknown feat: ${ch.feat}` };
   }
 
+  /* Releve avant toute ecriture : c'est lui qui dira si un ASI ou un don a
+     fait monter la CON, et donc s'il faut rattraper les PV des niveaux passes. */
+  const conAvant = Math.floor(((parseInt(c.con) || 10) - 10) / 2);
+
   // ── Niveau ──
   c.classes = getClasses(c).map(cl => ({ ...cl }));
   if (plan.isNewClass) {
@@ -9129,6 +9171,21 @@ function applyLevelUp(c, plan, choices) {
       if (ch.asiA && ch.asiB && ch.asiA !== ch.asiB) { bump(ch.asiA, 1); bump(ch.asiB, 1); }
       else bump(ch.asiA, 2);
     }
+  }
+
+  /* Un modificateur de CON qui monte vaut +1 PV par niveau DEJA pris, pas
+     seulement pour celui qu'on vient de gagner. Sans ce rattrapage, un
+     Guerrier 8 qui passe CON 14 a 16 perdait huit points de vie et ne pouvait
+     s'en apercevoir qu'en recomptant sa fiche a la main.
+
+     Le gain de ce niveau-ci a ete calcule avec l'ancien modificateur : il fait
+     donc partie des niveaux a rattraper, d'ou le total APRES montee. */
+  const conApres = Math.floor(((parseInt(c.con) || 10) - 10) / 2);
+  if (conApres !== conAvant) {
+    const rattrapage = (conApres - conAvant) * plan.totalAfter;
+    c.pvMax    = Math.max(1, (parseInt(c.pvMax) || 0) + rattrapage);
+    c.pvActuel = Math.max(0, (parseInt(c.pvActuel) || 0) + rattrapage);
+    log.push(`${rattrapage > 0 ? '+' : ''}${rattrapage} PV max (CON ${conAvant > conApres ? 'baissée' : 'montée'}, rétroactif sur ${plan.totalAfter} niveaux)`);
   }
 
   syncClassesToLegacy(c);
@@ -13665,10 +13722,26 @@ ${car} characters of notes.
         }
       }
 
-      // Background → compétences cochées
+      // Background → compétences cochées et don d'origine
       if (selBg.value) {
         c.background = selBg.value;
-        (BACKGROUND_DATA[selBg.value].skillKeys || []).forEach(k => { c[k] = 1; });
+        const bg = BACKGROUND_DATA[selBg.value];
+        (bg.skillKeys || []).forEach(k => { c[k] = 1; });
+        /* L'etape 4 annonce ce don au joueur : il doit se retrouver sur la
+           fiche. L'import D&D Beyond le pose deja dans customFeatures — sans
+           cette ligne, creer un personnage et en importer un ne donnaient pas
+           la meme fiche. */
+        if (bg.feat) {
+          c.customFeatures = c.customFeatures || [];
+          if (!c.customFeatures.some(f => f.name === bg.feat)) {
+            c.customFeatures.push({
+              name: bg.feat,
+              source: `Origin feat — ${selBg.value}`,
+              desc: (typeof ORIGIN_FEATS !== 'undefined' && ORIGIN_FEATS[bg.feat]) || '',
+              _open: false,
+            });
+          }
+        }
       }
 
       // Équipement de départ → inventaire + bourse, puis CA et attaques dérivées
