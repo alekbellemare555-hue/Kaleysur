@@ -211,6 +211,34 @@ function ok(cond, label) {
   eq(emplacementsPersonnage([{classe:'Wizard', sousClasse:'', niveau:0}]), null,
      'une classe a zero niveau ne lance rien');
 
+
+  /* ── Aucune table d'emplacements hors des regles ──
+     Chaque copie privee derive : celle de l'import portait encore le Psion en
+     demi-lanceur et l'arrondi 2014 longtemps apres leur correction ailleurs.
+     Les motifs ci-dessous sont des lignes caracteristiques des tables ; ils ne
+     peuvent apparaitre par hasard dans du code d'interface. */
+  {
+    const MOTIFS = [
+      [/\[\s*4\s*,\s*3\s*,\s*3\s*,\s*3\s*,\s*2\s*,\s*1/, 'lanceur complet / multiclasse'],
+      [/\[\s*4\s*,\s*2\s*,\s*0\s*,\s*0\s*,\s*0/,         'demi-lanceur'],
+      [/\[\s*0\s*,\s*0\s*,\s*2\s*,\s*0\s*,\s*0/,         'magie de pacte'],
+      [/\[\s*4\s*,\s*3\s*,\s*3\s*,\s*1\s*,\s*0/,         'tiers-lanceur'],
+    ];
+    for (const [re, quoi] of MOTIFS) {
+      ok(!re.test(J), 'joueurs.html : table « ' + quoi + '  » recopiee hors des regles');
+    }
+    /* Et elles existent bien la ou elles doivent etre. */
+    for (const [re, quoi] of MOTIFS) {
+      ok(re.test(R), 'js/rules-2024.js : la table « ' + quoi + ' » y est');
+    }
+
+    /* Les listes de lanceurs ne doivent pas non plus se recopier : c'est par la
+       qu'une copie reintroduit le Psion en demi-lanceur. */
+    ok(!/HALF_CASTERS|FULL_CASTERS|HALF_CAST_CLS|FULL_CAST_CLS/.test(J),
+       'joueurs.html : plus de liste de lanceurs recopiee');
+    ok(!/const SLOT_TABLE/.test(J), 'joueurs.html : plus de table d\'emplacements privee');
+  }
+
   // Emplacements de sorts multiclasse (PHB)
   eq(computeMulticlassSlots({ classes: [{ classe: 'Wizard', niveau: 5 }] }),
      [4,3,2,0,0,0,0,0,0], 'slots Wizard 5');
