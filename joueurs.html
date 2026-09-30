@@ -9522,14 +9522,33 @@ function armorFromItem(item) {
 
 /* Le personnage maitrise-t-il cette categorie d'arme ?
    weaponProf est du texte libre par classe (« Simple and Martial weapons »). */
-function isProficientWith(c, weaponCat) {
-  const profs = getClasses(c)
+function isProficientWith(c, weaponCat, props) {
+  /* Une liste par classe, pas un texte concatene : deux classes multiclassees
+     cumulent leurs maitrises, et une forme conditionnelle lue dans la bouillie
+     des deux ne veut plus rien dire. */
+  const listes = getClasses(c)
     .map(cl => (typeof CLASS_DATA !== 'undefined' && CLASS_DATA[cl.classe]?.weaponProf) || '')
-    .join(' ').toLowerCase();
-  if (!profs) return true;                      // classe inconnue : on n'invente pas un malus
-  if (/martial/.test(profs)) return true;       // martial couvre aussi simple
-  if (weaponCat === 'martial') return false;
-  return /simple/.test(profs) || !weaponCat;
+    .filter(Boolean)
+    .map(t => t.toLowerCase());
+  if (!listes.length) return true;              // classe inconnue : on n'invente pas un malus
+  const p = props || {};
+  return listes.some(texte => {
+    if (weaponCat === 'martial') {
+      if (!/martial/.test(texte)) return false;
+      /* « Martial weapons that have the Finesse or Light property » : la
+         maitrise porte sur une partie des armes de guerre seulement. Le
+         Roublard et le Moine sont dans ce cas depuis 2024 — sans cette lecture,
+         le seul mot « martial » leur ouvrait l'epee a deux mains. */
+      const cond = texte.match(/martial weapons that have the (.*?) propert/);
+      if (!cond) return true;                   // maitrise generale
+      const voulu = cond[1];
+      /* Propriete inconnue de l'arme : on ne tranche pas contre le joueur. */
+      if (p.finesse === undefined && p.light === undefined) return true;
+      return (/finesse/.test(voulu) && !!p.finesse) || (/light/.test(voulu) && !!p.light);
+    }
+    /* Une arme courante, ou une categorie qu'on ne connait pas. */
+    return /simple/.test(texte) || /martial/.test(texte) || !weaponCat;
+  });
 }
 
 /* Construit la ligne d'attaque d'un objet, ou null si ce n'est pas une arme.
@@ -9539,14 +9558,19 @@ function attackFromItem(item, c) {
   const nom = (item.name || '').trim();
   let dmg = item.dmg, type = item.dmgType, finesse = !!item.finesse, ranged = !!item.ranged;
   let cat = item.weaponCat;
+  /* undefined et non false : « on ne sait pas » et « ce n'est pas Legere » ne
+     donnent pas la meme reponse a la maitrise conditionnelle. */
+  let light = item.light;
 
-  if (!dmg && typeof STARTING_WEAPONS !== 'undefined') {
+  if (typeof STARTING_WEAPONS !== 'undefined') {
     const key = STARTING_WEAPONS[nom] ? nom
               : Object.keys(STARTING_WEAPONS).find(w => nom.includes(w));
     if (key) {
       const w = STARTING_WEAPONS[key];
-      dmg = w.dmg; type = w.type; finesse = !!w.finesse;
-      ranged = w.abil === 'dex';
+      /* Les donnees de l'objet priment ; la table ne comble que les trous. */
+      if (!dmg) { dmg = w.dmg; type = w.type; finesse = !!w.finesse; ranged = w.abil === 'dex'; }
+      if (!cat) cat = w.cat;
+      if (light === undefined) light = !!w.light;
     }
   }
   if (!dmg) return null;
@@ -9560,7 +9584,7 @@ function attackFromItem(item, c) {
     degats: dmg + (bonus ? (bonus > 0 ? '+' : '') + bonus : ''),
     typeDegat: type || '',
     atkType: abil,
-    prof: isProficientWith(c, cat),
+    prof: isProficientWith(c, cat, { finesse, light }),
     bonus: '',
     fromItem: nom,                 // marque l'origine : seules ces lignes sont retirees
   };

@@ -115,7 +115,7 @@ function ok(cond, label) {
     extract(J, 'function isAttunable(item)'),
     extract(J, 'function attunedItems(inv)'),
     extract(J, 'function migrateAttunement(inv)'),
-    extract(J, 'function isProficientWith(c, weaponCat)'),
+    extract(J, 'function isProficientWith(c, weaponCat, props)'),
     extract(J, 'function attackFromItem(item, c)'),
     extract(J, 'function syncAttackForItem(c, item, equipped)'),
     extract(J, 'const COIN_RATE'),
@@ -269,7 +269,7 @@ function ok(cond, label) {
   const { CLASS_DATA, SPECIES_DATA, BACKGROUND_DATA, GENERAL_FEATS, ORIGIN_FEATS,
           STARTING_EQUIP, DND_CLASSES, SUBCLASS_DATA, PREPARED_SPELLS, SPELL_PREP_STYLE,
           STARTING_SPELLS, LANGUAGES, TOOL_CHOICES, MULTICLASS_PREREQ, STARTING_ARMOR,
-          FEATURE_CHOICES, estUA, nomUA, sourceUA, titreUA,
+          FEATURE_CHOICES, estUA, nomUA, sourceUA, titreUA, STARTING_WEAPONS,
           CANTRIPS_KNOWN, CLASS_RESOURCES, infoUA, UA_SUBCLASSES,
           SUBCLASS_RENOMMEES, SOURCE_LIVRE, livreSource, donsDisponibles,
           /* typeLanceur n'est pas repris ici : les declarations de fonction
@@ -279,7 +279,7 @@ function ok(cond, label) {
     new Function(R + '; return { CLASS_DATA, SPECIES_DATA, BACKGROUND_DATA, GENERAL_FEATS,'
       + ' ORIGIN_FEATS, STARTING_EQUIP, DND_CLASSES, SUBCLASS_DATA, PREPARED_SPELLS,'
       + ' STARTING_SPELLS, LANGUAGES, TOOL_CHOICES, MULTICLASS_PREREQ, STARTING_ARMOR,'
-      + ' FEATURE_CHOICES, estUA, nomUA, sourceUA, titreUA,'
+      + ' FEATURE_CHOICES, estUA, nomUA, sourceUA, titreUA, STARTING_WEAPONS,'
       + ' CANTRIPS_KNOWN, CLASS_RESOURCES, infoUA, UA_SUBCLASSES,'
       + ' SUBCLASS_RENOMMEES, SOURCE_LIVRE, livreSource, donsDisponibles,'
       + ' LANCEURS,'
@@ -1007,6 +1007,108 @@ function ok(cond, label) {
              cls + ' ' + lvl + ' / ' + f.name + ' : expertise invalide (' + f.expertise + ')');
         });
       });
+    });
+  }
+
+
+  /* ── Maitrises 2024 : armes, armure, outils ── */
+  {
+    /* Les listes etaient celles de 2014. Le piege : isProficientWith ne
+       cherchait que les mots « martial » et « simple », si bien que corriger le
+       texte du Roublard — « Martial weapons that have the Finesse or Light
+       property » — l'aurait rendu maitre de TOUTES les armes de guerre. Le
+       defaut aurait change de sens sans qu'on le voie. */
+    eq(CLASS_DATA.Bard.weaponProf, 'Simple weapons',
+       'Barde : armes courantes seulement en 2024');
+    eq(CLASS_DATA.Artificer.weaponProf, 'Simple weapons',
+       'Artificier : armes courantes seulement');
+    ok(/Finesse or Light/.test(CLASS_DATA.Rogue.weaponProf),
+       'Roublard : armes de guerre Finesse ou Legeres');
+    ok(/that have the Light property/.test(CLASS_DATA.Monk.weaponProf),
+       'Moine : armes de guerre Legeres');
+    /* Le Druide : ni armure intermediaire, ni restriction sur le metal — la
+       phrase de 2014 sur le metal ne figure plus dans le livre. */
+    eq(CLASS_DATA.Druid.armorProf, 'Light armor and Shields',
+       'Druide : armure legere et boucliers');
+    ok(!/metal/i.test(CLASS_DATA.Druid.armorProf), 'Druide : plus d interdiction du metal');
+    ok(!/medium/i.test(CLASS_DATA.Druid.armorProf), 'Druide : pas d armure intermediaire');
+
+    /* Outils accordes par la classe au niveau 1. Les huit autres classes du PHB
+       n'en accordent aucun : le champ vide est la bonne reponse chez elles. */
+    eq(CLASS_DATA.Rogue.toolProf,  "Thieves' Tools", 'Roublard : outils de voleur');
+    eq(CLASS_DATA.Druid.toolProf,  'Herbalism Kit',  'Druide : kit d herboriste');
+    ok(/Musical Instrument/.test(CLASS_DATA.Bard.toolProf || ''), 'Barde : des instruments');
+    ok(/×3/.test(CLASS_DATA.Bard.toolProf || ''),                 'Barde : trois');
+    ok(/Artisan/.test(CLASS_DATA.Monk.toolProf || ''),            'Moine : outils d artisan');
+    ok(/or Musical Instrument/.test(CLASS_DATA.Monk.toolProf || ''), 'Moine : ou un instrument');
+    ok(/Tinker/.test(CLASS_DATA.Artificer.toolProf || ''),        'Artificier : outils de bricoleur');
+    /* Le Clerc avait recu par erreur les outils de l'Artificier, faute d un
+       ancrage borne a la bonne classe. */
+    ['Barbarian','Cleric','Fighter','Paladin','Ranger','Sorcerer','Warlock','Wizard']
+      .forEach(cls => ok(!CLASS_DATA[cls].toolProf,
+        cls + ' : aucune maitrise d outils de classe en 2024'));
+
+    /* La maitrise conditionnelle, arme par arme. */
+    const h = (cls) => hero({ classes:[{ classe:cls, sousClasse:'', niveau:5, customSousClasse:'' }] });
+    const CAS = [
+      ['Rogue',  'martial', { finesse:true,  light:false }, true,  'rapiere'],
+      ['Rogue',  'martial', { finesse:true,  light:true  }, true,  'epee courte'],
+      ['Rogue',  'martial', { finesse:false, light:false }, false, 'epee a deux mains'],
+      ['Rogue',  'simple',  { finesse:true,  light:true  }, true,  'dague'],
+      ['Monk',   'martial', { finesse:true,  light:true  }, true,  'cimeterre'],
+      ['Monk',   'martial', { finesse:true,  light:false }, false, 'rapiere (Finesse sans Legere)'],
+      ['Monk',   'martial', { finesse:false, light:false }, false, 'hache d armes'],
+      ['Bard',   'martial', { finesse:false, light:false }, false, 'epee longue'],
+      ['Bard',   'simple',  { finesse:true,  light:true  }, true,  'dague'],
+      ['Fighter','martial', { finesse:false, light:false }, true,  'epee a deux mains'],
+      ['Wizard', 'martial', { finesse:false, light:false }, false, 'epee a deux mains'],
+      ['Wizard', 'simple',  { finesse:true,  light:true  }, true,  'dague'],
+    ];
+    CAS.forEach(([cls, cat, props, attendu, quoi]) =>
+      eq(isProficientWith(h(cls), cat, props), attendu,
+         cls + ' + ' + quoi + ' (' + cat + ')'));
+
+    /* Multiclassage : les maitrises se cumulent, elles ne se melangent pas.
+       Un texte concatene aurait fait lire la condition du Roublard a travers
+       la liste du Guerrier. */
+    const mc = hero({ classes:[{ classe:'Rogue', sousClasse:'', niveau:3, customSousClasse:'' },
+                               { classe:'Fighter', sousClasse:'', niveau:2, customSousClasse:'' }] });
+    ok(isProficientWith(mc, 'martial', { finesse:false, light:false }),
+       'Roublard/Guerrier : le Guerrier donne l epee a deux mains');
+    const mc2 = hero({ classes:[{ classe:'Rogue', sousClasse:'', niveau:3, customSousClasse:'' },
+                                { classe:'Wizard', sousClasse:'', niveau:2, customSousClasse:'' }] });
+    ok(!isProficientWith(mc2, 'martial', { finesse:false, light:false }),
+       'Roublard/Magicien : ni l un ni l autre ne la donne');
+
+    /* Propriete inconnue : on ne tranche pas contre le joueur. */
+    ok(isProficientWith(h('Rogue'), 'martial', {}),
+       'arme de guerre aux proprietes inconnues : pas de malus invente');
+    ok(isProficientWith({ classes:[{ classe:'ClasseMaison', niveau:3 }] }, 'martial', { finesse:false }),
+       'classe inconnue : pas de malus invente');
+
+    /* La table d'armes porte desormais categorie et propriete Legere : sans
+       elles, la maitrise conditionnelle n'a pas de quoi repondre. */
+    const W = STARTING_WEAPONS;
+    eq(W.Shortsword.cat, 'martial', 'epee courte : arme de guerre');
+    eq(W.Dagger.cat,     'simple',  'dague : arme courante');
+    ok(W.Scimitar.light,   'cimeterre : Legere');
+    ok(W.Shortsword.light, 'epee courte : Legere');
+    ok(!W.Longsword.light, 'epee longue : pas Legere');
+    ok(!W.Greatsword.light,'epee a deux mains : pas Legere');
+    /* La Serpe n'a pas Finesse en 2024 : Simple, Legere, 1d4 tranchant. */
+    ok(!W.Sickle.finesse, 'serpe : pas de Finesse en 2024');
+    ok(W.Sickle.light,    'serpe : Legere');
+    Object.entries(W).forEach(([nom, w]) =>
+      ok(w.cat === 'simple' || w.cat === 'martial', nom + ' : categorie manquante ou invalide'));
+
+    /* Et le bout en bout : la ligne d'attaque construite depuis un objet porte
+       la bonne maitrise, categorie et propriete venant de la table. */
+    [['Rogue','Shortsword',true],['Rogue','Greatsword',false],['Rogue','Dagger',true],
+     ['Wizard','Greatsword',false],['Monk','Scimitar',true],['Monk','Greataxe',false],
+     ['Bard','Longsword',false],['Fighter','Greatsword',true]].forEach(([cls, nom, attendu]) => {
+      const a = attackFromItem({ name:nom }, h(cls));
+      ok(a, cls + ' + ' + nom + ' : une attaque est construite');
+      eq(a?.prof, attendu, cls + ' + ' + nom + ' : maitrise');
     });
   }
 

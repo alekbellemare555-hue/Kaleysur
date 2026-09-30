@@ -270,23 +270,28 @@ const STARTING_ARMOR = {
 };
 
 /* dmg = dé de base, abil = 'for' | 'dex', finesse = le joueur prend le meilleur des deux */
+/* `cat` et `light` ne sont pas decoratifs : depuis que le Roublard et le Moine
+   ont une maitrise conditionnelle — « Martial weapons that have the Finesse or
+   Light property » — c'est la seule facon de repondre a la question. Sans eux,
+   isProficientWith ne saurait pas si l'arme en main est concernee.
+   La Serpe n'a pas Finesse en 2024 : elle est Simple, Legere, 1d4 tranchant. */
 const STARTING_WEAPONS = {
-  'Dagger':         { dmg:'1d4',  type:'piercing',    abil:'for', finesse:true },
-  'Flail':          { dmg:'1d8',  type:'bludgeoning', abil:'for' },
-  'Greataxe':       { dmg:'1d12', type:'slashing',    abil:'for' },
-  'Greatsword':     { dmg:'2d6',  type:'slashing',    abil:'for' },
-  'Handaxe':        { dmg:'1d6',  type:'slashing',    abil:'for' },
-  'Javelin':        { dmg:'1d6',  type:'piercing',    abil:'for' },
-  'Light Crossbow': { dmg:'1d8',  type:'piercing',    abil:'dex' },
-  'Longbow':        { dmg:'1d8',  type:'piercing',    abil:'dex' },
-  'Longsword':      { dmg:'1d8',  type:'slashing',    abil:'for' },
-  'Mace':           { dmg:'1d6',  type:'bludgeoning', abil:'for' },
-  'Quarterstaff':   { dmg:'1d6',  type:'bludgeoning', abil:'for' },
-  'Scimitar':       { dmg:'1d6',  type:'slashing',    abil:'for', finesse:true },
-  'Shortbow':       { dmg:'1d6',  type:'piercing',    abil:'dex' },
-  'Shortsword':     { dmg:'1d6',  type:'piercing',    abil:'for', finesse:true },
-  'Sickle':         { dmg:'1d4',  type:'slashing',    abil:'for', finesse:true },
-  'Spear':          { dmg:'1d6',  type:'piercing',    abil:'for' },
+  'Dagger':         { dmg:'1d4',  type:'piercing',    abil:'for', cat:'simple',  finesse:true, light:true },
+  'Flail':          { dmg:'1d8',  type:'bludgeoning', abil:'for', cat:'martial' },
+  'Greataxe':       { dmg:'1d12', type:'slashing',    abil:'for', cat:'martial' },
+  'Greatsword':     { dmg:'2d6',  type:'slashing',    abil:'for', cat:'martial' },
+  'Handaxe':        { dmg:'1d6',  type:'slashing',    abil:'for', cat:'simple',  light:true },
+  'Javelin':        { dmg:'1d6',  type:'piercing',    abil:'for', cat:'simple' },
+  'Light Crossbow': { dmg:'1d8',  type:'piercing',    abil:'dex', cat:'simple' },
+  'Longbow':        { dmg:'1d8',  type:'piercing',    abil:'dex', cat:'martial' },
+  'Longsword':      { dmg:'1d8',  type:'slashing',    abil:'for', cat:'martial' },
+  'Mace':           { dmg:'1d6',  type:'bludgeoning', abil:'for', cat:'simple' },
+  'Quarterstaff':   { dmg:'1d6',  type:'bludgeoning', abil:'for', cat:'simple' },
+  'Scimitar':       { dmg:'1d6',  type:'slashing',    abil:'for', cat:'martial', finesse:true, light:true },
+  'Shortbow':       { dmg:'1d6',  type:'piercing',    abil:'dex', cat:'simple' },
+  'Shortsword':     { dmg:'1d6',  type:'piercing',    abil:'for', cat:'martial', finesse:true, light:true },
+  'Sickle':         { dmg:'1d4',  type:'slashing',    abil:'for', cat:'simple',  light:true },
+  'Spear':          { dmg:'1d6',  type:'piercing',    abil:'for', cat:'simple' },
 };
 
 const STARTING_EQUIP = {
@@ -978,7 +983,11 @@ const CLASS_DATA = {
   saves: ['dex','cha'],
   skillChoices: 3, skillList: ['acrobaties','animaux','arcanes','athletisme','discret','duperie','histoire','intimidation','investigation','medecine','nature','perception','performance','persuasion','prestidig','religion','survie','perspicacite'],
   armorProf: 'Light armor',
-  weaponProf: 'Simple weapons, Hand crossbow, Longsword, Rapier, Shortsword',
+  /* « Simple weapons », rien d'autre en 2024 : epee longue, rapiere, epee
+     courte et arbalete de poing appartenaient a la liste de 2014. C'est le
+     College de la Vaillance qui les rend, au niveau 3. */
+  weaponProf: 'Simple weapons',
+  toolProf: "Musical Instrument (choice) ×3",
   features: {
     1: [
       { name:'Bardic Inspiration', type:'feature', desc:"Bonus action: give one creature within 60 ft a Bardic Inspiration die (d6). They can roll it and add it to one ability check, attack roll, or saving throw within the next 10 minutes. You can use this CHA modifier times (minimum 1), regaining uses on Long Rest." },
@@ -1045,8 +1054,11 @@ const CLASS_DATA = {
 'Druid': {
   saves: ['int','sag'],
   skillChoices: 2, skillList: ['arcanes','animaux','perspicacite','medecine','nature','perception','religion','survie'],
-  armorProf: 'Light, Medium, Shields (non-metal)',
+  /* Ni armure intermediaire, ni restriction sur le metal : la phrase de 2014
+     sur le metal ne figure plus dans le livre, c'est devenu de la saveur. */
+  armorProf: 'Light armor and Shields',
   weaponProf: 'Simple weapons',
+  toolProf: "Herbalism Kit",
   features: {
     1: [
       { name:'Druidic', type:'feature', desc:"You know Druidic, the secret language of druids. You can speak it and use it to leave hidden messages. Creatures who don't know Druidic can detect a message exists with a DC 15 Perception check." },
@@ -1124,7 +1136,10 @@ const CLASS_DATA = {
   saves: ['for','dex'],
   skillChoices: 2, skillList: ['acrobaties','athletisme','histoire','perspicacite','religion','discret'],
   armorProf: 'None',
-  weaponProf: 'Simple weapons, Shortsword',
+  /* Les armes de guerre Legeres, cimeterre compris — pas seulement l'epee
+     courte, qui etait la formulation de 2014. */
+  weaponProf: 'Simple weapons and Martial weapons that have the Light property',
+  toolProf: "Artisan's Tools (choice) or Musical Instrument (choice)",
   features: {
     1: [
       { name:'Martial Arts', type:'feature', desc:"Gain these benefits while unarmored or wearing monk weapons: use DEX for attacks/damage, use the Martial Arts damage die (d6) for unarmed strikes, and make one Unarmed Strike as a Bonus Action after an Attack action." },
@@ -1300,7 +1315,12 @@ const CLASS_DATA = {
   saves: ['dex','int'],
   skillChoices: 4, skillList: ['acrobaties','athletisme','duperie','perspicacite','intimidation','investigation','perception','persuasion','prestidig','discret'],
   armorProf: 'Light armor',
-  weaponProf: 'Simple weapons, Hand crossbow, Longsword, Rapier, Shortsword',
+  /* La maitrise est conditionnelle en 2024 : les armes de guerre Finesse ou
+     Legeres, pas toutes. Le Roublard gagne la rapiere, le cimeterre, le fouet
+     et l'arbalete de poing, et perd l'epee longue. isProficientWith lit cette
+     forme — sans quoi le mot « Martial » lui ouvrirait l'epee a deux mains. */
+  weaponProf: 'Simple weapons and Martial weapons that have the Finesse or Light property',
+  toolProf: "Thieves' Tools",
   features: {
     1: [
       { name:'Expertise', type:'feature', desc:"Choose 2 skills you are proficient in. Your proficiency bonus is doubled for those skills." },
@@ -1442,7 +1462,8 @@ const CLASS_DATA = {
   saves: ['con','int'],
   skillChoices: 2, skillList: ['arcanes','histoire','investigation','medecine','nature','perception','prestidig'],
   armorProf: 'Light, Medium, Shields',
-  weaponProf: 'Simple weapons, Hand crossbow, Heavy crossbow',
+  weaponProf: 'Simple weapons',
+  toolProf: "Thieves' Tools, Tinker's Tools, and one Artisan's Tools (choice)",
   features: {
     1: [
       { name:'Magical Tinkering', type:'feature', desc:"Touch a Tiny nonmagical object and give it a magical property: emit light, emit a recorded message, emit an odor, or display a static visual. You can have INT modifier such objects active at once." },
