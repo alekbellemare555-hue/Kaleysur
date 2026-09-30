@@ -486,14 +486,13 @@ const FEATURE_CHOICES = {
     },
   },
 
-  'Deft Explorer': {
-    pick: 1,
-    options: ['Expertise','Canny'],
-    desc: {
-      'Expertise': 'Double your proficiency bonus in one more skill.',
-      'Canny':     'One extra language, and one additional level-1 Ranger spell always prepared.',
-    },
-  },
+  /* « Deft Explorer » n'est plus un choix : ses deux benefices sont cumules
+     en 2024, et l'Expertise passe par expertise:1 sur la capacite elle-meme. */
+
+  /* Les paliers 10 et 17 rejouent la meme liste. Sans ces deux entrees, la
+     correspondance par nom exact echouait et aucune option n'etait proposee. */
+  'Metamagic (2 more)':  { pick: 2, inherit: 'Metamagic' },
+  'Metamagic (2 final)': { pick: 2, inherit: 'Metamagic' },
 
   'Metamagic': {
     pick: 2,
@@ -961,13 +960,10 @@ const CLASS_DATA = {
     3: [{ name:'Bard Subclass', type:'subclass', desc:"Choose a Bard College: Dance, Glamour, Lore, Valor, or Whispers. You gain the first subclass feature." }],
     4: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
     5: [{ name:'Font of Inspiration', type:'feature', desc:"You now regain expended Bardic Inspiration uses when you finish a Short or Long Rest." }],
-    6: [
-      { name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Bard College." },
-      { name:'Countercharm', type:'feature', desc:"As an action, start a performance. Until you stop, each creature within 30 ft of you has advantage on saving throws against being Frightened or Charmed." }
-    ],
-    7: [{ name:'Expertise', type:'feature', desc:"Choose 2 more skills. Your proficiency bonus is doubled for checks using those skills (4 total)." }],
+    6: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Bard College." }],
+    7: [{ name:'Countercharm', type:'feature', desc:"As a Reaction, start a performance. Until the end of your next turn, you and allies within 30 ft have Advantage on saving throws to avoid or end the Frightened and Charmed conditions." }],
     8: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
-    9: [{ name:'Superior Bardic Inspiration', type:'feature', desc:"When you roll initiative and have no Bardic Inspiration uses remaining, you regain 1 use." }],
+    9: [{ name:'Expertise', type:'feature', desc:"Choose 2 more skills. Your proficiency bonus is doubled for checks using those skills (4 total)." }],
     10: [
       { name:'Magical Secrets', type:'feature', desc:"You can choose spells from any class's spell list when you learn or swap Bard spells." },
       { name:'Bardic Inspiration — d8', type:'feature', desc:"Your Bardic Inspiration die increases to a d8." }
@@ -1235,13 +1231,17 @@ const CLASS_DATA = {
   weaponProf: 'Simple and Martial weapons',
   features: {
     1: [
-      { name:'Expertise', type:'feature', desc:"Choose 2 skills you are proficient in. Your proficiency bonus is doubled for those skills." },
       { name:'Favored Enemy', type:'feature', desc:"Hunter's Mark is always prepared for you. You can cast it without expending a spell slot a number of times equal to your WIS modifier (minimum 1)/Long Rest." },
       { name:'Spellcasting', type:'feature', desc:"You are a half-caster using Wisdom, from level 1 (a 2024 change — spellcasting no longer waits for level 2). No cantrips. Prepared spells are set by your class table (2 at level 1) and can only be swapped when you gain a level." },
       { name:'Weapon Mastery', type:'feature', desc:"Use the Mastery property of 2 weapons. You can swap choices on Long Rest." }
     ],
     2: [
-      { name:'Deft Explorer', type:'feature', desc:"Choose Expertise (double prof in one more skill) or Canny (learn one extra language and one additional Ranger spell of 1st level, always prepared)." },
+      /* Deux benefices cumules, pas un choix : « you gain the following
+         benefits », au pluriel. « Canny » etait la formulation de 2014.
+         expertise:1 dit au monteur de niveau combien de competences faire
+         choisir — la capacite ne s'appelle pas « Expertise », elle en accorde
+         une quand meme. */
+      { name:'Deft Explorer', type:'feature', expertise:1, desc:"Two benefits: Expertise in one skill you are proficient in and lack Expertise in, and two languages of your choice." },
       { name:'Fighting Style', type:'feature', desc:"Choose a fighting style: Archery, Defense, Druidic Warrior (2 Druid cantrips), or Two-Weapon Fighting." }
     ],
     3: [{ name:'Ranger Subclass', type:'subclass', desc:"Choose a Ranger Archetype: Beast Master, Fey Wanderer, Gloom Stalker, or Hunter. You gain subclass features." }],
@@ -1250,7 +1250,7 @@ const CLASS_DATA = {
     6: [{ name:'Roving', type:'feature', desc:"Your walking speed increases by 10 ft. You gain a Climb speed equal to your walking speed and a Swim speed equal to your walking speed." }],
     7: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Ranger Archetype." }],
     8: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
-    9: [{ name:'Expertise', type:'feature', desc:"Double your proficiency bonus in 2 more skills (4 total)." }],
+    9: [{ name:'Expertise', type:'feature', desc:"Double your proficiency bonus in 2 more skills (3 total, with the one from Deft Explorer)." }],
     10: [{ name:'Tireless', type:'feature', desc:"As an action, give yourself temporary HP equal to 1d8 + WIS modifier. Use this WIS modifier times/Long Rest. On Short Rest, reduce your exhaustion level by 1." }],
     11: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Ranger Archetype." }],
     12: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
@@ -1332,6 +1332,11 @@ const CLASS_DATA = {
     12: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
     14: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Sorcerous Origin." }],
     16: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    /* « You gain two more options at Sorcerer level 10 and two more at
+       Sorcerer level 17 » : le 17 manquait entierement. Les deux portent un nom
+       distinct du « Metamagic » du niveau 2, sans quoi les choix des trois
+       paliers s'ecraseraient — la cle de stockage est « classe::nom ». */
+    17: [{ name:'Metamagic (2 final)', type:'feature', desc:"You learn 2 more Metamagic options (6 total)." }],
     18: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Sorcerous Origin." }],
     19: [{ name:'Epic Boon', type:'epic', desc:"Gain an Epic Boon feat or another feat of your choice." }],
     20: [{ name:'Arcane Apotheosis', type:'feature', desc:"While Innate Sorcery is active, once per turn when you cast a spell, you can apply a Metamagic option to the spell without expending Sorcery Points." }]
@@ -1379,7 +1384,10 @@ const CLASS_DATA = {
       { name:'Spellcasting', type:'feature', desc:"You are a full spellcaster using Intelligence. You start with 3 cantrips and a spellbook of 6 level-1 spells. Each day you prepare a subset of your spellbook — the number is set by your class table (4 at level 1). Unprepared spells stay in the book." }
     ],
     2: [
-      { name:'Scholar', type:'feature', desc:"You gain Expertise in your choice of Arcana or History. You also learn one additional language of your choice." }
+      /* Six competences au choix, pas deux, et aucune langue : le livre dit
+         « Arcana, History, Investigation, Medicine, Nature, or Religion ».
+         expertise:1 pour la meme raison que Deft Explorer. */
+      { name:'Scholar', type:'feature', expertise:1, desc:"Choose one skill you are proficient in among Arcana, History, Investigation, Medicine, Nature or Religion. You gain Expertise in it." }
     ],
     3: [
       { name:'Wizard Subclass', type:'subclass', desc:"Choose an Arcane Tradition: Abjuration, Conjuration, Divination, Enchantment, Evocation, Illusion, Necromancy, or Transmutation. You gain the first subclass feature." },

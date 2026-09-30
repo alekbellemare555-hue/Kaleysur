@@ -914,6 +914,101 @@ function ok(cond, label) {
     ok(/refresh\(\)/.test(bloc), 'choisir sa sous-classe recalcule le plan');
   }
 
+
+  /* ── Niveaux d'acquisition verifies sur les tables 2024 ── */
+  {
+    /* Chacun de ces paliers etait faux et a ete relu sur dnd2024.wikidot.com et
+       AideDD. Ils sont ecrits ici en clair : une table qui derive redevient
+       invisible a la lecture, c'est comme ca qu'ils s'etaient installes. */
+    const noms = (cls, lvl) => (CLASS_DATA[cls]?.features?.[lvl] || []).map(f => f.name);
+    const a = (cls, lvl, nom) => ok(noms(cls, lvl).includes(nom),
+      cls + ' ' + lvl + ' : ' + nom + ' attendu — trouve ' + JSON.stringify(noms(cls, lvl)));
+    const pas = (cls, lvl, nom) => ok(!noms(cls, lvl).includes(nom),
+      cls + ' ' + lvl + ' : ' + nom + ' ne doit pas y etre');
+
+    /* BARDE : Expertise 2 et 9, Countercharm 7. */
+    a('Bard', 2, 'Expertise');
+    a('Bard', 9, 'Expertise');
+    pas('Bard', 7, 'Expertise');
+    a('Bard', 7, 'Countercharm');
+    pas('Bard', 6, 'Countercharm');
+    eq(noms('Bard', 6), ['Subclass Feature'], 'Barde 6 : rien que la sous-classe');
+    /* « Superior Bardic Inspiration » au niveau 9 etait un doublon sous un autre
+       nom de « Superior Inspiration », qui est au 18 et y est toujours. */
+    pas('Bard', 9, 'Superior Bardic Inspiration');
+    a('Bard', 18, 'Superior Inspiration');
+    eq(expertiseAt('Bard', 2), 2, 'Barde 2 : deux competences');
+    eq(expertiseAt('Bard', 9), 2, 'Barde 9 : deux de plus');
+    eq(expertiseAt('Bard', 7), 0, 'Barde 7 : aucune');
+
+    /* ROUBLARD : 1 et 6. Ils etaient justes — ne pas les aligner sur le Barde. */
+    eq(expertiseAt('Rogue', 1), 2, 'Roublard 1 : deux competences');
+    eq(expertiseAt('Rogue', 6), 2, 'Roublard 6 : deux de plus');
+
+    /* RODEUR : aucune Expertise au niveau 1 ; une par Deft Explorer au 2 ;
+       deux au 9, soit trois en tout. */
+    pas('Ranger', 1, 'Expertise');
+    eq(noms('Ranger', 1).sort(), ['Favored Enemy','Spellcasting','Weapon Mastery'],
+       'Rodeur 1 : trois capacites, pas d Expertise');
+    eq(expertiseAt('Ranger', 1), 0, 'Rodeur 1 : aucune competence en Expertise');
+    eq(expertiseAt('Ranger', 2), 1, 'Rodeur 2 : une, par Deft Explorer');
+    eq(expertiseAt('Ranger', 9), 2, 'Rodeur 9 : deux de plus');
+    {
+      const de = (CLASS_DATA.Ranger.features[2] || []).find(f => f.name === 'Deft Explorer');
+      ok(de && !/\bCanny\b/i.test(de.desc || ''), 'Deft Explorer : « Canny » n existe plus en 2024');
+      ok(de && /languages?/i.test(de.desc || ''), 'Deft Explorer : les deux langues sont dites');
+      ok(!FEATURE_CHOICES['Deft Explorer'], 'Deft Explorer n est plus un choix');
+      const neuf = (CLASS_DATA.Ranger.features[9] || []).find(f => f.name === 'Expertise');
+      ok(neuf && /3 total/.test(neuf.desc || ''), 'Rodeur 9 : trois au total, pas quatre');
+    }
+
+    /* MAGICIEN : Scholar, six competences, aucune langue. */
+    {
+      const sc = (CLASS_DATA.Wizard.features[2] || []).find(f => f.name === 'Scholar');
+      ok(sc, 'Magicien 2 : Scholar');
+      ok(!/language/i.test(sc.desc || ''), 'Scholar : aucune langue accordee');
+      ['Arcana','History','Investigation','Medicine','Nature','Religion'].forEach(k =>
+        ok(new RegExp(k).test(sc.desc || ''), 'Scholar : ' + k + ' doit etre proposee'));
+      eq(expertiseAt('Wizard', 2), 1, 'Scholar : une competence en Expertise');
+    }
+
+    /* ENSORCELEUR : metamagie aux niveaux 2, 10 et 17. */
+    a('Sorcerer', 2,  'Metamagic');
+    a('Sorcerer', 10, 'Metamagic (2 more)');
+    a('Sorcerer', 17, 'Metamagic (2 final)');
+    /* Et chacun de ces trois paliers doit REELLEMENT proposer deux options :
+       la correspondance se fait par nom exact, un libelle qui ne figure pas
+       dans FEATURE_CHOICES n'offrait rien du tout. */
+    /* Le || {} n'est pas de la coquetterie : sans lui, un palier qui redevient
+       muet fait PLANTER le test au lieu de le faire echouer, et toutes les
+       assertions suivantes disparaissent avec lui. */
+    [[2,'Metamagic'],[10,'Metamagic (2 more)'],[17,'Metamagic (2 final)']].forEach(([lvl, nom]) => {
+      const ch = featureChoicesAt('Sorcerer', null, lvl);
+      const c0 = ch[0] || {};
+      eq(ch.length, 1, 'Ensorceleur ' + lvl + ' : un bloc de choix');
+      eq(c0.name, nom, 'Ensorceleur ' + lvl + ' : ' + nom);
+      eq(c0.pick, 2, 'Ensorceleur ' + lvl + ' : deux options a retenir');
+      eq((c0.options || []).length, 10, 'Ensorceleur ' + lvl + ' : les dix options');
+    });
+    /* Les trois paliers portent des noms distincts, sinon leurs choix
+       s'ecraseraient : la cle de stockage est « classe::nom ». */
+    {
+      const trois = [2,10,17].map(l => (featureChoicesAt('Sorcerer', null, l)[0] || {}).name);
+      eq(new Set(trois).size, 3, 'metamagie : trois libelles distincts');
+    }
+
+    /* Toute capacite qui declare expertise doit declarer un entier positif. */
+    Object.entries(CLASS_DATA).forEach(([cls, d]) => {
+      Object.entries(d.features || {}).forEach(([lvl, liste]) => {
+        (liste || []).forEach(f => {
+          if (f.expertise === undefined) return;
+          ok(Number.isInteger(f.expertise) && f.expertise > 0,
+             cls + ' ' + lvl + ' / ' + f.name + ' : expertise invalide (' + f.expertise + ')');
+        });
+      });
+    });
+  }
+
   /* ── PV saisis a la main a la montee de niveau ── */
   {
     const auNiveau = (hp) => {
@@ -1335,8 +1430,16 @@ function ok(cond, label) {
     eq(featureChoicesAt('Cleric', null, 1).map(f => f.name), ['Divine Order'], 'Clerc niveau 1');
     eq(featureChoicesAt('Druid', null, 1).map(f => f.name), ['Primal Order'], 'Druide niveau 1');
     eq(featureChoicesAt('Sorcerer', null, 2).map(f => f.name), ['Metamagic'], 'Ensorceleur niveau 2');
-    eq(featureChoicesAt('Ranger', null, 2).map(f => f.name).sort(), ['Deft Explorer', 'Fighting Style'],
-       'Rodeur niveau 2 : deux capacites a choix');
+    /* Deft Explorer a quitte cette liste : en 2024 ses deux benefices sont
+       cumules — « you gain the following benefits » — et l'option « Canny »
+       n'existe plus. Le seul choix du niveau 2 est le style de combat.
+       L'assertion d'origine verrouillait le defaut. */
+    eq(featureChoicesAt('Ranger', null, 2).map(f => f.name), ['Fighting Style'],
+       'Rodeur niveau 2 : seul le style de combat se choisit');
+    eq(featureChoicesAt('Sorcerer', null, 10).map(f => f.name), ['Metamagic (2 more)'],
+       'Ensorceleur niveau 10 : deux options de metamagie de plus');
+    eq(featureChoicesAt('Sorcerer', null, 17).map(f => f.name), ['Metamagic (2 final)'],
+       'Ensorceleur niveau 17 : les deux dernieres');
     eq(featureChoicesAt('Fighter', 'Champion', 7).map(f => f.name), ['Additional Fighting Style'],
        'Champion niveau 7 : un second style');
     eq(featureChoicesAt('Fighter', 'Champion', 3), [], 'aucun choix a ce niveau');

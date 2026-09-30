@@ -9006,10 +9006,18 @@ function cantripsAt(className, level) {
    Lu dans la description de la capacite plutot que code en dur. */
 function expertiseAt(className, level) {
   const feats = (typeof CLASS_DATA !== 'undefined' && CLASS_DATA[className]?.features?.[level]) || [];
-  const f = feats.find(x => /^expertise$/i.test(x.name || ''));
-  if (!f) return 0;
-  const m = (f.desc || '').match(/(\d+)\s+(?:more\s+)?skills?/i);
-  return m ? parseInt(m[1]) : 2;
+  /* On additionne : un niveau peut en accorder par deux chemins. Et certaines
+     capacites en donnent sans s'appeler « Expertise » — Deft Explorer (Rodeur 2)
+     et Scholar (Magicien 2) — d'ou le champ expertise pose sur la capacite,
+     plutot qu'une liste de noms en dur ici. */
+  let n = 0;
+  feats.forEach(f => {
+    if (Number.isInteger(f.expertise)) { n += f.expertise; return; }
+    if (!/^expertise$/i.test(f.name || '')) return;
+    const m = (f.desc || '').match(/(\d+)\s+(?:more\s+)?skills?/i);
+    n += m ? parseInt(m[1]) : 2;
+  });
+  return n;
 }
 
 /* Plus haut niveau de sort accessible, d'apres les emplacements. */
