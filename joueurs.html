@@ -6135,6 +6135,7 @@ function migrateToMulticlass(c) {
   /* Meme raison : rattraper la forme ancienne une seule fois, avant que quoi
      que ce soit s'en serve. */
   if (migrerChoixCapacites(c)) migre = true;
+  if (migrerNomsAttaques(c)) migre = true;
   if (migre) triggerSave();
 }
 
@@ -7534,10 +7535,11 @@ function parseRoll20JSON(raw) {
   const initiative = num('initiative_bonus', 'initiative', 'initiative_overall') || mod(stats.dex);
 
   /* ── Attaques ──
-     Même forme que celles de l'import D&D Beyond : `degat` au singulier,
-     `atkType` pour la caractéristique, `prof` pour la maîtrise. */
+     Même forme que celles de l'import D&D Beyond : name/degats, qui est la
+     forme que la fiche lit. Les deux imports ecrivaient nom/degat, et les
+     attaques importees s'affichaient vides. Les SORTS gardent nom/degat. */
   const attaques = repeating('attack').map(l => ({
-    nom: champ(l, 'atkname', 'name'),
+    name: champ(l, 'atkname', 'name'),
     bonus: champ(l, 'atkbonus', 'atkmod', 'attack_bonus'),
     // Roll20 donne le bonus d'attaque deja calcule. On le passe tel quel plutot
     // que de deviner la caracteristique : calcAtkBonus() n'utilise le bonus manuel
@@ -7545,12 +7547,12 @@ function parseRoll20JSON(raw) {
     // Le joueur peut choisir la caracteristique apres coup pour que ca suive ses niveaux.
     atkType: '',
     prof: false,
-    degat: [champ(l, 'dmgbase', 'dmg1base', 'atkdmgbase', 'dmg'), champ(l, 'dmgattr', 'dmg1attr')]
+    degats: [champ(l, 'dmgbase', 'dmg1base', 'atkdmgbase', 'dmg'), champ(l, 'dmgattr', 'dmg1attr')]
       .filter(Boolean).join(' + '),
     typeDegat: champ(l, 'dmgtype', 'dmg1type', 'atkdmgtype'),
     portee: champ(l, 'atkrange', 'range'),
     notes: champ(l, 'atkdesc', 'desc'),
-  })).filter(a => a.nom);
+  })).filter(a => a.name);
 
   /* ── Sorts ──
      Une section répétable par niveau : repeating_spell-0 … repeating_spell-9,
@@ -7806,9 +7808,11 @@ function parseDnDBeyondJSON(raw) {
     const dmg  = def.damage?.diceString || (def.damage?.diceCount ? `${def.damage.diceCount}d${def.damage.diceSize}` : '1d6');
     const type = (def.damageType||'').toLowerCase();
     const range = isRanged ? (def.range ? `${def.range}/${def.longRange||def.range*4}` : '80/320') : '5 ft.';
+    /* name/degats, pas nom/degat : c'est la forme que la fiche lit. Les sorts,
+       eux, gardent nom/degat — les deux coexistent legitimement. */
     attaques.push({
-      nom: def.name||'', bonus:'', atkType: atkStat, prof: true,
-      degat: dmg, typeDegat: type, portee: range, notes: props.filter(p=>!['finesse','light','thrown','versatile','reach'].includes(p)).join(', ')
+      name: def.name||'', bonus:'', atkType: atkStat, prof: true,
+      degats: dmg, typeDegat: type, portee: range, notes: props.filter(p=>!['finesse','light','thrown','versatile','reach'].includes(p)).join(', ')
     });
   });
 
@@ -8101,7 +8105,7 @@ function openShortRestModal() {
   let pendingHealing = 0;
   let diceRolled = 0;
   const nbDice = parseInt(c.nbDeVie) || getTotalLevel(c) || 1;
-  const dieType = parseInt((c.deVie||'1d8').replace('1d','')) || 8;
+  const dieType = deDeVie(c);
   const conMod  = Math.floor(((parseInt(c.con)||10) - 10) / 2);
   const maxHP   = parseInt(c.pvMax) || 0;
   const curHP   = parseInt(c.pvActuel) || 0;
@@ -8880,6 +8884,37 @@ function featureChoicesAt(className, subclassName, level) {
   return out;
 }
 
+/** Taille du de de vie du personnage.
+
+    c.deVie a pris trois formes selon le chemin de creation — « 1d10 » a la
+    main, « 5d10 » par Roll20 qui y met le nombre TOTAL de des, et
+    « 5d10 + 2d8 » par D&D Beyond en multiclasse. On lit donc les tailles
+    presentes plutot que de decouper la chaine a l'aveugle. */
+function deDeVie(c) {
+  const tailles = String(c?.deVie || '').match(/d(\d+)/g) || [];
+  /* Une seule taille : c'est elle, quel que soit le nombre devant. */
+  if (tailles.length === 1) return parseInt(tailles[0].slice(1), 10) || 8;
+  /* Plusieurs des, ou libelle illisible : on prend celui de la classe ou le
+     personnage a le plus de niveaux — c'est celle dont il a le plus de des. */
+  const principale = getClasses(c).slice()
+    .sort((a, b) => (parseInt(b.niveau, 10) || 0) - (parseInt(a.niveau, 10) || 0))[0];
+  const m = String((typeof DND_CLASSES !== 'undefined' && DND_CLASSES[principale?.classe]?.de) || '')
+    .match(/d(\d+)/);
+  return m ? parseInt(m[1], 10) : 8;
+}
+
+/* Renomme les attaques ecrites par les imports avant que ceux-ci posent la
+   bonne forme. Les SORTS gardent nom/degat : on ne touche qu'aux attaques. */
+function migrerNomsAttaques(c) {
+  if (!Array.isArray(c?.attaques)) return false;
+  let change = false;
+  for (const a of c.attaques) {
+    if (a && a.nom !== undefined && a.name === undefined) { a.name = a.nom; delete a.nom; change = true; }
+    if (a && a.degat !== undefined && a.degats === undefined) { a.degats = a.degat; delete a.degat; change = true; }
+  }
+  return change;
+}
+
 /* Choix enregistres sur le personnage : { 'Fighter::Fighting Style': ['Defense'] }
 
    La cle porte la classe. Deux classes peuvent donner la meme capacite a choix
@@ -9107,6 +9142,14 @@ function applyLevelUp(c, plan, choices) {
 
   // ── Dés de vie ──
   c.nbDeVie = (parseInt(c.nbDeVie) || 0) + 1;
+  /* Le libelle suit la classe ou le personnage a le plus de niveaux : sinon un
+     Magicien passe Guerrier garde son d6, et le repos court avec. */
+  {
+    const dominante = c.classes.slice()
+      .sort((a, b) => (parseInt(b.niveau, 10) || 0) - (parseInt(a.niveau, 10) || 0))[0];
+    const de = typeof DND_CLASSES !== 'undefined' && DND_CLASSES[dominante?.classe]?.de;
+    if (de && de !== c.deVie) { c.deVie = de; log.push(`Hit die : ${de}`); }
+  }
 
   // ── Sous-classe (déjà validée plus haut) ──
   if (plan.needsSubclass && ch.subclass) {

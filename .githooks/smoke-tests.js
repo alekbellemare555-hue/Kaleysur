@@ -87,6 +87,8 @@ function ok(cond, label) {
     extract(J, 'function cleChoix(className, featureName)'),
     extract(J, 'function getFeatureChoice(c, featureName, className)'),
     extract(J, 'function migrerChoixCapacites(c)'),
+    extract(J, 'function deDeVie(c)'),
+    extract(J, 'function migrerNomsAttaques(c)'),
     extract(J, 'function setFeatureChoice(c, featureName, className, selection)'),
     extract(J, 'function pendingFeatureChoices(c)'),
     extract(J, 'function cantripsAt(className, level)'),
@@ -568,6 +570,98 @@ function ok(cond, label) {
         || (parClasse && parClasse[1].split(/\s+/).some(c => liste.includes('.' + c + '.open')));
       ok(couvert, 'MODALS : « ' + id +' » n\'est surveille par aucun selecteur');
     });
+  }
+
+
+  /* ── La forme des attaques est celle que la fiche lit ── */
+  {
+    /* La fiche rend atk.name et atk.degats ; les deux imports ecrivaient
+       nom/degat, donc les attaques importees arrivaient sans nom ni degats.
+       Les SORTS, eux, utilisent bien nom/degat : les deux formes coexistent,
+       et c'est ce qui a permis a la confusion de durer. */
+    const canon = { name:'', degats:'', typeDegat:'', atkType:'', prof:true, bonus:'' };
+    Object.keys(canon).forEach(k =>
+      ok(J.includes("C().attaques.push({ name:''"), 'attaque ajoutee a la main : forme canonique'));
+
+    /* Aucun import ne doit plus poser les anciens noms dans une attaque. */
+    const zoneImports = J.slice(J.indexOf('function parseRoll20JSON'), J.indexOf('function parseDnDBeyondJSON') + 20000);
+    ok(!/attaques\.push\(\{\s*nom:/.test(zoneImports), 'import : plus de « nom » dans une attaque');
+    ok(!/^\s*nom: champ\(l, 'atkname'/m.test(zoneImports), 'Roll20 : plus de « nom » dans une attaque');
+    /* Le filtre final lit le meme champ que la construction : en renommer un
+       sans l'autre vidait silencieusement toute la liste. */
+    ok(!/filter\(a => a\.nom\)/.test(J), 'Roll20 : le filtre lit le champ qui existe');
+
+    /* La migration reprend les fiches deja importees, et ne touche pas aux sorts. */
+    const c = { attaques: [{ nom:'Rapière', degat:'1d8+4', typeDegat:'perçant' }],
+                spells:   [{ nom:'Trait de feu', degat:'1d10' }] };
+    ok(migrerNomsAttaques(c), 'migration : il y a quelque chose a reprendre');
+    eq(c.attaques[0].name, 'Rapière', 'migration : le nom est repris');
+    eq(c.attaques[0].degats, '1d8+4', 'migration : les degats sont repris');
+    eq(c.attaques[0].nom, undefined, 'migration : l\'ancien champ disparait');
+    eq(c.spells[0].nom, 'Trait de feu', 'migration : les sorts gardent leur forme');
+    eq(c.spells[0].degat, '1d10', 'migration : les degats de sort sont intacts');
+    ok(!migrerNomsAttaques(c), 'migration : rien a refaire au second passage');
+
+    /* Une attaque deja a la bonne forme ne doit pas etre ecrasee. */
+    const d = { attaques: [{ name:'Arc', degats:'1d8', nom:'VIEUX', degat:'VIEUX' }] };
+    migrerNomsAttaques(d);
+    eq(d.attaques[0].name, 'Arc', 'migration : ne remplace pas une valeur deja bonne');
+    eq(d.attaques[0].degats, '1d8', 'migration : idem pour les degats');
+  }
+
+  /* ── Le dé de vie se lit dans toutes ses formes ── */
+  {
+    /* c.deVie a trois formes selon le chemin de creation. Le repos court la
+       lisait avec .replace('1d',''), ce qui marchait pour « 1d10 » mais donnait
+       un d5 pour « 5d10 » et un d110 pour « 11d10 » — d'ou un defaut qui ne se
+       voyait qu'apres un import. */
+    const avec = (deVie, classes) => deDeVie({ deVie, classes });
+    const g = [{ classe:'Fighter', sousClasse:'', niveau:5 }];
+
+    eq(avec('1d10', g), 10, 'de de vie : forme normale');
+    eq(avec('1d6', g), 6, 'de de vie : d6');
+    eq(avec('1d12', g), 12, 'de de vie : d12');
+    eq(avec('5d10', g), 10, 'de de vie : forme Roll20 (nombre total devant)');
+    eq(avec('11d10', g), 10, 'de de vie : deux chiffres devant');
+    /* Plusieurs des : on prend celui de la classe ou il a le plus de niveaux. */
+    eq(avec('5d10 + 2d8', [{ classe:'Fighter', niveau:5 }, { classe:'Wizard', niveau:2 }]), 10,
+       'de de vie : multiclasse, la classe dominante decide');
+    eq(avec('5d10 + 2d8', [{ classe:'Fighter', niveau:2 }, { classe:'Wizard', niveau:5 }]), 6,
+       'de de vie : multiclasse, l\'autre sens');
+    /* Libelle vide ou illisible : la classe tranche, sinon d8. */
+    eq(avec('', g), 10, 'de de vie : sans libelle, la classe decide');
+    eq(avec('n\'importe quoi', [{ classe:'', niveau:1 }]), 8, 'de de vie : dernier recours');
+
+    /* Le repos court doit passer par la, pas re-decouper la chaine. */
+    ok(/const dieType = deDeVie\(c\)/.test(J), 'repos court : lit la taille au lieu de la deviner');
+    /* Les trois autres decoupages de « 1d » lisent DND_CLASSES[...].de, dont la
+       forme est garantie. C'est la chaine STOCKEE sur le personnage qui ne doit
+       plus etre decoupee a l'aveugle, puisqu'elle prend trois formes. */
+    {
+      let aveugle = false;
+      let i = J.indexOf('c.deVie');
+      while (i !== -1) {
+        if (J.slice(i, i + 60).includes(".replace('1d'")) aveugle = true;
+        i = J.indexOf('c.deVie', i + 1);
+      }
+      ok(!aveugle, 'c.deVie : plus de decoupage a l aveugle');
+    }
+  }
+
+  /* ── Le libellé suit la classe dominante à la montée ── */
+  {
+    /* Sans ca, un Magicien qui multiclasse Guerrier garde son d6 pour toujours,
+       et le repos court avec. */
+    const m = hero({ classes:[{classe:'Wizard',sousClasse:'',niveau:5,customSousClasse:''}], deVie:'1d6' });
+    applyLevelUp(m, planLevelUp(m, 'Wizard'), {});
+    eq(m.deVie, '1d6', 'mono-classe : le de ne bouge pas');
+
+    const mc = hero({ classes:[{classe:'Wizard',sousClasse:'',niveau:2,customSousClasse:''},
+                               {classe:'Fighter',sousClasse:'Champion',niveau:5,customSousClasse:''}],
+                      deVie:'1d6' });
+    applyLevelUp(mc, planLevelUp(mc, 'Fighter'), {});
+    eq(mc.deVie, '1d10', 'multiclasse : le de suit la classe dominante');
+    eq(deDeVie(mc), 10, 'et le repos court roulera le bon de');
   }
 
   /* ── PV saisis a la main a la montee de niveau ── */
@@ -2291,10 +2385,19 @@ function ok(cond, label) {
   eq(c.duperie, undefined, 'Roll20 : « 0 » ne vaut rien');
 
   // Les sections répétables sont regroupées par identifiant de ligne
-  eq(c.attaques.map(x => x.nom), ['Rapière'], 'Roll20 : attaques');
-  eq(c.attaques[0].degat, '1d8 + 4', 'Roll20 : dégâts recomposés');
-  eq(c.attaques[0].bonus, '+7', 'Roll20 : bonus d\'attaque conservé tel quel');
-  eq(c.attaques[0].atkType, '', 'Roll20 : caractéristique laissée vide — calcAtkBonus garde le bonus');
+  /* name/degats : la forme que la fiche lit. Les imports ecrivaient nom/degat,
+     et les attaques importees s'affichaient vides. */
+  eq(c.attaques.map(x => x.name), ['Rapière'], 'Roll20 : attaques');
+  /* Renommer la construction sans renommer le filtre final vidait toute la
+     liste : sans ce garde, les assertions suivantes plantaient au lieu de le
+     dire, et masquaient tout ce qui venait apres. */
+  const atk0 = c.attaques[0] || {};
+  ok(c.attaques.length === 1, 'Roll20 : une attaque, pas une liste vidée par le filtre');
+  eq(atk0.nom, undefined, 'Roll20 : plus de champ nom sur une attaque');
+  eq(atk0.degats, '1d8 + 4', 'Roll20 : dégâts recomposés');
+  eq(atk0.degat, undefined, 'Roll20 : plus de champ degat sur une attaque');
+  eq(atk0.bonus, '+7', 'Roll20 : bonus d\'attaque conservé tel quel');
+  eq(atk0.atkType, '', 'Roll20 : caractéristique laissée vide — calcAtkBonus garde le bonus');
   eq(c.spells.map(x => x.name + '@' + x.level),
      ['Minor Illusion@0', 'Shield@1', 'Misty Step@2'], 'Roll20 : sorts, cantrip au niveau 0');
   ok(c.spells[2].conc, 'Roll20 : concentration déduite de la durée');
