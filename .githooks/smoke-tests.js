@@ -760,6 +760,55 @@ function ok(cond, label) {
        'nom par defaut : New character');
   }
 
+
+  /* ── Resilient donne la maitrise de sauvegarde ── */
+  {
+    /* Le don applique son +1 et s'inscrit dans les capacites, mais n'ecrivait
+       jamais c.saveXxx. Un Magicien qui le prend en CON pour ses jets de
+       Concentration n'avait toujours pas la maitrise sur sa fiche, alors que la
+       description affichee la lui promet mot pour mot. */
+    const m = hero({ classes:[{classe:'Wizard',sousClasse:'',niveau:3,customSousClasse:''}], con:14 });
+    eq(m.saveCon, undefined, 'avant : pas de maitrise en CON');
+    const r = applyLevelUp(m, planLevelUp(m, 'Wizard'),
+                           { asiMode:'feat', feat:'Resilient', featAbil:'con' });
+    eq(m.saveCon, true, 'Resilient : la maitrise de sauvegarde est posee');
+    eq(m.con, 15, 'Resilient : le +1 est applique aussi');
+    ok(r.log.some(x => /Save proficiency/.test(x)), 'Resilient : le journal le dit');
+
+    /* Les six caracteristiques ecrivent la bonne cle. */
+    const CLES = { for:'saveFor', dex:'saveDex', con:'saveCon',
+                   int:'saveInt', sag:'saveSag', cha:'saveCha' };
+    for (const [abil, cle] of Object.entries(CLES)) {
+      const h = hero({ classes:[{classe:'Wizard',sousClasse:'',niveau:3,customSousClasse:''}] });
+      applyLevelUp(h, planLevelUp(h, 'Wizard'), { asiMode:'feat', feat:'Resilient', featAbil:abil });
+      eq(h[cle], true, 'Resilient ' + abil.toUpperCase() + ' : ' + cle);
+    }
+
+    /* Un autre don ne doit pas accorder de maitrise au passage. */
+    const autre = hero({ classes:[{classe:'Wizard',sousClasse:'',niveau:3,customSousClasse:''}], con:14 });
+    applyLevelUp(autre, planLevelUp(autre, 'Wizard'),
+                 { asiMode:'feat', feat:'Durable', featAbil:'con' });
+    eq(autre.saveCon, undefined, 'Durable : aucune maitrise accordee');
+
+    /* Le journal parle la langue de l'interface. */
+    ok(r.log.some(x => /^Feat : /.test(x)), 'journal : « Feat », pas « Don »');
+    ok(!J.includes('\`Don : \${ch.feat}\`'), 'journal : plus de « Don » en francais');
+  }
+
+  /* ── Le bonus de maitrise ne se recalcule plus a cote ── */
+  {
+    /* Deux copies d'une meme formule finissent par diverger : c'est deja arrive
+       trois fois dans ce fichier avec les tables d'emplacements. */
+    const plan = J.slice(J.indexOf('const pbLigne'), J.indexOf('const pbLigne') + 200);
+    ok(/pb\(totalLv\)/.test(plan), 'onglet plan : le bonus vient de pb()');
+    ok(!J.includes('Math.ceil(totalLv / 4) + 1'),
+       'onglet plan : plus de formule recopiee');
+    /* Et pb() donne bien ce que l'ancienne formule donnait, sur toute la plage. */
+    for (let n = 1; n <= 20; n++) {
+      eq(pb(n), Math.ceil(n / 4) + 1, 'pb(' + n + ') : identique a l ancienne formule');
+    }
+  }
+
   /* ── PV saisis a la main a la montee de niveau ── */
   {
     const auNiveau = (hp) => {
@@ -960,17 +1009,38 @@ function ok(cond, label) {
   // ASI : lu dans la table de la classe, sur le niveau DE CLASSE
   [3,7,9,11,15].forEach(l => ok(planLevelUp(hero({ classes:[{classe:'Rogue',sousClasse:'Assassin',niveau:l}] }), 'Rogue').isAsi,
     `Roublard : ASI en montant au niveau ${l + 1}`));
-  [1,4,5,13,18].forEach(l => ok(!planLevelUp(hero({ classes:[{classe:'Rogue',sousClasse:'Assassin',niveau:l}] }), 'Rogue').isAsi,
+  /* 18 a quitte cette liste : le niveau 19 donne un don epique, donc un don.
+     L'y laisser verrouillait le defaut — tout correctif echouait au pre-commit. */
+  [1,4,5,13].forEach(l => ok(!planLevelUp(hero({ classes:[{classe:'Rogue',sousClasse:'Assassin',niveau:l}] }), 'Rogue').isAsi,
     `Roublard : pas d'ASI en montant au niveau ${l + 1}`));
   // Le Guerrier en a deux de plus (6 et 14) — une liste generique les raterait
   [3,5,7,11,13,15].forEach(l => ok(planLevelUp(hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:l}] }), 'Fighter').isAsi,
     `Guerrier : ASI en montant au niveau ${l + 1}`));
-  // Niveau 19 : don epique en 2024, pas un ASI
+  /* Niveau 19 : un don epique, donc un don — et l'assistant doit le proposer.
+     L'assertion inverse figeait le defaut : elle affirmait pour les 14 classes
+     que le niveau 19 n'offre rien, ce qui etait vrai du code et faux de la regle. */
   Object.keys(CLASS_DATA).forEach(cls => {
     const p19 = planLevelUp(hero({ classes:[{classe:cls,sousClasse:'',niveau:18}] }), cls);
-    ok(!p19.isAsi, `${cls} : le niveau 19 est un don epique, pas un ASI`);
+    ok(p19.isAsi, `${cls} : le niveau 19 propose un don`);
+    ok(p19.isEpic, `${cls} : et c'est un don epique`);
     ok(p19.newFeatures.some(f => f.type === 'epic'), `${cls} : don epique au niveau 19`);
+    /* Un ASI ordinaire ne doit pas se faire passer pour un don epique. */
+    const p4 = planLevelUp(hero({ classes:[{classe:cls,sousClasse:'',niveau:3}] }), cls);
+    if (p4.isAsi) ok(!p4.isEpic, `${cls} : le niveau 4 est un ASI, pas un don epique`);
   });
+
+  /* Le plafond depend du don : 30 pour un don epique, 20 sinon. */
+  {
+    const epique = hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:18}], for:20 });
+    applyLevelUp(epique, planLevelUp(epique, 'Fighter'),
+                 { asiMode:'feat', feat:'Boon of the Iron Mind', featAbil:'for' });
+    eq(epique.for, 21, 'don epique : la caracteristique depasse 20');
+
+    const ordinaire = hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:3}], for:20 });
+    applyLevelUp(ordinaire, planLevelUp(ordinaire, 'Fighter'),
+                 { asiMode:'feat', feat:'Durable', featAbil:'for' });
+    eq(ordinaire.for, 20, 'don ordinaire : le plafond de 20 tient');
+  }
   // Chaque classe a au minimum les ASI de base
   Object.entries(CLASS_DATA).forEach(([cls, d]) => {
     const lv = Object.entries(d.features).filter(([, fs]) => fs.some(f => f.type === 'asi')).map(([l]) => +l);

@@ -8304,7 +8304,9 @@ function renderLvlupTab() {
     for (let j = 0; j <= i; j++) { const rc = rows[j].cls || defaultCls; clsCnt[rc] = (clsCnt[rc]||0)+1; }
     const classLv = clsCnt[cls];
     const totalLv  = i + 1;
-    const pb = Math.ceil(totalLv / 4) + 1;
+    /* pb() fait exactement ce calcul et il est teste sur dix niveaux : deux
+       copies d'une meme formule finissent par diverger. */
+    const pbLigne = pb(totalLv);
     const dndInfo   = DND_CLASSES[cls] || {};
     const hitDie    = dndInfo.de || '1d8';
     const hitDieNum = parseInt(hitDie.replace('1d','')) || 8;
@@ -8320,7 +8322,7 @@ function renderLvlupTab() {
     for (let j = 0; j < i; j++) { const rc = rows[j].cls||defaultCls; clsCntPrev[rc]=(clsCntPrev[rc]||0)+1; }
     const prevSlots = i > 0 ? slotsForCounts(clsCntPrev) : null;
     const isMultiHere = Object.keys(clsCnt).length > 1;
-    return { cls, classLv, totalLv, pb, hitDie, hitDieNum, conMod, avgHp,
+    return { cls, classLv, totalLv, pb: pbLigne, hitDie, hitDieNum, conMod, avgHp,
              features, isAsi, hasKnown, slots, prevSlots, isMultiHere, clsCnt };
   });
 
@@ -9052,10 +9054,14 @@ function planLevelUp(c, className) {
     ? Object.keys(SUBCLASS_DATA[className]) : [];
   const needsSubclass = toLevel >= 3 && !currentSub && subOptions.length > 0;
 
-  // ASI/don : lu dans la table de la classe, pas dans une liste générique —
-  // le Guerrier en a aussi aux niveaux 6 et 14, le Roublard au 10, et le niveau 19
-  // est un don épique (type 'epic'), pas un ASI, depuis 2024.
-  const isAsi = (CLASS_DATA[className].features?.[toLevel] || []).some(f => f.type === 'asi');
+  /* ASI/don : lu dans la table de la classe, pas dans une liste generique —
+     le Guerrier en a aussi aux niveaux 6 et 14, le Roublard au 10.
+     Le niveau 19 porte 'epic' et non 'asi' : ne tester que 'asi' revenait a ne
+     RIEN proposer a ce niveau-la, pour les quatorze classes. On garde les deux
+     separes, parce que l'ecran ne dit pas la meme chose dans les deux cas. */
+  const featsIci = CLASS_DATA[className].features?.[toLevel] || [];
+  const isEpic = featsIci.some(f => f.type === 'epic');
+  const isAsi  = featsIci.some(f => f.type === 'asi') || isEpic;
 
   // Capacités débloquées à ce niveau de classe (+ celles de la sous-classe)
   const clsFeatures = (CLASS_DATA[className].features?.[toLevel] || []).map(f => ({ ...f, source: className }));
@@ -9070,7 +9076,7 @@ function planLevelUp(c, className) {
     avgHp:  Math.max(1, Math.floor(hitDieNum / 2) + 1 + conMod + speciesHp),
     maxHp:  Math.max(1, hitDieNum + conMod + speciesHp),
     minHp:  Math.max(1, 1 + conMod + speciesHp),
-    needsSubclass, subOptions, isAsi,
+    needsSubclass, subOptions, isAsi, isEpic,
     newFeatures: [...clsFeatures, ...subFeatures],
     pbBefore: pb(totalBefore), pbAfter: pb(totalAfter),
     preparedBefore: preparedTotal(c),
@@ -9196,10 +9202,25 @@ function applyLevelUp(c, plan, choices) {
         name: ch.feat, source: `Don — ${plan.className} ${plan.toLevel}`,
         desc: f?.desc || '', _open:false
       });
-      log.push(`Don : ${ch.feat}`);
+      log.push(`Feat : ${ch.feat}`);
+      /* Resilient donne la maitrise des jets de sauvegarde de la caracteristique
+         choisie, en plus du +1. C'est ecrit dans sa description, affichee au
+         joueur au moment ou il le prend — et ce n'etait jamais applique. */
+      if (ch.feat === 'Resilient' && ch.featAbil) {
+        const SAVE = { for:'saveFor', dex:'saveDex', con:'saveCon',
+                       int:'saveInt', sag:'saveSag', cha:'saveCha' };
+        const cle = SAVE[ch.featAbil];
+        if (cle && !c[cle]) {
+          c[cle] = true;
+          log.push(`Save proficiency : ${ch.featAbil.toUpperCase()}`);
+        }
+      }
       // Les dons généraux 2024 donnent aussi +1 dans une caractéristique
       if (f?.asi && ch.featAbil) {
-        c[ch.featAbil] = Math.min(20, (parseInt(c[ch.featAbil]) || 10) + 1);
+        /* Un don epique monte jusqu'a 30 — sa description le dit. Le plafond
+           de 20 de l'ASI ordinaire, lui, ne bouge pas. */
+        const plafond = f?.epic ? 30 : 20;
+        c[ch.featAbil] = Math.min(plafond, (parseInt(c[ch.featAbil]) || 10) + 1);
         log.push(`+1 ${ch.featAbil.toUpperCase()} (${ch.feat})`);
       }
     } else {
@@ -9250,7 +9271,7 @@ function applyLevelUp(c, plan, choices) {
     row.cls = plan.className;
     row.hp  = gain;
     if (plan.isAsi) row.asi = ch.asiMode === 'feat'
-      ? `Don : ${ch.feat || ''}` + (ch.featAbil ? ` (+1 ${ch.featAbil.toUpperCase()})` : '')
+      ? `Feat : ${ch.feat || ''}` + (ch.featAbil ? ` (+1 ${ch.featAbil.toUpperCase()})` : '')
       : (ch.asiA && ch.asiB && ch.asiA !== ch.asiB
           ? `+1 ${ch.asiA.toUpperCase()} / +1 ${ch.asiB.toUpperCase()}`
           : `+2 ${(ch.asiA || '').toUpperCase()}`);
@@ -14068,6 +14089,13 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
     // ASI / don
     const asiBlock = $('lvlup-asi-block');
     asiBlock.style.display = plan.isAsi ? '' : 'none';
+    /* Au niveau 19 ce n'est pas un ASI mais un don epique : l'intitule le dit,
+       sinon le joueur cherche une amelioration de caracteristique qui n'est pas
+       ce qu'on lui propose. */
+    const titreAsi = $('lvlup-asi-title');
+    if (titreAsi) titreAsi.innerHTML = plan.isEpic
+      ? 'Epic Boon <span class="lvlup-req">or another feat</span>'
+      : 'Ability Score Improvement <span class="lvlup-req">or feat</span>';
     if (plan.isAsi) {
       // Une caractéristique déjà à 20 ne peut plus monter : on le dit au lieu de perdre le gain
       const opt = (sel) => ABIL.map(([k, l]) => {
@@ -14144,9 +14172,13 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
     if (f.asi) {
       const keys = abilKeysFromFeat(f.abil);
       wrap.style.display = '';
+      /* Meme plafond qu'a l'application : sans ca le selecteur grisait une
+         caracteristique a 20 alors que le don epique peut la monter a 30. */
+      const plafond = f.epic ? 30 : 20;
       $('lvlup-feat-abil').innerHTML = keys.map(k => {
         const v = parseInt(C()[k]) || 10;
-        return `<option value="${k}"${v >= 20 ? ' disabled' : ''}>${k.toUpperCase()} ${v}${v >= 20 ? ' (max)' : ''}</option>`;
+        const bloque = v >= plafond;
+        return `<option value="${k}"${bloque ? ' disabled' : ''}>${k.toUpperCase()} ${v}${bloque ? ' (max)' : ''}</option>`;
       }).join('');
     } else wrap.style.display = 'none';
   });
@@ -14977,7 +15009,7 @@ document.addEventListener('keydown', e => {
 
         <!-- ASI / don -->
         <div class="lvlup-block" id="lvlup-asi-block" style="display:none;">
-          <div class="lvlup-block-title">Ability Score Improvement <span class="lvlup-req">or feat</span></div>
+          <div class="lvlup-block-title" id="lvlup-asi-title">Ability Score Improvement <span class="lvlup-req">or feat</span></div>
           <div class="lvlup-asi-tabs">
             <button type="button" class="lvlup-tab active" data-asimode="abil">Abilities</button>
             <button type="button" class="lvlup-tab" data-asimode="feat">Don</button>
