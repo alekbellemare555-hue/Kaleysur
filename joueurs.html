@@ -6148,6 +6148,14 @@ function getTotalLevel(c) {
   return getClasses(c).reduce((s, cl) => s + (parseInt(cl.niveau) || 1), 0);
 }
 
+/* Les classes reellement renseignees.
+   Une fiche vierge porte une entree vide : la compter donnait un niveau total
+   de 1 a un personnage sans classe, puis de 2 des sa premiere montee, avec une
+   classe fantome a cote de la vraie. */
+function classesReelles(c) {
+  return getClasses(c).filter(cl => cl.classe);
+}
+
 function syncClassesToLegacy(c) {
   const classes = getClasses(c);
   if (classes.length > 0) {
@@ -9012,7 +9020,10 @@ function topSlotLevel(slots) {
 
 /* Décrit la montée d'un niveau dans `className` sans modifier le personnage. */
 function planLevelUp(c, className) {
-  const classes = getClasses(c);
+  /* Les entrees vides sont ignorees ici ET dans applyLevelUp : les deux
+     calculent leur indice de classe sur la meme liste, sinon ils designeraient
+     deux classes differentes. */
+  const classes = classesReelles(c);
   const idx     = classes.findIndex(cl => cl.classe === className);
   const known   = typeof CLASS_DATA !== 'undefined' && CLASS_DATA[className];
   if (!known) return { ok:false, error:`Unknown class: ${className}` };
@@ -9020,7 +9031,9 @@ function planLevelUp(c, className) {
   const fromLevel = idx >= 0 ? (parseInt(classes[idx].niveau) || 1) : 0;
   const toLevel   = fromLevel + 1;
   if (toLevel > 20) return { ok:false, error:`${className} is already level 20.` };
-  const totalBefore = getTotalLevel(c);
+  /* Sur les classes reelles, comme l indice plus haut : sinon une feuille
+     vierge partait du niveau 1 et arrivait au 2. */
+  const totalBefore = classes.reduce((n, cl) => n + (parseInt(cl.niveau, 10) || 1), 0);
   // Un multiclassage part du niveau 1 : le total ne bouge que d'un cran dans tous les cas
   const totalAfter  = totalBefore + 1;
   if (totalAfter > 20) return { ok:false, error:'Total level 20 reached.' };
@@ -9124,7 +9137,9 @@ function applyLevelUp(c, plan, choices) {
   const conAvant = Math.floor(((parseInt(c.con) || 10) - 10) / 2);
 
   // ── Niveau ──
-  c.classes = getClasses(c).map(cl => ({ ...cl }));
+  /* Les entrees vides disparaissent : sans ca la vraie classe s'ajoutait A COTE
+     de la classe fantome d'une feuille vierge. */
+  c.classes = classesReelles(c).map(cl => ({ ...cl }));
   if (plan.isNewClass) {
     c.classes.push({ classe: plan.className, sousClasse:'', niveau:1, customSousClasse:'' });
     log.push(`${plan.className} added at level 1 (multiclassing)`);
@@ -11321,14 +11336,21 @@ function renderViewSheet(el, pd, c, slot, username) {
     {key:'int',label:'INT'},{key:'sag',label:'WIS'},{key:'cha',label:'CHA'}
   ];
   // ── Proficiency bonus
-  const niveau = parseInt(c.niveau) || 1;
+  /* c.niveau vaut le niveau de la PREMIERE classe apres une montee, mais le
+     niveau TOTAL apres un import : lui faire confiance donnait +3 a un
+     Guerrier 5 / Magicien 5. On additionne les classes. */
+  const niveau = getTotalLevel(c);
   const profBonus = Math.ceil(niveau/4) + 1;
   // ── HP
   const pvCur = parseInt(c.pvActuel)||0; const pvMax = parseInt(c.pvMax)||1;
   const hpPct = Math.round((pvCur/pvMax)*100);
   const hpColor = hpPct>50?'#6aba6a':hpPct>25?'#dca03c':'#c97a7a';
   // ── Header
-  const avatarHtml = c.avatarPng
+  /* Pas `avatarHtml` : ce nom est deja celui de la fonction appelee juste en
+     dessous, et la const la masquait. Sans avatarPng, la vue partagee plantait
+     donc sur une zone morte temporelle — c est-a-dire pour presque tout le
+     monde, puisque peu de fiches portent une image. */
+  const avatarBloc = c.avatarPng
     ? `<div class="view-avatar"><img src="${c.avatarPng}" alt="avatar"></div>`
     : `<div class="view-avatar">${avatarHtml(c.avatar || pd.avatar)}</div>`;
   const classes = (c.classes||[{classe:c.classe,niveau:c.niveau}]).filter(cl=>cl.classe).map(cl=>`${cl.classe} ${cl.niveau}`).join(' / ') || '—';
@@ -11377,7 +11399,7 @@ function renderViewSheet(el, pd, c, slot, username) {
   const now = new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
   el.innerHTML = `
     <div class="view-header">
-      ${avatarHtml}
+      ${avatarBloc}
       <div>
         <div class="view-char-name">${esc(c.characterName||'Unnamed')}</div>
         <div class="view-char-sub">${esc(classes)}${c.species?' · '+esc(c.species):''}</div>
@@ -13695,7 +13717,7 @@ ${car} characters of notes.
 
     /* ── Création : applique tous les choix à la fiche ── */
     btnOk.addEventListener('click', () => {
-      const name = nameInp.value.trim() || 'Nouveau personnage';
+      const name = nameInp.value.trim() || 'New character';
       const id   = newCharId();
       playerData.characters[id] = emptyCharSlot(name);
       const slot = playerData.characters[id];
@@ -13708,12 +13730,16 @@ ${car} characters of notes.
       const b2 = bgBox.querySelector('[data-bgb="2"]')?.value;
       const b1 = bgBox.querySelector('[data-bgb="1"]')?.value;
       const bgOk = b2 && b1 && b2 !== b1;   // ignoré si les deux pointent la même caractéristique
+      /* Le bonus d'historique s'applique meme sans valeur choisie dans le
+         tableau : la boucle sautait ces caracteristiques, et le +2/+1 partait
+         avec elles sans que rien ne le dise. A defaut de choix, on part de ce
+         que la fiche porte deja. */
       abilBox.querySelectorAll('.wiz-abil-sel').forEach(s => {
-        if (!s.value) return;
         const k = s.dataset.abil;
-        c[k] = parseInt(s.value)
-             + (bgOk && k === b2 ? 2 : 0)
-             + (bgOk && k === b1 ? 1 : 0);
+        const bonus = (bgOk && k === b2 ? 2 : 0) + (bgOk && k === b1 ? 1 : 0);
+        if (!s.value && !bonus) return;
+        const base = s.value ? parseInt(s.value) : (parseInt(c[k]) || 10);
+        c[k] = base + bonus;
       });
 
       // Espèce + lignée → vitesse (fx sert aussi au calcul des PV plus bas)
@@ -13809,7 +13835,7 @@ ${car} characters of notes.
 
     /* ── Fiche vierge : certains préfèrent tout remplir eux-mêmes ── */
     btnBlank.addEventListener('click', () => {
-      const name = nameInp.value.trim() || 'Nouveau personnage';
+      const name = nameInp.value.trim() || 'New character';
       const id   = newCharId();
       playerData.characters[id] = emptyCharSlot(name);
       playerData.characters[id].character.characterName = name;
@@ -13830,6 +13856,23 @@ ${car} characters of notes.
       showToast(toast);
     }
 
+    /* Deux personnages peuvent legitimement porter le meme nom — des jumeaux,
+       un remplacant homonyme. On previent donc pendant la saisie au lieu
+       d'interdire : sans ca, le selecteur affiche deux entrees identiques et
+       le joueur ne sait plus laquelle il ouvre. */
+    const noteNom = document.createElement('div');
+    noteNom.className = 'wiz-bgb-warn';
+    noteNom.id = 'wiz-nom-warn';
+    nameInp.parentElement?.appendChild(noteNom);
+    const verifierNom = () => {
+      const voulu = nameInp.value.trim().toLowerCase();
+      const pris = voulu && Object.values(playerData?.characters || {})
+        .some(sl => (sl?.name || '').trim().toLowerCase() === voulu);
+      noteNom.innerHTML = pris
+        ? ic('warn') + ' A character already goes by this name — both will look the same in the list.'
+        : '';
+    };
+    nameInp.addEventListener('input', verifierNom);
     nameInp.addEventListener('keydown', e => { if (e.key === 'Enter') showStep(step + 1); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal(); });
     refreshAbils();

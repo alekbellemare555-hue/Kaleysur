@@ -51,6 +51,7 @@ function ok(cond, label) {
     extract(J, 'function esc(val)'),
     extract(J, 'function getClasses(c)'),
     extract(J, 'function getTotalLevel(c)'),
+    extract(J, 'function classesReelles(c)'),
     extract(R, 'const MULTICLASS_SLOTS'),
     extract(R, 'const FULL_CASTER_SLOTS'),
     extract(R, 'const HALF_CASTER_SLOTS'),
@@ -662,6 +663,101 @@ function ok(cond, label) {
     applyLevelUp(mc, planLevelUp(mc, 'Fighter'), {});
     eq(mc.deVie, '1d10', 'multiclasse : le de suit la classe dominante');
     eq(deDeVie(mc), 10, 'et le repos court roulera le bon de');
+  }
+
+
+  /* ── Une feuille vierge n'a pas de classe fantome ── */
+  {
+    /* emptyCharacter pose une entree de classe vide. La compter donnait un
+       niveau total de 1 a un personnage sans classe, puis applyLevelUp
+       ajoutait la vraie classe A COTE : deux classes, total 2, des la
+       premiere montee. */
+    const vierge = () => hero({ classes:[{ classe:'', sousClasse:'', niveau:1, customSousClasse:'' }] });
+
+    eq(classesReelles(vierge()).length, 0, 'feuille vierge : aucune classe reelle');
+    eq(classesReelles(hero({ classes:[{classe:'Fighter',niveau:3},{classe:'',niveau:1}] })).length, 1,
+       'une entree vide a cote d\'une vraie ne compte pas');
+
+    const c = vierge();
+    const p = planLevelUp(c, 'Fighter');
+    ok(p.ok, 'feuille vierge : la montee est possible');
+    ok(p.isNewClass, 'feuille vierge : la classe est nouvelle');
+    eq(p.totalAfter, 1, 'feuille vierge : on arrive au niveau 1, pas 2');
+    applyLevelUp(c, p, { hp:8 });
+    eq(c.classes.length, 1, 'feuille vierge : une seule classe apres la montee');
+    eq(c.classes[0].classe, 'Fighter', 'feuille vierge : la bonne classe');
+    eq(getTotalLevel(c), 1, 'feuille vierge : niveau total 1');
+
+    /* Une vraie classe a cote d'une entree vide : l'indice doit designer la
+       bonne, sinon le plan et l'application parlent de deux classes
+       differentes. */
+    const mix = hero({ classes:[{ classe:'', sousClasse:'', niveau:1, customSousClasse:'' },
+                                { classe:'Wizard', sousClasse:'', niveau:3, customSousClasse:'' }] });
+    const pm = planLevelUp(mix, 'Wizard');
+    eq(pm.fromLevel, 3, 'entree vide en tete : le niveau lu est le bon');
+    ok(!pm.isNewClass, 'entree vide en tete : la classe existe deja');
+    applyLevelUp(mix, pm, { hp:5 });
+    eq(mix.classes.length, 1, 'entree vide en tete : elle a disparu');
+    eq(mix.classes[0].niveau, 4, 'entree vide en tete : c\'est bien le Magicien qui monte');
+  }
+
+  /* ── La vue partagée compte le niveau total ── */
+  {
+    /* c.niveau vaut le niveau de la PREMIERE classe apres une montee, mais le
+       niveau TOTAL apres un import. La vue en tirait le bonus de maitrise. */
+    const mc = { niveau: 5, classes:[{classe:'Fighter',niveau:5},{classe:'Wizard',niveau:5}] };
+    eq(getTotalLevel(mc), 10, 'multiclasse : le total est 10, pas 5');
+    eq(Math.ceil(getTotalLevel(mc) / 4) + 1, 4, 'multiclasse : bonus de maitrise +4');
+    eq(Math.ceil((parseInt(mc.niveau) || 1) / 4) + 1, 3, 'et +3 si on croit c.niveau');
+
+    const vue = J.slice(J.indexOf('function renderViewSheet'), J.indexOf('function renderViewSheet') + 4000);
+    /* Un const portant le nom d'une fonction appelee juste en dessous la
+       masquait : sans avatarPng, la vue plantait sur une zone morte temporelle
+       — donc pour presque toutes les fiches, puisque peu portent une image.
+       Trouve en essayant de verifier le bonus de maitrise, pas par l'audit. */
+    ok(!vue.includes('const avatarHtml ='),
+       'vue partagee : plus de const qui masque la fonction avatarHtml');
+    ok(vue.includes('const avatarBloc ='),
+       'vue partagee : le bloc d\'avatar a son propre nom');
+    ok(/const niveau = getTotalLevel\(c\)/.test(vue),
+       'vue partagee : le niveau vient du total');
+    ok(!/const niveau = parseInt\(c\.niveau\)/.test(vue),
+       'vue partagee : plus de confiance a c.niveau');
+  }
+
+  /* ── Le bonus d'historique ne se perd plus ── */
+  {
+    /* La boucle sautait les caracteristiques sans valeur du tableau, et le
+       +2/+1 partait avec elles. Ce qui suit est la forme du code, faute de DOM :
+       la condition doit dependre AUSSI du bonus, pas seulement de la valeur. */
+    /* Trois endroits appellent abilBox.querySelectorAll — on visait par erreur
+       celui qui VIDE les cases. On ancre donc sur la ligne qui calcule le
+       bonus, qui n'existe que dans le bloc voulu. */
+    const debutAbil = J.indexOf("const bonus = (bgOk && k === b2 ? 2 : 0)");
+    const bloc = J.slice(Math.max(0, debutAbil - 400), debutAbil + 400);
+    ok(/if \(!s\.value && !bonus\) return/.test(bloc),
+       'bonus d\'historique : une case vide ne le fait plus disparaitre');
+    ok(/parseInt\(c\[k\]\) \|\| 10/.test(bloc),
+       'bonus d\'historique : a defaut de choix, on part de la fiche');
+    ok(!/if \(!s\.value\) return;/.test(bloc),
+       'bonus d\'historique : plus de sortie seche sur la valeur');
+  }
+
+  /* ── Les doublons de nom se signalent ── */
+  {
+    const bloc = J.slice(J.indexOf('const noteNom'), J.indexOf('const noteNom') + 900);
+    ok(bloc.length > 100, 'doublons : le garde existe');
+    ok(/already goes by this name/.test(bloc), 'doublons : le joueur est prevenu');
+    /* On previent, on n'interdit pas : deux jumeaux sont le droit du joueur. */
+    ok(!/return;/.test(bloc.slice(0, bloc.indexOf('addEventListener'))),
+       'doublons : aucun blocage, seulement un avertissement');
+    /* Le nom par defaut, pas les commentaires : « Nouveau personnage » subsiste
+       legitimement dans un commentaire de code, et l'assertion large le prenait
+       pour une chaine affichee. */
+    ok(!J.includes("trim() || 'Nouveau personnage'"),
+       'nom par defaut : plus de francais dans l interface joueur');
+    ok(J.includes("trim() || 'New character'"),
+       'nom par defaut : New character');
   }
 
   /* ── PV saisis a la main a la montee de niveau ── */
