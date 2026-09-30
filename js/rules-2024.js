@@ -946,7 +946,8 @@ const CLASS_DATA = {
     1: [
       { name:'Rage', type:'feature', desc:"Bonus action. Gain advantage on STR checks and saves, resistance to Bludgeoning/Piercing/Slashing damage, and a damage bonus. You can't cast or concentrate spells while raging. Ends if you don't attack or take damage. Uses: 2/Long Rest, scaling with level." },
       { name:'Unarmored Defense', type:'feature', desc:"While wearing no armor, your AC = 10 + DEX modifier + CON modifier. You can use a shield and still gain this benefit." },
-      { name:'Weapon Mastery', type:'feature', desc:"Use the Mastery property of 2 Simple or Martial weapons, choosing them on Long Rest." }
+      /* MELEE : le Barbare ne choisit pas parmi les armes a distance. */
+      { name:'Weapon Mastery', type:'feature', desc:"Use the Mastery property of 2 Simple or Martial Melee weapons, changing one of them on a Long Rest. You gain more at higher levels." }
     ],
     2: [
       { name:'Danger Sense', type:'feature', desc:"Advantage on DEX saving throws against effects you can see (traps, spells, etc.), as long as you are not Incapacitated." },
@@ -956,7 +957,10 @@ const CLASS_DATA = {
       { name:'Barbarian Subclass', type:'subclass', desc:"Choose a subclass: Berserker, Wild Heart, World Tree, or Zealot. You gain the first subclass feature." },
       { name:'Primal Knowledge', type:'feature', desc:"Gain proficiency in one skill from the Barbarian list: Athletics, Intimidation, Nature, Perception, or Survival." }
     ],
-    4: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    4: [
+      { name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." },
+      { name:'Weapon Mastery (3 weapons)', type:'feature', desc:"You can now use the Mastery property of 3 kinds of weapons." }
+    ],
     5: [
       { name:'Extra Attack', type:'feature', desc:"You can attack twice instead of once whenever you take the Attack action on your turn." },
       { name:'Fast Movement', type:'feature', desc:"While not wearing heavy armor, your walking speed increases by 10 feet." }
@@ -968,7 +972,10 @@ const CLASS_DATA = {
     ],
     8: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
     9: [{ name:'Brutal Strike', type:'feature', desc:"When you use Reckless Attack, you can forgo advantage on one attack to make a Brutal Strike: deal extra 1d10 damage and choose an effect (Forceful Blow: push 15 ft; Hamstring Blow: target speed −15 ft until your next turn)." }],
-    10: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Barbarian subclass." }],
+    10: [
+      { name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Barbarian subclass." },
+      { name:'Weapon Mastery (4 weapons)', type:'feature', desc:"You can now use the Mastery property of 4 kinds of weapons." }
+    ],
     11: [{ name:'Relentless Rage', type:'feature', desc:"If reduced to 0 HP while Raging, make a DC 10 CON save to drop to 1 HP instead. DC increases by 5 each time you succeed; resets on Long Rest." }],
     12: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
     13: [{ name:'Improved Brutal Strike', type:'feature', desc:"Brutal Strike damage increases to 2d10, and you can choose two effects on a Brutal Strike." }],
@@ -1104,14 +1111,17 @@ const CLASS_DATA = {
     1: [
       { name:'Fighting Style', type:'feature', desc:"Choose a fighting style: Archery (+2 ranged attack rolls), Defense (+1 AC in armor), Dueling (+2 damage with one-handed weapon), Great Weapon Fighting (reroll 1s and 2s on damage), Protection (impose disadvantage on attacker vs ally), or Two-Weapon Fighting (add ability mod to off-hand)." },
       { name:'Second Wind', type:'feature', desc:"Bonus action: regain 1d10 + Fighter level HP. You can use this twice per Short Rest. Also, as a Bonus Action on your turn in combat, you can expend a Second Wind use without healing but to add 1d10 to a failed ability check (Tactical Mind)." },
-      { name:'Weapon Mastery', type:'feature', desc:"Use the Mastery property of 3 Simple or Martial weapons. You can swap your choices on Long Rest." }
+      { name:'Weapon Mastery', type:'feature', desc:"Use the Mastery property of 3 kinds of Simple or Martial weapons, swapping your choices on a Long Rest. You gain more at higher levels." }
     ],
     2: [
       { name:'Action Surge', type:'feature', desc:"Once per Short Rest, on your turn you can take one additional Action. This extra action cannot be another Action Surge." },
       { name:'Tactical Mind', type:'feature', desc:"On a failed ability check, you can expend a Second Wind use to add 1d10 to the check. If this causes the check to succeed, you don't regain HP from Second Wind." }
     ],
     3: [{ name:'Fighter Subclass', type:'subclass', desc:"Choose a Martial Archetype: Battle Master, Champion, Eldritch Knight, Psi Warrior, or others. You gain your first subclass feature." }],
-    4: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    4: [
+      { name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." },
+      { name:'Weapon Mastery (4 weapons)', type:'feature', desc:"You can now use the Mastery property of 4 kinds of weapons." }
+    ],
     5: [{ name:'Extra Attack', type:'feature', desc:"You can attack twice instead of once whenever you take the Attack action on your turn." }],
     6: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
     7: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Fighter subclass." }],
@@ -1120,13 +1130,19 @@ const CLASS_DATA = {
       { name:'Indomitable', type:'feature', desc:"When you fail a saving throw, you can reroll it and must use the new result. 1/Long Rest (increases at higher levels)." },
       { name:'Tactical Shift', type:'feature', desc:"Whenever you use Action Surge, you can also move up to your speed and take one Object Interaction without using an action." }
     ],
-    10: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Fighter subclass." }],
+    10: [
+      { name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Fighter subclass." },
+      { name:'Weapon Mastery (5 weapons)', type:'feature', desc:"You can now use the Mastery property of 5 kinds of weapons." }
+    ],
     11: [{ name:'Two Extra Attacks', type:'feature', desc:"You can attack three times whenever you take the Attack action on your turn." }],
     12: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
     13: [{ name:'Studied Attacks', type:'feature', desc:"When you miss an attack roll, you gain advantage on your next attack roll against the same target before the end of your turn." }],
     14: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
     15: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Fighter subclass." }],
-    16: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    16: [
+      { name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." },
+      { name:'Weapon Mastery (6 weapons)', type:'feature', desc:"You can now use the Mastery property of 6 kinds of weapons." }
+    ],
     17: [
       { name:'Action Surge (2/Short Rest)', type:'feature', desc:"You can now use Action Surge twice per Short Rest." },
       { name:'Indomitable (2/Long Rest)', type:'feature', desc:"You can now use Indomitable twice per Long Rest." }
@@ -1336,7 +1352,9 @@ const CLASS_DATA = {
       { name:"Thieves' Cant", type:'feature',
         langues:["Thieves' Cant"], langueChoix:{ nb:1, tables:['standard','rare'] },
         desc:"You know Thieves' Cant, a secret mix of slang and signals used by criminals, plus one other language of your choice from either language table. You can hide messages in conversation that only other Cant speakers recognise." },
-      { name:'Weapon Mastery', type:'feature', desc:"Use the Mastery property of 2 Finesse or Ranged weapons. Change choices on Long Rest." }
+      /* « two kinds of weapons of your choice with which you have
+         proficiency » : la restriction vient de ses maitrises, pas d'ici. */
+      { name:'Weapon Mastery', type:'feature', desc:"Use the Mastery property of 2 kinds of weapons you are proficient with. You can change your choices on a Long Rest." }
     ],
     2: [{ name:'Cunning Action', type:'feature', desc:"Bonus action: Dash, Disengage, or Hide." }],
     3: [

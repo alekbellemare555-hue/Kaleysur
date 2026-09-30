@@ -1202,6 +1202,58 @@ function ok(cond, label) {
     }
   }
 
+
+  /* ── Bottes d'arme : les colonnes de progression ── */
+  {
+    /* Le Barbare et le Guerrier ont une COLONNE « Weapon Mastery » dans leur
+       table : le nombre d'armes augmente avec le niveau. Le site le figeait a
+       sa valeur du niveau 1 — un Guerrier 16 en maitrisait trois au lieu de six.
+       Chiffres releves dans les tables elles-memes, pas dans un resume : le
+       premier resume automatique annoncait « 3 puis 4 a partir du niveau 5 »
+       pour le Guerrier, ce que la table dement ligne par ligne. */
+    const noms = (cls, lvl) => (CLASS_DATA[cls]?.features?.[lvl] || []).map(f => f.name);
+    const palier = (cls, lvl, nb) => ok(noms(cls, lvl).includes('Weapon Mastery (' + nb + ' weapons)'),
+      cls + ' ' + lvl + ' : ' + nb + ' armes — trouve ' + JSON.stringify(noms(cls, lvl)));
+
+    palier('Barbarian',  4, 3);
+    palier('Barbarian', 10, 4);
+    palier('Fighter',    4, 4);
+    palier('Fighter',   10, 5);
+    palier('Fighter',   16, 6);
+
+    /* Et nulle part ailleurs : un palier de trop vaut un palier manquant. */
+    const paliersDe = (cls) => Object.entries(CLASS_DATA[cls].features || {})
+      .filter(([, l]) => (l || []).some(f => /^Weapon Mastery \(/.test(f.name)))
+      .map(([lv]) => +lv).sort((a, b) => a - b);
+    eq(paliersDe('Barbarian'), [4, 10],     'Barbare : deux paliers, pas plus');
+    eq(paliersDe('Fighter'),   [4, 10, 16], 'Guerrier : trois paliers');
+    /* Le Paladin, le Rodeur et le Roublard n'ont pas de colonne : deux armes
+       du niveau 1 au niveau 20. */
+    ['Paladin','Ranger','Rogue'].forEach(cls =>
+      eq(paliersDe(cls), [], cls + ' : aucun palier, le nombre ne bouge pas'));
+
+    /* Les cinq classes qui ont la capacite, et elles seules. */
+    const aLaCapacite = Object.keys(CLASS_DATA).filter(cls =>
+      (CLASS_DATA[cls].features?.[1] || []).some(f => f.name === 'Weapon Mastery'));
+    eq(aLaCapacite.sort(), ['Barbarian','Fighter','Paladin','Ranger','Rogue'],
+       'seules ces cinq classes ont des bottes d armes');
+    /* Le Barde, le Moine et l'Artificier n'en ont pas — ni dans la classe, ni
+       dans leurs sous-classes. */
+    ['Bard','Monk','Artificer','Druid','Cleric','Wizard','Sorcerer','Warlock'].forEach(cls =>
+      ok(!classeOffreCapacite(cls, 'Weapon Mastery'), cls + ' : aucune botte d arme'));
+
+    /* Les deux libelles qui etaient faux. */
+    {
+      const wm = (cls) => (CLASS_DATA[cls].features[1] || []).find(f => f.name === 'Weapon Mastery');
+      ok(/Melee/.test(wm('Barbarian').desc), 'Barbare : des armes de MELEE');
+      ok(!/Finesse or Ranged/.test(wm('Rogue').desc),
+         'Roublard : la restriction ne vient pas de la capacite');
+      ok(/proficient with/.test(wm('Rogue').desc),
+         'Roublard : les armes qu il maitrise');
+      ok(/3 kinds/.test(wm('Fighter').desc), 'Guerrier : trois au niveau 1');
+    }
+  }
+
   /* ── PV saisis a la main a la montee de niveau ── */
   {
     const auNiveau = (hp) => {
