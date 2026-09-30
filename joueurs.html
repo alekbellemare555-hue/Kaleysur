@@ -9021,7 +9021,7 @@ function topSlotLevel(slots) {
 }
 
 /* Décrit la montée d'un niveau dans `className` sans modifier le personnage. */
-function planLevelUp(c, className) {
+function planLevelUp(c, className, opts) {
   /* Les entrees vides sont ignorees ici ET dans applyLevelUp : les deux
      calculent leur indice de classe sur la meme liste, sinon ils designeraient
      deux classes differentes. */
@@ -9053,6 +9053,14 @@ function planLevelUp(c, className) {
   const subOptions  = (typeof SUBCLASS_DATA !== 'undefined' && SUBCLASS_DATA[className])
     ? Object.keys(SUBCLASS_DATA[className]) : [];
   const needsSubclass = toLevel >= 3 && !currentSub && subOptions.length > 0;
+  /* La sous-classe que le joueur est en train de choisir dans la modal compte
+     des maintenant. Sans elle, le plan reste celui d'un personnage sans
+     sous-classe et l'ecran annonce des gains qui ne sont pas ceux qu'on
+     s'apprete a appliquer : un Guerrier qui prend Eldritch Knight au niveau 3
+     gagne deux emplacements de sort, et le plan les ignorait. */
+  const pending = (opts || {}).subclass || '';
+  const subName = (currentSub && currentSub !== '__custom__') ? currentSub
+                : (needsSubclass && subOptions.includes(pending)) ? pending : '';
 
   /* ASI/don : lu dans la table de la classe, pas dans une liste generique —
      le Guerrier en a aussi aux niveaux 6 et 14, le Roublard au 10.
@@ -9064,10 +9072,23 @@ function planLevelUp(c, className) {
   const isAsi  = featsIci.some(f => f.type === 'asi') || isEpic;
 
   // Capacités débloquées à ce niveau de classe (+ celles de la sous-classe)
-  const clsFeatures = (CLASS_DATA[className].features?.[toLevel] || []).map(f => ({ ...f, source: className }));
-  const subName     = currentSub && currentSub !== '__custom__' ? currentSub : '';
+  const clsFeatures = featsIci.map(f => ({ ...f, source: className }));
   const subFeatures = (subName && SUBCLASS_DATA?.[className]?.[subName]?.[toLevel] || [])
     .map(f => ({ ...f, source: subName }));
+
+  /* Le personnage tel qu'il sera apres la montee. Une copie : rien n'est
+     touche ici. La sous-classe en fait partie — c'est elle qui fait d'un
+     Guerrier ou d'un Roublard un lanceur de sorts.
+
+     Ce calcul vivait dans la modal, recopie a cote de celui-ci ; il partait de
+     getClasses et non de classesReelles, et indexait donc la mauvaise classe
+     des qu'une feuille portait une entree vide. */
+  const classesApres = classes.map(cl => ({ ...cl }));
+  if (idx < 0) classesApres.push({ classe: className, sousClasse: subName, niveau: 1, customSousClasse: '' });
+  else {
+    classesApres[idx] = { ...classesApres[idx], niveau: toLevel };
+    if (subName) classesApres[idx].sousClasse = subName;
+  }
 
   return {
     ok: true, className, classIdx: idx, isNewClass: idx < 0,
@@ -9076,7 +9097,7 @@ function planLevelUp(c, className) {
     avgHp:  Math.max(1, Math.floor(hitDieNum / 2) + 1 + conMod + speciesHp),
     maxHp:  Math.max(1, hitDieNum + conMod + speciesHp),
     minHp:  Math.max(1, 1 + conMod + speciesHp),
-    needsSubclass, subOptions, isAsi, isEpic,
+    needsSubclass, subOptions, subName, subFeatures, isAsi, isEpic,
     newFeatures: [...clsFeatures, ...subFeatures],
     pbBefore: pb(totalBefore), pbAfter: pb(totalAfter),
     preparedBefore: preparedTotal(c),
@@ -9086,6 +9107,7 @@ function planLevelUp(c, className) {
     expertiseCount: expertiseAt(className, toLevel),
     featureChoices: featureChoicesAt(className, subName, toLevel),
     slotsBefore: computeMulticlassSlots(c),
+    slotsAfter:  computeMulticlassSlots({ classes: classesApres }),
     // Multiclassage : 13 requis des deux côtés (on prévient, on ne bloque pas —
     // certaines tables l'ignorent volontairement)
     prereq: idx < 0 ? multiclassPrereqCheck(c, className) : null,
@@ -9199,7 +9221,7 @@ function applyLevelUp(c, plan, choices) {
       const f = (typeof GENERAL_FEATS !== 'undefined' && GENERAL_FEATS[ch.feat]) || null;
       c.customFeatures = c.customFeatures || [];
       c.customFeatures.push({
-        name: ch.feat, source: `Don — ${plan.className} ${plan.toLevel}`,
+        name: ch.feat, source: `Feat — ${plan.className} ${plan.toLevel}`,
         desc: f?.desc || '', _open:false
       });
       log.push(`Feat : ${ch.feat}`);
@@ -13914,18 +13936,9 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
   const ABIL = [['for','STR'],['dex','DEX'],['con','CON'],['int','INT'],['sag','WIS'],['cha','CHA']];
   const $ = id => document.getElementById(id);
   let plan = null, chosenHp = null, asiMode = 'abil';
+  let chosenSub = '';             // sous-classe en cours de choix, avant confirmation
   let expertisePick = new Set();
   let fcPick = {};                // { "Fighting Style": ["Defense"] }
-
-  /* Copie legere du personnage au niveau suivant — sert a comparer les
-     emplacements de sorts avant/apres sans rien modifier. */
-  function simulateLevel(c, p) {
-    const classes = getClasses(c).map(x => ({ ...x }));
-    if (p.isNewClass) classes.push({ classe: p.className, niveau: 1 });
-    else classes[p.classIdx].niveau = p.toLevel;
-    return { classes };
-  }
-
 
   /* Choix de capacites du niveau : un bloc de pastilles par capacite.
      Meme mecanique que l'Expertise, mais le nombre a retenir varie
@@ -13996,7 +14009,7 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
 
   function refresh() {
     const c = C();
-    plan = planLevelUp(c, $('lvlup-class').value);
+    plan = planLevelUp(c, $('lvlup-class').value, { subclass: chosenSub });
     const okBtn = $('lvlup-confirm');
 
     if (!plan.ok) {
@@ -14081,10 +14094,16 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
     const subBlock = $('lvlup-sub-block');
     subBlock.style.display = plan.needsSubclass ? '' : 'none';
     if (plan.needsSubclass) {
+      /* La liste se reconstruit a chaque passage : sans reposer la valeur, le
+         choix disparaissait de l'ecran a l'instant ou on le faisait. */
       $('lvlup-sub').innerHTML = '<option value="">— Choose —</option>'
-        + plan.subOptions.map(s => `<option value="${esc(s)}"${titreUA(s)}>${esc(nomUA(s))}</option>`).join('');
-      $('lvlup-sub-preview').innerHTML = '';
-    }
+        + plan.subOptions.map(s =>
+            `<option value="${esc(s)}"${titreUA(s)}${s === chosenSub ? ' selected' : ''}>${esc(nomUA(s))}</option>`).join('');
+      /* L'apercu sort du plan, comme tout le reste de l'ecran : deux lectures
+         separees des memes donnees finissent toujours par se contredire. */
+      $('lvlup-sub-preview').innerHTML = (plan.subFeatures || []).map(f =>
+        `<div class="wiz-trait"><span class="wiz-trait-name">${esc(f.name)}</span> — ${esc(f.desc || '')}</div>`).join('');
+    } else chosenSub = '';
 
     // ASI / don
     const asiBlock = $('lvlup-asi-block');
@@ -14127,7 +14146,7 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
                + `(<strong>${plan.cantripsTotal}</strong> total) — pick them in the Compendium.</div>`);
     }
     const avant = topSlotLevel(plan.slotsBefore);
-    const apres = topSlotLevel(computeMulticlassSlots(simulateLevel(c, plan)));
+    const apres = topSlotLevel(plan.slotsAfter);
     if (apres > avant) {
       gains.push(`<div><span class="lvlup-gain-icon">✦</span>You unlock <strong>level ${apres}</strong>.</div>`);
     }
@@ -14183,13 +14202,18 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
     } else wrap.style.display = 'none';
   });
 
+  /* Choisir sa sous-classe recalcule tout le plan. Elle apporte des
+     emplacements de sorts (Eldritch Knight, Arcane Trickster), des capacites a
+     choisir et des nouveautes a annoncer : l'ecran se contentait d'en peindre
+     un apercu a cote, pendant que le plan restait celui d'avant le choix. */
   $('lvlup-sub').addEventListener('change', () => {
-    const feats = SUBCLASS_DATA?.[plan?.className]?.[$('lvlup-sub').value]?.[plan.toLevel] || [];
-    $('lvlup-sub-preview').innerHTML = feats.map(f =>
-      `<div class="wiz-trait"><span class="wiz-trait-name">${esc(f.name)}</span> — ${esc(f.desc || '')}</div>`).join('');
+    chosenSub = $('lvlup-sub').value;
+    refresh();
   });
 
-  $('lvlup-class').addEventListener('change', () => { chosenHp = null; refresh(); });
+  /* Changer de classe repart de zero : la sous-classe retenue etait celle de
+     l'autre classe. */
+  $('lvlup-class').addEventListener('change', () => { chosenHp = null; chosenSub = ''; refresh(); });
   $('lvlup-cancel').addEventListener('click', () => overlay.classList.remove('open'));
   overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
   document.addEventListener('keydown', e => {
@@ -14198,7 +14222,7 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
 
   $('lvlup-confirm').addEventListener('click', () => {
     if (!plan?.ok) return;
-    if (plan.needsSubclass && !$('lvlup-sub').value) {
+    if (plan.needsSubclass && !chosenSub) {
       showToast('Choose your subclass — it is required at level 3.', 'warn');
       return;
     }
@@ -14224,7 +14248,7 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
       return;
     }
     const res = applyLevelUp(C(), plan, {
-      hp: chosenHp, subclass: $('lvlup-sub').value, asiMode,
+      hp: chosenHp, subclass: chosenSub, asiMode,
       expertise: [...expertisePick],
       featureChoices: fcPick,
       asiA: $('lvlup-asi-a').value, asiB: $('lvlup-asi-b').value,
@@ -14248,6 +14272,7 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
       + `<optgroup label="Multiclasser">${CLASS_LIST.filter(n => !cur.includes(n))
             .map(n => `<option value="${esc(n)}">${esc(nomUA(n))}</option>`).join('')}</optgroup>`;
     chosenHp = null;
+    chosenSub = '';
     asiMode = 'abil';
     expertisePick = new Set();
     fcPick = {};

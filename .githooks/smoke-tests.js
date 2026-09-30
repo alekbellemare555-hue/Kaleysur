@@ -95,7 +95,7 @@ function ok(cond, label) {
     extract(J, 'function cantripsAt(className, level)'),
     extract(J, 'function expertiseAt(className, level)'),
     extract(J, 'function topSlotLevel(slots)'),
-    extract(J, 'function planLevelUp(c, className)'),
+    extract(J, 'function planLevelUp(c, className, opts)'),
     extract(J, 'function applyLevelUp(c, plan, choices)'),
     extract(J, 'function applyStartingGear(c, className, items)'),
     extract(J, 'function startingMaxHp(c, hitDie, speciesEffects)'),
@@ -807,6 +807,111 @@ function ok(cond, label) {
     for (let n = 1; n <= 20; n++) {
       eq(pb(n), Math.ceil(n / 4) + 1, 'pb(' + n + ') : identique a l ancienne formule');
     }
+  }
+
+
+  /* ── La sous-classe choisie dans la modal entre dans le plan ── */
+  {
+    /* Le plan etait calcule a l'ouverture de la modal, donc AVANT le choix de
+       sous-classe — et le choix ne le recalculait pas. Un Guerrier qui prend
+       Eldritch Knight au niveau 3 devient lanceur de sorts : l'ecran n'en
+       disait rien, le message d'apres-coup si. */
+    const guerrier = () => hero({ classes:[{classe:'Fighter',sousClasse:'',niveau:2,customSousClasse:''}] });
+
+    const sans = planLevelUp(guerrier(), 'Fighter');
+    eq(topSlotLevel(sans.slotsAfter), 0, 'Guerrier 3 sans sous-classe : aucun emplacement');
+
+    const ek = planLevelUp(guerrier(), 'Fighter', { subclass:'Eldritch Knight' });
+    eq(topSlotLevel(ek.slotsBefore), 0, 'Eldritch Knight : rien avant la montee');
+    eq(topSlotLevel(ek.slotsAfter),  1, 'Eldritch Knight : le niveau 3 ouvre les sorts de niveau 1');
+    /* computeMulticlassSlots rend null pour un non-lanceur : lire [0] dessus
+       faisait PLANTER le test au lieu de le faire echouer, ce qui masquait
+       toutes les assertions suivantes. */
+    eq((ek.slotsAfter || [])[0], 2, 'Eldritch Knight : deux emplacements de niveau 1');
+
+    /* Une sous-classe non lanceuse ne doit rien inventer. */
+    const champ = planLevelUp(guerrier(), 'Fighter', { subclass:'Champion' });
+    eq(topSlotLevel(champ.slotsAfter), 0, 'Champion : toujours pas de sorts');
+
+    /* Le Roublard a le meme mecanisme. */
+    const rogue = hero({ classes:[{classe:'Rogue',sousClasse:'',niveau:2,customSousClasse:''}] });
+    eq(topSlotLevel(planLevelUp(rogue, 'Rogue', { subclass:'Arcane Trickster' }).slotsAfter), 1,
+       'Arcane Trickster : le niveau 3 ouvre les sorts de niveau 1');
+    eq(topSlotLevel(planLevelUp(rogue, 'Rogue', { subclass:'Thief' }).slotsAfter), 0,
+       'Thief : aucun emplacement');
+
+    /* Les nouveautes de la sous-classe retenue apparaissent dans le plan. */
+    ok(!sans.subFeatures.length, 'sans sous-classe : aucune capacite de sous-classe annoncee');
+    ok(ek.subFeatures.length > 0, 'Eldritch Knight : ses capacites de niveau 3 sont annoncees');
+    ok(ek.subFeatures.every(f => f.source === 'Eldritch Knight'),
+       'les capacites de sous-classe portent son nom comme source');
+    ok(ek.newFeatures.some(f => f.source === 'Eldritch Knight'),
+       'la liste des nouveautes inclut la sous-classe');
+    eq(ek.subName, 'Eldritch Knight', 'le plan porte la sous-classe retenue');
+
+    /* Une sous-classe inconnue est ignoree, pas injectee. */
+    const faux = planLevelUp(guerrier(), 'Fighter', { subclass:'Bladesinger' });
+    eq(faux.subName, '', 'sous-classe etrangere a la classe : ignoree');
+    eq(topSlotLevel(faux.slotsAfter), 0, 'sous-classe etrangere : aucun emplacement');
+
+    /* Un personnage qui a DEJA sa sous-classe garde la sienne : le menu n'est
+       pas affiche, et une valeur residuelle ne doit pas la remplacer. */
+    const deja = hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:5,customSousClasse:''}] });
+    const p6 = planLevelUp(deja, 'Fighter', { subclass:'Eldritch Knight' });
+    eq(p6.subName, 'Champion', 'sous-classe deja posee : le pending ne la remplace pas');
+    eq(topSlotLevel(p6.slotsAfter), 0, 'sous-classe deja posee : pas de sorts voles a une autre');
+
+    /* Les capacites a choix de la sous-classe sont proposees. Cas reel : une
+       fiche importee sans sous-classe qui monte au niveau 7. */
+    const tardif = () => hero({ classes:[{classe:'Fighter',sousClasse:'',niveau:6,customSousClasse:''}] });
+    const nom = (p) => (p.featureChoices || []).map(f => f.name);
+    ok(!nom(planLevelUp(tardif(), 'Fighter')).includes('Additional Fighting Style'),
+       'sans sous-classe : le choix du Champion n est pas propose');
+    ok(nom(planLevelUp(tardif(), 'Fighter', { subclass:'Champion' })).includes('Additional Fighting Style'),
+       'Champion retenu : son choix de niveau 7 est propose');
+  }
+
+  /* ── Le plan annonce exactement ce que la montee produit ── */
+  {
+    /* C'est l'invariant qui a casse : deux calculs separes des memes
+       emplacements, l'un dans la modal et l'autre apres coup, qui se sont
+       contredits des qu'une sous-classe est entree en jeu. */
+    const cas = [];
+    Object.keys(CLASS_DATA).forEach(cls => {
+      const subs = Object.keys(SUBCLASS_DATA[cls] || {});
+      [1, 2, 4, 9, 16].forEach(niv => {
+        cas.push([cls, niv, '']);
+        if (niv === 2 && subs.length) subs.forEach(sub => cas.push([cls, niv, sub]));
+      });
+    });
+    /* Plus une feuille portant une entree de classe vide : l'ancien calcul
+       indexait la mauvaise classe des qu'il y en avait une. */
+    cas.push(['Fighter', 2, 'Eldritch Knight', true]);
+
+    cas.forEach(([cls, niv, sub, vide]) => {
+      const c = hero({ classes: (vide ? [{ classe:'', sousClasse:'', niveau:1, customSousClasse:'' }] : [])
+        .concat([{ classe:cls, sousClasse:'', niveau:niv, customSousClasse:'' }]) });
+      const plan = planLevelUp(c, cls, { subclass: sub });
+      if (!plan.ok) return;
+      const annonce = plan.slotsAfter;
+      applyLevelUp(c, plan, { hp:5, subclass: sub });
+      eq(annonce, computeMulticlassSlots(c),
+         cls + ' ' + niv + '→' + (niv + 1) + (sub ? ' / ' + sub : '') + (vide ? ' (entree vide)' : '')
+         + ' : le plan annonce les emplacements reellement obtenus');
+    });
+  }
+
+  /* ── L'ecran ne recalcule plus les emplacements dans son coin ── */
+  {
+    ok(!J.includes('function simulateLevel'),
+       'simulateLevel supprimee : le plan porte slotsAfter');
+    ok(J.includes('topSlotLevel(plan.slotsAfter)'),
+       'la modal lit les emplacements du plan');
+    /* Le menu de sous-classe recalcule le plan au lieu d afficher un apercu. */
+    const h = J.indexOf("$('lvlup-sub').addEventListener('change'");
+    ok(h !== -1, 'le menu de sous-classe a bien un gestionnaire');
+    const bloc = J.slice(h, h + 260);
+    ok(/refresh\(\)/.test(bloc), 'choisir sa sous-classe recalcule le plan');
   }
 
   /* ── PV saisis a la main a la montee de niveau ── */
