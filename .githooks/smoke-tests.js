@@ -521,6 +521,55 @@ function ok(cond, label) {
   });
 
 
+
+  /* ── Une modal ouverte est isolee ── */
+  {
+    /* Un refus d'applyLevelUp ne doit pas fermer la modal : le joueur y a saisi
+       ses PV, sa sous-classe, son don et ses choix de capacite, et un message
+       d'erreur devant une modal fermee ne dit pas ou reprendre. L'ordre des
+       deux lignes est tout le correctif, donc c'est l'ordre qu'on verifie. */
+    /* Le bouton Cancel est declare AVANT Confirm dans le fichier : borner la
+       fin sur lui donnait une tranche vide, et les trois assertions passaient
+       a cote sans rien dire. On prend donc une fenetre a partir du debut. */
+    const debutConf = J.indexOf("$('lvlup-confirm').addEventListener");
+    const conf = J.slice(debutConf, debutConf + 3000);
+    const iLecture = conf.indexOf('if (!res.ok)');
+    const iFermeture = conf.indexOf("overlay.classList.remove('open')");
+    ok(iLecture !== -1, 'montee : le resultat est lu');
+    ok(iFermeture !== -1, 'montee : la modal se ferme');
+    ok(iLecture < iFermeture,
+       'montee : un refus ne ferme pas la modal — les choix seraient perdus');
+
+    /* Les raccourcis a une lettre ne doivent pas traverser une modal : le test
+       du focus ne suffit pas, puisqu'un clic sur un bouton de la modal sort du
+       champ de saisie sans fermer quoi que ce soit. */
+    const raccourcis = J.slice(J.indexOf('17b. Raccourcis clavier globaux'),
+                               J.indexOf("case '?':"));
+    ok(/modalOuverte\(\)/.test(raccourcis),
+       'raccourcis : une modal ouverte les absorbe');
+    ok(/e\.key !== 'Escape'/.test(raccourcis),
+       "raccourcis : Echap reste actif — il ferme la modal");
+    /* Les quatre lettres qui changent l'etat du personnage. */
+    ["case 'l'", "case 'r'", "case 's'", "case 'd'"].forEach(c =>
+      ok(raccourcis.includes(c) || J.includes(c), 'raccourci ' + c + ' toujours present'));
+
+    /* La liste des overlays doit couvrir les modals qui existent vraiment :
+       en oublier une la laisse permeable sans que rien ne le signale. */
+    const liste = J.slice(J.indexOf('const MODALS = ['), J.indexOf('function modalOuverte'));
+    ['.new-char-modal-overlay.open', '.sr-modal-overlay.open',
+     '.ddb-modal-overlay.open', '#compendium-overlay.open', '.modal-overlay.open']
+      .forEach(sel => ok(liste.includes(sel), 'MODALS : ' + sel + ' surveille'));
+    /* Et chaque overlay declare dans le markup doit y figurer. */
+    const declares = [...J.matchAll(/id="([a-z0-9-]*overlay[a-z0-9-]*)"/g)].map(m => m[1]);
+    declares.filter(id => id !== 'sidebar-overlay').forEach(id => {
+      const parClasse = new RegExp('id="' + id + '"[^>]*class="([^"]*)"').exec(J)
+                     || new RegExp('class="([^"]*)"[^>]*id="' + id + '"').exec(J);
+      const couvert = liste.includes('#' + id)
+        || (parClasse && parClasse[1].split(/\s+/).some(c => liste.includes('.' + c + '.open')));
+      ok(couvert, 'MODALS : « ' + id +' » n\'est surveille par aucun selecteur');
+    });
+  }
+
   /* ── PV saisis a la main a la montee de niveau ── */
   {
     const auNiveau = (hp) => {

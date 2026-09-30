@@ -14112,8 +14112,11 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
       asiA: $('lvlup-asi-a').value, asiB: $('lvlup-asi-b').value,
       feat: $('lvlup-feat').value, featAbil: $('lvlup-feat-abil').value,
     });
-    overlay.classList.remove('open');
+    /* On ne ferme qu'apres avoir lu le resultat : un refus laissait sinon le
+       joueur devant une modal fermee, avec ses PV saisis, sa sous-classe et ses
+       choix de capacite perdus, et un message qui ne dit pas ou reprendre. */
     if (!res.ok) { showToast(res.error, 'warn'); return; }
+    overlay.classList.remove('open');
     renderAll(); renderCharCards(); renderCharSelector(); triggerSave();
     showToast(`⬆ Level ${res.totalLevel} — ${res.log.join(' · ')}`);
   });
@@ -14685,12 +14688,25 @@ document.getElementById('death-save-roll-btn')?.addEventListener('click', e => {
   document.getElementById('dice-total').textContent = msg;
 });
 
+/* Une modal ouverte doit absorber les raccourcis. Le test du focus ne suffit
+   pas : des qu'on clique sur un bouton ou sur le fond d'une modal, le focus
+   n'est plus dans un champ, et « l » lance alors un repos long sur le
+   personnage affiche derriere l'assistant de creation. */
+const MODALS = ['.modal-overlay.open', '.ddb-modal-overlay.open',
+                '.new-char-modal-overlay.open', '.sr-modal-overlay.open',
+                '#compendium-overlay.open'];
+function modalOuverte() {
+  return MODALS.some(sel => document.querySelector(sel));
+}
+
 /* ── 17b. Raccourcis clavier globaux ── */
 document.addEventListener('keydown', e => {
   // Ignorer si focus dans un champ de saisie
   const tag = document.activeElement?.tagName;
   if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
   if (e.ctrlKey || e.metaKey || e.altKey) return;
+  /* Echap reste utile : c'est lui qui ferme la modal. */
+  if (e.key !== 'Escape' && modalOuverte()) return;
 
   switch (e.key.toLowerCase()) {
     case 'd': {
