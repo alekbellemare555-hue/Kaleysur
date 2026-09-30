@@ -499,8 +499,9 @@ const FEATURE_CHOICES = {
     pick: 1,
     options: ['Protector','Thaumaturge'],
     desc: {
-      'Protector':   'Proficiency with Martial weapons and Heavy armor.',
-      'Thaumaturge': 'One additional Cleric cantrip, and Expertise in Arcana or Religion.',
+      'Protector':   'Proficiency with Martial weapons and training with Heavy armor.',
+      /* Pas une Expertise : un bonus egal au modificateur de Sagesse. */
+      'Thaumaturge': 'One extra Cleric cantrip, and a bonus to your Intelligence (Arcana or Religion) checks equal to your WIS modifier (minimum +1).',
     },
   },
 
@@ -508,8 +509,10 @@ const FEATURE_CHOICES = {
     pick: 1,
     options: ['Magician','Warden'],
     desc: {
-      'Magician': 'One extra cantrip from any list; a Nature spell is always prepared.',
-      'Warden':   'Proficiency with Martial weapons and Medium armor.',
+      /* Un sort mineur de DRUIDE, et un bonus aux jets d'Intelligence — pas un
+         sort de Nature toujours prepare, qui n'existe pas dans cette option. */
+      'Magician': 'One extra Druid cantrip, and a bonus to your Intelligence (Arcana or Nature) checks equal to your WIS modifier (minimum +1).',
+      'Warden':   'Proficiency with Martial weapons and training with Medium armor.',
     },
   },
 
@@ -1061,7 +1064,9 @@ const CLASS_DATA = {
   toolProf: "Herbalism Kit",
   features: {
     1: [
-      { name:'Druidic', type:'feature', desc:"You know Druidic, the secret language of druids. You can speak it and use it to leave hidden messages. Creatures who don't know Druidic can detect a message exists with a DC 15 Perception check." },
+      /* Le sort manquait, et le jet n'est pas une Perception. */
+      { name:'Druidic', type:'feature', langues:['Druidic'],
+        desc:"You know Druidic, the secret language of Druids. Learning it also unlocked the magic of speaking with animals: you always have the Speak with Animals spell prepared. You can leave hidden messages in Druidic — anyone who knows it spots them automatically, others need a DC 15 Intelligence (Investigation) check to notice one and magic to read it." },
       { name:'Primal Order', type:'feature', desc:"Choose Magician (one extra cantrip from any list, Nature spell always prepared per level) or Warden (proficiency with Martial weapons and Medium Armor)." },
       { name:'Spellcasting', type:'feature', desc:"You are a full spellcaster using Wisdom. You know 2 cantrips and prepare spells from the Druid list — the number is set by your class table (4 at level 1). You may swap prepared spells on a Long Rest." },
       { name:'Wild Shape', type:'feature', desc:"Bonus action: transform into a Beast you've seen, CR 1/4 or lower. Lasts 1 hour or until you drop to 0 HP. Regain uses (equal to WIS mod) on Long Rest, or 1 use on Short Rest." }
@@ -1325,7 +1330,12 @@ const CLASS_DATA = {
     1: [
       { name:'Expertise', type:'feature', desc:"Choose 2 skills you are proficient in. Your proficiency bonus is doubled for those skills." },
       { name:'Sneak Attack', type:'feature', desc:"Once per turn, deal 1d6 extra damage to one creature you hit with a Finesse or ranged weapon attack if you have advantage, or if an ally is adjacent to the target. Scales by 1d6 every odd level." },
-      { name:"Thieves' Cant", type:'feature', desc:"You know Thieves' Cant, a secret mix of slang and signals used by criminals. You can also hide messages in conversation only other Cant speakers recognize." },
+      /* Deux langues, pas une : l'argot, et une autre « from the language
+         tables in Chapter 2 » — au pluriel, donc la table rare est ouverte.
+         C'est l'aptitude qui autorise ce que l'origine, elle, interdit. */
+      { name:"Thieves' Cant", type:'feature',
+        langues:["Thieves' Cant"], langueChoix:{ nb:1, tables:['standard','rare'] },
+        desc:"You know Thieves' Cant, a secret mix of slang and signals used by criminals, plus one other language of your choice from either language table. You can hide messages in conversation that only other Cant speakers recognise." },
       { name:'Weapon Mastery', type:'feature', desc:"Use the Mastery property of 2 Finesse or Ranged weapons. Change choices on Long Rest." }
     ],
     2: [{ name:'Cunning Action', type:'feature', desc:"Bonus action: Dash, Disengage, or Hide." }],
@@ -1426,7 +1436,8 @@ const CLASS_DATA = {
 
 'Wizard': {
   saves: ['int','sag'],
-  skillChoices: 2, skillList: ['arcanes','histoire','perspicacite','investigation','medecine','religion'],
+  /* Sept competences au choix, Nature comprise. Elle manquait. */
+  skillChoices: 2, skillList: ['arcanes','histoire','perspicacite','investigation','medecine','nature','religion'],
   armorProf: 'None',
   weaponProf: 'Simple weapons',
   features: {

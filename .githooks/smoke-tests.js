@@ -85,6 +85,7 @@ function ok(cond, label) {
     extract(R, 'const FEATURE_CHOICES'),
     extract(J, 'function featureOptions(featureName, className)'),
     extract(J, 'function classeOffreCapacite(className, featureName)'),
+    extract(J, 'function languesDeClasse(className, niveau)'),
     extract(J, 'function featureChoicesAt(className, subclassName, level)'),
     extract(J, 'function cleChoix(className, featureName)'),
     extract(J, 'function getFeatureChoice(c, featureName, className)'),
@@ -1110,6 +1111,95 @@ function ok(cond, label) {
       ok(a, cls + ' + ' + nom + ' : une attaque est construite');
       eq(a?.prof, attendu, cls + ' + ' + nom + ' : maitrise');
     });
+  }
+
+
+  /* ── Listes, langues et ordres ── */
+  {
+    /* Le Magicien avait six competences au lieu de sept : Nature manquait. */
+    eq(CLASS_DATA.Wizard.skillList.length, 7, 'Magicien : sept competences au choix');
+    ok(CLASS_DATA.Wizard.skillList.includes('nature'), 'Magicien : Nature en fait partie');
+    eq(CLASS_DATA.Wizard.skillChoices, 2, 'Magicien : deux a retenir');
+
+    /* Les ordres : un bonus egal au modificateur de Sagesse, pas une Expertise
+       ni un sort de Nature toujours prepare. */
+    {
+      const d = FEATURE_CHOICES['Divine Order'].desc;
+      ok(!/Expertise/i.test(d.Thaumaturge), 'Thaumaturge : ce n est pas une Expertise');
+      ok(/WIS modifier/.test(d.Thaumaturge), 'Thaumaturge : un bonus egal au mod. de SAG');
+      ok(/Arcana or Religion/.test(d.Thaumaturge), 'Thaumaturge : Arcanes ou Religion');
+      ok(/Heavy armor/.test(d.Protector), 'Protecteur : armures lourdes');
+      ok(/Martial weapons/.test(d.Protector), 'Protecteur : armes de guerre');
+      const p = FEATURE_CHOICES['Primal Order'].desc;
+      ok(!/always prepared/i.test(p.Magician), 'Magicien : aucun sort toujours prepare dans cette option');
+      ok(/Druid cantrip/.test(p.Magician), 'Magicien : un sort mineur de Druide');
+      ok(/WIS modifier/.test(p.Magician), 'Magicien : un bonus egal au mod. de SAG');
+      ok(/Medium armor/.test(p.Warden), 'Gardien : armures intermediaires');
+      ok(!/Heavy/.test(p.Warden), 'Gardien : jamais les armures lourdes');
+    }
+
+    /* Les langues accordees par la classe. */
+    {
+      const r = languesDeClasse('Rogue', 1);
+      eq(r.accordees, ["Thieves' Cant"], 'Roublard : l argot des voleurs');
+      eq(r.choix.length, 1, 'Roublard : une langue de plus a choisir');
+      /* Le || {} evite qu une liste vide fasse PLANTER le test au lieu de le
+         faire echouer — toutes les assertions suivantes disparaitraient. */
+      const rc = r.choix[0] || {};
+      eq(rc.nb, 1, 'Roublard : une seule');
+      /* « from the language tables in Chapter 2 », au pluriel : c'est
+         l'aptitude qui ouvre la table rare, que l'origine interdit. */
+      eq((rc.tables || []).slice().sort(), ['rare','standard'], 'Roublard : les DEUX tables');
+      eq(rc.source, "Thieves' Cant", 'Roublard : la source est nommee');
+
+      const d = languesDeClasse('Druid', 1);
+      eq(d.accordees, ['Druidic'], 'Druide : le druidique');
+      eq(d.choix.length, 0, 'Druide : rien a choisir');
+
+      ['Wizard','Fighter','Bard','Cleric'].forEach(c => {
+        const l = languesDeClasse(c, 1);
+        eq(l.accordees.length, 0, c + ' : aucune langue de classe au niveau 1');
+        eq(l.choix.length, 0,     c + ' : aucun choix de langue au niveau 1');
+      });
+
+      /* Le niveau borne la lecture, et les bornes tiennent. */
+      eq(languesDeClasse('Rogue', 20).accordees, ["Thieves' Cant"], 'Roublard 20 : toujours une seule');
+      eq(languesDeClasse('Inconnue', 1).accordees, [], 'classe inconnue : rien, sans planter');
+      eq(languesDeClasse('Rogue', 0).accordees, ["Thieves' Cant"], 'niveau 0 : ramene a 1');
+      eq(languesDeClasse('Rogue', 99).accordees, ["Thieves' Cant"], 'niveau hors borne : ramene a 20');
+    }
+
+    /* Le druidique avait perdu son sort, et le jet n etait pas le bon. */
+    {
+      const dr = (CLASS_DATA.Druid.features[1] || []).find(f => f.name === 'Druidic');
+      ok(/Speak with Animals/.test(dr.desc), 'Druidique : Communication avec les animaux toujours prepare');
+      ok(/Investigation/.test(dr.desc), 'Druidique : le jet est une Investigation');
+      ok(!/Perception check/.test(dr.desc), 'Druidique : ce n est pas une Perception');
+      const tc = (CLASS_DATA.Rogue.features[1] || []).find(f => f.name === "Thieves' Cant");
+      ok(/one other language/.test(tc.desc), 'Argot des voleurs : la seconde langue est dite');
+    }
+
+    /* L ecran de creation ne puise plus dans la table rare pour l origine.
+       « Common plus two languages you roll or choose from the Standard
+       Languages table » : la table rare s ouvre par une aptitude. */
+    {
+      const i = J.indexOf('const langOpts =');
+      ok(i !== -1, 'le constructeur des menus de langue existe');
+      const bloc = J.slice(i, i + 700);
+      ok(/tables \|\| \['standard'\]/.test(bloc),
+         'creation : la table standard par defaut, la rare sur demande');
+      /* Les deux menus d origine s appellent sans table : donc standard. */
+      ok(/selLang1\.innerHTML = langOpts\(\);/.test(J), 'langue 1 : table standard');
+      ok(/selLang2\.innerHTML = langOpts\(\);/.test(J), 'langue 2 : table standard');
+      /* Et la langue accordee par la classe n est pas reproposee au choix. */
+      ok(/langOpts\('', ch\.tables, lg\.accordees\)/.test(J),
+         'la langue deja accordee est exclue du choix');
+      /* Les langues de classe arrivent sur la fiche. */
+      const k = J.indexOf("c.langues = ['Common'");
+      ok(k !== -1, 'les langues sont ecrites sur la fiche');
+      ok(/lg\.accordees/.test(J.slice(k - 300, k + 300)),
+         'la fiche recoit aussi les langues de la classe');
+    }
   }
 
   /* ── PV saisis a la main a la montee de niveau ── */

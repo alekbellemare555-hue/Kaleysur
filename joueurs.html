@@ -8903,6 +8903,27 @@ function classeOffreCapacite(className, featureName) {
   return Object.values(subs).some(porte);
 }
 
+/** Langues qu'une classe accorde jusqu'a un niveau donne.
+
+    Renvoie { accordees, choix } : celles qu'elle donne d'office, et les choix
+    qu'elle laisse ouverts avec les tables ou puiser. C'est la seule facon
+    d'ouvrir la table des langues rares : l'origine est verrouillee sur la table
+    standard, et une aptitude peut autoriser les deux — l'Argot des voleurs du
+    Roublard le fait explicitement. */
+function languesDeClasse(className, niveau) {
+  const out = { accordees: [], choix: [] };
+  const table = (typeof CLASS_DATA !== 'undefined' && CLASS_DATA[className]?.features) || null;
+  if (!table) return out;
+  const max = Math.max(1, Math.min(20, parseInt(niveau, 10) || 1));
+  for (let lv = 1; lv <= max; lv++) {
+    (table[lv] || []).forEach(f => {
+      (f.langues || []).forEach(l => { if (!out.accordees.includes(l)) out.accordees.push(l); });
+      if (f.langueChoix) out.choix.push({ ...f.langueChoix, source: f.name });
+    });
+  }
+  return out;
+}
+
 /* Capacites a choix debloquees a un niveau de classe donne (classe + sous-classe). */
 function featureChoicesAt(className, subclassName, level) {
   const out = [];
@@ -13734,12 +13755,47 @@ ${car} characters of notes.
       selTool.innerHTML = opts.map(o => `<option>${o}</option>`).join('');
     }
 
-    /* Langues : Commun d'office + 2 au choix (PHB 2024) */
-    const langOpts = sel => '<option value="">— Choose —</option>'
-      + `<optgroup label="Courantes">${LANGUAGES.standard.map(l => `<option${l === sel ? ' selected' : ''}>${l}</option>`).join('')}</optgroup>`
-      + `<optgroup label="Rares">${LANGUAGES.rare.map(l => `<option${l === sel ? ' selected' : ''}>${l}</option>`).join('')}</optgroup>`;
+    /* Langues : Commun d'office + 2 au choix (PHB 2024).
+
+       L'origine puise dans la table STANDARD, et seulement elle : « Common plus
+       two languages you roll or choose from the Standard Languages table ». La
+       table rare est ouverte par une aptitude — « Some features let a character
+       learn a rare language » — pas a la naissance. Les deux menus proposaient
+       les deux tables : on pouvait naitre Abyssal. */
+    /* `exclure` : une langue deja connue proposee au choix est un choix gaspille.
+       L'Argot des voleurs se donne lui-meme — il n'a rien a faire dans la liste
+       de la langue supplementaire qu'il accorde. */
+    const langOpts = (sel, tables, exclure) => '<option value="">— Choose —</option>'
+      + (tables || ['standard']).map(t => {
+          const etiquette = t === 'rare' ? 'Rares' : 'Courantes';
+          const liste = (LANGUAGES[t] || []).filter(l => !(exclure || []).includes(l));
+          if (!liste.length) return '';
+          return `<optgroup label="${etiquette}">${liste.map(l =>
+            `<option${l === sel ? ' selected' : ''}>${l}</option>`).join('')}</optgroup>`;
+        }).join('');
     selLang1.innerHTML = langOpts();
     selLang2.innerHTML = langOpts();
+
+    /* Ce que la classe ajoute par-dessus l'origine : l'Argot des voleurs donne
+       l'argot ET une langue au choix dans les DEUX tables, le Druidique donne le
+       druidique. Rien de tout cela n'arrivait sur la fiche. */
+    const majLanguesClasse = () => {
+      const bloc = document.getElementById('wiz-lang-classe');
+      if (!bloc) return;
+      const lg = languesDeClasse(selClass.value, 1);
+      if (!lg.accordees.length && !lg.choix.length) { bloc.innerHTML = ''; bloc.style.display = 'none'; return; }
+      bloc.style.display = '';
+      const choix = lg.choix.map((ch, i) =>
+        `<div class="auth-field">
+           <label class="auth-label" for="wiz-lang-cls${i}">Language — ${esc(ch.source)}</label>
+           <select class="auth-input" id="wiz-lang-cls${i}" data-langcls="1">${langOpts('', ch.tables, lg.accordees)}</select>
+         </div>`).join('');
+      bloc.innerHTML = (lg.accordees.length
+          ? `<div class="wiz-lang-note">Your class also grants <strong>${lg.accordees.map(esc).join('</strong>, <strong>')}</strong>.</div>`
+          : '')
+        + (choix ? `<div class="wiz-lang-row">${choix}</div>` : '');
+    };
+    majLanguesClasse();
     // Deux fois la même langue = une langue gâchée : on prévient sans bloquer
     const syncLangs = () => {
       const dup = selLang1.value && selLang1.value === selLang2.value;
@@ -13762,6 +13818,7 @@ ${car} characters of notes.
       btnOk.style.display   = step === TOTAL_STEPS ? '' : 'none';
       btnBlank.style.display = step === 1 ? '' : 'none';
       if (step === 1) setTimeout(() => nameInp.focus(), 50);
+      if (step === 4) majLanguesClasse();  // depend de la classe choisie a l'etape 3
       if (step === 5) renderBgBonus();  // dépend du background choisi à l'étape 4
       if (step === 6) { refreshEquip(); renderWizSummary(); }
     }
@@ -13923,9 +13980,15 @@ ${car} characters of notes.
         if (list.length) c.maitrises = list.join('\n');
       }
 
-      // Langues : Commun d'office + les deux choix de l'origine (doublon ignoré)
-      c.langues = ['Common', selLang1.value, selLang2.value]
-        .filter((l, i, arr) => l && arr.indexOf(l) === i).join(', ');
+      /* Langues : Commun d'office, les deux choix de l'origine, puis ce que la
+         classe accorde — l'argot du Roublard, le druidique du Druide, et la
+         langue que l'aptitude laisse choisir. Les doublons disparaissent. */
+      {
+        const lg = languesDeClasse(selClass.value, 1);
+        const choisies = Array.from(document.querySelectorAll('[data-langcls]')).map(el => el.value);
+        c.langues = ['Common', selLang1.value, selLang2.value, ...lg.accordees, ...choisies]
+          .filter((l, i, arr) => l && arr.indexOf(l) === i).join(', ');
+      }
 
       finishCreate(id, `✦ ${name} created — ${[c.species, c.classe && c.classe + ' 1', c.background].filter(Boolean).join(' · ') || 'blank sheet'}`);
     });
@@ -15028,7 +15091,8 @@ document.addEventListener('keydown', e => {
               <select class="auth-input" id="wiz-lang2"></select>
             </div>
           </div>
-          <div class="wiz-lang-note">You speak <strong>Commun</strong> by default, plus two languages from your origin.</div>
+          <div class="wiz-lang-note">You speak <strong>Commun</strong> by default, plus two languages from your origin — drawn from the Standard table. Rare languages come from class features, not from your origin.</div>
+          <div id="wiz-lang-classe" style="display:none;"></div>
           <div class="wiz-preview" id="wiz-bg-preview"></div>
         </div>
 
