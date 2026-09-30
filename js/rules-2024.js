@@ -416,14 +416,32 @@ const GENERAL_FEATS = {
   'Magic Connoisseur':  { asi:true, abil:'INT, SAG or CHA', prereq:'Level 4+, Magic Initiate', desc:"Choose a level-1 and a level-2 spell from your Magic Initiate list: they are always prepared and each can be cast once per Long Rest without a slot. You can swap one of them whenever you gain a level." },
   'Spell Resistant':    { asi:true, abil:'DEX or CON', prereq:'Level 4+', desc:"Resistance to Necrotic, Psychic, Radiant or Thunder damage (your choice). When you would fail a save against a spell or magical effect, add 1d6 to the roll (PB times per Long Rest)." },
   'Spell Subterfuge':   { asi:true, abil:'INT, SAG or CHA', prereq:'Level 4+, Spellcasting/Pact Magic', desc:"After casting a spell with the Magic action using a slot, take both Dash and Hide as one Bonus Action (the feat's ability modifier, times per Long Rest). Casting with a Verbal component or a spell attack doesn't end your Invisible condition if you end your turn with Three-Quarters or Total Cover." },
-  /* Dons epiques : reserves au niveau 19, d'ou le drapeau. */
+  /* ── Dons epiques ──
+     Reserves au niveau 19, d'ou le drapeau. Tous portent un +1 dont le plafond
+     monte a 30 et non 20 : c'est applyLevelUp qui lit ce drapeau pour le savoir.
+     Les douze premiers sont ceux du Player's Handbook 2024 ; les trois derniers
+     viennent d'Arcana Unleashed et sont signales comme tels par SOURCE_LIVRE. */
+  'Boon of Combat Prowess':      { epic:true, asi:true, abil:'choice', prereq:'Level 19+', desc:"The chosen score can rise to 30. Peerless Aim: when you miss with an attack roll, you can hit instead. Once used, not again until the start of your next turn." },
+  'Boon of Dimensional Travel':  { epic:true, asi:true, abil:'choice', prereq:'Level 19+', desc:"The chosen score can rise to 30. Blink Steps: immediately after you take the Attack action or the Magic action, you can teleport up to 30 ft to an unoccupied space you can see." },
+  'Boon of Energy Resistance':   { epic:true, asi:true, abil:'choice', prereq:'Level 19+', desc:"The chosen score can rise to 30. Energy Resistances: pick two damage types among Acid, Cold, Fire, Lightning, Necrotic, Poison, Psychic, Radiant and Thunder — you have Resistance to both, and can change your picks on a Long Rest. Energy Redirection: Reaction, when you take damage of a chosen type, to send it at a creature you can see within 60 ft that isn't behind Total Cover — DEX save (DC 8 + CON modifier + Proficiency Bonus) or 2d12 + CON modifier damage of that type." },
+  'Boon of Fate':                { epic:true, asi:true, abil:'choice', prereq:'Level 19+', desc:"The chosen score can rise to 30. Improve Fate: when you or a creature within 60 ft succeeds on or fails a D20 Test, you can roll 2d4 and apply the total as a bonus or a penalty to that roll. Once used, not again until you roll Initiative or finish a Short or Long Rest." },
+  'Boon of Fortitude':           { epic:true, asi:true, abil:'choice', prereq:'Level 19+', desc:"The chosen score can rise to 30. Your Hit Point maximum increases by 40, and whenever you regain Hit Points you regain your CON modifier more — once per turn at most." },
+  'Boon of Irresistible Offense':{ epic:true, asi:true, abil:'FOR or DEX', prereq:'Level 19+', desc:"The chosen score can rise to 30. Your Bludgeoning, Piercing and Slashing damage ignores Resistance. On a natural 20 on an attack roll, you can deal extra damage of the attack's type equal to the score this feat increased." },
+  'Boon of Recovery':            { epic:true, asi:true, abil:'choice', prereq:'Level 19+', desc:"The chosen score can rise to 30. Last Stand: when you would drop to 0 Hit Points, you drop to 1 instead and regain half your Hit Point maximum — once per Long Rest. Recover Vitality: you have a pool of ten d10; as a Bonus Action, spend any number of them, roll them, and regain that many Hit Points. The pool is restored on a Long Rest." },
+  'Boon of Skill':               { epic:true, asi:true, abil:'choice', prereq:'Level 19+', desc:"The chosen score can rise to 30. You gain proficiency in all skills, and Expertise in one skill of your choice in which you don't already have it." },
+  'Boon of Speed':               { epic:true, asi:true, abil:'choice', prereq:'Level 19+', desc:"The chosen score can rise to 30. Escape Artist: Bonus Action to take the Disengage action, which also ends the Grappled condition on you. Quickness: your Speed increases by 30 ft." },
+  'Boon of Spell Recall':        { epic:true, asi:true, abil:'INT, SAG or CHA', prereq:'Level 19+, Spellcasting/Pact Magic', desc:"The chosen score can rise to 30. Whenever you cast a spell with a level 1–4 spell slot, roll 1d4: if the result equals the slot's level, the slot isn't expended." },
+  'Boon of the Night Spirit':    { epic:true, asi:true, abil:'choice', prereq:'Level 19+', desc:"The chosen score can rise to 30. Merge with Shadows: while in Dim Light or Darkness, Bonus Action to become Invisible — it ends as soon as you take an action, a Bonus Action or a Reaction. Shadowy Form: while in Dim Light or Darkness, you have Resistance to every damage type except Psychic and Radiant." },
+  'Boon of Truesight':           { epic:true, asi:true, abil:'choice', prereq:'Level 19+', desc:"The chosen score can rise to 30. You have Truesight out to 60 ft." },
+
+  /* Arcana Unleashed (2026) */
   'Boon of Erupting Spellpower':{ epic:true, asi:true, abil:'INT, SAG or CHA', prereq:'Level 19+, Spellcasting/Pact Magic', desc:"The chosen score can rise to 30. When a spell you cast with a slot deals damage, treat any 1 or 2 on its damage dice as a 3, and creatures damaged by it also have the Prone condition. Once per Initiative roll or Rest." },
   'Boon of Magic School Mastery':{ epic:true, asi:true, abil:'INT, SAG or CHA', prereq:'Level 19+, Spellcasting/Pact Magic', desc:"The chosen score can rise to 30. Pick a school of magic: a level-1 spell from it is always prepared and castable with no slot or components, and a level-7-or-lower spell from it is always prepared and castable once per Long Rest without a slot. Repeatable with a different school." },
   'Boon of the Iron Mind':{ epic:true, asi:true, abil:'choice', prereq:'Level 19+', desc:"The chosen score can rise to 30. You lose Concentration only if you start another Concentration effect, gain the Petrified or Unconscious condition, or die." },
 };
 /** Dons proposables a ce niveau de personnage.
-    Les dons epiques d'Arcana Unleashed sont reserves au niveau 19 : les lister
-    plus tot revient a proposer un choix que la regle refuse. */
+    Les dons epiques sont reserves au niveau 19 : les lister plus tot revient a
+    proposer un choix que la regle refuse. */
 function donsDisponibles(niveauTotal) {
   return Object.keys(GENERAL_FEATS)
     .filter(nom => !GENERAL_FEATS[nom].epic || (niveauTotal || 0) >= 19);
@@ -3022,6 +3040,7 @@ const SOURCE_LIVRE = {};
  'Covenant of the Grave Recruit', 'Crucible Storm Chaser', 'Familiar Trainer',
  'Horizon Weaver Initiate', 'Phantasmic Circus Trouper', 'Seer Apprentice',
  'Ward of the Sheltering Hands',
+  'Boon of Erupting Spellpower', 'Boon of Magic School Mastery', 'Boon of the Iron Mind',
 ].forEach(nom => { SOURCE_LIVRE[nom] = 'Arcana Unleashed (2026)'; });
 
 /** Livre dont vient cette option, vide si elle est dans le PHB. */

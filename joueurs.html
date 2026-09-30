@@ -8413,7 +8413,7 @@ function renderLvlupTab() {
     // Body: ASI — sélecteur de feat (PHB 2024) + note libre
     if (d.isAsi) {
       const featOpts = donsDisponibles(d.totalLv).map(fn =>
-        `<option value="${esc(fn)}">${esc(fn)}</option>`).join('');
+        `<option value="${esc(fn)}"${titreUA(fn)}>${esc(fn)}</option>`).join('');
       bodyHtml += `<div class="lvlrow-section">
         <div class="lvlrow-sec-title">⬆ ASI / Feat Decision</div>
         <div class="lvlrow-feat-pick">
@@ -14131,9 +14131,12 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
       }).join('');
       $('lvlup-asi-a').innerHTML = '<option value="">— +2 ici, ou +1/+1 —</option>' + opt();
       $('lvlup-asi-b').innerHTML = '<option value="">— none (so +2) —</option>' + opt();
+      /* titreUA : la liste des dons epiques melange le PHB et Arcana Unleashed,
+         l'infobulle dit lequel. Sans elle, rien ne distingue un don du livre de
+         base d'un don d'un supplement que la table n'utilise peut-etre pas. */
       $('lvlup-feat').innerHTML = '<option value="">— Choose a feat —</option>'
         + donsDisponibles(plan.totalAfter).filter(f => f !== 'Ability Score Improvement')
-            .map(f => `<option>${esc(f)}</option>`).join('');
+            .map(f => `<option${titreUA(f)}>${esc(f)}</option>`).join('');
       syncAsiNote();
     }
 

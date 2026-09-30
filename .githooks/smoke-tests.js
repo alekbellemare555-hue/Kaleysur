@@ -3187,19 +3187,43 @@ function ok(cond, label) {
            d + ' : prerequis Familiar Friend');
       });
 
-    /* Les trois dons epiques sont reserves au niveau 19. Les lister plus tot
-       revient a proposer un choix que la regle refuse — c'est precisement ce
-       qui arrivait tant que GENERAL_FEATS etait affiche tel quel. */
-    const EPIQUES = ['Boon of Erupting Spellpower', 'Boon of Magic School Mastery',
-                     'Boon of the Iron Mind'];
+    /* Les dons epiques sont reserves au niveau 19. Les lister plus tot revient
+       a proposer un choix que la regle refuse — c'est precisement ce qui
+       arrivait tant que GENERAL_FEATS etait affiche tel quel.
+
+       Les douze du Player's Handbook 2024, verifies sur aidedd.org et
+       dnd2024.wikidot.com : les deux listes concordent exactement. Le site n'en
+       avait que trois, et les trois viennent d'un autre livre — le niveau 19 ne
+       proposait donc aucun don du livre de base. */
+    const EPIQUES_PHB = [
+      'Boon of Combat Prowess', 'Boon of Dimensional Travel', 'Boon of Energy Resistance',
+      'Boon of Fate', 'Boon of Fortitude', 'Boon of Irresistible Offense',
+      'Boon of Recovery', 'Boon of Skill', 'Boon of Speed', 'Boon of Spell Recall',
+      'Boon of the Night Spirit', 'Boon of Truesight',
+    ];
+    /* Ceux-la viennent d'Arcana Unleashed : ils restent, et l'infobulle doit le
+       dire maintenant que la liste melange deux livres. */
+    const EPIQUES_AU = ['Boon of Erupting Spellpower', 'Boon of Magic School Mastery',
+                        'Boon of the Iron Mind'];
+    const EPIQUES = [...EPIQUES_PHB, ...EPIQUES_AU];
     EPIQUES.forEach(d => {
       ok(R2.GENERAL_FEATS[d] && R2.GENERAL_FEATS[d].epic === true, d + ' : marque epique');
+      ok(R2.GENERAL_FEATS[d] && R2.GENERAL_FEATS[d].asi === true, d + ' : porte un +1');
+      ok(/^Level 19\+/.test(R2.GENERAL_FEATS[d]?.prereq || ''), d + ' : prerequis niveau 19');
+      ok(/\b30\b/.test(R2.GENERAL_FEATS[d]?.desc || ''), d + ' : le plafond de 30 est dit');
       ok(!R2.donsDisponibles(4).includes(d), d + ' : absent au niveau 4');
       ok(!R2.donsDisponibles(18).includes(d), d + ' : absent au niveau 18');
       ok(R2.donsDisponibles(19).includes(d), d + ' : propose au niveau 19');
     });
-    eq(R2.donsDisponibles(19).length - R2.donsDisponibles(4).length, 3,
-       'seuls les trois dons epiques s\'ajoutent au niveau 19');
+    EPIQUES_PHB.forEach(d => eq(R2.livreSource(d), '', d + ' : du PHB, aucun livre a signaler'));
+    EPIQUES_AU.forEach(d => ok(/Arcana Unleashed/.test(R2.livreSource(d)),
+       d + ' : vient d Arcana Unleashed et doit le dire'));
+    /* Aucun autre don ne doit porter le drapeau epique : un don ordinaire
+       marque epic disparaitrait de la liste avant le niveau 19. */
+    eq(Object.keys(R2.GENERAL_FEATS).filter(d => R2.GENERAL_FEATS[d].epic).sort(),
+       [...EPIQUES].sort(), 'la liste des dons epiques est exactement celle-la');
+    eq(R2.donsDisponibles(19).length - R2.donsDisponibles(4).length, EPIQUES.length,
+       'les quinze dons epiques s\'ajoutent au niveau 19, et rien d\'autre');
     /* Un appel sans niveau ne doit pas ouvrir les dons epiques par accident. */
     ok(!R2.donsDisponibles().some(d => EPIQUES.includes(d)),
        'sans niveau connu, pas de don epique');
