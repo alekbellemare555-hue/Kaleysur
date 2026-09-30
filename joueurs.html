@@ -13966,16 +13966,25 @@ ${car} characters of notes.
       }
       applyStartingGear(c, selClass.value, eqItems);
 
-      // Maîtrises : armures + armes de la classe, outil du background
+      // Maîtrises : armures + armes + outils de la classe, outil du background
       if (selClass.value || selBg.value) {
         const cd   = CLASS_DATA[selClass.value];
         const bd   = BACKGROUND_DATA[selBg.value];
         // « Gaming Set (choice) » → l'outil réellement choisi à l'étape 4
         const tool = bd && (TOOL_CHOICES[bd.tool] ? selTool.value : bd.tool);
+        /* Les outils de la classe ET celui de l'historique : cinq classes en
+           accordent au niveau 1 (Roublard, Druide, Barde, Moine, Artificier) et
+           aucun n'arrivait sur la fiche. Quand les deux donnent le meme — un
+           Roublard Criminel a deux fois les outils de voleur — la regle 2024 est
+           d'en prendre un autre du meme type ; on le signale plutot que de
+           choisir a la place du joueur. */
+        const outils = [cd?.toolProf, tool].filter(Boolean);
+        const memeOutil = cd?.toolProf && tool && cd.toolProf === tool;
         const list = [
           cd?.armorProf  && `Armor: ${cd.armorProf}`,
           cd?.weaponProf && `Weapons: ${cd.weaponProf}`,
-          tool           && `Outil : ${tool}`,
+          outils.length  && `Tools: ${[...new Set(outils)].join(', ')}`
+                            + (memeOutil ? ' — already granted twice, pick another of the same kind' : ''),
         ].filter(Boolean);
         if (list.length) c.maitrises = list.join('\n');
       }

@@ -1049,6 +1049,19 @@ function ok(cond, label) {
       .forEach(cls => ok(!CLASS_DATA[cls].toolProf,
         cls + ' : aucune maitrise d outils de classe en 2024'));
 
+    /* Les outils de la classe arrivent sur la fiche. Ils y etaient absents :
+       cinq classes en accordent au niveau 1 et le createur n en ecrivait aucun. */
+    {
+      const i = J.indexOf('// Maîtrises : armures + armes');
+      ok(i !== -1, 'le bloc des maitrises du createur existe');
+      const b = J.slice(i, i + 1400);
+      ok(/cd?.toolProf/.test(b), 'createur : les outils de la classe sont lus');
+      ok(/Tools: /.test(b), 'createur : ils sont ecrits sur la fiche');
+      /* Le doublon classe + historique est signale, pas tranche en silence. */
+      ok(/memeOutil/.test(b), 'createur : le doublon d outil est signale');
+      ok(b.includes('new Set(outils)'), 'createur : pas de doublon dans la liste');
+    }
+
     /* La maitrise conditionnelle, arme par arme. */
     const h = (cls) => hero({ classes:[{ classe:cls, sousClasse:'', niveau:5, customSousClasse:'' }] });
     const CAS = [
