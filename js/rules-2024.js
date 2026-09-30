@@ -453,26 +453,39 @@ function donsDisponibles(niveauTotal) {
    a la main, ou l'oubliait.
 
    `pick`    : combien d'options retenir
-   `options` : liste commune, OU `perClass` quand elle depend de la classe
+   `options`       : liste commune a toutes les classes
+   `perClassExtra` : ce qu'une classe ajoute EN PLUS de la liste commune
    `inherit` : reutilise les options d'une autre capacite (Champion niv.7) */
 const FEATURE_CHOICES = {
+  /* Les dix styles du PHB 2024 sont des dons de categorie « Fighting Style
+     Feat », ouverts aux trois classes : « You gain a Fighting Style feat of your
+     choice » chez le Guerrier comme chez le Paladin et le Rodeur. Seuls Blessed
+     Warrior et Druidic Warrior restent des options exclusives de la capacite de
+     classe — ce ne sont pas des dons. Arcane Warrior est un don, d'Arcana
+     Unleashed, ouvert aux trois aussi. */
   'Fighting Style': {
     pick: 1,
-    perClass: {
-      Fighter: ['Arcane Warrior','Archery','Defense','Dueling','Great Weapon Fighting','Protection','Two-Weapon Fighting'],
-      Paladin: ['Arcane Warrior','Blessed Warrior','Defense','Dueling','Great Weapon Fighting','Protection'],
-      Ranger:  ['Arcane Warrior','Archery','Defense','Druidic Warrior','Two-Weapon Fighting'],
+    options: ['Archery','Blind Fighting','Defense','Dueling','Great Weapon Fighting',
+              'Interception','Protection','Thrown Weapon Fighting','Two-Weapon Fighting',
+              'Unarmed Fighting','Arcane Warrior'],
+    perClassExtra: {
+      Paladin: ['Blessed Warrior'],
+      Ranger:  ['Druidic Warrior'],
     },
     desc: {
-      'Arcane Warrior':       'You learn two Wizard cantrips; INT, WIS or CHA is your spellcasting ability for them (Arcana Unleashed).',
-      'Archery':              '+2 to ranged weapon attack rolls.',
-      'Blessed Warrior':      'You learn two Cleric cantrips; Charisma is your spellcasting ability for them.',
-      'Defense':              '+1 AC while wearing armor.',
-      'Druidic Warrior':      'You learn two Druid cantrips; Wisdom is your spellcasting ability for them.',
-      'Dueling':              '+2 damage with a one-handed weapon and no other weapon.',
-      'Great Weapon Fighting':'Reroll 1s and 2s on damage with a two-handed weapon.',
-      'Protection':           'Reaction: impose Disadvantage on an attack against an ally within 5 ft.',
-      'Two-Weapon Fighting':  'Add your ability modifier to the off-hand attack damage.',
+      'Archery':              '+2 to attack rolls with Ranged weapons.',
+      'Blind Fighting':       'You have Blindsight out to 10 ft.',
+      'Defense':              '+1 AC while wearing Light, Medium or Heavy armor.',
+      'Dueling':              '+2 damage with a Melee weapon held in one hand, with no other weapon.',
+      'Great Weapon Fighting':'Treat any 1 or 2 on a damage die as a 3, with a Melee weapon held in two hands (Two-Handed or Versatile).',
+      'Interception':         'Reaction when a creature within 5 ft is hit: reduce the damage by 1d10 + your Proficiency Bonus.',
+      'Protection':           'Reaction with a Shield: Disadvantage on the triggering attack against a creature within 5 ft, and on all other attacks against it until the start of your next turn while you stay within 5 ft.',
+      'Thrown Weapon Fighting':'+2 damage when you hit with a weapon that has the Thrown property.',
+      'Two-Weapon Fighting':  'Add your ability modifier to the damage of the extra attack made with a Light weapon.',
+      'Unarmed Fighting':     'Your Unarmed Strike deals 1d6 + STR Bludgeoning damage, or 1d8 with both hands free. Once per turn, deal 1d4 Bludgeoning damage to a creature you have Grappled.',
+      'Arcane Warrior':       'You learn two Wizard cantrips; INT, WIS or CHA is your spellcasting ability for them.',
+      'Blessed Warrior':      'You learn two Cleric cantrips; Charisma is your spellcasting ability for them. Paladin only — not a feat.',
+      'Druidic Warrior':      'You learn two Druid cantrips; Wisdom is your spellcasting ability for them. Ranger only — not a feat.',
     },
   },
   'Additional Fighting Style': { pick: 1, inherit: 'Fighting Style' },
@@ -3041,6 +3054,7 @@ const SOURCE_LIVRE = {};
  'Horizon Weaver Initiate', 'Phantasmic Circus Trouper', 'Seer Apprentice',
  'Ward of the Sheltering Hands',
   'Boon of Erupting Spellpower', 'Boon of Magic School Mastery', 'Boon of the Iron Mind',
+ 'Arcane Warrior',
 ].forEach(nom => { SOURCE_LIVRE[nom] = 'Arcana Unleashed (2026)'; });
 
 /** Livre dont vient cette option, vide si elle est dans le PHB. */

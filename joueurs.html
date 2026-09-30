@@ -8876,9 +8876,31 @@ function featureOptions(featureName, className) {
   // « Additional Fighting Style » (Champion 7) reutilise la liste de base
   const source = def.inherit ? FEATURE_CHOICES[def.inherit] : def;
   if (!source) return null;
-  const options = source.perClass ? (source.perClass[className] || []) : (source.options || []);
+  /* La liste commune, plus ce que la classe ajoute en propre : en 2024 les
+     styles de combat sont ouverts aux trois classes, et seules Blessed Warrior
+     (Paladin) et Druidic Warrior (Rodeur) leur sont reservees. */
+  const options = [...(source.options || []),
+                   ...((source.perClassExtra || {})[className] || [])];
   if (!options.length) return null;
   return { pick, options, desc: source.desc || {} };
+}
+
+/** Cette classe possede-t-elle vraiment cette capacite, a n'importe quel niveau ?
+
+    featureOptions repond a « quelles options », pas a « la classe l'a-t-elle » :
+    une liste commune a plusieurs classes — les styles de combat en 2024 —
+    repondrait oui pour toutes, Magicien compris. La migration des anciennes
+    cles a besoin de la vraie question, sinon elle rattache « Fighting Style »
+    au premier venu. */
+function classeOffreCapacite(className, featureName) {
+  if (!className || !featureName) return false;
+  const porte = (table) => Object.values(table || {})
+    .some(liste => (liste || []).some(f => f.name === featureName));
+  if (typeof CLASS_DATA !== 'undefined' && porte(CLASS_DATA[className]?.features)) return true;
+  /* Les sous-classes aussi : « Additional Fighting Style » appartient au
+     Champion, pas a la table du Guerrier. */
+  const subs = (typeof SUBCLASS_DATA !== 'undefined' && SUBCLASS_DATA[className]) || {};
+  return Object.values(subs).some(porte);
 }
 
 /* Capacites a choix debloquees a un niveau de classe donne (classe + sous-classe). */
@@ -8969,7 +8991,7 @@ function migrerChoixCapacites(c) {
   let change = false;
   for (const cle of Object.keys(all)) {
     if (cle.includes('::')) continue;
-    const proprio = getClasses(c).find(cl => featureOptions(cle, cl.classe));
+    const proprio = getClasses(c).find(cl => classeOffreCapacite(cl.classe, cle));
     if (proprio) all[cleChoix(proprio.classe, cle)] = all[cle];
     /* Sans classe proprietaire, l'entree ne correspond a rien de jouable : on
        la laisse en place plutot que de la jeter, la lecture la trouvera encore. */
@@ -13603,7 +13625,7 @@ ${car} characters of notes.
               const on = pris.includes(o);
               return `<button type="button" class="cf-skill-chip${on ? ' on' : ''}${!on && plein ? ' muted' : ''}"`
                    + ` data-wfc="${esc(f.name)}" data-wfcopt="${esc(o)}"`
-                   + ` title="${esc(f.desc[o] || '')}">${esc(o)}</button>`;
+                   + ` title="${esc((f.desc[o] || '') + (livreSource(o) ? ' — ' + livreSource(o) : ''))}">${esc(o)}</button>`;
             }).join('')
           + `</div>`
           + (pris.length ? `<div class="wiz-fc-note">${pris.map(o =>
@@ -13968,7 +13990,7 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
             const on = pris.includes(o);
             return `<button type="button" class="cf-skill-chip${on ? ' on' : ''}${!on && plein ? ' muted' : ''}"`
                  + ` data-fc="${esc(f.name)}" data-fcopt="${esc(o)}"`
-                 + ` title="${esc(f.desc[o] || '')}">${esc(o)}</button>`;
+                 + ` title="${esc((f.desc[o] || '') + (livreSource(o) ? ' — ' + livreSource(o) : ''))}">${esc(o)}</button>`;
           }).join('')
         + `</div>`
         + (pris.length ? `<div class="lvlup-hp-detail">${pris.map(o =>

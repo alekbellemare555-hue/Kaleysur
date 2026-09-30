@@ -84,6 +84,7 @@ function ok(cond, label) {
     extract(R, 'const CANTRIPS_KNOWN'),
     extract(R, 'const FEATURE_CHOICES'),
     extract(J, 'function featureOptions(featureName, className)'),
+    extract(J, 'function classeOffreCapacite(className, featureName)'),
     extract(J, 'function featureChoicesAt(className, subclassName, level)'),
     extract(J, 'function cleChoix(className, featureName)'),
     extract(J, 'function getFeatureChoice(c, featureName, className)'),
@@ -1395,30 +1396,62 @@ function ok(cond, label) {
 
   /* -- Choix de capacites : style de combat, ordre divin, metamagie... -- */
   {
-    // Les options du style de combat dependent de la classe
-    // Arcana Unleashed ajoute Arcane Warrior, ouvert aux trois classes qui ont
-    // la capacite Fighting Style — d'ou un style de plus dans chaque liste.
-    eq(featureOptions('Fighting Style', 'Fighter').options.length, 7, 'Guerrier : sept styles de combat');
-    eq(featureOptions('Fighting Style', 'Paladin').options.length, 6, 'Paladin : six styles');
-    eq(featureOptions('Fighting Style', 'Ranger').options.length, 5, 'Rodeur : cinq styles');
-    ['Fighter', 'Paladin', 'Ranger'].forEach(cls =>
-      ok(featureOptions('Fighting Style', cls).options.includes('Arcane Warrior'),
-         `${cls} : Arcane Warrior propose`));
-    ok(!featureOptions('Fighting Style', 'Paladin').options.includes('Archery'),
-       'Archery n est pas propose au Paladin');
+    /* En 2024 les styles de combat sont des DONS de categorie « Fighting Style
+       Feat », ouverts aux trois classes : « You gain a Fighting Style feat of
+       your choice », chez le Guerrier comme chez le Paladin et le Rodeur.
+       Les assertions d'origine verrouillaient les listes cloisonnees de 2014 —
+       elles affirmaient notamment qu'Archery n'est pas propose au Paladin. */
+    const STYLES_PHB = ['Archery','Blind Fighting','Defense','Dueling','Great Weapon Fighting',
+                        'Interception','Protection','Thrown Weapon Fighting','Two-Weapon Fighting',
+                        'Unarmed Fighting'];
+    ['Fighter', 'Paladin', 'Ranger'].forEach(cls => {
+      const o = featureOptions('Fighting Style', cls).options;
+      STYLES_PHB.forEach(st => ok(o.includes(st), `${cls} : ${st} doit etre propose`));
+      /* Arcane Warrior est un don de cette categorie, d'Arcana Unleashed. */
+      ok(o.includes('Arcane Warrior'), `${cls} : Arcane Warrior propose`);
+      ok(/Arcana Unleashed/.test(livreSource('Arcane Warrior')),
+         'Arcane Warrior : son livre doit etre signale');
+    });
+    /* Blessed Warrior et Druidic Warrior ne sont PAS des dons : ce sont les
+       options exclusives de la capacite de classe. Le Guerrier n'en a aucune. */
+    eq(featureOptions('Fighting Style', 'Fighter').options.length, 11,
+       'Guerrier : les dix styles du PHB plus Arcane Warrior, rien d exclusif');
+    eq(featureOptions('Fighting Style', 'Paladin').options.length, 12, 'Paladin : plus Blessed Warrior');
+    eq(featureOptions('Fighting Style', 'Ranger').options.length, 12, 'Rodeur : plus Druidic Warrior');
+    ok(featureOptions('Fighting Style', 'Paladin').options.includes('Archery'),
+       'Archery est desormais ouvert au Paladin');
+    ok(featureOptions('Fighting Style', 'Ranger').options.includes('Dueling'),
+       'Dueling est desormais ouvert au Rodeur');
     ok(featureOptions('Fighting Style', 'Ranger').options.includes('Druidic Warrior'),
        'Druidic Warrior propre au Rodeur');
+    ok(!featureOptions('Fighting Style', 'Paladin').options.includes('Druidic Warrior'),
+       'Druidic Warrior reste refuse au Paladin');
     ok(featureOptions('Fighting Style', 'Paladin').options.includes('Blessed Warrior'),
        'Blessed Warrior propre au Paladin');
+    ok(!featureOptions('Fighting Style', 'Ranger').options.includes('Blessed Warrior'),
+       'Blessed Warrior reste refuse au Rodeur');
+    ok(!featureOptions('Fighting Style', 'Fighter').options.includes('Blessed Warrior'),
+       'le Guerrier n a aucune option exclusive');
+    /* Deux descriptions etaient celles de 2014. */
+    {
+      const d = FEATURE_CHOICES['Fighting Style'].desc;
+      ok(!/reroll/i.test(d['Great Weapon Fighting']),
+         'Great Weapon Fighting : plus de relance en 2024');
+      ok(/treat any 1 or 2/i.test(d['Great Weapon Fighting']),
+         'Great Weapon Fighting : les 1 et les 2 comptent pour 3');
+      ok(/all other attack/i.test(d['Protection']),
+         'Protection : le Desavantage s etend aux autres attaques contre la cible');
+      ok(/Shield/.test(d['Protection']), 'Protection : le bouclier est requis');
+    }
     eq(featureOptions('Metamagic', 'Sorcerer').pick, 2, 'Metamagie : deux options a retenir');
     eq(featureOptions('Second Wind', 'Fighter'), null, 'une capacite sans choix ne propose rien');
-    eq(featureOptions('Additional Fighting Style', 'Fighter').options.length, 7,
+    eq(featureOptions('Additional Fighting Style', 'Fighter').options.length, 11,
        'Champion : herite de la liste du Guerrier');
 
     // Chaque option a une description : sans elle l'infobulle serait vide
     Object.entries(FEATURE_CHOICES).forEach(([nom, def]) => {
       const src = def.inherit ? FEATURE_CHOICES[def.inherit] : def;
-      const toutes = src.perClass ? [].concat(...Object.values(src.perClass)) : src.options;
+      const toutes = [].concat(src.options || [], ...Object.values(src.perClassExtra || {}));
       [...new Set(toutes)].forEach(o =>
         ok(!!(src.desc || {})[o], `${nom} / ${o} : description manquante`));
       ok((def.pick || 1) >= 1, `${nom} : nombre a retenir invalide`);
@@ -1451,8 +1484,31 @@ function ok(cond, label) {
       eq(getFeatureChoice(c3, 'Fighting Style', 'Fighter'), ['Defense'], 'choix relu correctement');
       eq(setFeatureChoice(c3, 'Fighting Style', 'Fighter', ['OptionBidon']), [],
          'option inexistante refusee');
-      eq(setFeatureChoice(c3, 'Fighting Style', 'Paladin', ['Archery']), [],
-         'option d une autre classe refusee');
+      /* Archery est desormais ouvert aux trois classes : l'option qui reste
+         refusee au Guerrier est celle qui appartient en propre a une autre
+         classe. Blessed Warrior n'est pas un don, c'est l'option exclusive du
+         Paladin. */
+      eq(setFeatureChoice(c3, 'Fighting Style', 'Fighter', ['Blessed Warrior']), [],
+         'option exclusive d une autre classe refusee');
+      eq(setFeatureChoice(c3, 'Fighting Style', 'Fighter', ['Druidic Warrior']), [],
+         'l option du Rodeur refusee au Guerrier');
+
+      /* classeOffreCapacite repond a « la classe a-t-elle cette capacite »,
+         ce que featureOptions ne sait plus faire depuis que les styles de
+         combat ont une liste commune aux trois classes. */
+      ok(classeOffreCapacite('Fighter', 'Fighting Style'), 'le Guerrier a un style de combat');
+      ok(classeOffreCapacite('Paladin', 'Fighting Style'), 'le Paladin aussi');
+      ok(classeOffreCapacite('Ranger',  'Fighting Style'), 'le Rodeur aussi');
+      ok(!classeOffreCapacite('Wizard', 'Fighting Style'), 'le Magicien, non');
+      ok(!classeOffreCapacite('Rogue',  'Metamagic'),      'le Roublard n a pas la metamagie');
+      ok(classeOffreCapacite('Sorcerer','Metamagic'),      'l Ensorceleur si');
+      /* Une capacite de sous-classe compte pour sa classe. */
+      ok(classeOffreCapacite('Fighter', 'Additional Fighting Style'),
+         'Additional Fighting Style appartient au Champion, donc au Guerrier');
+      ok(!classeOffreCapacite('Paladin', 'Additional Fighting Style'),
+         'mais pas au Paladin');
+      ok(!classeOffreCapacite('', 'Fighting Style'), 'classe vide : non');
+      ok(!classeOffreCapacite('Fighter', ''), 'capacite vide : non');
       eq(setFeatureChoice(c3, 'Metamagic', 'Sorcerer', ['Careful', 'Subtle', 'Twinned']),
          ['Careful', 'Subtle'], 'surplus tronque au nombre autorise');
       eq(getFeatureChoice({}, 'Fighting Style'), [], 'personnage sans choix enregistre');
