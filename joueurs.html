@@ -2868,6 +2868,22 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
 .lvlup-hp-detail { font-size: 0.72rem; color: #7a7a8a; margin-top: 0.4rem; line-height: 1.45; }
 .lvlup-hp-detail strong { color: var(--gold, #c9a227); }
 .lvlup-hp-pick { font-family: 'Cinzel', serif; color: var(--gold, #c9a227); font-size: 0.85rem; margin-left: 0.3rem; }
+.lvlup-hp-manual { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; color: var(--text-dim, #7a7a8a); margin-left: 0.2rem; }
+.lvlup-hp-input {
+  width: 3.4rem; padding: 0.25rem 0.35rem; text-align: center;
+  font-family: 'Cinzel', serif; font-size: 0.85rem;
+  color: var(--gold, #c9a227);
+  background: var(--j-input, #110d07);
+  border: 1px solid var(--j-border-col, #4a3510); border-radius: 4px;
+}
+.lvlup-hp-input:focus { outline: none; border-color: var(--gold, #c9a227); }
+/* Les fleches natives volent la moitie d'un champ deja etroit, et le pouce les
+   rate sur telephone : les boutons Average et Roll jouent ce role. */
+.lvlup-hp-input::-webkit-outer-spin-button,
+.lvlup-hp-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.lvlup-hp-input { -moz-appearance: textfield; appearance: textfield; }
+.lvlup-hp-warn { color: var(--gold, #c9a227); display: block; margin-top: 0.25rem; }
+.lvlup-hp-warn .ic { width: 0.8em; height: 0.8em; vertical-align: -0.1em; }
 .lvlup-asi-tabs { display: flex; gap: 0.3rem; margin-bottom: 0.55rem; }
 .lvlup-tab {
   flex: 1; font-size: 0.74rem; padding: 0.28rem 0.5rem; border-radius: 4px; cursor: pointer;
@@ -5142,7 +5158,7 @@ function autoFillClass(classe) {
 function featureChoiceChips(featureName, className) {
   const opt = featureOptions(featureName, className);
   if (!opt) return '';
-  const pris = getFeatureChoice(C(), featureName);
+  const pris = getFeatureChoice(C(), featureName, className);
   const plein = pris.length >= opt.pick;
   const manque = opt.pick - pris.length;
   return `<div class="cf-fc">`
@@ -5167,7 +5183,7 @@ function bindFeatureChoiceChips(root) {
     const nom = chip.dataset.cffeat, cls = chip.dataset.cfcls, o = chip.dataset.cfopt;
     const opt = featureOptions(nom, cls);
     if (!opt) return;
-    const pris = getFeatureChoice(C(), nom).slice();
+    const pris = getFeatureChoice(C(), nom, cls).slice();
     const i = pris.indexOf(o);
     if (i >= 0) pris.splice(i, 1);
     else if (pris.length < opt.pick) pris.push(o);
@@ -5198,8 +5214,6 @@ function renderClassFeatures() {
   title.textContent = validClasses.map(cl => cl.classe + ' ' + cl.niveau).join(' / ') + ' — Class Features';
 
   /* ── Spell slots note (multiclass or single) ── */
-  const FULL_CAST  = ['Bard','Cleric','Druid','Psion','Sorcerer','Wizard'];
-  const HALF_CAST  = ['Paladin','Psion','Ranger'];
   const ordinals   = ['1st','2nd','3rd','4th','5th','6th','7th','8th','9th'];
 
   if (classes.length > 1) {
@@ -5224,11 +5238,9 @@ function renderClassFeatures() {
     // Single class
     const classe = validClasses[0].classe;
     const niveau = Math.max(1, Math.min(20, parseInt(validClasses[0].niveau) || 1));
-    let slotTable = null;
-    if (FULL_CAST.includes(classe))      slotTable = FULL_CASTER_SLOTS[niveau];
-    else if (HALF_CAST.includes(classe)) slotTable = HALF_CASTER_SLOTS[niveau];
-    else if (classe === 'Warlock')       slotTable = WARLOCK_SLOTS[niveau];
-    else if (classe === 'Artificer')     slotTable = ARTIFICER_SLOTS[niveau];
+    /* La sous-classe compte : c'est elle qui fait du Guerrier un Chevalier
+       Occulte, et donc un lanceur. */
+    const slotTable = emplacementsClasse(classe, validClasses[0].sousClasse, niveau);
     if (slotTable) {
       const parts = slotTable.map((s,i) => s > 0 ? `${s} × ${ordinals[i]}` : null).filter(Boolean);
       if (parts.length) {
@@ -6119,7 +6131,12 @@ function migrateToMulticlass(c) {
   // renderAll() passe ici avant tout rendu : c'est le bon endroit pour rattraper
   // un nom de sous-classe périmé, une seule fois, avant que quoi que ce soit
   // s'en serve.
-  if (migrerNomsSousClasse(c)) triggerSave();
+  let migre = migrerNomsSousClasse(c);
+  /* Meme raison : rattraper la forme ancienne une seule fois, avant que quoi
+     que ce soit s'en serve. */
+  if (migrerChoixCapacites(c)) migre = true;
+  if (migrerNomsAttaques(c)) migre = true;
+  if (migre) triggerSave();
 }
 
 function getClasses(c) {
@@ -6131,6 +6148,14 @@ function getTotalLevel(c) {
   return getClasses(c).reduce((s, cl) => s + (parseInt(cl.niveau) || 1), 0);
 }
 
+/* Les classes reellement renseignees.
+   Une fiche vierge porte une entree vide : la compter donnait un niveau total
+   de 1 a un personnage sans classe, puis de 2 des sa premiere montee, avec une
+   classe fantome a cote de la vraie. */
+function classesReelles(c) {
+  return getClasses(c).filter(cl => cl.classe);
+}
+
 function syncClassesToLegacy(c) {
   const classes = getClasses(c);
   if (classes.length > 0) {
@@ -6140,20 +6165,11 @@ function syncClassesToLegacy(c) {
   }
 }
 
+/* Les emplacements d'un personnage, mono ou multiclasse.
+   La logique vit dans js/rules-2024.js : trois ecrans la partageaient en trois
+   copies, et elles avaient fini par se contredire sur le Psion. */
 function computeMulticlassSlots(c) {
-  const classes = getClasses(c);
-  const FULL_C  = ['Bard','Cleric','Druid','Psion','Sorcerer','Wizard'];
-  const HALF_C  = ['Paladin','Psion','Ranger','Artificer'];
-  let eff = 0;
-  let hasCaster = false;
-  classes.forEach(cl => {
-    const lvl = parseInt(cl.niveau) || 1;
-    if (FULL_C.includes(cl.classe))      { eff += lvl;                    hasCaster = true; }
-    else if (HALF_C.includes(cl.classe)) { eff += Math.floor(lvl / 2);    hasCaster = true; }
-    // Warlock: pact magic, not combined; others: no spellcasting
-  });
-  if (!hasCaster || eff < 1) return null;
-  return MULTICLASS_SLOTS[Math.min(eff, 20)] || null;
+  return emplacementsPersonnage(getClasses(c));
 }
 
 function renderMulticlasses() {
@@ -7527,10 +7543,11 @@ function parseRoll20JSON(raw) {
   const initiative = num('initiative_bonus', 'initiative', 'initiative_overall') || mod(stats.dex);
 
   /* ── Attaques ──
-     Même forme que celles de l'import D&D Beyond : `degat` au singulier,
-     `atkType` pour la caractéristique, `prof` pour la maîtrise. */
+     Même forme que celles de l'import D&D Beyond : name/degats, qui est la
+     forme que la fiche lit. Les deux imports ecrivaient nom/degat, et les
+     attaques importees s'affichaient vides. Les SORTS gardent nom/degat. */
   const attaques = repeating('attack').map(l => ({
-    nom: champ(l, 'atkname', 'name'),
+    name: champ(l, 'atkname', 'name'),
     bonus: champ(l, 'atkbonus', 'atkmod', 'attack_bonus'),
     // Roll20 donne le bonus d'attaque deja calcule. On le passe tel quel plutot
     // que de deviner la caracteristique : calcAtkBonus() n'utilise le bonus manuel
@@ -7538,12 +7555,12 @@ function parseRoll20JSON(raw) {
     // Le joueur peut choisir la caracteristique apres coup pour que ca suive ses niveaux.
     atkType: '',
     prof: false,
-    degat: [champ(l, 'dmgbase', 'dmg1base', 'atkdmgbase', 'dmg'), champ(l, 'dmgattr', 'dmg1attr')]
+    degats: [champ(l, 'dmgbase', 'dmg1base', 'atkdmgbase', 'dmg'), champ(l, 'dmgattr', 'dmg1attr')]
       .filter(Boolean).join(' + '),
     typeDegat: champ(l, 'dmgtype', 'dmg1type', 'atkdmgtype'),
     portee: champ(l, 'atkrange', 'range'),
     notes: champ(l, 'atkdesc', 'desc'),
-  })).filter(a => a.nom);
+  })).filter(a => a.name);
 
   /* ── Sorts ──
      Une section répétable par niveau : repeating_spell-0 … repeating_spell-9,
@@ -7677,16 +7694,6 @@ function parseDnDBeyondJSON(raw) {
   const INV_CAT  = {'Weapon':'arme','Armor':'armure','Potion':'consommable',
     'Scroll':'consommable','Wondrous Item':'magique','Ring':'magique',
     'Rod':'magique','Staff':'magique','Wand':'magique'};
-  const SLOT_TABLE = {
-    1:[2,0,0,0,0,0,0,0,0],2:[3,0,0,0,0,0,0,0,0],3:[4,2,0,0,0,0,0,0,0],
-    4:[4,3,0,0,0,0,0,0,0],5:[4,3,2,0,0,0,0,0,0],6:[4,3,3,0,0,0,0,0,0],
-    7:[4,3,3,1,0,0,0,0,0],8:[4,3,3,2,0,0,0,0,0],9:[4,3,3,3,1,0,0,0,0],
-    10:[4,3,3,3,2,0,0,0,0],11:[4,3,3,3,2,1,0,0,0],12:[4,3,3,3,2,1,0,0,0],
-    13:[4,3,3,3,2,1,1,0,0],14:[4,3,3,3,2,1,1,0,0],15:[4,3,3,3,2,1,1,1,0],
-    16:[4,3,3,3,2,1,1,1,0],17:[4,3,3,3,2,1,1,1,1],18:[4,3,3,3,3,1,1,1,1],
-    19:[4,3,3,3,3,2,1,1,1],20:[4,3,3,3,3,2,2,1,1]
-  };
-
   const stripHtml = s => (s||'').replace(/<[^>]*>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/\s+/g,' ').trim().substring(0,600);
 
   // ── Ability scores ──────────────────────────────────────────────
@@ -7809,9 +7816,11 @@ function parseDnDBeyondJSON(raw) {
     const dmg  = def.damage?.diceString || (def.damage?.diceCount ? `${def.damage.diceCount}d${def.damage.diceSize}` : '1d6');
     const type = (def.damageType||'').toLowerCase();
     const range = isRanged ? (def.range ? `${def.range}/${def.longRange||def.range*4}` : '80/320') : '5 ft.';
+    /* name/degats, pas nom/degat : c'est la forme que la fiche lit. Les sorts,
+       eux, gardent nom/degat — les deux coexistent legitimement. */
     attaques.push({
-      nom: def.name||'', bonus:'', atkType: atkStat, prof: true,
-      degat: dmg, typeDegat: type, portee: range, notes: props.filter(p=>!['finesse','light','thrown','versatile','reach'].includes(p)).join(', ')
+      name: def.name||'', bonus:'', atkType: atkStat, prof: true,
+      degats: dmg, typeDegat: type, portee: range, notes: props.filter(p=>!['finesse','light','thrown','versatile','reach'].includes(p)).join(', ')
     });
   });
 
@@ -7886,28 +7895,22 @@ function parseDnDBeyondJSON(raw) {
   const currency = { pp:cur.pp||0, gp:cur.gp||0, ep:cur.ep||0, sp:cur.sp||0, cp:cur.cp||0 };
 
   // ── Spell slots (avec Warlock Pact Magic + multi-classing) ────────
-  const HALF_CASTERS = ['Paladin','Psion','Ranger','Artificer'];
-  const FULL_CASTERS = ['Bard','Cleric','Druid','Psion','Sorcerer','Wizard'];
-  let casterLevel = 0;
-  let warlockLevel = 0;
-  classesArr.forEach(cl => {
-    const cn = cl.classe;
-    if (cn === 'Warlock') warlockLevel += cl.niveau;
-    else if (FULL_CASTERS.includes(cn)) casterLevel += cl.niveau;
-    else if (HALF_CASTERS.includes(cn)) casterLevel += Math.floor(cl.niveau / 2);
-  });
-  const slotArr = casterLevel > 0 ? (SLOT_TABLE[Math.min(20,casterLevel)]||[0,0,0,0,0,0,0,0,0]) : [0,0,0,0,0,0,0,0,0];
+  /* Le meme moteur que la fiche, le plan et la montee de niveau. L'import
+     gardait ici sa propre table, sa propre liste de lanceurs et son propre
+     arrondi : un personnage importe recevait des emplacements faux la ou le
+     meme personnage saisi a la main en recevait des justes. */
+  const warlockLevel = classesArr
+    .filter(cl => cl.classe === 'Warlock')
+    .reduce((n, cl) => n + (parseInt(cl.niveau, 10) || 0), 0);
+  const slotArr = emplacementsPersonnage(classesArr) || [0,0,0,0,0,0,0,0,0];
   const emplacementsSort = {};
   slotArr.forEach((n,i) => { emplacementsSort[i+1] = n; });
   // Warlock Pact Magic — fusionne avec les emplacements normaux
   if (warlockLevel > 0) {
-    const W = { 1:[1,0,0,0,0,0,0,0,0], 2:[2,0,0,0,0,0,0,0,0], 3:[0,2,0,0,0,0,0,0,0],
-      4:[0,2,0,0,0,0,0,0,0], 5:[0,0,2,0,0,0,0,0,0], 6:[0,0,2,0,0,0,0,0,0],
-      7:[0,0,0,2,0,0,0,0,0], 8:[0,0,0,2,0,0,0,0,0], 9:[0,0,0,0,2,0,0,0,0],
-      10:[0,0,0,0,2,0,0,0,0],11:[0,0,0,0,3,0,0,0,0],17:[0,0,0,0,4,0,0,0,0]};
-    let key = warlockLevel;
-    while (key > 0 && !W[key]) key--;
-    const wArr = W[key] || [0,0,0,0,0,0,0,0,0];
+    /* Cinquieme copie retiree : WARLOCK_SLOTS dit deja ceci, et celle-ci
+       etait lacunaire — elle sautait les niveaux 12 a 16 et 18 a 20, rattrapes
+       par une boucle qui redescendait jusqu'a une entree existante. */
+    const wArr = emplacementsClasse('Warlock', '', warlockLevel) || [0,0,0,0,0,0,0,0,0];
     wArr.forEach((n,i) => { emplacementsSort[i+1] = (emplacementsSort[i+1]||0) + n; });
   }
 
@@ -8110,7 +8113,7 @@ function openShortRestModal() {
   let pendingHealing = 0;
   let diceRolled = 0;
   const nbDice = parseInt(c.nbDeVie) || getTotalLevel(c) || 1;
-  const dieType = parseInt((c.deVie||'1d8').replace('1d','')) || 8;
+  const dieType = deDeVie(c);
   const conMod  = Math.floor(((parseInt(c.con)||10) - 10) / 2);
   const maxHP   = parseInt(c.pvMax) || 0;
   const curHP   = parseInt(c.pvActuel) || 0;
@@ -8280,32 +8283,18 @@ function renderLvlupTab() {
   }
 
   /* ── Per-row calculations ── */
-  const FULL_CAST_CLS  = ['Bard','Cleric','Druid','Psion','Sorcerer','Wizard'];
-  const HALF_CAST_CLS  = ['Paladin','Psion','Ranger'];
   const KNOWN_SPL_CLS  = ['Bard','Ranger','Sorcerer','Warlock'];
   const ordinals = ['','1st','2nd','3rd','4th','5th','6th','7th','8th','9th'];
 
   // Helper: compute spell slots at a given running class-count map
+  /* Le plan ne connait que des noms de classe, pas les sous-classes : il lit
+     celle du personnage pour savoir si un Guerrier est Chevalier Occulte. */
   function slotsForCounts(clsCount) {
-    const unique = Object.keys(clsCount);
-    if (unique.length === 0) return null;
-    if (unique.length === 1) {
-      const cls = unique[0]; const lv = clsCount[cls];
-      if (cls === 'Warlock')   return WARLOCK_SLOTS[Math.min(lv,20)];
-      if (cls === 'Artificer') return ARTIFICER_SLOTS[Math.min(lv,20)];
-      if (HALF_CAST_CLS.includes(cls)) return HALF_CASTER_SLOTS[Math.min(lv,20)];
-      if (FULL_CAST_CLS.includes(cls)) return FULL_CASTER_SLOTS[Math.min(lv,20)];
-      return null;
-    }
-    // Multiclass caster level
-    let cL = 0;
-    for (const [cl, n] of Object.entries(clsCount)) {
-      if (FULL_CAST_CLS.includes(cl))       cL += n;
-      else if (HALF_CAST_CLS.includes(cl))  cL += Math.floor(n / 2);
-      else if (cl === 'Artificer')           cL += Math.ceil(n / 2);
-      // Warlock pact slots handled separately; not contributed to combined slots
-    }
-    return cL > 0 ? MULTICLASS_SLOTS[Math.min(cL, 20)] : null;
+    const sousDe = {};
+    (charClasses || []).forEach(cl => { if (cl.classe) sousDe[cl.classe] = cl.sousClasse; });
+    const classes = Object.entries(clsCount)
+      .map(([classe, niveau]) => ({ classe, niveau, sousClasse: sousDe[classe] || '' }));
+    return emplacementsPersonnage(classes);
   }
 
   const rowData = rows.map((row, i) => {
@@ -8315,7 +8304,9 @@ function renderLvlupTab() {
     for (let j = 0; j <= i; j++) { const rc = rows[j].cls || defaultCls; clsCnt[rc] = (clsCnt[rc]||0)+1; }
     const classLv = clsCnt[cls];
     const totalLv  = i + 1;
-    const pb = Math.ceil(totalLv / 4) + 1;
+    /* pb() fait exactement ce calcul et il est teste sur dix niveaux : deux
+       copies d'une meme formule finissent par diverger. */
+    const pbLigne = pb(totalLv);
     const dndInfo   = DND_CLASSES[cls] || {};
     const hitDie    = dndInfo.de || '1d8';
     const hitDieNum = parseInt(hitDie.replace('1d','')) || 8;
@@ -8331,7 +8322,7 @@ function renderLvlupTab() {
     for (let j = 0; j < i; j++) { const rc = rows[j].cls||defaultCls; clsCntPrev[rc]=(clsCntPrev[rc]||0)+1; }
     const prevSlots = i > 0 ? slotsForCounts(clsCntPrev) : null;
     const isMultiHere = Object.keys(clsCnt).length > 1;
-    return { cls, classLv, totalLv, pb, hitDie, hitDieNum, conMod, avgHp,
+    return { cls, classLv, totalLv, pb: pbLigne, hitDie, hitDieNum, conMod, avgHp,
              features, isAsi, hasKnown, slots, prevSlots, isMultiHere, clsCnt };
   });
 
@@ -8422,7 +8413,7 @@ function renderLvlupTab() {
     // Body: ASI — sélecteur de feat (PHB 2024) + note libre
     if (d.isAsi) {
       const featOpts = donsDisponibles(d.totalLv).map(fn =>
-        `<option value="${esc(fn)}">${esc(fn)}</option>`).join('');
+        `<option value="${esc(fn)}"${titreUA(fn)}>${esc(fn)}</option>`).join('');
       bodyHtml += `<div class="lvlrow-section">
         <div class="lvlrow-sec-title">⬆ ASI / Feat Decision</div>
         <div class="lvlrow-feat-pick">
@@ -8885,9 +8876,52 @@ function featureOptions(featureName, className) {
   // « Additional Fighting Style » (Champion 7) reutilise la liste de base
   const source = def.inherit ? FEATURE_CHOICES[def.inherit] : def;
   if (!source) return null;
-  const options = source.perClass ? (source.perClass[className] || []) : (source.options || []);
+  /* La liste commune, plus ce que la classe ajoute en propre : en 2024 les
+     styles de combat sont ouverts aux trois classes, et seules Blessed Warrior
+     (Paladin) et Druidic Warrior (Rodeur) leur sont reservees. */
+  const options = [...(source.options || []),
+                   ...((source.perClassExtra || {})[className] || [])];
   if (!options.length) return null;
   return { pick, options, desc: source.desc || {} };
+}
+
+/** Cette classe possede-t-elle vraiment cette capacite, a n'importe quel niveau ?
+
+    featureOptions repond a « quelles options », pas a « la classe l'a-t-elle » :
+    une liste commune a plusieurs classes — les styles de combat en 2024 —
+    repondrait oui pour toutes, Magicien compris. La migration des anciennes
+    cles a besoin de la vraie question, sinon elle rattache « Fighting Style »
+    au premier venu. */
+function classeOffreCapacite(className, featureName) {
+  if (!className || !featureName) return false;
+  const porte = (table) => Object.values(table || {})
+    .some(liste => (liste || []).some(f => f.name === featureName));
+  if (typeof CLASS_DATA !== 'undefined' && porte(CLASS_DATA[className]?.features)) return true;
+  /* Les sous-classes aussi : « Additional Fighting Style » appartient au
+     Champion, pas a la table du Guerrier. */
+  const subs = (typeof SUBCLASS_DATA !== 'undefined' && SUBCLASS_DATA[className]) || {};
+  return Object.values(subs).some(porte);
+}
+
+/** Langues qu'une classe accorde jusqu'a un niveau donne.
+
+    Renvoie { accordees, choix } : celles qu'elle donne d'office, et les choix
+    qu'elle laisse ouverts avec les tables ou puiser. C'est la seule facon
+    d'ouvrir la table des langues rares : l'origine est verrouillee sur la table
+    standard, et une aptitude peut autoriser les deux — l'Argot des voleurs du
+    Roublard le fait explicitement. */
+function languesDeClasse(className, niveau) {
+  const out = { accordees: [], choix: [] };
+  const table = (typeof CLASS_DATA !== 'undefined' && CLASS_DATA[className]?.features) || null;
+  if (!table) return out;
+  const max = Math.max(1, Math.min(20, parseInt(niveau, 10) || 1));
+  for (let lv = 1; lv <= max; lv++) {
+    (table[lv] || []).forEach(f => {
+      (f.langues || []).forEach(l => { if (!out.accordees.includes(l)) out.accordees.push(l); });
+      if (f.langueChoix) out.choix.push({ ...f.langueChoix, source: f.name });
+    });
+  }
+  return out;
 }
 
 /* Capacites a choix debloquees a un niveau de classe donne (classe + sous-classe). */
@@ -8903,10 +8937,52 @@ function featureChoicesAt(className, subclassName, level) {
   return out;
 }
 
-/* Choix enregistres sur le personnage : { 'Fighting Style': ['Defense'] } */
-function getFeatureChoice(c, featureName) {
+/** Taille du de de vie du personnage.
+
+    c.deVie a pris trois formes selon le chemin de creation — « 1d10 » a la
+    main, « 5d10 » par Roll20 qui y met le nombre TOTAL de des, et
+    « 5d10 + 2d8 » par D&D Beyond en multiclasse. On lit donc les tailles
+    presentes plutot que de decouper la chaine a l'aveugle. */
+function deDeVie(c) {
+  const tailles = String(c?.deVie || '').match(/d(\d+)/g) || [];
+  /* Une seule taille : c'est elle, quel que soit le nombre devant. */
+  if (tailles.length === 1) return parseInt(tailles[0].slice(1), 10) || 8;
+  /* Plusieurs des, ou libelle illisible : on prend celui de la classe ou le
+     personnage a le plus de niveaux — c'est celle dont il a le plus de des. */
+  const principale = getClasses(c).slice()
+    .sort((a, b) => (parseInt(b.niveau, 10) || 0) - (parseInt(a.niveau, 10) || 0))[0];
+  const m = String((typeof DND_CLASSES !== 'undefined' && DND_CLASSES[principale?.classe]?.de) || '')
+    .match(/d(\d+)/);
+  return m ? parseInt(m[1], 10) : 8;
+}
+
+/* Renomme les attaques ecrites par les imports avant que ceux-ci posent la
+   bonne forme. Les SORTS gardent nom/degat : on ne touche qu'aux attaques. */
+function migrerNomsAttaques(c) {
+  if (!Array.isArray(c?.attaques)) return false;
+  let change = false;
+  for (const a of c.attaques) {
+    if (a && a.nom !== undefined && a.name === undefined) { a.name = a.nom; delete a.nom; change = true; }
+    if (a && a.degat !== undefined && a.degats === undefined) { a.degats = a.degat; delete a.degat; change = true; }
+  }
+  return change;
+}
+
+/* Choix enregistres sur le personnage : { 'Fighter::Fighting Style': ['Defense'] }
+
+   La cle porte la classe. Deux classes peuvent donner la meme capacite a choix
+   — un Guerrier/Rodeur a deux styles de combat — et les ranger sous le seul nom
+   faisait que le second effacait le premier, en silence. */
+function cleChoix(className, featureName) {
+  return (className || '?') + '::' + featureName;
+}
+
+/* La lecture accepte encore l'ancienne cle : si la migration n'a pas tourne, ou
+   a rate, un choix deja fait doit rester visible plutot que disparaitre. */
+function getFeatureChoice(c, featureName, className) {
   const all = c?.featureChoices;
-  const v = all && all[featureName];
+  if (!all) return [];
+  const v = all[cleChoix(className, featureName)] ?? all[featureName];
   return Array.isArray(v) ? v : (v ? [v] : []);
 }
 
@@ -8917,9 +8993,32 @@ function setFeatureChoice(c, featureName, className, selection) {
   if (!opt || !c) return [];
   const valides = (selection || []).filter(x => opt.options.includes(x)).slice(0, opt.pick);
   c.featureChoices = c.featureChoices || {};
-  if (valides.length) c.featureChoices[featureName] = valides;
-  else delete c.featureChoices[featureName];
+  const cle = cleChoix(className, featureName);
+  if (valides.length) c.featureChoices[cle] = valides;
+  else delete c.featureChoices[cle];
+  /* L'ancienne cle nue disparait des qu'on reecrit : sinon elle reviendrait
+     masquer le nouveau choix a la lecture suivante. */
+  delete c.featureChoices[featureName];
   return valides;
+}
+
+/* Reprend les fiches ecrites avant que la cle porte la classe.
+   On rattache chaque ancien choix a la premiere classe du personnage qui offre
+   vraiment cette capacite — l'ancienne forme n'en gardait qu'un de toute facon,
+   donc il n'y a rien a repartir. */
+function migrerChoixCapacites(c) {
+  const all = c?.featureChoices;
+  if (!all) return false;
+  let change = false;
+  for (const cle of Object.keys(all)) {
+    if (cle.includes('::')) continue;
+    const proprio = getClasses(c).find(cl => classeOffreCapacite(cl.classe, cle));
+    if (proprio) all[cleChoix(proprio.classe, cle)] = all[cle];
+    /* Sans classe proprietaire, l'entree ne correspond a rien de jouable : on
+       la laisse en place plutot que de la jeter, la lecture la trouvera encore. */
+    if (proprio) { delete all[cle]; change = true; }
+  }
+  return change;
 }
 
 /* Capacites a choix encore vides, tous niveaux atteints confondus.
@@ -8930,7 +9029,7 @@ function pendingFeatureChoices(c) {
     const lvl = parseInt(cl.niveau) || 1;
     for (let n = 1; n <= lvl; n++) {
       featureChoicesAt(cl.classe, cl.sousClasse, n).forEach(f => {
-        const fait = getFeatureChoice(c, f.name).length;
+        const fait = getFeatureChoice(c, f.name, cl.classe).length;
         if (fait < f.pick) out.push({ name: f.name, classe: cl.classe, niveau: n, pick: f.pick, fait });
       });
     }
@@ -8950,10 +9049,18 @@ function cantripsAt(className, level) {
    Lu dans la description de la capacite plutot que code en dur. */
 function expertiseAt(className, level) {
   const feats = (typeof CLASS_DATA !== 'undefined' && CLASS_DATA[className]?.features?.[level]) || [];
-  const f = feats.find(x => /^expertise$/i.test(x.name || ''));
-  if (!f) return 0;
-  const m = (f.desc || '').match(/(\d+)\s+(?:more\s+)?skills?/i);
-  return m ? parseInt(m[1]) : 2;
+  /* On additionne : un niveau peut en accorder par deux chemins. Et certaines
+     capacites en donnent sans s'appeler « Expertise » — Deft Explorer (Rodeur 2)
+     et Scholar (Magicien 2) — d'ou le champ expertise pose sur la capacite,
+     plutot qu'une liste de noms en dur ici. */
+  let n = 0;
+  feats.forEach(f => {
+    if (Number.isInteger(f.expertise)) { n += f.expertise; return; }
+    if (!/^expertise$/i.test(f.name || '')) return;
+    const m = (f.desc || '').match(/(\d+)\s+(?:more\s+)?skills?/i);
+    n += m ? parseInt(m[1]) : 2;
+  });
+  return n;
 }
 
 /* Plus haut niveau de sort accessible, d'apres les emplacements. */
@@ -8965,8 +9072,11 @@ function topSlotLevel(slots) {
 }
 
 /* Décrit la montée d'un niveau dans `className` sans modifier le personnage. */
-function planLevelUp(c, className) {
-  const classes = getClasses(c);
+function planLevelUp(c, className, opts) {
+  /* Les entrees vides sont ignorees ici ET dans applyLevelUp : les deux
+     calculent leur indice de classe sur la meme liste, sinon ils designeraient
+     deux classes differentes. */
+  const classes = classesReelles(c);
   const idx     = classes.findIndex(cl => cl.classe === className);
   const known   = typeof CLASS_DATA !== 'undefined' && CLASS_DATA[className];
   if (!known) return { ok:false, error:`Unknown class: ${className}` };
@@ -8974,7 +9084,9 @@ function planLevelUp(c, className) {
   const fromLevel = idx >= 0 ? (parseInt(classes[idx].niveau) || 1) : 0;
   const toLevel   = fromLevel + 1;
   if (toLevel > 20) return { ok:false, error:`${className} is already level 20.` };
-  const totalBefore = getTotalLevel(c);
+  /* Sur les classes reelles, comme l indice plus haut : sinon une feuille
+     vierge partait du niveau 1 et arrivait au 2. */
+  const totalBefore = classes.reduce((n, cl) => n + (parseInt(cl.niveau, 10) || 1), 0);
   // Un multiclassage part du niveau 1 : le total ne bouge que d'un cran dans tous les cas
   const totalAfter  = totalBefore + 1;
   if (totalAfter > 20) return { ok:false, error:'Total level 20 reached.' };
@@ -8992,17 +9104,42 @@ function planLevelUp(c, className) {
   const subOptions  = (typeof SUBCLASS_DATA !== 'undefined' && SUBCLASS_DATA[className])
     ? Object.keys(SUBCLASS_DATA[className]) : [];
   const needsSubclass = toLevel >= 3 && !currentSub && subOptions.length > 0;
+  /* La sous-classe que le joueur est en train de choisir dans la modal compte
+     des maintenant. Sans elle, le plan reste celui d'un personnage sans
+     sous-classe et l'ecran annonce des gains qui ne sont pas ceux qu'on
+     s'apprete a appliquer : un Guerrier qui prend Eldritch Knight au niveau 3
+     gagne deux emplacements de sort, et le plan les ignorait. */
+  const pending = (opts || {}).subclass || '';
+  const subName = (currentSub && currentSub !== '__custom__') ? currentSub
+                : (needsSubclass && subOptions.includes(pending)) ? pending : '';
 
-  // ASI/don : lu dans la table de la classe, pas dans une liste générique —
-  // le Guerrier en a aussi aux niveaux 6 et 14, le Roublard au 10, et le niveau 19
-  // est un don épique (type 'epic'), pas un ASI, depuis 2024.
-  const isAsi = (CLASS_DATA[className].features?.[toLevel] || []).some(f => f.type === 'asi');
+  /* ASI/don : lu dans la table de la classe, pas dans une liste generique —
+     le Guerrier en a aussi aux niveaux 6 et 14, le Roublard au 10.
+     Le niveau 19 porte 'epic' et non 'asi' : ne tester que 'asi' revenait a ne
+     RIEN proposer a ce niveau-la, pour les quatorze classes. On garde les deux
+     separes, parce que l'ecran ne dit pas la meme chose dans les deux cas. */
+  const featsIci = CLASS_DATA[className].features?.[toLevel] || [];
+  const isEpic = featsIci.some(f => f.type === 'epic');
+  const isAsi  = featsIci.some(f => f.type === 'asi') || isEpic;
 
   // Capacités débloquées à ce niveau de classe (+ celles de la sous-classe)
-  const clsFeatures = (CLASS_DATA[className].features?.[toLevel] || []).map(f => ({ ...f, source: className }));
-  const subName     = currentSub && currentSub !== '__custom__' ? currentSub : '';
+  const clsFeatures = featsIci.map(f => ({ ...f, source: className }));
   const subFeatures = (subName && SUBCLASS_DATA?.[className]?.[subName]?.[toLevel] || [])
     .map(f => ({ ...f, source: subName }));
+
+  /* Le personnage tel qu'il sera apres la montee. Une copie : rien n'est
+     touche ici. La sous-classe en fait partie — c'est elle qui fait d'un
+     Guerrier ou d'un Roublard un lanceur de sorts.
+
+     Ce calcul vivait dans la modal, recopie a cote de celui-ci ; il partait de
+     getClasses et non de classesReelles, et indexait donc la mauvaise classe
+     des qu'une feuille portait une entree vide. */
+  const classesApres = classes.map(cl => ({ ...cl }));
+  if (idx < 0) classesApres.push({ classe: className, sousClasse: subName, niveau: 1, customSousClasse: '' });
+  else {
+    classesApres[idx] = { ...classesApres[idx], niveau: toLevel };
+    if (subName) classesApres[idx].sousClasse = subName;
+  }
 
   return {
     ok: true, className, classIdx: idx, isNewClass: idx < 0,
@@ -9011,7 +9148,7 @@ function planLevelUp(c, className) {
     avgHp:  Math.max(1, Math.floor(hitDieNum / 2) + 1 + conMod + speciesHp),
     maxHp:  Math.max(1, hitDieNum + conMod + speciesHp),
     minHp:  Math.max(1, 1 + conMod + speciesHp),
-    needsSubclass, subOptions, isAsi,
+    needsSubclass, subOptions, subName, subFeatures, isAsi, isEpic,
     newFeatures: [...clsFeatures, ...subFeatures],
     pbBefore: pb(totalBefore), pbAfter: pb(totalAfter),
     preparedBefore: preparedTotal(c),
@@ -9021,6 +9158,7 @@ function planLevelUp(c, className) {
     expertiseCount: expertiseAt(className, toLevel),
     featureChoices: featureChoicesAt(className, subName, toLevel),
     slotsBefore: computeMulticlassSlots(c),
+    slotsAfter:  computeMulticlassSlots({ classes: classesApres }),
     // Multiclassage : 13 requis des deux côtés (on prévient, on ne bloque pas —
     // certaines tables l'ignorent volontairement)
     prereq: idx < 0 ? multiclassPrereqCheck(c, className) : null,
@@ -9073,8 +9211,14 @@ function applyLevelUp(c, plan, choices) {
     return { ok:false, error:`Unknown feat: ${ch.feat}` };
   }
 
+  /* Releve avant toute ecriture : c'est lui qui dira si un ASI ou un don a
+     fait monter la CON, et donc s'il faut rattraper les PV des niveaux passes. */
+  const conAvant = Math.floor(((parseInt(c.con) || 10) - 10) / 2);
+
   // ── Niveau ──
-  c.classes = getClasses(c).map(cl => ({ ...cl }));
+  /* Les entrees vides disparaissent : sans ca la vraie classe s'ajoutait A COTE
+     de la classe fantome d'une feuille vierge. */
+  c.classes = classesReelles(c).map(cl => ({ ...cl }));
   if (plan.isNewClass) {
     c.classes.push({ classe: plan.className, sousClasse:'', niveau:1, customSousClasse:'' });
     log.push(`${plan.className} added at level 1 (multiclassing)`);
@@ -9092,6 +9236,14 @@ function applyLevelUp(c, plan, choices) {
 
   // ── Dés de vie ──
   c.nbDeVie = (parseInt(c.nbDeVie) || 0) + 1;
+  /* Le libelle suit la classe ou le personnage a le plus de niveaux : sinon un
+     Magicien passe Guerrier garde son d6, et le repos court avec. */
+  {
+    const dominante = c.classes.slice()
+      .sort((a, b) => (parseInt(b.niveau, 10) || 0) - (parseInt(a.niveau, 10) || 0))[0];
+    const de = typeof DND_CLASSES !== 'undefined' && DND_CLASSES[dominante?.classe]?.de;
+    if (de && de !== c.deVie) { c.deVie = de; log.push(`Hit die : ${de}`); }
+  }
 
   // ── Sous-classe (déjà validée plus haut) ──
   if (plan.needsSubclass && ch.subclass) {
@@ -9120,13 +9272,28 @@ function applyLevelUp(c, plan, choices) {
       const f = (typeof GENERAL_FEATS !== 'undefined' && GENERAL_FEATS[ch.feat]) || null;
       c.customFeatures = c.customFeatures || [];
       c.customFeatures.push({
-        name: ch.feat, source: `Don — ${plan.className} ${plan.toLevel}`,
+        name: ch.feat, source: `Feat — ${plan.className} ${plan.toLevel}`,
         desc: f?.desc || '', _open:false
       });
-      log.push(`Don : ${ch.feat}`);
+      log.push(`Feat : ${ch.feat}`);
+      /* Resilient donne la maitrise des jets de sauvegarde de la caracteristique
+         choisie, en plus du +1. C'est ecrit dans sa description, affichee au
+         joueur au moment ou il le prend — et ce n'etait jamais applique. */
+      if (ch.feat === 'Resilient' && ch.featAbil) {
+        const SAVE = { for:'saveFor', dex:'saveDex', con:'saveCon',
+                       int:'saveInt', sag:'saveSag', cha:'saveCha' };
+        const cle = SAVE[ch.featAbil];
+        if (cle && !c[cle]) {
+          c[cle] = true;
+          log.push(`Save proficiency : ${ch.featAbil.toUpperCase()}`);
+        }
+      }
       // Les dons généraux 2024 donnent aussi +1 dans une caractéristique
       if (f?.asi && ch.featAbil) {
-        c[ch.featAbil] = Math.min(20, (parseInt(c[ch.featAbil]) || 10) + 1);
+        /* Un don epique monte jusqu'a 30 — sa description le dit. Le plafond
+           de 20 de l'ASI ordinaire, lui, ne bouge pas. */
+        const plafond = f?.epic ? 30 : 20;
+        c[ch.featAbil] = Math.min(plafond, (parseInt(c[ch.featAbil]) || 10) + 1);
         log.push(`+1 ${ch.featAbil.toUpperCase()} (${ch.feat})`);
       }
     } else {
@@ -9140,6 +9307,21 @@ function applyLevelUp(c, plan, choices) {
       if (ch.asiA && ch.asiB && ch.asiA !== ch.asiB) { bump(ch.asiA, 1); bump(ch.asiB, 1); }
       else bump(ch.asiA, 2);
     }
+  }
+
+  /* Un modificateur de CON qui monte vaut +1 PV par niveau DEJA pris, pas
+     seulement pour celui qu'on vient de gagner. Sans ce rattrapage, un
+     Guerrier 8 qui passe CON 14 a 16 perdait huit points de vie et ne pouvait
+     s'en apercevoir qu'en recomptant sa fiche a la main.
+
+     Le gain de ce niveau-ci a ete calcule avec l'ancien modificateur : il fait
+     donc partie des niveaux a rattraper, d'ou le total APRES montee. */
+  const conApres = Math.floor(((parseInt(c.con) || 10) - 10) / 2);
+  if (conApres !== conAvant) {
+    const rattrapage = (conApres - conAvant) * plan.totalAfter;
+    c.pvMax    = Math.max(1, (parseInt(c.pvMax) || 0) + rattrapage);
+    c.pvActuel = Math.max(0, (parseInt(c.pvActuel) || 0) + rattrapage);
+    log.push(`${rattrapage > 0 ? '+' : ''}${rattrapage} PV max (CON ${conAvant > conApres ? 'baissée' : 'montée'}, rétroactif sur ${plan.totalAfter} niveaux)`);
   }
 
   syncClassesToLegacy(c);
@@ -9162,7 +9344,7 @@ function applyLevelUp(c, plan, choices) {
     row.cls = plan.className;
     row.hp  = gain;
     if (plan.isAsi) row.asi = ch.asiMode === 'feat'
-      ? `Don : ${ch.feat || ''}` + (ch.featAbil ? ` (+1 ${ch.featAbil.toUpperCase()})` : '')
+      ? `Feat : ${ch.feat || ''}` + (ch.featAbil ? ` (+1 ${ch.featAbil.toUpperCase()})` : '')
       : (ch.asiA && ch.asiB && ch.asiA !== ch.asiB
           ? `+1 ${ch.asiA.toUpperCase()} / +1 ${ch.asiB.toUpperCase()}`
           : `+2 ${(ch.asiA || '').toUpperCase()}`);
@@ -9361,14 +9543,33 @@ function armorFromItem(item) {
 
 /* Le personnage maitrise-t-il cette categorie d'arme ?
    weaponProf est du texte libre par classe (« Simple and Martial weapons »). */
-function isProficientWith(c, weaponCat) {
-  const profs = getClasses(c)
+function isProficientWith(c, weaponCat, props) {
+  /* Une liste par classe, pas un texte concatene : deux classes multiclassees
+     cumulent leurs maitrises, et une forme conditionnelle lue dans la bouillie
+     des deux ne veut plus rien dire. */
+  const listes = getClasses(c)
     .map(cl => (typeof CLASS_DATA !== 'undefined' && CLASS_DATA[cl.classe]?.weaponProf) || '')
-    .join(' ').toLowerCase();
-  if (!profs) return true;                      // classe inconnue : on n'invente pas un malus
-  if (/martial/.test(profs)) return true;       // martial couvre aussi simple
-  if (weaponCat === 'martial') return false;
-  return /simple/.test(profs) || !weaponCat;
+    .filter(Boolean)
+    .map(t => t.toLowerCase());
+  if (!listes.length) return true;              // classe inconnue : on n'invente pas un malus
+  const p = props || {};
+  return listes.some(texte => {
+    if (weaponCat === 'martial') {
+      if (!/martial/.test(texte)) return false;
+      /* « Martial weapons that have the Finesse or Light property » : la
+         maitrise porte sur une partie des armes de guerre seulement. Le
+         Roublard et le Moine sont dans ce cas depuis 2024 — sans cette lecture,
+         le seul mot « martial » leur ouvrait l'epee a deux mains. */
+      const cond = texte.match(/martial weapons that have the (.*?) propert/);
+      if (!cond) return true;                   // maitrise generale
+      const voulu = cond[1];
+      /* Propriete inconnue de l'arme : on ne tranche pas contre le joueur. */
+      if (p.finesse === undefined && p.light === undefined) return true;
+      return (/finesse/.test(voulu) && !!p.finesse) || (/light/.test(voulu) && !!p.light);
+    }
+    /* Une arme courante, ou une categorie qu'on ne connait pas. */
+    return /simple/.test(texte) || /martial/.test(texte) || !weaponCat;
+  });
 }
 
 /* Construit la ligne d'attaque d'un objet, ou null si ce n'est pas une arme.
@@ -9378,14 +9579,19 @@ function attackFromItem(item, c) {
   const nom = (item.name || '').trim();
   let dmg = item.dmg, type = item.dmgType, finesse = !!item.finesse, ranged = !!item.ranged;
   let cat = item.weaponCat;
+  /* undefined et non false : « on ne sait pas » et « ce n'est pas Legere » ne
+     donnent pas la meme reponse a la maitrise conditionnelle. */
+  let light = item.light;
 
-  if (!dmg && typeof STARTING_WEAPONS !== 'undefined') {
+  if (typeof STARTING_WEAPONS !== 'undefined') {
     const key = STARTING_WEAPONS[nom] ? nom
               : Object.keys(STARTING_WEAPONS).find(w => nom.includes(w));
     if (key) {
       const w = STARTING_WEAPONS[key];
-      dmg = w.dmg; type = w.type; finesse = !!w.finesse;
-      ranged = w.abil === 'dex';
+      /* Les donnees de l'objet priment ; la table ne comble que les trous. */
+      if (!dmg) { dmg = w.dmg; type = w.type; finesse = !!w.finesse; ranged = w.abil === 'dex'; }
+      if (!cat) cat = w.cat;
+      if (light === undefined) light = !!w.light;
     }
   }
   if (!dmg) return null;
@@ -9399,7 +9605,7 @@ function attackFromItem(item, c) {
     degats: dmg + (bonus ? (bonus > 0 ? '+' : '') + bonus : ''),
     typeDegat: type || '',
     atkType: abil,
-    prof: isProficientWith(c, cat),
+    prof: isProficientWith(c, cat, { finesse, light }),
     bonus: '',
     fromItem: nom,                 // marque l'origine : seules ces lignes sont retirees
   };
@@ -11248,14 +11454,21 @@ function renderViewSheet(el, pd, c, slot, username) {
     {key:'int',label:'INT'},{key:'sag',label:'WIS'},{key:'cha',label:'CHA'}
   ];
   // ── Proficiency bonus
-  const niveau = parseInt(c.niveau) || 1;
+  /* c.niveau vaut le niveau de la PREMIERE classe apres une montee, mais le
+     niveau TOTAL apres un import : lui faire confiance donnait +3 a un
+     Guerrier 5 / Magicien 5. On additionne les classes. */
+  const niveau = getTotalLevel(c);
   const profBonus = Math.ceil(niveau/4) + 1;
   // ── HP
   const pvCur = parseInt(c.pvActuel)||0; const pvMax = parseInt(c.pvMax)||1;
   const hpPct = Math.round((pvCur/pvMax)*100);
   const hpColor = hpPct>50?'#6aba6a':hpPct>25?'#dca03c':'#c97a7a';
   // ── Header
-  const avatarHtml = c.avatarPng
+  /* Pas `avatarHtml` : ce nom est deja celui de la fonction appelee juste en
+     dessous, et la const la masquait. Sans avatarPng, la vue partagee plantait
+     donc sur une zone morte temporelle — c est-a-dire pour presque tout le
+     monde, puisque peu de fiches portent une image. */
+  const avatarBloc = c.avatarPng
     ? `<div class="view-avatar"><img src="${c.avatarPng}" alt="avatar"></div>`
     : `<div class="view-avatar">${avatarHtml(c.avatar || pd.avatar)}</div>`;
   const classes = (c.classes||[{classe:c.classe,niveau:c.niveau}]).filter(cl=>cl.classe).map(cl=>`${cl.classe} ${cl.niveau}`).join(' / ') || '—';
@@ -11304,7 +11517,7 @@ function renderViewSheet(el, pd, c, slot, username) {
   const now = new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
   el.innerHTML = `
     <div class="view-header">
-      ${avatarHtml}
+      ${avatarBloc}
       <div>
         <div class="view-char-name">${esc(c.characterName||'Unnamed')}</div>
         <div class="view-char-sub">${esc(classes)}${c.species?' · '+esc(c.species):''}</div>
@@ -13457,7 +13670,7 @@ ${car} characters of notes.
               const on = pris.includes(o);
               return `<button type="button" class="cf-skill-chip${on ? ' on' : ''}${!on && plein ? ' muted' : ''}"`
                    + ` data-wfc="${esc(f.name)}" data-wfcopt="${esc(o)}"`
-                   + ` title="${esc(f.desc[o] || '')}">${esc(o)}</button>`;
+                   + ` title="${esc((f.desc[o] || '') + (livreSource(o) ? ' — ' + livreSource(o) : ''))}">${esc(o)}</button>`;
             }).join('')
           + `</div>`
           + (pris.length ? `<div class="wiz-fc-note">${pris.map(o =>
@@ -13542,12 +13755,47 @@ ${car} characters of notes.
       selTool.innerHTML = opts.map(o => `<option>${o}</option>`).join('');
     }
 
-    /* Langues : Commun d'office + 2 au choix (PHB 2024) */
-    const langOpts = sel => '<option value="">— Choose —</option>'
-      + `<optgroup label="Courantes">${LANGUAGES.standard.map(l => `<option${l === sel ? ' selected' : ''}>${l}</option>`).join('')}</optgroup>`
-      + `<optgroup label="Rares">${LANGUAGES.rare.map(l => `<option${l === sel ? ' selected' : ''}>${l}</option>`).join('')}</optgroup>`;
+    /* Langues : Commun d'office + 2 au choix (PHB 2024).
+
+       L'origine puise dans la table STANDARD, et seulement elle : « Common plus
+       two languages you roll or choose from the Standard Languages table ». La
+       table rare est ouverte par une aptitude — « Some features let a character
+       learn a rare language » — pas a la naissance. Les deux menus proposaient
+       les deux tables : on pouvait naitre Abyssal. */
+    /* `exclure` : une langue deja connue proposee au choix est un choix gaspille.
+       L'Argot des voleurs se donne lui-meme — il n'a rien a faire dans la liste
+       de la langue supplementaire qu'il accorde. */
+    const langOpts = (sel, tables, exclure) => '<option value="">— Choose —</option>'
+      + (tables || ['standard']).map(t => {
+          const etiquette = t === 'rare' ? 'Rares' : 'Courantes';
+          const liste = (LANGUAGES[t] || []).filter(l => !(exclure || []).includes(l));
+          if (!liste.length) return '';
+          return `<optgroup label="${etiquette}">${liste.map(l =>
+            `<option${l === sel ? ' selected' : ''}>${l}</option>`).join('')}</optgroup>`;
+        }).join('');
     selLang1.innerHTML = langOpts();
     selLang2.innerHTML = langOpts();
+
+    /* Ce que la classe ajoute par-dessus l'origine : l'Argot des voleurs donne
+       l'argot ET une langue au choix dans les DEUX tables, le Druidique donne le
+       druidique. Rien de tout cela n'arrivait sur la fiche. */
+    const majLanguesClasse = () => {
+      const bloc = document.getElementById('wiz-lang-classe');
+      if (!bloc) return;
+      const lg = languesDeClasse(selClass.value, 1);
+      if (!lg.accordees.length && !lg.choix.length) { bloc.innerHTML = ''; bloc.style.display = 'none'; return; }
+      bloc.style.display = '';
+      const choix = lg.choix.map((ch, i) =>
+        `<div class="auth-field">
+           <label class="auth-label" for="wiz-lang-cls${i}">Language — ${esc(ch.source)}</label>
+           <select class="auth-input" id="wiz-lang-cls${i}" data-langcls="1">${langOpts('', ch.tables, lg.accordees)}</select>
+         </div>`).join('');
+      bloc.innerHTML = (lg.accordees.length
+          ? `<div class="wiz-lang-note">Your class also grants <strong>${lg.accordees.map(esc).join('</strong>, <strong>')}</strong>.</div>`
+          : '')
+        + (choix ? `<div class="wiz-lang-row">${choix}</div>` : '');
+    };
+    majLanguesClasse();
     // Deux fois la même langue = une langue gâchée : on prévient sans bloquer
     const syncLangs = () => {
       const dup = selLang1.value && selLang1.value === selLang2.value;
@@ -13570,6 +13818,7 @@ ${car} characters of notes.
       btnOk.style.display   = step === TOTAL_STEPS ? '' : 'none';
       btnBlank.style.display = step === 1 ? '' : 'none';
       if (step === 1) setTimeout(() => nameInp.focus(), 50);
+      if (step === 4) majLanguesClasse();  // depend de la classe choisie a l'etape 3
       if (step === 5) renderBgBonus();  // dépend du background choisi à l'étape 4
       if (step === 6) { refreshEquip(); renderWizSummary(); }
     }
@@ -13622,7 +13871,7 @@ ${car} characters of notes.
 
     /* ── Création : applique tous les choix à la fiche ── */
     btnOk.addEventListener('click', () => {
-      const name = nameInp.value.trim() || 'Nouveau personnage';
+      const name = nameInp.value.trim() || 'New character';
       const id   = newCharId();
       playerData.characters[id] = emptyCharSlot(name);
       const slot = playerData.characters[id];
@@ -13635,12 +13884,16 @@ ${car} characters of notes.
       const b2 = bgBox.querySelector('[data-bgb="2"]')?.value;
       const b1 = bgBox.querySelector('[data-bgb="1"]')?.value;
       const bgOk = b2 && b1 && b2 !== b1;   // ignoré si les deux pointent la même caractéristique
+      /* Le bonus d'historique s'applique meme sans valeur choisie dans le
+         tableau : la boucle sautait ces caracteristiques, et le +2/+1 partait
+         avec elles sans que rien ne le dise. A defaut de choix, on part de ce
+         que la fiche porte deja. */
       abilBox.querySelectorAll('.wiz-abil-sel').forEach(s => {
-        if (!s.value) return;
         const k = s.dataset.abil;
-        c[k] = parseInt(s.value)
-             + (bgOk && k === b2 ? 2 : 0)
-             + (bgOk && k === b1 ? 1 : 0);
+        const bonus = (bgOk && k === b2 ? 2 : 0) + (bgOk && k === b1 ? 1 : 0);
+        if (!s.value && !bonus) return;
+        const base = s.value ? parseInt(s.value) : (parseInt(c[k]) || 10);
+        c[k] = base + bonus;
       });
 
       // Espèce + lignée → vitesse (fx sert aussi au calcul des PV plus bas)
@@ -13676,10 +13929,26 @@ ${car} characters of notes.
         }
       }
 
-      // Background → compétences cochées
+      // Background → compétences cochées et don d'origine
       if (selBg.value) {
         c.background = selBg.value;
-        (BACKGROUND_DATA[selBg.value].skillKeys || []).forEach(k => { c[k] = 1; });
+        const bg = BACKGROUND_DATA[selBg.value];
+        (bg.skillKeys || []).forEach(k => { c[k] = 1; });
+        /* L'etape 4 annonce ce don au joueur : il doit se retrouver sur la
+           fiche. L'import D&D Beyond le pose deja dans customFeatures — sans
+           cette ligne, creer un personnage et en importer un ne donnaient pas
+           la meme fiche. */
+        if (bg.feat) {
+          c.customFeatures = c.customFeatures || [];
+          if (!c.customFeatures.some(f => f.name === bg.feat)) {
+            c.customFeatures.push({
+              name: bg.feat,
+              source: `Origin feat — ${selBg.value}`,
+              desc: (typeof ORIGIN_FEATS !== 'undefined' && ORIGIN_FEATS[bg.feat]) || '',
+              _open: false,
+            });
+          }
+        }
       }
 
       // Équipement de départ → inventaire + bourse, puis CA et attaques dérivées
@@ -13697,30 +13966,45 @@ ${car} characters of notes.
       }
       applyStartingGear(c, selClass.value, eqItems);
 
-      // Maîtrises : armures + armes de la classe, outil du background
+      // Maîtrises : armures + armes + outils de la classe, outil du background
       if (selClass.value || selBg.value) {
         const cd   = CLASS_DATA[selClass.value];
         const bd   = BACKGROUND_DATA[selBg.value];
         // « Gaming Set (choice) » → l'outil réellement choisi à l'étape 4
         const tool = bd && (TOOL_CHOICES[bd.tool] ? selTool.value : bd.tool);
+        /* Les outils de la classe ET celui de l'historique : cinq classes en
+           accordent au niveau 1 (Roublard, Druide, Barde, Moine, Artificier) et
+           aucun n'arrivait sur la fiche. Quand les deux donnent le meme — un
+           Roublard Criminel a deux fois les outils de voleur — la regle 2024 est
+           d'en prendre un autre du meme type ; on le signale plutot que de
+           choisir a la place du joueur. */
+        const outils = [cd?.toolProf, tool].filter(Boolean);
+        const memeOutil = cd?.toolProf && tool && cd.toolProf === tool;
         const list = [
           cd?.armorProf  && `Armor: ${cd.armorProf}`,
           cd?.weaponProf && `Weapons: ${cd.weaponProf}`,
-          tool           && `Outil : ${tool}`,
+          outils.length  && `Tools: ${[...new Set(outils)].join(', ')}`
+                            + (memeOutil ? ' — already granted twice, pick another of the same kind' : ''),
         ].filter(Boolean);
         if (list.length) c.maitrises = list.join('\n');
       }
 
-      // Langues : Commun d'office + les deux choix de l'origine (doublon ignoré)
-      c.langues = ['Common', selLang1.value, selLang2.value]
-        .filter((l, i, arr) => l && arr.indexOf(l) === i).join(', ');
+      /* Langues : Commun d'office, les deux choix de l'origine, puis ce que la
+         classe accorde — l'argot du Roublard, le druidique du Druide, et la
+         langue que l'aptitude laisse choisir. Les doublons disparaissent. */
+      {
+        const lg = languesDeClasse(selClass.value, 1);
+        const choisies = Array.from(document.querySelectorAll('[data-langcls]')).map(el => el.value);
+        c.langues = ['Common', selLang1.value, selLang2.value, ...lg.accordees, ...choisies]
+          .filter((l, i, arr) => l && arr.indexOf(l) === i).join(', ');
+      }
 
       finishCreate(id, `✦ ${name} created — ${[c.species, c.classe && c.classe + ' 1', c.background].filter(Boolean).join(' · ') || 'blank sheet'}`);
     });
 
     /* ── Fiche vierge : certains préfèrent tout remplir eux-mêmes ── */
     btnBlank.addEventListener('click', () => {
-      const name = nameInp.value.trim() || 'Nouveau personnage';
+      const name = nameInp.value.trim() || 'New character';
       const id   = newCharId();
       playerData.characters[id] = emptyCharSlot(name);
       playerData.characters[id].character.characterName = name;
@@ -13741,6 +14025,23 @@ ${car} characters of notes.
       showToast(toast);
     }
 
+    /* Deux personnages peuvent legitimement porter le meme nom — des jumeaux,
+       un remplacant homonyme. On previent donc pendant la saisie au lieu
+       d'interdire : sans ca, le selecteur affiche deux entrees identiques et
+       le joueur ne sait plus laquelle il ouvre. */
+    const noteNom = document.createElement('div');
+    noteNom.className = 'wiz-bgb-warn';
+    noteNom.id = 'wiz-nom-warn';
+    nameInp.parentElement?.appendChild(noteNom);
+    const verifierNom = () => {
+      const voulu = nameInp.value.trim().toLowerCase();
+      const pris = voulu && Object.values(playerData?.characters || {})
+        .some(sl => (sl?.name || '').trim().toLowerCase() === voulu);
+      noteNom.innerHTML = pris
+        ? ic('warn') + ' A character already goes by this name — both will look the same in the list.'
+        : '';
+    };
+    nameInp.addEventListener('input', verifierNom);
     nameInp.addEventListener('keydown', e => { if (e.key === 'Enter') showStep(step + 1); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal(); });
     refreshAbils();
@@ -13761,18 +14062,9 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
   const ABIL = [['for','STR'],['dex','DEX'],['con','CON'],['int','INT'],['sag','WIS'],['cha','CHA']];
   const $ = id => document.getElementById(id);
   let plan = null, chosenHp = null, asiMode = 'abil';
+  let chosenSub = '';             // sous-classe en cours de choix, avant confirmation
   let expertisePick = new Set();
   let fcPick = {};                // { "Fighting Style": ["Defense"] }
-
-  /* Copie legere du personnage au niveau suivant — sert a comparer les
-     emplacements de sorts avant/apres sans rien modifier. */
-  function simulateLevel(c, p) {
-    const classes = getClasses(c).map(x => ({ ...x }));
-    if (p.isNewClass) classes.push({ classe: p.className, niveau: 1 });
-    else classes[p.classIdx].niveau = p.toLevel;
-    return { classes };
-  }
-
 
   /* Choix de capacites du niveau : un bloc de pastilles par capacite.
      Meme mecanique que l'Expertise, mais le nombre a retenir varie
@@ -13794,7 +14086,7 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
             const on = pris.includes(o);
             return `<button type="button" class="cf-skill-chip${on ? ' on' : ''}${!on && plein ? ' muted' : ''}"`
                  + ` data-fc="${esc(f.name)}" data-fcopt="${esc(o)}"`
-                 + ` title="${esc(f.desc[o] || '')}">${esc(o)}</button>`;
+                 + ` title="${esc((f.desc[o] || '') + (livreSource(o) ? ' — ' + livreSource(o) : ''))}">${esc(o)}</button>`;
           }).join('')
         + `</div>`
         + (pris.length ? `<div class="lvlup-hp-detail">${pris.map(o =>
@@ -13843,7 +14135,7 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
 
   function refresh() {
     const c = C();
-    plan = planLevelUp(c, $('lvlup-class').value);
+    plan = planLevelUp(c, $('lvlup-class').value, { subclass: chosenSub });
     const okBtn = $('lvlup-confirm');
 
     if (!plan.ok) {
@@ -13873,31 +14165,82 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
     $('lvlup-hp-row').innerHTML =
       `<button class="btn btn-sm btn-gold" id="lvlup-hp-avg">⊘ Average (+${plan.avgHp})</button>
        <button class="btn btn-sm" id="lvlup-hp-roll">${ic('die')} Roll ${plan.hitDie}</button>
-       <span class="lvlup-hp-pick" id="lvlup-hp-pick">+${chosenHp} PV</span>`;
-    $('lvlup-hp-detail').innerHTML =
-      `${plan.hitDie} ${plan.conMod < 0 ? '−' : '+'} <strong>${Math.abs(plan.conMod)}</strong> CON`
-      + (plan.speciesHp ? ` + <strong>${plan.speciesHp}</strong> species` : '')
-      + ` — between ${plan.minHp} and ${plan.maxHp} HP.`;
-    $('lvlup-hp-avg').addEventListener('click', () => { chosenHp = plan.avgHp; $('lvlup-hp-pick').textContent = `+${chosenHp} PV`; });
+       <label class="lvlup-hp-manual">
+         <span>or</span>
+         <input type="number" id="lvlup-hp-input" class="lvlup-hp-input"
+                min="1" step="1" inputmode="numeric" value="${chosenHp}"
+                aria-label="Hit points gained at this level">
+         <span>HP</span>
+       </label>`;
+
+    /* Le detail se recalcule a chaque changement : il porte l'avertissement de
+       borne, qui depend de la valeur saisie. */
+    const detailHp = () => {
+      const base = `${plan.hitDie} ${plan.conMod < 0 ? '−' : '+'} <strong>${Math.abs(plan.conMod)}</strong> CON`
+        + (plan.speciesHp ? ` + <strong>${plan.speciesHp}</strong> species` : '')
+        + ` — between ${plan.minHp} and ${plan.maxHp} HP.`;
+      /* Hors bornes : on le signale, on ne l'interdit pas. Un MJ qui accorde un
+         forfait a le droit, et le refuser obligerait a corriger la fiche apres
+         coup — exactement ce que ce champ evite. */
+      const hors = chosenHp < plan.minHp || chosenHp > plan.maxHp;
+      return base + (hors
+        ? ` <span class="lvlup-hp-warn">${ic('warn')} +${chosenHp} is outside what ${plan.hitDie} can roll — kept as entered.</span>`
+        : '');
+    };
+    $('lvlup-hp-detail').innerHTML = detailHp();
+
+    /* Une seule valeur de reference, chosenHp ; le champ n'en est que
+       l'affichage. `ecrire` distingue les deux sens : les boutons imposent une
+       valeur au champ, la frappe ne fait que la lire.
+
+       Sans cette distinction, reecrire le champ a chaque touche empechait de
+       l'effacer pour retaper — « 12 » passait par un « 1 » aussitot fige. */
+    const poserHp = (n, { ecrire = true } = {}) => {
+      const v = parseInt(n, 10);
+      if (Number.isFinite(v) && v >= 1) chosenHp = v;
+      const inp = $('lvlup-hp-input');
+      if (ecrire && inp) inp.value = chosenHp;
+      $('lvlup-hp-detail').innerHTML = detailHp();
+    };
+
+    $('lvlup-hp-avg').addEventListener('click', () => poserHp(plan.avgHp));
     $('lvlup-hp-roll').addEventListener('click', () => {
       const r = rollDiceExpr(plan.hitDie);
-      chosenHp = Math.max(1, r.total + plan.conMod + plan.speciesHp);
       showDamageRoll(`HP level ${plan.totalAfter} · ${plan.hitDie}`, r);
-      $('lvlup-hp-pick').textContent = `+${chosenHp} PV`;
+      poserHp(r.total + plan.conMod + plan.speciesHp);
     });
+    /* Pendant la frappe le champ reste libre : un champ vide ou a zero ne
+       change pas chosenHp, il attend la suite de la saisie. */
+    $('lvlup-hp-input').addEventListener('input', e => poserHp(e.target.value, { ecrire: false }));
+    /* En sortant, le champ retrouve la derniere valeur valable — celle qui sera
+       reellement appliquee. */
+    $('lvlup-hp-input').addEventListener('blur', () => poserHp(chosenHp));
 
     // Sous-classe
     const subBlock = $('lvlup-sub-block');
     subBlock.style.display = plan.needsSubclass ? '' : 'none';
     if (plan.needsSubclass) {
+      /* La liste se reconstruit a chaque passage : sans reposer la valeur, le
+         choix disparaissait de l'ecran a l'instant ou on le faisait. */
       $('lvlup-sub').innerHTML = '<option value="">— Choose —</option>'
-        + plan.subOptions.map(s => `<option value="${esc(s)}"${titreUA(s)}>${esc(nomUA(s))}</option>`).join('');
-      $('lvlup-sub-preview').innerHTML = '';
-    }
+        + plan.subOptions.map(s =>
+            `<option value="${esc(s)}"${titreUA(s)}${s === chosenSub ? ' selected' : ''}>${esc(nomUA(s))}</option>`).join('');
+      /* L'apercu sort du plan, comme tout le reste de l'ecran : deux lectures
+         separees des memes donnees finissent toujours par se contredire. */
+      $('lvlup-sub-preview').innerHTML = (plan.subFeatures || []).map(f =>
+        `<div class="wiz-trait"><span class="wiz-trait-name">${esc(f.name)}</span> — ${esc(f.desc || '')}</div>`).join('');
+    } else chosenSub = '';
 
     // ASI / don
     const asiBlock = $('lvlup-asi-block');
     asiBlock.style.display = plan.isAsi ? '' : 'none';
+    /* Au niveau 19 ce n'est pas un ASI mais un don epique : l'intitule le dit,
+       sinon le joueur cherche une amelioration de caracteristique qui n'est pas
+       ce qu'on lui propose. */
+    const titreAsi = $('lvlup-asi-title');
+    if (titreAsi) titreAsi.innerHTML = plan.isEpic
+      ? 'Epic Boon <span class="lvlup-req">or another feat</span>'
+      : 'Ability Score Improvement <span class="lvlup-req">or feat</span>';
     if (plan.isAsi) {
       // Une caractéristique déjà à 20 ne peut plus monter : on le dit au lieu de perdre le gain
       const opt = (sel) => ABIL.map(([k, l]) => {
@@ -13906,9 +14249,12 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
       }).join('');
       $('lvlup-asi-a').innerHTML = '<option value="">— +2 ici, ou +1/+1 —</option>' + opt();
       $('lvlup-asi-b').innerHTML = '<option value="">— none (so +2) —</option>' + opt();
+      /* titreUA : la liste des dons epiques melange le PHB et Arcana Unleashed,
+         l'infobulle dit lequel. Sans elle, rien ne distingue un don du livre de
+         base d'un don d'un supplement que la table n'utilise peut-etre pas. */
       $('lvlup-feat').innerHTML = '<option value="">— Choose a feat —</option>'
         + donsDisponibles(plan.totalAfter).filter(f => f !== 'Ability Score Improvement')
-            .map(f => `<option>${esc(f)}</option>`).join('');
+            .map(f => `<option${titreUA(f)}>${esc(f)}</option>`).join('');
       syncAsiNote();
     }
 
@@ -13929,7 +14275,7 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
                + `(<strong>${plan.cantripsTotal}</strong> total) — pick them in the Compendium.</div>`);
     }
     const avant = topSlotLevel(plan.slotsBefore);
-    const apres = topSlotLevel(computeMulticlassSlots(simulateLevel(c, plan)));
+    const apres = topSlotLevel(plan.slotsAfter);
     if (apres > avant) {
       gains.push(`<div><span class="lvlup-gain-icon">✦</span>You unlock <strong>level ${apres}</strong>.</div>`);
     }
@@ -13974,20 +14320,29 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
     if (f.asi) {
       const keys = abilKeysFromFeat(f.abil);
       wrap.style.display = '';
+      /* Meme plafond qu'a l'application : sans ca le selecteur grisait une
+         caracteristique a 20 alors que le don epique peut la monter a 30. */
+      const plafond = f.epic ? 30 : 20;
       $('lvlup-feat-abil').innerHTML = keys.map(k => {
         const v = parseInt(C()[k]) || 10;
-        return `<option value="${k}"${v >= 20 ? ' disabled' : ''}>${k.toUpperCase()} ${v}${v >= 20 ? ' (max)' : ''}</option>`;
+        const bloque = v >= plafond;
+        return `<option value="${k}"${bloque ? ' disabled' : ''}>${k.toUpperCase()} ${v}${bloque ? ' (max)' : ''}</option>`;
       }).join('');
     } else wrap.style.display = 'none';
   });
 
+  /* Choisir sa sous-classe recalcule tout le plan. Elle apporte des
+     emplacements de sorts (Eldritch Knight, Arcane Trickster), des capacites a
+     choisir et des nouveautes a annoncer : l'ecran se contentait d'en peindre
+     un apercu a cote, pendant que le plan restait celui d'avant le choix. */
   $('lvlup-sub').addEventListener('change', () => {
-    const feats = SUBCLASS_DATA?.[plan?.className]?.[$('lvlup-sub').value]?.[plan.toLevel] || [];
-    $('lvlup-sub-preview').innerHTML = feats.map(f =>
-      `<div class="wiz-trait"><span class="wiz-trait-name">${esc(f.name)}</span> — ${esc(f.desc || '')}</div>`).join('');
+    chosenSub = $('lvlup-sub').value;
+    refresh();
   });
 
-  $('lvlup-class').addEventListener('change', () => { chosenHp = null; refresh(); });
+  /* Changer de classe repart de zero : la sous-classe retenue etait celle de
+     l'autre classe. */
+  $('lvlup-class').addEventListener('change', () => { chosenHp = null; chosenSub = ''; refresh(); });
   $('lvlup-cancel').addEventListener('click', () => overlay.classList.remove('open'));
   overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
   document.addEventListener('keydown', e => {
@@ -13996,7 +14351,7 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
 
   $('lvlup-confirm').addEventListener('click', () => {
     if (!plan?.ok) return;
-    if (plan.needsSubclass && !$('lvlup-sub').value) {
+    if (plan.needsSubclass && !chosenSub) {
       showToast('Choose your subclass — it is required at level 3.', 'warn');
       return;
     }
@@ -14022,14 +14377,17 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
       return;
     }
     const res = applyLevelUp(C(), plan, {
-      hp: chosenHp, subclass: $('lvlup-sub').value, asiMode,
+      hp: chosenHp, subclass: chosenSub, asiMode,
       expertise: [...expertisePick],
       featureChoices: fcPick,
       asiA: $('lvlup-asi-a').value, asiB: $('lvlup-asi-b').value,
       feat: $('lvlup-feat').value, featAbil: $('lvlup-feat-abil').value,
     });
-    overlay.classList.remove('open');
+    /* On ne ferme qu'apres avoir lu le resultat : un refus laissait sinon le
+       joueur devant une modal fermee, avec ses PV saisis, sa sous-classe et ses
+       choix de capacite perdus, et un message qui ne dit pas ou reprendre. */
     if (!res.ok) { showToast(res.error, 'warn'); return; }
+    overlay.classList.remove('open');
     renderAll(); renderCharCards(); renderCharSelector(); triggerSave();
     showToast(`⬆ Level ${res.totalLevel} — ${res.log.join(' · ')}`);
   });
@@ -14043,6 +14401,7 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
       + `<optgroup label="Multiclasser">${CLASS_LIST.filter(n => !cur.includes(n))
             .map(n => `<option value="${esc(n)}">${esc(nomUA(n))}</option>`).join('')}</optgroup>`;
     chosenHp = null;
+    chosenSub = '';
     asiMode = 'abil';
     expertisePick = new Set();
     fcPick = {};
@@ -14601,12 +14960,25 @@ document.getElementById('death-save-roll-btn')?.addEventListener('click', e => {
   document.getElementById('dice-total').textContent = msg;
 });
 
+/* Une modal ouverte doit absorber les raccourcis. Le test du focus ne suffit
+   pas : des qu'on clique sur un bouton ou sur le fond d'une modal, le focus
+   n'est plus dans un champ, et « l » lance alors un repos long sur le
+   personnage affiche derriere l'assistant de creation. */
+const MODALS = ['.modal-overlay.open', '.ddb-modal-overlay.open',
+                '.new-char-modal-overlay.open', '.sr-modal-overlay.open',
+                '#compendium-overlay.open'];
+function modalOuverte() {
+  return MODALS.some(sel => document.querySelector(sel));
+}
+
 /* ── 17b. Raccourcis clavier globaux ── */
 document.addEventListener('keydown', e => {
   // Ignorer si focus dans un champ de saisie
   const tag = document.activeElement?.tagName;
   if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
   if (e.ctrlKey || e.metaKey || e.altKey) return;
+  /* Echap reste utile : c'est lui qui ferme la modal. */
+  if (e.key !== 'Escape' && modalOuverte()) return;
 
   switch (e.key.toLowerCase()) {
     case 'd': {
@@ -14728,7 +15100,8 @@ document.addEventListener('keydown', e => {
               <select class="auth-input" id="wiz-lang2"></select>
             </div>
           </div>
-          <div class="wiz-lang-note">You speak <strong>Commun</strong> by default, plus two languages from your origin.</div>
+          <div class="wiz-lang-note">You speak <strong>Commun</strong> by default, plus two languages from your origin — drawn from the Standard table. Rare languages come from class features, not from your origin.</div>
+          <div id="wiz-lang-classe" style="display:none;"></div>
           <div class="wiz-preview" id="wiz-bg-preview"></div>
         </div>
 
@@ -14791,7 +15164,7 @@ document.addEventListener('keydown', e => {
 
         <!-- ASI / don -->
         <div class="lvlup-block" id="lvlup-asi-block" style="display:none;">
-          <div class="lvlup-block-title">Ability Score Improvement <span class="lvlup-req">or feat</span></div>
+          <div class="lvlup-block-title" id="lvlup-asi-title">Ability Score Improvement <span class="lvlup-req">or feat</span></div>
           <div class="lvlup-asi-tabs">
             <button type="button" class="lvlup-tab active" data-asimode="abil">Abilities</button>
             <button type="button" class="lvlup-tab" data-asimode="feat">Don</button>

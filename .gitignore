@@ -1,1 +1,5 @@
 .claude/
+
+# Sorties du generateur de plaques 3D : regenerables en une commande,
+# et un depot qui sert aussi de site n a pas a porter 10 Mo de STL.
+tools/out*/

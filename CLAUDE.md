@@ -182,7 +182,33 @@ Stratégie actuelle : network-first pour HTML, cache-first pour assets (CSS/JS/i
 
 1. Modifier les fichiers
 2. `git add <fichiers>` puis `git commit` — le hook bump le SW et vérifie la syntaxe tout seul
-3. `git push` puis merger la PR vers `main`
+3. **REVUE — s'arrêter ici et attendre le feu vert** (voir ci-dessous)
+4. `git push` puis merger la PR vers `main`
+5. Publier : `git push pages origin/main:refs/heads/main`
+
+### L'étape de revue
+
+Le dépôt est public et sert directement le site : une fois poussé, c'est en
+ligne pour les joueurs. Rien ne part sans que l'auteur ait pu regarder.
+
+**S'arrêter avant le push**, pas après. Un commit local se défait, un push non.
+
+La revue tient en quatre choses, dans cet ordre :
+
+1. **Ce qui change**, en une poignée de lignes : l'intention, pas la liste des
+   fichiers. `git diff --stat` en complément si c'est gros.
+2. **Ce qui a été vérifié**, et comment — tests passés, contrôle négatif fait,
+   rendu regardé dans le navigateur. Dire aussi ce qui n'a PAS été vérifié.
+3. **De quoi tester soi-même** : une preview déjà lancée avec son URL, ou la
+   commande exacte à lancer. Pas « tu peux tester » — le moyen concret.
+4. **Ce qui mérite un œil** : les endroits où un choix a été fait, ceux où un
+   doute subsiste. Si tout est trivial, le dire aussi.
+
+Puis attendre. Un silence n'est pas un accord.
+
+⚠️ `.claude/settings.json` met `git push` et `gh pr merge` en `ask` : même en
+cas d'oubli, une confirmation est demandée. Le garde-fou ne remplace pas la
+revue — une invite affiche une commande, pas ce qu'elle emporte.
 
 ---
 

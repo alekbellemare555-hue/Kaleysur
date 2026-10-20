@@ -119,14 +119,28 @@ const FULL_CASTER_SLOTS = {
   16:[4,3,3,3,2,1,1,1,0], 17:[4,3,3,3,2,1,1,1,1], 18:[4,3,3,3,3,1,1,1,1],
   19:[4,3,3,3,3,2,1,1,1], 20:[4,3,3,3,3,2,2,1,1]
 };
+/* Paladin et Rodeur. En 2024 ils lancent des sorts des le niveau 1 : c'est le
+   seul ecart avec la table 2014, qui commencait au niveau 2. */
 const HALF_CASTER_SLOTS = {
-  1:[0,0,0,0,0,0,0,0,0], 2:[2,0,0,0,0,0,0,0,0], 3:[3,0,0,0,0,0,0,0,0],
+  1:[2,0,0,0,0,0,0,0,0], 2:[2,0,0,0,0,0,0,0,0], 3:[3,0,0,0,0,0,0,0,0],
   4:[3,0,0,0,0,0,0,0,0], 5:[4,2,0,0,0,0,0,0,0], 6:[4,2,0,0,0,0,0,0,0],
   7:[4,3,0,0,0,0,0,0,0], 8:[4,3,0,0,0,0,0,0,0], 9:[4,3,2,0,0,0,0,0,0],
   10:[4,3,2,0,0,0,0,0,0], 11:[4,3,3,0,0,0,0,0,0], 12:[4,3,3,0,0,0,0,0,0],
   13:[4,3,3,1,0,0,0,0,0], 14:[4,3,3,1,0,0,0,0,0], 15:[4,3,3,2,0,0,0,0,0],
   16:[4,3,3,2,0,0,0,0,0], 17:[4,3,3,3,1,0,0,0,0], 18:[4,3,3,3,1,0,0,0,0],
   19:[4,3,3,3,2,0,0,0,0], 20:[4,3,3,3,2,0,0,0,0]
+};
+/* Chevalier Occulte et Filou Arcanique. Identique en 2014 et en 2024.
+   A ne pas confondre avec leur apport au multiclassement, qui est le tiers du
+   niveau arrondi a l'inferieur : les deux ne donnent pas le meme resultat. */
+const THIRD_CASTER_SLOTS = {
+  1:[0,0,0,0,0,0,0,0,0], 2:[0,0,0,0,0,0,0,0,0], 3:[2,0,0,0,0,0,0,0,0],
+  4:[3,0,0,0,0,0,0,0,0], 5:[3,0,0,0,0,0,0,0,0], 6:[3,0,0,0,0,0,0,0,0],
+  7:[4,2,0,0,0,0,0,0,0], 8:[4,2,0,0,0,0,0,0,0], 9:[4,2,0,0,0,0,0,0,0],
+  10:[4,3,0,0,0,0,0,0,0], 11:[4,3,0,0,0,0,0,0,0], 12:[4,3,0,0,0,0,0,0,0],
+  13:[4,3,2,0,0,0,0,0,0], 14:[4,3,2,0,0,0,0,0,0], 15:[4,3,2,0,0,0,0,0,0],
+  16:[4,3,3,0,0,0,0,0,0], 17:[4,3,3,0,0,0,0,0,0], 18:[4,3,3,0,0,0,0,0,0],
+  19:[4,3,3,1,0,0,0,0,0], 20:[4,3,3,1,0,0,0,0,0]
 };
 const WARLOCK_SLOTS = {
   1:[1,0,0,0,0,0,0,0,0], 2:[2,0,0,0,0,0,0,0,0], 3:[0,2,0,0,0,0,0,0,0],
@@ -161,6 +175,84 @@ const MULTICLASS_SLOTS = {
 };
 
 /* ════════════════════════════════════════════════════════════
+   QUI LANCE QUOI — source unique
+   Trois ecrans decidaient chacun de leur cote, avec trois listes recopiees, et
+   elles avaient divergé sur le Psion. Tout passe par ici desormais.
+   ════════════════════════════════════════════════════════════ */
+
+/* Qui lance quoi, en une table. Regroupee en un seul objet plutot qu'en
+   plusieurs tableaux : le harnais de smoke-tests extrait les litteraux par
+   appariement d'accolades et ne sait pas lire un tableau isole — la table
+   serait alors recopiee dans les tests, ce qui ramenerait l'ecart qu'on vient
+   de supprimer. */
+const LANCEURS = {
+  complet:    ['Bard', 'Cleric', 'Druid', 'Psion', 'Sorcerer', 'Wizard'],
+  demi:       ['Paladin', 'Ranger'],
+  pacte:      ['Warlock'],
+  artificier: ['Artificer'],
+  /* Ces sous-classes rendent lanceuse une classe qui ne l'est pas. */
+  tiers:      { Fighter: ['Eldritch Knight'], Rogue: ['Arcane Trickster'] },
+};
+
+/** 'complet' | 'demi' | 'tiers' | 'pacte' | 'artificier' | null */
+function typeLanceur(classe, sousClasse) {
+  if (!classe) return null;
+  for (const type of ['pacte', 'artificier', 'complet', 'demi']) {
+    if (LANCEURS[type].includes(classe)) return type;
+  }
+  if ((LANCEURS.tiers[classe] || []).includes(sousClasse)) return 'tiers';
+  return null;
+}
+
+/** La table de la classe elle-meme, pour un personnage qui n'a qu'elle. */
+function emplacementsClasse(classe, sousClasse, niveau) {
+  const n = Math.max(1, Math.min(20, parseInt(niveau, 10) || 1));
+  switch (typeLanceur(classe, sousClasse)) {
+    case 'complet':    return FULL_CASTER_SLOTS[n];
+    case 'demi':       return HALF_CASTER_SLOTS[n];
+    case 'tiers':      return THIRD_CASTER_SLOTS[n];
+    case 'pacte':      return WARLOCK_SLOTS[n];
+    case 'artificier': return ARTIFICER_SLOTS[n];
+    default:           return null;
+  }
+}
+
+/** Niveau de lanceur effectif pour la table multiclasse.
+    2024 : Paladin et Rodeur comptent pour la moitie ARRONDIE AU SUPERIEUR. */
+function niveauLanceurEffectif(classes) {
+  let eff = 0;
+  for (const cl of classes || []) {
+    const n = parseInt(cl.niveau, 10) || 0;
+    if (n <= 0) continue;
+    switch (typeLanceur(cl.classe, cl.sousClasse)) {
+      case 'complet':    eff += n; break;
+      case 'demi':       eff += Math.ceil(n / 2); break;
+      case 'artificier': eff += Math.ceil(n / 2); break;
+      case 'tiers':      eff += Math.floor(n / 3); break;
+      /* La Magie de Pacte ne se combine pas : elle s'affiche a part. */
+    }
+  }
+  return eff;
+}
+
+/** Les emplacements d'un personnage, mono ou multiclasse.
+    Un seul lanceur non-occultiste utilise SA table de classe, pas la table
+    multiclasse : pour un demi-lanceur les deux coincident, mais pour un
+    tiers-lanceur elles divergent nettement. */
+function emplacementsPersonnage(classes) {
+  const lanceurs = (classes || []).filter(cl =>
+    (parseInt(cl.niveau, 10) || 0) > 0 && typeLanceur(cl.classe, cl.sousClasse));
+  const horsPacte = lanceurs.filter(cl => typeLanceur(cl.classe, cl.sousClasse) !== 'pacte');
+  if (!horsPacte.length) return null;
+  if (horsPacte.length === 1) {
+    const cl = horsPacte[0];
+    return emplacementsClasse(cl.classe, cl.sousClasse, cl.niveau);
+  }
+  const eff = niveauLanceurEffectif(horsPacte);
+  return eff > 0 ? (MULTICLASS_SLOTS[Math.min(eff, 20)] || null) : null;
+}
+
+/* ════════════════════════════════════════════════════════════
    D&D 2024 CLASS DATA  (PHB, base classes)
    Each feature: { name, desc, type }
    type: 'feature' | 'asi' | 'subclass' | 'epic'
@@ -178,23 +270,28 @@ const STARTING_ARMOR = {
 };
 
 /* dmg = dé de base, abil = 'for' | 'dex', finesse = le joueur prend le meilleur des deux */
+/* `cat` et `light` ne sont pas decoratifs : depuis que le Roublard et le Moine
+   ont une maitrise conditionnelle — « Martial weapons that have the Finesse or
+   Light property » — c'est la seule facon de repondre a la question. Sans eux,
+   isProficientWith ne saurait pas si l'arme en main est concernee.
+   La Serpe n'a pas Finesse en 2024 : elle est Simple, Legere, 1d4 tranchant. */
 const STARTING_WEAPONS = {
-  'Dagger':         { dmg:'1d4',  type:'piercing',    abil:'for', finesse:true },
-  'Flail':          { dmg:'1d8',  type:'bludgeoning', abil:'for' },
-  'Greataxe':       { dmg:'1d12', type:'slashing',    abil:'for' },
-  'Greatsword':     { dmg:'2d6',  type:'slashing',    abil:'for' },
-  'Handaxe':        { dmg:'1d6',  type:'slashing',    abil:'for' },
-  'Javelin':        { dmg:'1d6',  type:'piercing',    abil:'for' },
-  'Light Crossbow': { dmg:'1d8',  type:'piercing',    abil:'dex' },
-  'Longbow':        { dmg:'1d8',  type:'piercing',    abil:'dex' },
-  'Longsword':      { dmg:'1d8',  type:'slashing',    abil:'for' },
-  'Mace':           { dmg:'1d6',  type:'bludgeoning', abil:'for' },
-  'Quarterstaff':   { dmg:'1d6',  type:'bludgeoning', abil:'for' },
-  'Scimitar':       { dmg:'1d6',  type:'slashing',    abil:'for', finesse:true },
-  'Shortbow':       { dmg:'1d6',  type:'piercing',    abil:'dex' },
-  'Shortsword':     { dmg:'1d6',  type:'piercing',    abil:'for', finesse:true },
-  'Sickle':         { dmg:'1d4',  type:'slashing',    abil:'for', finesse:true },
-  'Spear':          { dmg:'1d6',  type:'piercing',    abil:'for' },
+  'Dagger':         { dmg:'1d4',  type:'piercing',    abil:'for', cat:'simple',  finesse:true, light:true },
+  'Flail':          { dmg:'1d8',  type:'bludgeoning', abil:'for', cat:'martial' },
+  'Greataxe':       { dmg:'1d12', type:'slashing',    abil:'for', cat:'martial' },
+  'Greatsword':     { dmg:'2d6',  type:'slashing',    abil:'for', cat:'martial' },
+  'Handaxe':        { dmg:'1d6',  type:'slashing',    abil:'for', cat:'simple',  light:true },
+  'Javelin':        { dmg:'1d6',  type:'piercing',    abil:'for', cat:'simple' },
+  'Light Crossbow': { dmg:'1d8',  type:'piercing',    abil:'dex', cat:'simple' },
+  'Longbow':        { dmg:'1d8',  type:'piercing',    abil:'dex', cat:'martial' },
+  'Longsword':      { dmg:'1d8',  type:'slashing',    abil:'for', cat:'martial' },
+  'Mace':           { dmg:'1d6',  type:'bludgeoning', abil:'for', cat:'simple' },
+  'Quarterstaff':   { dmg:'1d6',  type:'bludgeoning', abil:'for', cat:'simple' },
+  'Scimitar':       { dmg:'1d6',  type:'slashing',    abil:'for', cat:'martial', finesse:true, light:true },
+  'Shortbow':       { dmg:'1d6',  type:'piercing',    abil:'dex', cat:'simple' },
+  'Shortsword':     { dmg:'1d6',  type:'piercing',    abil:'for', cat:'martial', finesse:true, light:true },
+  'Sickle':         { dmg:'1d4',  type:'slashing',    abil:'for', cat:'simple',  light:true },
+  'Spear':          { dmg:'1d6',  type:'piercing',    abil:'for', cat:'simple' },
 };
 
 const STARTING_EQUIP = {
@@ -324,14 +421,32 @@ const GENERAL_FEATS = {
   'Magic Connoisseur':  { asi:true, abil:'INT, SAG or CHA', prereq:'Level 4+, Magic Initiate', desc:"Choose a level-1 and a level-2 spell from your Magic Initiate list: they are always prepared and each can be cast once per Long Rest without a slot. You can swap one of them whenever you gain a level." },
   'Spell Resistant':    { asi:true, abil:'DEX or CON', prereq:'Level 4+', desc:"Resistance to Necrotic, Psychic, Radiant or Thunder damage (your choice). When you would fail a save against a spell or magical effect, add 1d6 to the roll (PB times per Long Rest)." },
   'Spell Subterfuge':   { asi:true, abil:'INT, SAG or CHA', prereq:'Level 4+, Spellcasting/Pact Magic', desc:"After casting a spell with the Magic action using a slot, take both Dash and Hide as one Bonus Action (the feat's ability modifier, times per Long Rest). Casting with a Verbal component or a spell attack doesn't end your Invisible condition if you end your turn with Three-Quarters or Total Cover." },
-  /* Dons epiques : reserves au niveau 19, d'ou le drapeau. */
+  /* ── Dons epiques ──
+     Reserves au niveau 19, d'ou le drapeau. Tous portent un +1 dont le plafond
+     monte a 30 et non 20 : c'est applyLevelUp qui lit ce drapeau pour le savoir.
+     Les douze premiers sont ceux du Player's Handbook 2024 ; les trois derniers
+     viennent d'Arcana Unleashed et sont signales comme tels par SOURCE_LIVRE. */
+  'Boon of Combat Prowess':      { epic:true, asi:true, abil:'choice', prereq:'Level 19+', desc:"The chosen score can rise to 30. Peerless Aim: when you miss with an attack roll, you can hit instead. Once used, not again until the start of your next turn." },
+  'Boon of Dimensional Travel':  { epic:true, asi:true, abil:'choice', prereq:'Level 19+', desc:"The chosen score can rise to 30. Blink Steps: immediately after you take the Attack action or the Magic action, you can teleport up to 30 ft to an unoccupied space you can see." },
+  'Boon of Energy Resistance':   { epic:true, asi:true, abil:'choice', prereq:'Level 19+', desc:"The chosen score can rise to 30. Energy Resistances: pick two damage types among Acid, Cold, Fire, Lightning, Necrotic, Poison, Psychic, Radiant and Thunder — you have Resistance to both, and can change your picks on a Long Rest. Energy Redirection: Reaction, when you take damage of a chosen type, to send it at a creature you can see within 60 ft that isn't behind Total Cover — DEX save (DC 8 + CON modifier + Proficiency Bonus) or 2d12 + CON modifier damage of that type." },
+  'Boon of Fate':                { epic:true, asi:true, abil:'choice', prereq:'Level 19+', desc:"The chosen score can rise to 30. Improve Fate: when you or a creature within 60 ft succeeds on or fails a D20 Test, you can roll 2d4 and apply the total as a bonus or a penalty to that roll. Once used, not again until you roll Initiative or finish a Short or Long Rest." },
+  'Boon of Fortitude':           { epic:true, asi:true, abil:'choice', prereq:'Level 19+', desc:"The chosen score can rise to 30. Your Hit Point maximum increases by 40, and whenever you regain Hit Points you regain your CON modifier more — once per turn at most." },
+  'Boon of Irresistible Offense':{ epic:true, asi:true, abil:'FOR or DEX', prereq:'Level 19+', desc:"The chosen score can rise to 30. Your Bludgeoning, Piercing and Slashing damage ignores Resistance. On a natural 20 on an attack roll, you can deal extra damage of the attack's type equal to the score this feat increased." },
+  'Boon of Recovery':            { epic:true, asi:true, abil:'choice', prereq:'Level 19+', desc:"The chosen score can rise to 30. Last Stand: when you would drop to 0 Hit Points, you drop to 1 instead and regain half your Hit Point maximum — once per Long Rest. Recover Vitality: you have a pool of ten d10; as a Bonus Action, spend any number of them, roll them, and regain that many Hit Points. The pool is restored on a Long Rest." },
+  'Boon of Skill':               { epic:true, asi:true, abil:'choice', prereq:'Level 19+', desc:"The chosen score can rise to 30. You gain proficiency in all skills, and Expertise in one skill of your choice in which you don't already have it." },
+  'Boon of Speed':               { epic:true, asi:true, abil:'choice', prereq:'Level 19+', desc:"The chosen score can rise to 30. Escape Artist: Bonus Action to take the Disengage action, which also ends the Grappled condition on you. Quickness: your Speed increases by 30 ft." },
+  'Boon of Spell Recall':        { epic:true, asi:true, abil:'INT, SAG or CHA', prereq:'Level 19+, Spellcasting/Pact Magic', desc:"The chosen score can rise to 30. Whenever you cast a spell with a level 1–4 spell slot, roll 1d4: if the result equals the slot's level, the slot isn't expended." },
+  'Boon of the Night Spirit':    { epic:true, asi:true, abil:'choice', prereq:'Level 19+', desc:"The chosen score can rise to 30. Merge with Shadows: while in Dim Light or Darkness, Bonus Action to become Invisible — it ends as soon as you take an action, a Bonus Action or a Reaction. Shadowy Form: while in Dim Light or Darkness, you have Resistance to every damage type except Psychic and Radiant." },
+  'Boon of Truesight':           { epic:true, asi:true, abil:'choice', prereq:'Level 19+', desc:"The chosen score can rise to 30. You have Truesight out to 60 ft." },
+
+  /* Arcana Unleashed (2026) */
   'Boon of Erupting Spellpower':{ epic:true, asi:true, abil:'INT, SAG or CHA', prereq:'Level 19+, Spellcasting/Pact Magic', desc:"The chosen score can rise to 30. When a spell you cast with a slot deals damage, treat any 1 or 2 on its damage dice as a 3, and creatures damaged by it also have the Prone condition. Once per Initiative roll or Rest." },
   'Boon of Magic School Mastery':{ epic:true, asi:true, abil:'INT, SAG or CHA', prereq:'Level 19+, Spellcasting/Pact Magic', desc:"The chosen score can rise to 30. Pick a school of magic: a level-1 spell from it is always prepared and castable with no slot or components, and a level-7-or-lower spell from it is always prepared and castable once per Long Rest without a slot. Repeatable with a different school." },
   'Boon of the Iron Mind':{ epic:true, asi:true, abil:'choice', prereq:'Level 19+', desc:"The chosen score can rise to 30. You lose Concentration only if you start another Concentration effect, gain the Petrified or Unconscious condition, or die." },
 };
 /** Dons proposables a ce niveau de personnage.
-    Les dons epiques d'Arcana Unleashed sont reserves au niveau 19 : les lister
-    plus tot revient a proposer un choix que la regle refuse. */
+    Les dons epiques sont reserves au niveau 19 : les lister plus tot revient a
+    proposer un choix que la regle refuse. */
 function donsDisponibles(niveauTotal) {
   return Object.keys(GENERAL_FEATS)
     .filter(nom => !GENERAL_FEATS[nom].epic || (niveauTotal || 0) >= 19);
@@ -343,26 +458,39 @@ function donsDisponibles(niveauTotal) {
    a la main, ou l'oubliait.
 
    `pick`    : combien d'options retenir
-   `options` : liste commune, OU `perClass` quand elle depend de la classe
+   `options`       : liste commune a toutes les classes
+   `perClassExtra` : ce qu'une classe ajoute EN PLUS de la liste commune
    `inherit` : reutilise les options d'une autre capacite (Champion niv.7) */
 const FEATURE_CHOICES = {
+  /* Les dix styles du PHB 2024 sont des dons de categorie « Fighting Style
+     Feat », ouverts aux trois classes : « You gain a Fighting Style feat of your
+     choice » chez le Guerrier comme chez le Paladin et le Rodeur. Seuls Blessed
+     Warrior et Druidic Warrior restent des options exclusives de la capacite de
+     classe — ce ne sont pas des dons. Arcane Warrior est un don, d'Arcana
+     Unleashed, ouvert aux trois aussi. */
   'Fighting Style': {
     pick: 1,
-    perClass: {
-      Fighter: ['Arcane Warrior','Archery','Defense','Dueling','Great Weapon Fighting','Protection','Two-Weapon Fighting'],
-      Paladin: ['Arcane Warrior','Blessed Warrior','Defense','Dueling','Great Weapon Fighting','Protection'],
-      Ranger:  ['Arcane Warrior','Archery','Defense','Druidic Warrior','Two-Weapon Fighting'],
+    options: ['Archery','Blind Fighting','Defense','Dueling','Great Weapon Fighting',
+              'Interception','Protection','Thrown Weapon Fighting','Two-Weapon Fighting',
+              'Unarmed Fighting','Arcane Warrior'],
+    perClassExtra: {
+      Paladin: ['Blessed Warrior'],
+      Ranger:  ['Druidic Warrior'],
     },
     desc: {
-      'Arcane Warrior':       'You learn two Wizard cantrips; INT, WIS or CHA is your spellcasting ability for them (Arcana Unleashed).',
-      'Archery':              '+2 to ranged weapon attack rolls.',
-      'Blessed Warrior':      'You learn two Cleric cantrips; Charisma is your spellcasting ability for them.',
-      'Defense':              '+1 AC while wearing armor.',
-      'Druidic Warrior':      'You learn two Druid cantrips; Wisdom is your spellcasting ability for them.',
-      'Dueling':              '+2 damage with a one-handed weapon and no other weapon.',
-      'Great Weapon Fighting':'Reroll 1s and 2s on damage with a two-handed weapon.',
-      'Protection':           'Reaction: impose Disadvantage on an attack against an ally within 5 ft.',
-      'Two-Weapon Fighting':  'Add your ability modifier to the off-hand attack damage.',
+      'Archery':              '+2 to attack rolls with Ranged weapons.',
+      'Blind Fighting':       'You have Blindsight out to 10 ft.',
+      'Defense':              '+1 AC while wearing Light, Medium or Heavy armor.',
+      'Dueling':              '+2 damage with a Melee weapon held in one hand, with no other weapon.',
+      'Great Weapon Fighting':'Treat any 1 or 2 on a damage die as a 3, with a Melee weapon held in two hands (Two-Handed or Versatile).',
+      'Interception':         'Reaction when a creature within 5 ft is hit: reduce the damage by 1d10 + your Proficiency Bonus.',
+      'Protection':           'Reaction with a Shield: Disadvantage on the triggering attack against a creature within 5 ft, and on all other attacks against it until the start of your next turn while you stay within 5 ft.',
+      'Thrown Weapon Fighting':'+2 damage when you hit with a weapon that has the Thrown property.',
+      'Two-Weapon Fighting':  'Add your ability modifier to the damage of the extra attack made with a Light weapon.',
+      'Unarmed Fighting':     'Your Unarmed Strike deals 1d6 + STR Bludgeoning damage, or 1d8 with both hands free. Once per turn, deal 1d4 Bludgeoning damage to a creature you have Grappled.',
+      'Arcane Warrior':       'You learn two Wizard cantrips; INT, WIS or CHA is your spellcasting ability for them.',
+      'Blessed Warrior':      'You learn two Cleric cantrips; Charisma is your spellcasting ability for them. Paladin only — not a feat.',
+      'Druidic Warrior':      'You learn two Druid cantrips; Wisdom is your spellcasting ability for them. Ranger only — not a feat.',
     },
   },
   'Additional Fighting Style': { pick: 1, inherit: 'Fighting Style' },
@@ -371,8 +499,9 @@ const FEATURE_CHOICES = {
     pick: 1,
     options: ['Protector','Thaumaturge'],
     desc: {
-      'Protector':   'Proficiency with Martial weapons and Heavy armor.',
-      'Thaumaturge': 'One additional Cleric cantrip, and Expertise in Arcana or Religion.',
+      'Protector':   'Proficiency with Martial weapons and training with Heavy armor.',
+      /* Pas une Expertise : un bonus egal au modificateur de Sagesse. */
+      'Thaumaturge': 'One extra Cleric cantrip, and a bonus to your Intelligence (Arcana or Religion) checks equal to your WIS modifier (minimum +1).',
     },
   },
 
@@ -380,8 +509,10 @@ const FEATURE_CHOICES = {
     pick: 1,
     options: ['Magician','Warden'],
     desc: {
-      'Magician': 'One extra cantrip from any list; a Nature spell is always prepared.',
-      'Warden':   'Proficiency with Martial weapons and Medium armor.',
+      /* Un sort mineur de DRUIDE, et un bonus aux jets d'Intelligence — pas un
+         sort de Nature toujours prepare, qui n'existe pas dans cette option. */
+      'Magician': 'One extra Druid cantrip, and a bonus to your Intelligence (Arcana or Nature) checks equal to your WIS modifier (minimum +1).',
+      'Warden':   'Proficiency with Martial weapons and training with Medium armor.',
     },
   },
 
@@ -394,14 +525,13 @@ const FEATURE_CHOICES = {
     },
   },
 
-  'Deft Explorer': {
-    pick: 1,
-    options: ['Expertise','Canny'],
-    desc: {
-      'Expertise': 'Double your proficiency bonus in one more skill.',
-      'Canny':     'One extra language, and one additional level-1 Ranger spell always prepared.',
-    },
-  },
+  /* « Deft Explorer » n'est plus un choix : ses deux benefices sont cumules
+     en 2024, et l'Expertise passe par expertise:1 sur la capacite elle-meme. */
+
+  /* Les paliers 10 et 17 rejouent la meme liste. Sans ces deux entrees, la
+     correspondance par nom exact echouait et aucune option n'etait proposee. */
+  'Metamagic (2 more)':  { pick: 2, inherit: 'Metamagic' },
+  'Metamagic (2 final)': { pick: 2, inherit: 'Metamagic' },
 
   'Metamagic': {
     pick: 2,
@@ -816,7 +946,8 @@ const CLASS_DATA = {
     1: [
       { name:'Rage', type:'feature', desc:"Bonus action. Gain advantage on STR checks and saves, resistance to Bludgeoning/Piercing/Slashing damage, and a damage bonus. You can't cast or concentrate spells while raging. Ends if you don't attack or take damage. Uses: 2/Long Rest, scaling with level." },
       { name:'Unarmored Defense', type:'feature', desc:"While wearing no armor, your AC = 10 + DEX modifier + CON modifier. You can use a shield and still gain this benefit." },
-      { name:'Weapon Mastery', type:'feature', desc:"Use the Mastery property of 2 Simple or Martial weapons, choosing them on Long Rest." }
+      /* MELEE : le Barbare ne choisit pas parmi les armes a distance. */
+      { name:'Weapon Mastery', type:'feature', desc:"Use the Mastery property of 2 Simple or Martial Melee weapons, changing one of them on a Long Rest. You gain more at higher levels." }
     ],
     2: [
       { name:'Danger Sense', type:'feature', desc:"Advantage on DEX saving throws against effects you can see (traps, spells, etc.), as long as you are not Incapacitated." },
@@ -826,7 +957,10 @@ const CLASS_DATA = {
       { name:'Barbarian Subclass', type:'subclass', desc:"Choose a subclass: Berserker, Wild Heart, World Tree, or Zealot. You gain the first subclass feature." },
       { name:'Primal Knowledge', type:'feature', desc:"Gain proficiency in one skill from the Barbarian list: Athletics, Intimidation, Nature, Perception, or Survival." }
     ],
-    4: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    4: [
+      { name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." },
+      { name:'Weapon Mastery (3 weapons)', type:'feature', desc:"You can now use the Mastery property of 3 kinds of weapons." }
+    ],
     5: [
       { name:'Extra Attack', type:'feature', desc:"You can attack twice instead of once whenever you take the Attack action on your turn." },
       { name:'Fast Movement', type:'feature', desc:"While not wearing heavy armor, your walking speed increases by 10 feet." }
@@ -838,7 +972,10 @@ const CLASS_DATA = {
     ],
     8: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
     9: [{ name:'Brutal Strike', type:'feature', desc:"When you use Reckless Attack, you can forgo advantage on one attack to make a Brutal Strike: deal extra 1d10 damage and choose an effect (Forceful Blow: push 15 ft; Hamstring Blow: target speed −15 ft until your next turn)." }],
-    10: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Barbarian subclass." }],
+    10: [
+      { name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Barbarian subclass." },
+      { name:'Weapon Mastery (4 weapons)', type:'feature', desc:"You can now use the Mastery property of 4 kinds of weapons." }
+    ],
     11: [{ name:'Relentless Rage', type:'feature', desc:"If reduced to 0 HP while Raging, make a DC 10 CON save to drop to 1 HP instead. DC increases by 5 each time you succeed; resets on Long Rest." }],
     12: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
     13: [{ name:'Improved Brutal Strike', type:'feature', desc:"Brutal Strike damage increases to 2d10, and you can choose two effects on a Brutal Strike." }],
@@ -856,7 +993,11 @@ const CLASS_DATA = {
   saves: ['dex','cha'],
   skillChoices: 3, skillList: ['acrobaties','animaux','arcanes','athletisme','discret','duperie','histoire','intimidation','investigation','medecine','nature','perception','performance','persuasion','prestidig','religion','survie','perspicacite'],
   armorProf: 'Light armor',
-  weaponProf: 'Simple weapons, Hand crossbow, Longsword, Rapier, Shortsword',
+  /* « Simple weapons », rien d'autre en 2024 : epee longue, rapiere, epee
+     courte et arbalete de poing appartenaient a la liste de 2014. C'est le
+     College de la Vaillance qui les rend, au niveau 3. */
+  weaponProf: 'Simple weapons',
+  toolProf: "Musical Instrument (choice) ×3",
   features: {
     1: [
       { name:'Bardic Inspiration', type:'feature', desc:"Bonus action: give one creature within 60 ft a Bardic Inspiration die (d6). They can roll it and add it to one ability check, attack roll, or saving throw within the next 10 minutes. You can use this CHA modifier times (minimum 1), regaining uses on Long Rest." },
@@ -869,13 +1010,10 @@ const CLASS_DATA = {
     3: [{ name:'Bard Subclass', type:'subclass', desc:"Choose a Bard College: Dance, Glamour, Lore, Valor, or Whispers. You gain the first subclass feature." }],
     4: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
     5: [{ name:'Font of Inspiration', type:'feature', desc:"You now regain expended Bardic Inspiration uses when you finish a Short or Long Rest." }],
-    6: [
-      { name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Bard College." },
-      { name:'Countercharm', type:'feature', desc:"As an action, start a performance. Until you stop, each creature within 30 ft of you has advantage on saving throws against being Frightened or Charmed." }
-    ],
-    7: [{ name:'Expertise', type:'feature', desc:"Choose 2 more skills. Your proficiency bonus is doubled for checks using those skills (4 total)." }],
+    6: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Bard College." }],
+    7: [{ name:'Countercharm', type:'feature', desc:"As a Reaction, start a performance. Until the end of your next turn, you and allies within 30 ft have Advantage on saving throws to avoid or end the Frightened and Charmed conditions." }],
     8: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
-    9: [{ name:'Superior Bardic Inspiration', type:'feature', desc:"When you roll initiative and have no Bardic Inspiration uses remaining, you regain 1 use." }],
+    9: [{ name:'Expertise', type:'feature', desc:"Choose 2 more skills. Your proficiency bonus is doubled for checks using those skills (4 total)." }],
     10: [
       { name:'Magical Secrets', type:'feature', desc:"You can choose spells from any class's spell list when you learn or swap Bard spells." },
       { name:'Bardic Inspiration — d8', type:'feature', desc:"Your Bardic Inspiration die increases to a d8." }
@@ -926,11 +1064,16 @@ const CLASS_DATA = {
 'Druid': {
   saves: ['int','sag'],
   skillChoices: 2, skillList: ['arcanes','animaux','perspicacite','medecine','nature','perception','religion','survie'],
-  armorProf: 'Light, Medium, Shields (non-metal)',
+  /* Ni armure intermediaire, ni restriction sur le metal : la phrase de 2014
+     sur le metal ne figure plus dans le livre, c'est devenu de la saveur. */
+  armorProf: 'Light armor and Shields',
   weaponProf: 'Simple weapons',
+  toolProf: "Herbalism Kit",
   features: {
     1: [
-      { name:'Druidic', type:'feature', desc:"You know Druidic, the secret language of druids. You can speak it and use it to leave hidden messages. Creatures who don't know Druidic can detect a message exists with a DC 15 Perception check." },
+      /* Le sort manquait, et le jet n'est pas une Perception. */
+      { name:'Druidic', type:'feature', langues:['Druidic'],
+        desc:"You know Druidic, the secret language of Druids. Learning it also unlocked the magic of speaking with animals: you always have the Speak with Animals spell prepared. You can leave hidden messages in Druidic — anyone who knows it spots them automatically, others need a DC 15 Intelligence (Investigation) check to notice one and magic to read it." },
       { name:'Primal Order', type:'feature', desc:"Choose Magician (one extra cantrip from any list, Nature spell always prepared per level) or Warden (proficiency with Martial weapons and Medium Armor)." },
       { name:'Spellcasting', type:'feature', desc:"You are a full spellcaster using Wisdom. You know 2 cantrips and prepare spells from the Druid list — the number is set by your class table (4 at level 1). You may swap prepared spells on a Long Rest." },
       { name:'Wild Shape', type:'feature', desc:"Bonus action: transform into a Beast you've seen, CR 1/4 or lower. Lasts 1 hour or until you drop to 0 HP. Regain uses (equal to WIS mod) on Long Rest, or 1 use on Short Rest." }
@@ -968,14 +1111,17 @@ const CLASS_DATA = {
     1: [
       { name:'Fighting Style', type:'feature', desc:"Choose a fighting style: Archery (+2 ranged attack rolls), Defense (+1 AC in armor), Dueling (+2 damage with one-handed weapon), Great Weapon Fighting (reroll 1s and 2s on damage), Protection (impose disadvantage on attacker vs ally), or Two-Weapon Fighting (add ability mod to off-hand)." },
       { name:'Second Wind', type:'feature', desc:"Bonus action: regain 1d10 + Fighter level HP. You can use this twice per Short Rest. Also, as a Bonus Action on your turn in combat, you can expend a Second Wind use without healing but to add 1d10 to a failed ability check (Tactical Mind)." },
-      { name:'Weapon Mastery', type:'feature', desc:"Use the Mastery property of 3 Simple or Martial weapons. You can swap your choices on Long Rest." }
+      { name:'Weapon Mastery', type:'feature', desc:"Use the Mastery property of 3 kinds of Simple or Martial weapons, swapping your choices on a Long Rest. You gain more at higher levels." }
     ],
     2: [
       { name:'Action Surge', type:'feature', desc:"Once per Short Rest, on your turn you can take one additional Action. This extra action cannot be another Action Surge." },
       { name:'Tactical Mind', type:'feature', desc:"On a failed ability check, you can expend a Second Wind use to add 1d10 to the check. If this causes the check to succeed, you don't regain HP from Second Wind." }
     ],
     3: [{ name:'Fighter Subclass', type:'subclass', desc:"Choose a Martial Archetype: Battle Master, Champion, Eldritch Knight, Psi Warrior, or others. You gain your first subclass feature." }],
-    4: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    4: [
+      { name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." },
+      { name:'Weapon Mastery (4 weapons)', type:'feature', desc:"You can now use the Mastery property of 4 kinds of weapons." }
+    ],
     5: [{ name:'Extra Attack', type:'feature', desc:"You can attack twice instead of once whenever you take the Attack action on your turn." }],
     6: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
     7: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Fighter subclass." }],
@@ -984,13 +1130,19 @@ const CLASS_DATA = {
       { name:'Indomitable', type:'feature', desc:"When you fail a saving throw, you can reroll it and must use the new result. 1/Long Rest (increases at higher levels)." },
       { name:'Tactical Shift', type:'feature', desc:"Whenever you use Action Surge, you can also move up to your speed and take one Object Interaction without using an action." }
     ],
-    10: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Fighter subclass." }],
+    10: [
+      { name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Fighter subclass." },
+      { name:'Weapon Mastery (5 weapons)', type:'feature', desc:"You can now use the Mastery property of 5 kinds of weapons." }
+    ],
     11: [{ name:'Two Extra Attacks', type:'feature', desc:"You can attack three times whenever you take the Attack action on your turn." }],
     12: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
     13: [{ name:'Studied Attacks', type:'feature', desc:"When you miss an attack roll, you gain advantage on your next attack roll against the same target before the end of your turn." }],
     14: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
     15: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your chosen Fighter subclass." }],
-    16: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    16: [
+      { name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." },
+      { name:'Weapon Mastery (6 weapons)', type:'feature', desc:"You can now use the Mastery property of 6 kinds of weapons." }
+    ],
     17: [
       { name:'Action Surge (2/Short Rest)', type:'feature', desc:"You can now use Action Surge twice per Short Rest." },
       { name:'Indomitable (2/Long Rest)', type:'feature', desc:"You can now use Indomitable twice per Long Rest." }
@@ -1005,7 +1157,10 @@ const CLASS_DATA = {
   saves: ['for','dex'],
   skillChoices: 2, skillList: ['acrobaties','athletisme','histoire','perspicacite','religion','discret'],
   armorProf: 'None',
-  weaponProf: 'Simple weapons, Shortsword',
+  /* Les armes de guerre Legeres, cimeterre compris — pas seulement l'epee
+     courte, qui etait la formulation de 2014. */
+  weaponProf: 'Simple weapons and Martial weapons that have the Light property',
+  toolProf: "Artisan's Tools (choice) or Musical Instrument (choice)",
   features: {
     1: [
       { name:'Martial Arts', type:'feature', desc:"Gain these benefits while unarmored or wearing monk weapons: use DEX for attacks/damage, use the Martial Arts damage die (d6) for unarmed strikes, and make one Unarmed Strike as a Bonus Action after an Attack action." },
@@ -1143,13 +1298,17 @@ const CLASS_DATA = {
   weaponProf: 'Simple and Martial weapons',
   features: {
     1: [
-      { name:'Expertise', type:'feature', desc:"Choose 2 skills you are proficient in. Your proficiency bonus is doubled for those skills." },
       { name:'Favored Enemy', type:'feature', desc:"Hunter's Mark is always prepared for you. You can cast it without expending a spell slot a number of times equal to your WIS modifier (minimum 1)/Long Rest." },
       { name:'Spellcasting', type:'feature', desc:"You are a half-caster using Wisdom, from level 1 (a 2024 change — spellcasting no longer waits for level 2). No cantrips. Prepared spells are set by your class table (2 at level 1) and can only be swapped when you gain a level." },
       { name:'Weapon Mastery', type:'feature', desc:"Use the Mastery property of 2 weapons. You can swap choices on Long Rest." }
     ],
     2: [
-      { name:'Deft Explorer', type:'feature', desc:"Choose Expertise (double prof in one more skill) or Canny (learn one extra language and one additional Ranger spell of 1st level, always prepared)." },
+      /* Deux benefices cumules, pas un choix : « you gain the following
+         benefits », au pluriel. « Canny » etait la formulation de 2014.
+         expertise:1 dit au monteur de niveau combien de competences faire
+         choisir — la capacite ne s'appelle pas « Expertise », elle en accorde
+         une quand meme. */
+      { name:'Deft Explorer', type:'feature', expertise:1, desc:"Two benefits: Expertise in one skill you are proficient in and lack Expertise in, and two languages of your choice." },
       { name:'Fighting Style', type:'feature', desc:"Choose a fighting style: Archery, Defense, Druidic Warrior (2 Druid cantrips), or Two-Weapon Fighting." }
     ],
     3: [{ name:'Ranger Subclass', type:'subclass', desc:"Choose a Ranger Archetype: Beast Master, Fey Wanderer, Gloom Stalker, or Hunter. You gain subclass features." }],
@@ -1158,7 +1317,7 @@ const CLASS_DATA = {
     6: [{ name:'Roving', type:'feature', desc:"Your walking speed increases by 10 ft. You gain a Climb speed equal to your walking speed and a Swim speed equal to your walking speed." }],
     7: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Ranger Archetype." }],
     8: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
-    9: [{ name:'Expertise', type:'feature', desc:"Double your proficiency bonus in 2 more skills (4 total)." }],
+    9: [{ name:'Expertise', type:'feature', desc:"Double your proficiency bonus in 2 more skills (3 total, with the one from Deft Explorer)." }],
     10: [{ name:'Tireless', type:'feature', desc:"As an action, give yourself temporary HP equal to 1d8 + WIS modifier. Use this WIS modifier times/Long Rest. On Short Rest, reduce your exhaustion level by 1." }],
     11: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Ranger Archetype." }],
     12: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
@@ -1177,13 +1336,25 @@ const CLASS_DATA = {
   saves: ['dex','int'],
   skillChoices: 4, skillList: ['acrobaties','athletisme','duperie','perspicacite','intimidation','investigation','perception','persuasion','prestidig','discret'],
   armorProf: 'Light armor',
-  weaponProf: 'Simple weapons, Hand crossbow, Longsword, Rapier, Shortsword',
+  /* La maitrise est conditionnelle en 2024 : les armes de guerre Finesse ou
+     Legeres, pas toutes. Le Roublard gagne la rapiere, le cimeterre, le fouet
+     et l'arbalete de poing, et perd l'epee longue. isProficientWith lit cette
+     forme — sans quoi le mot « Martial » lui ouvrirait l'epee a deux mains. */
+  weaponProf: 'Simple weapons and Martial weapons that have the Finesse or Light property',
+  toolProf: "Thieves' Tools",
   features: {
     1: [
       { name:'Expertise', type:'feature', desc:"Choose 2 skills you are proficient in. Your proficiency bonus is doubled for those skills." },
       { name:'Sneak Attack', type:'feature', desc:"Once per turn, deal 1d6 extra damage to one creature you hit with a Finesse or ranged weapon attack if you have advantage, or if an ally is adjacent to the target. Scales by 1d6 every odd level." },
-      { name:"Thieves' Cant", type:'feature', desc:"You know Thieves' Cant, a secret mix of slang and signals used by criminals. You can also hide messages in conversation only other Cant speakers recognize." },
-      { name:'Weapon Mastery', type:'feature', desc:"Use the Mastery property of 2 Finesse or Ranged weapons. Change choices on Long Rest." }
+      /* Deux langues, pas une : l'argot, et une autre « from the language
+         tables in Chapter 2 » — au pluriel, donc la table rare est ouverte.
+         C'est l'aptitude qui autorise ce que l'origine, elle, interdit. */
+      { name:"Thieves' Cant", type:'feature',
+        langues:["Thieves' Cant"], langueChoix:{ nb:1, tables:['standard','rare'] },
+        desc:"You know Thieves' Cant, a secret mix of slang and signals used by criminals, plus one other language of your choice from either language table. You can hide messages in conversation that only other Cant speakers recognise." },
+      /* « two kinds of weapons of your choice with which you have
+         proficiency » : la restriction vient de ses maitrises, pas d'ici. */
+      { name:'Weapon Mastery', type:'feature', desc:"Use the Mastery property of 2 kinds of weapons you are proficient with. You can change your choices on a Long Rest." }
     ],
     2: [{ name:'Cunning Action', type:'feature', desc:"Bonus action: Dash, Disengage, or Hide." }],
     3: [
@@ -1240,6 +1411,11 @@ const CLASS_DATA = {
     12: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
     14: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Sorcerous Origin." }],
     16: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
+    /* « You gain two more options at Sorcerer level 10 and two more at
+       Sorcerer level 17 » : le 17 manquait entierement. Les deux portent un nom
+       distinct du « Metamagic » du niveau 2, sans quoi les choix des trois
+       paliers s'ecraseraient — la cle de stockage est « classe::nom ». */
+    17: [{ name:'Metamagic (2 final)', type:'feature', desc:"You learn 2 more Metamagic options (6 total)." }],
     18: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Sorcerous Origin." }],
     19: [{ name:'Epic Boon', type:'epic', desc:"Gain an Epic Boon feat or another feat of your choice." }],
     20: [{ name:'Arcane Apotheosis', type:'feature', desc:"While Innate Sorcery is active, once per turn when you cast a spell, you can apply a Metamagic option to the spell without expending Sorcery Points." }]
@@ -1278,7 +1454,8 @@ const CLASS_DATA = {
 
 'Wizard': {
   saves: ['int','sag'],
-  skillChoices: 2, skillList: ['arcanes','histoire','perspicacite','investigation','medecine','religion'],
+  /* Sept competences au choix, Nature comprise. Elle manquait. */
+  skillChoices: 2, skillList: ['arcanes','histoire','perspicacite','investigation','medecine','nature','religion'],
   armorProf: 'None',
   weaponProf: 'Simple weapons',
   features: {
@@ -1287,7 +1464,10 @@ const CLASS_DATA = {
       { name:'Spellcasting', type:'feature', desc:"You are a full spellcaster using Intelligence. You start with 3 cantrips and a spellbook of 6 level-1 spells. Each day you prepare a subset of your spellbook — the number is set by your class table (4 at level 1). Unprepared spells stay in the book." }
     ],
     2: [
-      { name:'Scholar', type:'feature', desc:"You gain Expertise in your choice of Arcana or History. You also learn one additional language of your choice." }
+      /* Six competences au choix, pas deux, et aucune langue : le livre dit
+         « Arcana, History, Investigation, Medicine, Nature, or Religion ».
+         expertise:1 pour la meme raison que Deft Explorer. */
+      { name:'Scholar', type:'feature', expertise:1, desc:"Choose one skill you are proficient in among Arcana, History, Investigation, Medicine, Nature or Religion. You gain Expertise in it." }
     ],
     3: [
       { name:'Wizard Subclass', type:'subclass', desc:"Choose an Arcane Tradition: Abjuration, Conjuration, Divination, Enchantment, Evocation, Illusion, Necromancy, or Transmutation. You gain the first subclass feature." },
@@ -1311,7 +1491,8 @@ const CLASS_DATA = {
   saves: ['con','int'],
   skillChoices: 2, skillList: ['arcanes','histoire','investigation','medecine','nature','perception','prestidig'],
   armorProf: 'Light, Medium, Shields',
-  weaponProf: 'Simple weapons, Hand crossbow, Heavy crossbow',
+  weaponProf: 'Simple weapons',
+  toolProf: "Thieves' Tools, Tinker's Tools, and one Artisan's Tools (choice)",
   features: {
     1: [
       { name:'Magical Tinkering', type:'feature', desc:"Touch a Tiny nonmagical object and give it a magical property: emit light, emit a recorded message, emit an odor, or display a static visual. You can have INT modifier such objects active at once." },
@@ -2922,6 +3103,8 @@ const SOURCE_LIVRE = {};
  'Covenant of the Grave Recruit', 'Crucible Storm Chaser', 'Familiar Trainer',
  'Horizon Weaver Initiate', 'Phantasmic Circus Trouper', 'Seer Apprentice',
  'Ward of the Sheltering Hands',
+  'Boon of Erupting Spellpower', 'Boon of Magic School Mastery', 'Boon of the Iron Mind',
+ 'Arcane Warrior',
 ].forEach(nom => { SOURCE_LIVRE[nom] = 'Arcana Unleashed (2026)'; });
 
 /** Livre dont vient cette option, vide si elle est dans le PHB. */

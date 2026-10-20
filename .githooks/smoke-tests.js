@@ -51,7 +51,18 @@ function ok(cond, label) {
     extract(J, 'function esc(val)'),
     extract(J, 'function getClasses(c)'),
     extract(J, 'function getTotalLevel(c)'),
+    extract(J, 'function classesReelles(c)'),
     extract(R, 'const MULTICLASS_SLOTS'),
+    extract(R, 'const FULL_CASTER_SLOTS'),
+    extract(R, 'const HALF_CASTER_SLOTS'),
+    extract(R, 'const THIRD_CASTER_SLOTS'),
+    extract(R, 'const WARLOCK_SLOTS'),
+    extract(R, 'const ARTIFICER_SLOTS'),
+    extract(R, 'const LANCEURS'),
+    extract(R, 'function typeLanceur(classe, sousClasse)'),
+    extract(R, 'function emplacementsClasse(classe, sousClasse, niveau)'),
+    extract(R, 'function niveauLanceurEffectif(classes)'),
+    extract(R, 'function emplacementsPersonnage(classes)'),
     extract(J, 'function computeMulticlassSlots(c)'),
     extract(R, 'const STARTING_ARMOR'),
     extract(R, 'const STARTING_WEAPONS'),
@@ -73,14 +84,20 @@ function ok(cond, label) {
     extract(R, 'const CANTRIPS_KNOWN'),
     extract(R, 'const FEATURE_CHOICES'),
     extract(J, 'function featureOptions(featureName, className)'),
+    extract(J, 'function classeOffreCapacite(className, featureName)'),
+    extract(J, 'function languesDeClasse(className, niveau)'),
     extract(J, 'function featureChoicesAt(className, subclassName, level)'),
-    extract(J, 'function getFeatureChoice(c, featureName)'),
+    extract(J, 'function cleChoix(className, featureName)'),
+    extract(J, 'function getFeatureChoice(c, featureName, className)'),
+    extract(J, 'function migrerChoixCapacites(c)'),
+    extract(J, 'function deDeVie(c)'),
+    extract(J, 'function migrerNomsAttaques(c)'),
     extract(J, 'function setFeatureChoice(c, featureName, className, selection)'),
     extract(J, 'function pendingFeatureChoices(c)'),
     extract(J, 'function cantripsAt(className, level)'),
     extract(J, 'function expertiseAt(className, level)'),
     extract(J, 'function topSlotLevel(slots)'),
-    extract(J, 'function planLevelUp(c, className)'),
+    extract(J, 'function planLevelUp(c, className, opts)'),
     extract(J, 'function applyLevelUp(c, plan, choices)'),
     extract(J, 'function applyStartingGear(c, className, items)'),
     extract(J, 'function startingMaxHp(c, hitDie, speciesEffects)'),
@@ -99,7 +116,7 @@ function ok(cond, label) {
     extract(J, 'function isAttunable(item)'),
     extract(J, 'function attunedItems(inv)'),
     extract(J, 'function migrateAttunement(inv)'),
-    extract(J, 'function isProficientWith(c, weaponCat)'),
+    extract(J, 'function isProficientWith(c, weaponCat, props)'),
     extract(J, 'function attackFromItem(item, c)'),
     extract(J, 'function syncAttackForItem(c, item, equipped)'),
     extract(J, 'const COIN_RATE'),
@@ -131,6 +148,102 @@ function ok(cond, label) {
   eq(getTotalLevel({ niveau: 7 }), 7, 'getTotalLevel legacy');
   eq(getTotalLevel({}), 1, 'getTotalLevel vide');
 
+
+  /* ── Qui lance quoi : une seule table, trois ecrans ──
+     La fiche, l'onglet plan et le multiclassement avaient chacun leur copie de
+     la liste des lanceurs, et elles avaient diverge : le Psion etait complet
+     d'un cote, demi-lanceur de l'autre, si bien que le meme personnage
+     affichait deux tables selon l'ecran. */
+  eq(typeLanceur('Psion', ''), 'complet', 'Psion : lanceur complet, partout');
+  eq(typeLanceur('Wizard', ''), 'complet', 'Magicien : lanceur complet');
+  eq(typeLanceur('Paladin', 'Oath of Devotion'), 'demi', 'Paladin : demi-lanceur');
+  eq(typeLanceur('Ranger', 'Hunter'), 'demi', 'Rodeur : demi-lanceur');
+  eq(typeLanceur('Warlock', ''), 'pacte', 'Occultiste : magie de pacte');
+  eq(typeLanceur('Artificer', ''), 'artificier', 'Artificier : sa propre table');
+  eq(typeLanceur('Fighter', 'Champion'), null, 'Champion : aucun sort');
+  eq(typeLanceur('Rogue', 'Thief'), null, 'Voleur : aucun sort');
+  /* La sous-classe seule fait la difference ici. */
+  eq(typeLanceur('Fighter', 'Eldritch Knight'), 'tiers', 'Chevalier Occulte : tiers-lanceur');
+  eq(typeLanceur('Rogue', 'Arcane Trickster'), 'tiers', 'Filou Arcanique : tiers-lanceur');
+  eq(typeLanceur('', ''), null, 'pas de classe, pas de sorts');
+
+  /* ── Le demi-lanceur 2024 lance des sorts des le niveau 1 ──
+     C'est le seul ecart avec la table 2014. Un 0 ici veut dire que la table
+     2014 est revenue. */
+  eq(emplacementsClasse('Paladin', '', 1), [2,0,0,0,0,0,0,0,0], 'Paladin 1 : 2 emplacements (2024)');
+  eq(emplacementsClasse('Ranger', '', 1), [2,0,0,0,0,0,0,0,0], 'Rodeur 1 : 2 emplacements (2024)');
+  eq(emplacementsClasse('Paladin', '', 5), [4,2,0,0,0,0,0,0,0], 'Paladin 5');
+  eq(emplacementsClasse('Paladin', '', 20), [4,3,3,3,2,0,0,0,0], 'Paladin 20 : plafonne au niveau 5 de sort');
+
+  /* ── Le tiers-lanceur a sa propre table ──
+     Elle n'est PAS la table multiclasse au tiers du niveau : un Chevalier
+     Occulte 7 a 4 emplacements de niveau 1 et 2 de niveau 2, alors que la regle
+     multiclasse (floor(7/3) = 2) n'en donnerait que 3 de niveau 1. Confondre
+     les deux est l'erreur naturelle. */
+  eq(emplacementsClasse('Fighter', 'Eldritch Knight', 2), [0,0,0,0,0,0,0,0,0], 'Chevalier Occulte 2 : rien avant le niveau 3');
+  eq(emplacementsClasse('Fighter', 'Eldritch Knight', 3), [2,0,0,0,0,0,0,0,0], 'Chevalier Occulte 3 : les premiers');
+  eq(emplacementsClasse('Fighter', 'Eldritch Knight', 7), [4,2,0,0,0,0,0,0,0], 'Chevalier Occulte 7 : 4/2, pas la table multiclasse');
+  eq(emplacementsClasse('Rogue', 'Arcane Trickster', 20), [4,3,3,1,0,0,0,0,0], 'Filou Arcanique 20');
+  eq(emplacementsClasse('Fighter', 'Champion', 20), null, 'Champion 20 : toujours aucun sort');
+
+  /* ── Multiclassement : 2024 arrondit AU SUPERIEUR les demi-lanceurs ──
+     Niveaux impairs uniquement : c'est la que floor et ceil different. */
+  eq(niveauLanceurEffectif([{classe:'Paladin', niveau:5}]), 3, 'Paladin 5 : ceil(5/2) = 3, pas 2');
+  eq(niveauLanceurEffectif([{classe:'Ranger', niveau:3}]), 2, 'Rodeur 3 : ceil(3/2) = 2, pas 1');
+  eq(niveauLanceurEffectif([{classe:'Paladin', niveau:5}, {classe:'Wizard', niveau:5}]), 8,
+     'Paladin 5 + Magicien 5 : 3 + 5 = 8');
+  eq(niveauLanceurEffectif([{classe:'Fighter', sousClasse:'Eldritch Knight', niveau:9}]), 3,
+     'Chevalier Occulte 9 : floor(9/3) = 3, le tiers arrondit a l\'inferieur');
+  eq(niveauLanceurEffectif([{classe:'Fighter', sousClasse:'Eldritch Knight', niveau:8}]), 2,
+     'Chevalier Occulte 8 : floor(8/3) = 2');
+  eq(niveauLanceurEffectif([{classe:'Fighter', sousClasse:'Champion', niveau:20}]), 0,
+     'Champion 20 : ne compte pas');
+  eq(niveauLanceurEffectif([{classe:'Warlock', niveau:10}]), 0,
+     'Occultiste : la magie de pacte ne se combine pas');
+
+  /* ── Mono ou multi : deux mecanismes, pas un ──
+     Un seul lanceur utilise SA table de classe. Passer par la table multiclasse
+     donnerait un resultat faux pour un tiers-lanceur. */
+  eq(emplacementsPersonnage([{classe:'Fighter', sousClasse:'Eldritch Knight', niveau:7}]),
+     [4,2,0,0,0,0,0,0,0], 'Chevalier Occulte seul : sa table de classe');
+  eq(emplacementsPersonnage([{classe:'Paladin', sousClasse:'', niveau:5}]),
+     [4,2,0,0,0,0,0,0,0], 'Paladin seul : sa table de classe');
+  eq(emplacementsPersonnage([{classe:'Fighter', sousClasse:'Champion', niveau:20}]), null,
+     'aucun lanceur : aucun emplacement');
+  eq(emplacementsPersonnage([{classe:'Warlock', sousClasse:'', niveau:5}]), null,
+     'Occultiste seul : magie de pacte, affichee a part');
+  /* Un niveau a zero ne doit pas compter comme une classe. */
+  eq(emplacementsPersonnage([{classe:'Wizard', sousClasse:'', niveau:0}]), null,
+     'une classe a zero niveau ne lance rien');
+
+
+  /* ── Aucune table d'emplacements hors des regles ──
+     Chaque copie privee derive : celle de l'import portait encore le Psion en
+     demi-lanceur et l'arrondi 2014 longtemps apres leur correction ailleurs.
+     Les motifs ci-dessous sont des lignes caracteristiques des tables ; ils ne
+     peuvent apparaitre par hasard dans du code d'interface. */
+  {
+    const MOTIFS = [
+      [/\[\s*4\s*,\s*3\s*,\s*3\s*,\s*3\s*,\s*2\s*,\s*1/, 'lanceur complet / multiclasse'],
+      [/\[\s*4\s*,\s*2\s*,\s*0\s*,\s*0\s*,\s*0/,         'demi-lanceur'],
+      [/\[\s*0\s*,\s*0\s*,\s*2\s*,\s*0\s*,\s*0/,         'magie de pacte'],
+      [/\[\s*4\s*,\s*3\s*,\s*3\s*,\s*1\s*,\s*0/,         'tiers-lanceur'],
+    ];
+    for (const [re, quoi] of MOTIFS) {
+      ok(!re.test(J), 'joueurs.html : table « ' + quoi + '  » recopiee hors des regles');
+    }
+    /* Et elles existent bien la ou elles doivent etre. */
+    for (const [re, quoi] of MOTIFS) {
+      ok(re.test(R), 'js/rules-2024.js : la table « ' + quoi + ' » y est');
+    }
+
+    /* Les listes de lanceurs ne doivent pas non plus se recopier : c'est par la
+       qu'une copie reintroduit le Psion en demi-lanceur. */
+    ok(!/HALF_CASTERS|FULL_CASTERS|HALF_CAST_CLS|FULL_CAST_CLS/.test(J),
+       'joueurs.html : plus de liste de lanceurs recopiee');
+    ok(!/const SLOT_TABLE/.test(J), 'joueurs.html : plus de table d\'emplacements privee');
+  }
+
   // Emplacements de sorts multiclasse (PHB)
   eq(computeMulticlassSlots({ classes: [{ classe: 'Wizard', niveau: 5 }] }),
      [4,3,2,0,0,0,0,0,0], 'slots Wizard 5');
@@ -157,16 +270,43 @@ function ok(cond, label) {
   const { CLASS_DATA, SPECIES_DATA, BACKGROUND_DATA, GENERAL_FEATS, ORIGIN_FEATS,
           STARTING_EQUIP, DND_CLASSES, SUBCLASS_DATA, PREPARED_SPELLS, SPELL_PREP_STYLE,
           STARTING_SPELLS, LANGUAGES, TOOL_CHOICES, MULTICLASS_PREREQ, STARTING_ARMOR,
-          FEATURE_CHOICES, estUA, nomUA, sourceUA, titreUA,
+          FEATURE_CHOICES, estUA, nomUA, sourceUA, titreUA, STARTING_WEAPONS,
           CANTRIPS_KNOWN, CLASS_RESOURCES, infoUA, UA_SUBCLASSES,
-          SUBCLASS_RENOMMEES, SOURCE_LIVRE, livreSource, donsDisponibles } =
+          SUBCLASS_RENOMMEES, SOURCE_LIVRE, livreSource, donsDisponibles,
+          /* typeLanceur n'est pas repris ici : les declarations de fonction
+             d'un eval direct fuient deja dans cette portee, et le redeclarer en
+             const provoquerait un conflit de nom au chargement. */
+          LANCEURS } =
     new Function(R + '; return { CLASS_DATA, SPECIES_DATA, BACKGROUND_DATA, GENERAL_FEATS,'
       + ' ORIGIN_FEATS, STARTING_EQUIP, DND_CLASSES, SUBCLASS_DATA, PREPARED_SPELLS,'
       + ' STARTING_SPELLS, LANGUAGES, TOOL_CHOICES, MULTICLASS_PREREQ, STARTING_ARMOR,'
-      + ' FEATURE_CHOICES, estUA, nomUA, sourceUA, titreUA,'
+      + ' FEATURE_CHOICES, estUA, nomUA, sourceUA, titreUA, STARTING_WEAPONS,'
       + ' CANTRIPS_KNOWN, CLASS_RESOURCES, infoUA, UA_SUBCLASSES,'
       + ' SUBCLASS_RENOMMEES, SOURCE_LIVRE, livreSource, donsDisponibles,'
+      + ' LANCEURS,'
       + ' SPELL_PREP_STYLE };')();
+  /* L'invariant qui empeche la divergence de revenir : une classe ne peut pas
+     figurer dans deux categories. C'est exactement ce qui s'etait produit — le
+     Psion etait a la fois complet et demi-lanceur, et chaque ecran attrapait
+     celle qu'il testait en premier. L'ordre de typeLanceur rend aujourd'hui le
+     doublon inoffensif, mais il reste un piege arme pour la prochaine lecture. */
+  {
+    const vues = new Map();
+    ['complet', 'demi', 'pacte', 'artificier'].forEach(type =>
+      LANCEURS[type].forEach(cls => {
+        ok(!vues.has(cls), `LANCEURS : « ${cls} » est a la fois ${vues.get(cls)} et ${type}`);
+        vues.set(cls, type);
+      }));
+    /* Toute classe connue doit etre classee, sinon ses emplacements disparaissent
+       en silence le jour ou on en ajoute une. */
+    Object.keys(CLASS_DATA).forEach(cls => {
+      const sous = Object.keys(SUBCLASS_DATA[cls] || {});
+      const lance = !!typeLanceur(cls, '') || sous.some(sc => typeLanceur(cls, sc));
+      const attendu = !!(PREPARED_SPELLS[cls] || CANTRIPS_KNOWN[cls] || cls === 'Warlock');
+      if (attendu) ok(lance, `${cls} : prepare des sorts mais n'est classe nulle part`);
+    });
+  }
+
   const SKILL_KEYS = extract(J, 'const SKILLS = [')
     .match(/key:'([a-z]+)'/g).map(s => s.slice(5, -1));
 
@@ -385,6 +525,920 @@ function ok(cond, label) {
       `don « ${name} » : clé « ${k} » invalide`));
   });
 
+
+
+  /* ── Une modal ouverte est isolee ── */
+  {
+    /* Un refus d'applyLevelUp ne doit pas fermer la modal : le joueur y a saisi
+       ses PV, sa sous-classe, son don et ses choix de capacite, et un message
+       d'erreur devant une modal fermee ne dit pas ou reprendre. L'ordre des
+       deux lignes est tout le correctif, donc c'est l'ordre qu'on verifie. */
+    /* Le bouton Cancel est declare AVANT Confirm dans le fichier : borner la
+       fin sur lui donnait une tranche vide, et les trois assertions passaient
+       a cote sans rien dire. On prend donc une fenetre a partir du debut. */
+    const debutConf = J.indexOf("$('lvlup-confirm').addEventListener");
+    const conf = J.slice(debutConf, debutConf + 3000);
+    const iLecture = conf.indexOf('if (!res.ok)');
+    const iFermeture = conf.indexOf("overlay.classList.remove('open')");
+    ok(iLecture !== -1, 'montee : le resultat est lu');
+    ok(iFermeture !== -1, 'montee : la modal se ferme');
+    ok(iLecture < iFermeture,
+       'montee : un refus ne ferme pas la modal — les choix seraient perdus');
+
+    /* Les raccourcis a une lettre ne doivent pas traverser une modal : le test
+       du focus ne suffit pas, puisqu'un clic sur un bouton de la modal sort du
+       champ de saisie sans fermer quoi que ce soit. */
+    const raccourcis = J.slice(J.indexOf('17b. Raccourcis clavier globaux'),
+                               J.indexOf("case '?':"));
+    ok(/modalOuverte\(\)/.test(raccourcis),
+       'raccourcis : une modal ouverte les absorbe');
+    ok(/e\.key !== 'Escape'/.test(raccourcis),
+       "raccourcis : Echap reste actif — il ferme la modal");
+    /* Les quatre lettres qui changent l'etat du personnage. */
+    ["case 'l'", "case 'r'", "case 's'", "case 'd'"].forEach(c =>
+      ok(raccourcis.includes(c) || J.includes(c), 'raccourci ' + c + ' toujours present'));
+
+    /* La liste des overlays doit couvrir les modals qui existent vraiment :
+       en oublier une la laisse permeable sans que rien ne le signale. */
+    const liste = J.slice(J.indexOf('const MODALS = ['), J.indexOf('function modalOuverte'));
+    ['.new-char-modal-overlay.open', '.sr-modal-overlay.open',
+     '.ddb-modal-overlay.open', '#compendium-overlay.open', '.modal-overlay.open']
+      .forEach(sel => ok(liste.includes(sel), 'MODALS : ' + sel + ' surveille'));
+    /* Et chaque overlay declare dans le markup doit y figurer. */
+    const declares = [...J.matchAll(/id="([a-z0-9-]*overlay[a-z0-9-]*)"/g)].map(m => m[1]);
+    declares.filter(id => id !== 'sidebar-overlay').forEach(id => {
+      const parClasse = new RegExp('id="' + id + '"[^>]*class="([^"]*)"').exec(J)
+                     || new RegExp('class="([^"]*)"[^>]*id="' + id + '"').exec(J);
+      const couvert = liste.includes('#' + id)
+        || (parClasse && parClasse[1].split(/\s+/).some(c => liste.includes('.' + c + '.open')));
+      ok(couvert, 'MODALS : « ' + id +' » n\'est surveille par aucun selecteur');
+    });
+  }
+
+
+  /* ── La forme des attaques est celle que la fiche lit ── */
+  {
+    /* La fiche rend atk.name et atk.degats ; les deux imports ecrivaient
+       nom/degat, donc les attaques importees arrivaient sans nom ni degats.
+       Les SORTS, eux, utilisent bien nom/degat : les deux formes coexistent,
+       et c'est ce qui a permis a la confusion de durer. */
+    const canon = { name:'', degats:'', typeDegat:'', atkType:'', prof:true, bonus:'' };
+    Object.keys(canon).forEach(k =>
+      ok(J.includes("C().attaques.push({ name:''"), 'attaque ajoutee a la main : forme canonique'));
+
+    /* Aucun import ne doit plus poser les anciens noms dans une attaque. */
+    const zoneImports = J.slice(J.indexOf('function parseRoll20JSON'), J.indexOf('function parseDnDBeyondJSON') + 20000);
+    ok(!/attaques\.push\(\{\s*nom:/.test(zoneImports), 'import : plus de « nom » dans une attaque');
+    ok(!/^\s*nom: champ\(l, 'atkname'/m.test(zoneImports), 'Roll20 : plus de « nom » dans une attaque');
+    /* Le filtre final lit le meme champ que la construction : en renommer un
+       sans l'autre vidait silencieusement toute la liste. */
+    ok(!/filter\(a => a\.nom\)/.test(J), 'Roll20 : le filtre lit le champ qui existe');
+
+    /* La migration reprend les fiches deja importees, et ne touche pas aux sorts. */
+    const c = { attaques: [{ nom:'Rapière', degat:'1d8+4', typeDegat:'perçant' }],
+                spells:   [{ nom:'Trait de feu', degat:'1d10' }] };
+    ok(migrerNomsAttaques(c), 'migration : il y a quelque chose a reprendre');
+    eq(c.attaques[0].name, 'Rapière', 'migration : le nom est repris');
+    eq(c.attaques[0].degats, '1d8+4', 'migration : les degats sont repris');
+    eq(c.attaques[0].nom, undefined, 'migration : l\'ancien champ disparait');
+    eq(c.spells[0].nom, 'Trait de feu', 'migration : les sorts gardent leur forme');
+    eq(c.spells[0].degat, '1d10', 'migration : les degats de sort sont intacts');
+    ok(!migrerNomsAttaques(c), 'migration : rien a refaire au second passage');
+
+    /* Une attaque deja a la bonne forme ne doit pas etre ecrasee. */
+    const d = { attaques: [{ name:'Arc', degats:'1d8', nom:'VIEUX', degat:'VIEUX' }] };
+    migrerNomsAttaques(d);
+    eq(d.attaques[0].name, 'Arc', 'migration : ne remplace pas une valeur deja bonne');
+    eq(d.attaques[0].degats, '1d8', 'migration : idem pour les degats');
+  }
+
+  /* ── Le dé de vie se lit dans toutes ses formes ── */
+  {
+    /* c.deVie a trois formes selon le chemin de creation. Le repos court la
+       lisait avec .replace('1d',''), ce qui marchait pour « 1d10 » mais donnait
+       un d5 pour « 5d10 » et un d110 pour « 11d10 » — d'ou un defaut qui ne se
+       voyait qu'apres un import. */
+    const avec = (deVie, classes) => deDeVie({ deVie, classes });
+    const g = [{ classe:'Fighter', sousClasse:'', niveau:5 }];
+
+    eq(avec('1d10', g), 10, 'de de vie : forme normale');
+    eq(avec('1d6', g), 6, 'de de vie : d6');
+    eq(avec('1d12', g), 12, 'de de vie : d12');
+    eq(avec('5d10', g), 10, 'de de vie : forme Roll20 (nombre total devant)');
+    eq(avec('11d10', g), 10, 'de de vie : deux chiffres devant');
+    /* Plusieurs des : on prend celui de la classe ou il a le plus de niveaux. */
+    eq(avec('5d10 + 2d8', [{ classe:'Fighter', niveau:5 }, { classe:'Wizard', niveau:2 }]), 10,
+       'de de vie : multiclasse, la classe dominante decide');
+    eq(avec('5d10 + 2d8', [{ classe:'Fighter', niveau:2 }, { classe:'Wizard', niveau:5 }]), 6,
+       'de de vie : multiclasse, l\'autre sens');
+    /* Libelle vide ou illisible : la classe tranche, sinon d8. */
+    eq(avec('', g), 10, 'de de vie : sans libelle, la classe decide');
+    eq(avec('n\'importe quoi', [{ classe:'', niveau:1 }]), 8, 'de de vie : dernier recours');
+
+    /* Le repos court doit passer par la, pas re-decouper la chaine. */
+    ok(/const dieType = deDeVie\(c\)/.test(J), 'repos court : lit la taille au lieu de la deviner');
+    /* Les trois autres decoupages de « 1d » lisent DND_CLASSES[...].de, dont la
+       forme est garantie. C'est la chaine STOCKEE sur le personnage qui ne doit
+       plus etre decoupee a l'aveugle, puisqu'elle prend trois formes. */
+    {
+      let aveugle = false;
+      let i = J.indexOf('c.deVie');
+      while (i !== -1) {
+        if (J.slice(i, i + 60).includes(".replace('1d'")) aveugle = true;
+        i = J.indexOf('c.deVie', i + 1);
+      }
+      ok(!aveugle, 'c.deVie : plus de decoupage a l aveugle');
+    }
+  }
+
+  /* ── Le libellé suit la classe dominante à la montée ── */
+  {
+    /* Sans ca, un Magicien qui multiclasse Guerrier garde son d6 pour toujours,
+       et le repos court avec. */
+    const m = hero({ classes:[{classe:'Wizard',sousClasse:'',niveau:5,customSousClasse:''}], deVie:'1d6' });
+    applyLevelUp(m, planLevelUp(m, 'Wizard'), {});
+    eq(m.deVie, '1d6', 'mono-classe : le de ne bouge pas');
+
+    const mc = hero({ classes:[{classe:'Wizard',sousClasse:'',niveau:2,customSousClasse:''},
+                               {classe:'Fighter',sousClasse:'Champion',niveau:5,customSousClasse:''}],
+                      deVie:'1d6' });
+    applyLevelUp(mc, planLevelUp(mc, 'Fighter'), {});
+    eq(mc.deVie, '1d10', 'multiclasse : le de suit la classe dominante');
+    eq(deDeVie(mc), 10, 'et le repos court roulera le bon de');
+  }
+
+
+  /* ── Une feuille vierge n'a pas de classe fantome ── */
+  {
+    /* emptyCharacter pose une entree de classe vide. La compter donnait un
+       niveau total de 1 a un personnage sans classe, puis applyLevelUp
+       ajoutait la vraie classe A COTE : deux classes, total 2, des la
+       premiere montee. */
+    const vierge = () => hero({ classes:[{ classe:'', sousClasse:'', niveau:1, customSousClasse:'' }] });
+
+    eq(classesReelles(vierge()).length, 0, 'feuille vierge : aucune classe reelle');
+    eq(classesReelles(hero({ classes:[{classe:'Fighter',niveau:3},{classe:'',niveau:1}] })).length, 1,
+       'une entree vide a cote d\'une vraie ne compte pas');
+
+    const c = vierge();
+    const p = planLevelUp(c, 'Fighter');
+    ok(p.ok, 'feuille vierge : la montee est possible');
+    ok(p.isNewClass, 'feuille vierge : la classe est nouvelle');
+    eq(p.totalAfter, 1, 'feuille vierge : on arrive au niveau 1, pas 2');
+    applyLevelUp(c, p, { hp:8 });
+    eq(c.classes.length, 1, 'feuille vierge : une seule classe apres la montee');
+    eq(c.classes[0].classe, 'Fighter', 'feuille vierge : la bonne classe');
+    eq(getTotalLevel(c), 1, 'feuille vierge : niveau total 1');
+
+    /* Une vraie classe a cote d'une entree vide : l'indice doit designer la
+       bonne, sinon le plan et l'application parlent de deux classes
+       differentes. */
+    const mix = hero({ classes:[{ classe:'', sousClasse:'', niveau:1, customSousClasse:'' },
+                                { classe:'Wizard', sousClasse:'', niveau:3, customSousClasse:'' }] });
+    const pm = planLevelUp(mix, 'Wizard');
+    eq(pm.fromLevel, 3, 'entree vide en tete : le niveau lu est le bon');
+    ok(!pm.isNewClass, 'entree vide en tete : la classe existe deja');
+    applyLevelUp(mix, pm, { hp:5 });
+    eq(mix.classes.length, 1, 'entree vide en tete : elle a disparu');
+    eq(mix.classes[0].niveau, 4, 'entree vide en tete : c\'est bien le Magicien qui monte');
+  }
+
+  /* ── La vue partagée compte le niveau total ── */
+  {
+    /* c.niveau vaut le niveau de la PREMIERE classe apres une montee, mais le
+       niveau TOTAL apres un import. La vue en tirait le bonus de maitrise. */
+    const mc = { niveau: 5, classes:[{classe:'Fighter',niveau:5},{classe:'Wizard',niveau:5}] };
+    eq(getTotalLevel(mc), 10, 'multiclasse : le total est 10, pas 5');
+    eq(Math.ceil(getTotalLevel(mc) / 4) + 1, 4, 'multiclasse : bonus de maitrise +4');
+    eq(Math.ceil((parseInt(mc.niveau) || 1) / 4) + 1, 3, 'et +3 si on croit c.niveau');
+
+    const vue = J.slice(J.indexOf('function renderViewSheet'), J.indexOf('function renderViewSheet') + 4000);
+    /* Un const portant le nom d'une fonction appelee juste en dessous la
+       masquait : sans avatarPng, la vue plantait sur une zone morte temporelle
+       — donc pour presque toutes les fiches, puisque peu portent une image.
+       Trouve en essayant de verifier le bonus de maitrise, pas par l'audit. */
+    ok(!vue.includes('const avatarHtml ='),
+       'vue partagee : plus de const qui masque la fonction avatarHtml');
+    ok(vue.includes('const avatarBloc ='),
+       'vue partagee : le bloc d\'avatar a son propre nom');
+    ok(/const niveau = getTotalLevel\(c\)/.test(vue),
+       'vue partagee : le niveau vient du total');
+    ok(!/const niveau = parseInt\(c\.niveau\)/.test(vue),
+       'vue partagee : plus de confiance a c.niveau');
+  }
+
+  /* ── Le bonus d'historique ne se perd plus ── */
+  {
+    /* La boucle sautait les caracteristiques sans valeur du tableau, et le
+       +2/+1 partait avec elles. Ce qui suit est la forme du code, faute de DOM :
+       la condition doit dependre AUSSI du bonus, pas seulement de la valeur. */
+    /* Trois endroits appellent abilBox.querySelectorAll — on visait par erreur
+       celui qui VIDE les cases. On ancre donc sur la ligne qui calcule le
+       bonus, qui n'existe que dans le bloc voulu. */
+    const debutAbil = J.indexOf("const bonus = (bgOk && k === b2 ? 2 : 0)");
+    const bloc = J.slice(Math.max(0, debutAbil - 400), debutAbil + 400);
+    ok(/if \(!s\.value && !bonus\) return/.test(bloc),
+       'bonus d\'historique : une case vide ne le fait plus disparaitre');
+    ok(/parseInt\(c\[k\]\) \|\| 10/.test(bloc),
+       'bonus d\'historique : a defaut de choix, on part de la fiche');
+    ok(!/if \(!s\.value\) return;/.test(bloc),
+       'bonus d\'historique : plus de sortie seche sur la valeur');
+  }
+
+  /* ── Les doublons de nom se signalent ── */
+  {
+    const bloc = J.slice(J.indexOf('const noteNom'), J.indexOf('const noteNom') + 900);
+    ok(bloc.length > 100, 'doublons : le garde existe');
+    ok(/already goes by this name/.test(bloc), 'doublons : le joueur est prevenu');
+    /* On previent, on n'interdit pas : deux jumeaux sont le droit du joueur. */
+    ok(!/return;/.test(bloc.slice(0, bloc.indexOf('addEventListener'))),
+       'doublons : aucun blocage, seulement un avertissement');
+    /* Le nom par defaut, pas les commentaires : « Nouveau personnage » subsiste
+       legitimement dans un commentaire de code, et l'assertion large le prenait
+       pour une chaine affichee. */
+    ok(!J.includes("trim() || 'Nouveau personnage'"),
+       'nom par defaut : plus de francais dans l interface joueur');
+    ok(J.includes("trim() || 'New character'"),
+       'nom par defaut : New character');
+  }
+
+
+  /* ── Resilient donne la maitrise de sauvegarde ── */
+  {
+    /* Le don applique son +1 et s'inscrit dans les capacites, mais n'ecrivait
+       jamais c.saveXxx. Un Magicien qui le prend en CON pour ses jets de
+       Concentration n'avait toujours pas la maitrise sur sa fiche, alors que la
+       description affichee la lui promet mot pour mot. */
+    const m = hero({ classes:[{classe:'Wizard',sousClasse:'',niveau:3,customSousClasse:''}], con:14 });
+    eq(m.saveCon, undefined, 'avant : pas de maitrise en CON');
+    const r = applyLevelUp(m, planLevelUp(m, 'Wizard'),
+                           { asiMode:'feat', feat:'Resilient', featAbil:'con' });
+    eq(m.saveCon, true, 'Resilient : la maitrise de sauvegarde est posee');
+    eq(m.con, 15, 'Resilient : le +1 est applique aussi');
+    ok(r.log.some(x => /Save proficiency/.test(x)), 'Resilient : le journal le dit');
+
+    /* Les six caracteristiques ecrivent la bonne cle. */
+    const CLES = { for:'saveFor', dex:'saveDex', con:'saveCon',
+                   int:'saveInt', sag:'saveSag', cha:'saveCha' };
+    for (const [abil, cle] of Object.entries(CLES)) {
+      const h = hero({ classes:[{classe:'Wizard',sousClasse:'',niveau:3,customSousClasse:''}] });
+      applyLevelUp(h, planLevelUp(h, 'Wizard'), { asiMode:'feat', feat:'Resilient', featAbil:abil });
+      eq(h[cle], true, 'Resilient ' + abil.toUpperCase() + ' : ' + cle);
+    }
+
+    /* Un autre don ne doit pas accorder de maitrise au passage. */
+    const autre = hero({ classes:[{classe:'Wizard',sousClasse:'',niveau:3,customSousClasse:''}], con:14 });
+    applyLevelUp(autre, planLevelUp(autre, 'Wizard'),
+                 { asiMode:'feat', feat:'Durable', featAbil:'con' });
+    eq(autre.saveCon, undefined, 'Durable : aucune maitrise accordee');
+
+    /* Le journal parle la langue de l'interface. */
+    ok(r.log.some(x => /^Feat : /.test(x)), 'journal : « Feat », pas « Don »');
+    ok(!J.includes('\`Don : \${ch.feat}\`'), 'journal : plus de « Don » en francais');
+  }
+
+  /* ── Le bonus de maitrise ne se recalcule plus a cote ── */
+  {
+    /* Deux copies d'une meme formule finissent par diverger : c'est deja arrive
+       trois fois dans ce fichier avec les tables d'emplacements. */
+    const plan = J.slice(J.indexOf('const pbLigne'), J.indexOf('const pbLigne') + 200);
+    ok(/pb\(totalLv\)/.test(plan), 'onglet plan : le bonus vient de pb()');
+    ok(!J.includes('Math.ceil(totalLv / 4) + 1'),
+       'onglet plan : plus de formule recopiee');
+    /* Et pb() donne bien ce que l'ancienne formule donnait, sur toute la plage. */
+    for (let n = 1; n <= 20; n++) {
+      eq(pb(n), Math.ceil(n / 4) + 1, 'pb(' + n + ') : identique a l ancienne formule');
+    }
+  }
+
+
+  /* ── La sous-classe choisie dans la modal entre dans le plan ── */
+  {
+    /* Le plan etait calcule a l'ouverture de la modal, donc AVANT le choix de
+       sous-classe — et le choix ne le recalculait pas. Un Guerrier qui prend
+       Eldritch Knight au niveau 3 devient lanceur de sorts : l'ecran n'en
+       disait rien, le message d'apres-coup si. */
+    const guerrier = () => hero({ classes:[{classe:'Fighter',sousClasse:'',niveau:2,customSousClasse:''}] });
+
+    const sans = planLevelUp(guerrier(), 'Fighter');
+    eq(topSlotLevel(sans.slotsAfter), 0, 'Guerrier 3 sans sous-classe : aucun emplacement');
+
+    const ek = planLevelUp(guerrier(), 'Fighter', { subclass:'Eldritch Knight' });
+    eq(topSlotLevel(ek.slotsBefore), 0, 'Eldritch Knight : rien avant la montee');
+    eq(topSlotLevel(ek.slotsAfter),  1, 'Eldritch Knight : le niveau 3 ouvre les sorts de niveau 1');
+    /* computeMulticlassSlots rend null pour un non-lanceur : lire [0] dessus
+       faisait PLANTER le test au lieu de le faire echouer, ce qui masquait
+       toutes les assertions suivantes. */
+    eq((ek.slotsAfter || [])[0], 2, 'Eldritch Knight : deux emplacements de niveau 1');
+
+    /* Une sous-classe non lanceuse ne doit rien inventer. */
+    const champ = planLevelUp(guerrier(), 'Fighter', { subclass:'Champion' });
+    eq(topSlotLevel(champ.slotsAfter), 0, 'Champion : toujours pas de sorts');
+
+    /* Le Roublard a le meme mecanisme. */
+    const rogue = hero({ classes:[{classe:'Rogue',sousClasse:'',niveau:2,customSousClasse:''}] });
+    eq(topSlotLevel(planLevelUp(rogue, 'Rogue', { subclass:'Arcane Trickster' }).slotsAfter), 1,
+       'Arcane Trickster : le niveau 3 ouvre les sorts de niveau 1');
+    eq(topSlotLevel(planLevelUp(rogue, 'Rogue', { subclass:'Thief' }).slotsAfter), 0,
+       'Thief : aucun emplacement');
+
+    /* Les nouveautes de la sous-classe retenue apparaissent dans le plan. */
+    ok(!sans.subFeatures.length, 'sans sous-classe : aucune capacite de sous-classe annoncee');
+    ok(ek.subFeatures.length > 0, 'Eldritch Knight : ses capacites de niveau 3 sont annoncees');
+    ok(ek.subFeatures.every(f => f.source === 'Eldritch Knight'),
+       'les capacites de sous-classe portent son nom comme source');
+    ok(ek.newFeatures.some(f => f.source === 'Eldritch Knight'),
+       'la liste des nouveautes inclut la sous-classe');
+    eq(ek.subName, 'Eldritch Knight', 'le plan porte la sous-classe retenue');
+
+    /* Une sous-classe inconnue est ignoree, pas injectee. */
+    const faux = planLevelUp(guerrier(), 'Fighter', { subclass:'Bladesinger' });
+    eq(faux.subName, '', 'sous-classe etrangere a la classe : ignoree');
+    eq(topSlotLevel(faux.slotsAfter), 0, 'sous-classe etrangere : aucun emplacement');
+
+    /* Un personnage qui a DEJA sa sous-classe garde la sienne : le menu n'est
+       pas affiche, et une valeur residuelle ne doit pas la remplacer. */
+    const deja = hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:5,customSousClasse:''}] });
+    const p6 = planLevelUp(deja, 'Fighter', { subclass:'Eldritch Knight' });
+    eq(p6.subName, 'Champion', 'sous-classe deja posee : le pending ne la remplace pas');
+    eq(topSlotLevel(p6.slotsAfter), 0, 'sous-classe deja posee : pas de sorts voles a une autre');
+
+    /* Les capacites a choix de la sous-classe sont proposees. Cas reel : une
+       fiche importee sans sous-classe qui monte au niveau 7. */
+    const tardif = () => hero({ classes:[{classe:'Fighter',sousClasse:'',niveau:6,customSousClasse:''}] });
+    const nom = (p) => (p.featureChoices || []).map(f => f.name);
+    ok(!nom(planLevelUp(tardif(), 'Fighter')).includes('Additional Fighting Style'),
+       'sans sous-classe : le choix du Champion n est pas propose');
+    ok(nom(planLevelUp(tardif(), 'Fighter', { subclass:'Champion' })).includes('Additional Fighting Style'),
+       'Champion retenu : son choix de niveau 7 est propose');
+  }
+
+  /* ── Le plan annonce exactement ce que la montee produit ── */
+  {
+    /* C'est l'invariant qui a casse : deux calculs separes des memes
+       emplacements, l'un dans la modal et l'autre apres coup, qui se sont
+       contredits des qu'une sous-classe est entree en jeu. */
+    const cas = [];
+    Object.keys(CLASS_DATA).forEach(cls => {
+      const subs = Object.keys(SUBCLASS_DATA[cls] || {});
+      [1, 2, 4, 9, 16].forEach(niv => {
+        cas.push([cls, niv, '']);
+        if (niv === 2 && subs.length) subs.forEach(sub => cas.push([cls, niv, sub]));
+      });
+    });
+    /* Plus une feuille portant une entree de classe vide : l'ancien calcul
+       indexait la mauvaise classe des qu'il y en avait une. */
+    cas.push(['Fighter', 2, 'Eldritch Knight', true]);
+
+    cas.forEach(([cls, niv, sub, vide]) => {
+      const c = hero({ classes: (vide ? [{ classe:'', sousClasse:'', niveau:1, customSousClasse:'' }] : [])
+        .concat([{ classe:cls, sousClasse:'', niveau:niv, customSousClasse:'' }]) });
+      const plan = planLevelUp(c, cls, { subclass: sub });
+      if (!plan.ok) return;
+      const annonce = plan.slotsAfter;
+      applyLevelUp(c, plan, { hp:5, subclass: sub });
+      eq(annonce, computeMulticlassSlots(c),
+         cls + ' ' + niv + '→' + (niv + 1) + (sub ? ' / ' + sub : '') + (vide ? ' (entree vide)' : '')
+         + ' : le plan annonce les emplacements reellement obtenus');
+    });
+  }
+
+  /* ── L'ecran ne recalcule plus les emplacements dans son coin ── */
+  {
+    ok(!J.includes('function simulateLevel'),
+       'simulateLevel supprimee : le plan porte slotsAfter');
+    ok(J.includes('topSlotLevel(plan.slotsAfter)'),
+       'la modal lit les emplacements du plan');
+    /* Le menu de sous-classe recalcule le plan au lieu d afficher un apercu. */
+    const h = J.indexOf("$('lvlup-sub').addEventListener('change'");
+    ok(h !== -1, 'le menu de sous-classe a bien un gestionnaire');
+    const bloc = J.slice(h, h + 260);
+    ok(/refresh\(\)/.test(bloc), 'choisir sa sous-classe recalcule le plan');
+  }
+
+
+  /* ── Niveaux d'acquisition verifies sur les tables 2024 ── */
+  {
+    /* Chacun de ces paliers etait faux et a ete relu sur dnd2024.wikidot.com et
+       AideDD. Ils sont ecrits ici en clair : une table qui derive redevient
+       invisible a la lecture, c'est comme ca qu'ils s'etaient installes. */
+    const noms = (cls, lvl) => (CLASS_DATA[cls]?.features?.[lvl] || []).map(f => f.name);
+    const a = (cls, lvl, nom) => ok(noms(cls, lvl).includes(nom),
+      cls + ' ' + lvl + ' : ' + nom + ' attendu — trouve ' + JSON.stringify(noms(cls, lvl)));
+    const pas = (cls, lvl, nom) => ok(!noms(cls, lvl).includes(nom),
+      cls + ' ' + lvl + ' : ' + nom + ' ne doit pas y etre');
+
+    /* BARDE : Expertise 2 et 9, Countercharm 7. */
+    a('Bard', 2, 'Expertise');
+    a('Bard', 9, 'Expertise');
+    pas('Bard', 7, 'Expertise');
+    a('Bard', 7, 'Countercharm');
+    pas('Bard', 6, 'Countercharm');
+    eq(noms('Bard', 6), ['Subclass Feature'], 'Barde 6 : rien que la sous-classe');
+    /* « Superior Bardic Inspiration » au niveau 9 etait un doublon sous un autre
+       nom de « Superior Inspiration », qui est au 18 et y est toujours. */
+    pas('Bard', 9, 'Superior Bardic Inspiration');
+    a('Bard', 18, 'Superior Inspiration');
+    eq(expertiseAt('Bard', 2), 2, 'Barde 2 : deux competences');
+    eq(expertiseAt('Bard', 9), 2, 'Barde 9 : deux de plus');
+    eq(expertiseAt('Bard', 7), 0, 'Barde 7 : aucune');
+
+    /* ROUBLARD : 1 et 6. Ils etaient justes — ne pas les aligner sur le Barde. */
+    eq(expertiseAt('Rogue', 1), 2, 'Roublard 1 : deux competences');
+    eq(expertiseAt('Rogue', 6), 2, 'Roublard 6 : deux de plus');
+
+    /* RODEUR : aucune Expertise au niveau 1 ; une par Deft Explorer au 2 ;
+       deux au 9, soit trois en tout. */
+    pas('Ranger', 1, 'Expertise');
+    eq(noms('Ranger', 1).sort(), ['Favored Enemy','Spellcasting','Weapon Mastery'],
+       'Rodeur 1 : trois capacites, pas d Expertise');
+    eq(expertiseAt('Ranger', 1), 0, 'Rodeur 1 : aucune competence en Expertise');
+    eq(expertiseAt('Ranger', 2), 1, 'Rodeur 2 : une, par Deft Explorer');
+    eq(expertiseAt('Ranger', 9), 2, 'Rodeur 9 : deux de plus');
+    {
+      const de = (CLASS_DATA.Ranger.features[2] || []).find(f => f.name === 'Deft Explorer');
+      ok(de && !/\bCanny\b/i.test(de.desc || ''), 'Deft Explorer : « Canny » n existe plus en 2024');
+      ok(de && /languages?/i.test(de.desc || ''), 'Deft Explorer : les deux langues sont dites');
+      ok(!FEATURE_CHOICES['Deft Explorer'], 'Deft Explorer n est plus un choix');
+      const neuf = (CLASS_DATA.Ranger.features[9] || []).find(f => f.name === 'Expertise');
+      ok(neuf && /3 total/.test(neuf.desc || ''), 'Rodeur 9 : trois au total, pas quatre');
+    }
+
+    /* MAGICIEN : Scholar, six competences, aucune langue. */
+    {
+      const sc = (CLASS_DATA.Wizard.features[2] || []).find(f => f.name === 'Scholar');
+      ok(sc, 'Magicien 2 : Scholar');
+      ok(!/language/i.test(sc.desc || ''), 'Scholar : aucune langue accordee');
+      ['Arcana','History','Investigation','Medicine','Nature','Religion'].forEach(k =>
+        ok(new RegExp(k).test(sc.desc || ''), 'Scholar : ' + k + ' doit etre proposee'));
+      eq(expertiseAt('Wizard', 2), 1, 'Scholar : une competence en Expertise');
+    }
+
+    /* ENSORCELEUR : metamagie aux niveaux 2, 10 et 17. */
+    a('Sorcerer', 2,  'Metamagic');
+    a('Sorcerer', 10, 'Metamagic (2 more)');
+    a('Sorcerer', 17, 'Metamagic (2 final)');
+    /* Et chacun de ces trois paliers doit REELLEMENT proposer deux options :
+       la correspondance se fait par nom exact, un libelle qui ne figure pas
+       dans FEATURE_CHOICES n'offrait rien du tout. */
+    /* Le || {} n'est pas de la coquetterie : sans lui, un palier qui redevient
+       muet fait PLANTER le test au lieu de le faire echouer, et toutes les
+       assertions suivantes disparaissent avec lui. */
+    [[2,'Metamagic'],[10,'Metamagic (2 more)'],[17,'Metamagic (2 final)']].forEach(([lvl, nom]) => {
+      const ch = featureChoicesAt('Sorcerer', null, lvl);
+      const c0 = ch[0] || {};
+      eq(ch.length, 1, 'Ensorceleur ' + lvl + ' : un bloc de choix');
+      eq(c0.name, nom, 'Ensorceleur ' + lvl + ' : ' + nom);
+      eq(c0.pick, 2, 'Ensorceleur ' + lvl + ' : deux options a retenir');
+      eq((c0.options || []).length, 10, 'Ensorceleur ' + lvl + ' : les dix options');
+    });
+    /* Les trois paliers portent des noms distincts, sinon leurs choix
+       s'ecraseraient : la cle de stockage est « classe::nom ». */
+    {
+      const trois = [2,10,17].map(l => (featureChoicesAt('Sorcerer', null, l)[0] || {}).name);
+      eq(new Set(trois).size, 3, 'metamagie : trois libelles distincts');
+    }
+
+    /* Toute capacite qui declare expertise doit declarer un entier positif. */
+    Object.entries(CLASS_DATA).forEach(([cls, d]) => {
+      Object.entries(d.features || {}).forEach(([lvl, liste]) => {
+        (liste || []).forEach(f => {
+          if (f.expertise === undefined) return;
+          ok(Number.isInteger(f.expertise) && f.expertise > 0,
+             cls + ' ' + lvl + ' / ' + f.name + ' : expertise invalide (' + f.expertise + ')');
+        });
+      });
+    });
+  }
+
+
+  /* ── Maitrises 2024 : armes, armure, outils ── */
+  {
+    /* Les listes etaient celles de 2014. Le piege : isProficientWith ne
+       cherchait que les mots « martial » et « simple », si bien que corriger le
+       texte du Roublard — « Martial weapons that have the Finesse or Light
+       property » — l'aurait rendu maitre de TOUTES les armes de guerre. Le
+       defaut aurait change de sens sans qu'on le voie. */
+    eq(CLASS_DATA.Bard.weaponProf, 'Simple weapons',
+       'Barde : armes courantes seulement en 2024');
+    eq(CLASS_DATA.Artificer.weaponProf, 'Simple weapons',
+       'Artificier : armes courantes seulement');
+    ok(/Finesse or Light/.test(CLASS_DATA.Rogue.weaponProf),
+       'Roublard : armes de guerre Finesse ou Legeres');
+    ok(/that have the Light property/.test(CLASS_DATA.Monk.weaponProf),
+       'Moine : armes de guerre Legeres');
+    /* Le Druide : ni armure intermediaire, ni restriction sur le metal — la
+       phrase de 2014 sur le metal ne figure plus dans le livre. */
+    eq(CLASS_DATA.Druid.armorProf, 'Light armor and Shields',
+       'Druide : armure legere et boucliers');
+    ok(!/metal/i.test(CLASS_DATA.Druid.armorProf), 'Druide : plus d interdiction du metal');
+    ok(!/medium/i.test(CLASS_DATA.Druid.armorProf), 'Druide : pas d armure intermediaire');
+
+    /* Outils accordes par la classe au niveau 1. Les huit autres classes du PHB
+       n'en accordent aucun : le champ vide est la bonne reponse chez elles. */
+    eq(CLASS_DATA.Rogue.toolProf,  "Thieves' Tools", 'Roublard : outils de voleur');
+    eq(CLASS_DATA.Druid.toolProf,  'Herbalism Kit',  'Druide : kit d herboriste');
+    ok(/Musical Instrument/.test(CLASS_DATA.Bard.toolProf || ''), 'Barde : des instruments');
+    ok(/×3/.test(CLASS_DATA.Bard.toolProf || ''),                 'Barde : trois');
+    ok(/Artisan/.test(CLASS_DATA.Monk.toolProf || ''),            'Moine : outils d artisan');
+    ok(/or Musical Instrument/.test(CLASS_DATA.Monk.toolProf || ''), 'Moine : ou un instrument');
+    ok(/Tinker/.test(CLASS_DATA.Artificer.toolProf || ''),        'Artificier : outils de bricoleur');
+    /* Le Clerc avait recu par erreur les outils de l'Artificier, faute d un
+       ancrage borne a la bonne classe. */
+    ['Barbarian','Cleric','Fighter','Paladin','Ranger','Sorcerer','Warlock','Wizard']
+      .forEach(cls => ok(!CLASS_DATA[cls].toolProf,
+        cls + ' : aucune maitrise d outils de classe en 2024'));
+
+    /* Les outils de la classe arrivent sur la fiche. Ils y etaient absents :
+       cinq classes en accordent au niveau 1 et le createur n en ecrivait aucun. */
+    {
+      const i = J.indexOf('// Maîtrises : armures + armes');
+      ok(i !== -1, 'le bloc des maitrises du createur existe');
+      const b = J.slice(i, i + 1400);
+      ok(/cd?.toolProf/.test(b), 'createur : les outils de la classe sont lus');
+      ok(/Tools: /.test(b), 'createur : ils sont ecrits sur la fiche');
+      /* Le doublon classe + historique est signale, pas tranche en silence. */
+      ok(/memeOutil/.test(b), 'createur : le doublon d outil est signale');
+      ok(b.includes('new Set(outils)'), 'createur : pas de doublon dans la liste');
+    }
+
+    /* La maitrise conditionnelle, arme par arme. */
+    const h = (cls) => hero({ classes:[{ classe:cls, sousClasse:'', niveau:5, customSousClasse:'' }] });
+    const CAS = [
+      ['Rogue',  'martial', { finesse:true,  light:false }, true,  'rapiere'],
+      ['Rogue',  'martial', { finesse:true,  light:true  }, true,  'epee courte'],
+      ['Rogue',  'martial', { finesse:false, light:false }, false, 'epee a deux mains'],
+      ['Rogue',  'simple',  { finesse:true,  light:true  }, true,  'dague'],
+      ['Monk',   'martial', { finesse:true,  light:true  }, true,  'cimeterre'],
+      ['Monk',   'martial', { finesse:true,  light:false }, false, 'rapiere (Finesse sans Legere)'],
+      ['Monk',   'martial', { finesse:false, light:false }, false, 'hache d armes'],
+      ['Bard',   'martial', { finesse:false, light:false }, false, 'epee longue'],
+      ['Bard',   'simple',  { finesse:true,  light:true  }, true,  'dague'],
+      ['Fighter','martial', { finesse:false, light:false }, true,  'epee a deux mains'],
+      ['Wizard', 'martial', { finesse:false, light:false }, false, 'epee a deux mains'],
+      ['Wizard', 'simple',  { finesse:true,  light:true  }, true,  'dague'],
+    ];
+    CAS.forEach(([cls, cat, props, attendu, quoi]) =>
+      eq(isProficientWith(h(cls), cat, props), attendu,
+         cls + ' + ' + quoi + ' (' + cat + ')'));
+
+    /* Multiclassage : les maitrises se cumulent, elles ne se melangent pas.
+       Un texte concatene aurait fait lire la condition du Roublard a travers
+       la liste du Guerrier. */
+    const mc = hero({ classes:[{ classe:'Rogue', sousClasse:'', niveau:3, customSousClasse:'' },
+                               { classe:'Fighter', sousClasse:'', niveau:2, customSousClasse:'' }] });
+    ok(isProficientWith(mc, 'martial', { finesse:false, light:false }),
+       'Roublard/Guerrier : le Guerrier donne l epee a deux mains');
+    const mc2 = hero({ classes:[{ classe:'Rogue', sousClasse:'', niveau:3, customSousClasse:'' },
+                                { classe:'Wizard', sousClasse:'', niveau:2, customSousClasse:'' }] });
+    ok(!isProficientWith(mc2, 'martial', { finesse:false, light:false }),
+       'Roublard/Magicien : ni l un ni l autre ne la donne');
+
+    /* Propriete inconnue : on ne tranche pas contre le joueur. */
+    ok(isProficientWith(h('Rogue'), 'martial', {}),
+       'arme de guerre aux proprietes inconnues : pas de malus invente');
+    ok(isProficientWith({ classes:[{ classe:'ClasseMaison', niveau:3 }] }, 'martial', { finesse:false }),
+       'classe inconnue : pas de malus invente');
+
+    /* La table d'armes porte desormais categorie et propriete Legere : sans
+       elles, la maitrise conditionnelle n'a pas de quoi repondre. */
+    const W = STARTING_WEAPONS;
+    eq(W.Shortsword.cat, 'martial', 'epee courte : arme de guerre');
+    eq(W.Dagger.cat,     'simple',  'dague : arme courante');
+    ok(W.Scimitar.light,   'cimeterre : Legere');
+    ok(W.Shortsword.light, 'epee courte : Legere');
+    ok(!W.Longsword.light, 'epee longue : pas Legere');
+    ok(!W.Greatsword.light,'epee a deux mains : pas Legere');
+    /* La Serpe n'a pas Finesse en 2024 : Simple, Legere, 1d4 tranchant. */
+    ok(!W.Sickle.finesse, 'serpe : pas de Finesse en 2024');
+    ok(W.Sickle.light,    'serpe : Legere');
+    Object.entries(W).forEach(([nom, w]) =>
+      ok(w.cat === 'simple' || w.cat === 'martial', nom + ' : categorie manquante ou invalide'));
+
+    /* Et le bout en bout : la ligne d'attaque construite depuis un objet porte
+       la bonne maitrise, categorie et propriete venant de la table. */
+    [['Rogue','Shortsword',true],['Rogue','Greatsword',false],['Rogue','Dagger',true],
+     ['Wizard','Greatsword',false],['Monk','Scimitar',true],['Monk','Greataxe',false],
+     ['Bard','Longsword',false],['Fighter','Greatsword',true]].forEach(([cls, nom, attendu]) => {
+      const a = attackFromItem({ name:nom }, h(cls));
+      ok(a, cls + ' + ' + nom + ' : une attaque est construite');
+      eq(a?.prof, attendu, cls + ' + ' + nom + ' : maitrise');
+    });
+  }
+
+
+  /* ── Listes, langues et ordres ── */
+  {
+    /* Le Magicien avait six competences au lieu de sept : Nature manquait. */
+    eq(CLASS_DATA.Wizard.skillList.length, 7, 'Magicien : sept competences au choix');
+    ok(CLASS_DATA.Wizard.skillList.includes('nature'), 'Magicien : Nature en fait partie');
+    eq(CLASS_DATA.Wizard.skillChoices, 2, 'Magicien : deux a retenir');
+
+    /* Les ordres : un bonus egal au modificateur de Sagesse, pas une Expertise
+       ni un sort de Nature toujours prepare. */
+    {
+      const d = FEATURE_CHOICES['Divine Order'].desc;
+      ok(!/Expertise/i.test(d.Thaumaturge), 'Thaumaturge : ce n est pas une Expertise');
+      ok(/WIS modifier/.test(d.Thaumaturge), 'Thaumaturge : un bonus egal au mod. de SAG');
+      ok(/Arcana or Religion/.test(d.Thaumaturge), 'Thaumaturge : Arcanes ou Religion');
+      ok(/Heavy armor/.test(d.Protector), 'Protecteur : armures lourdes');
+      ok(/Martial weapons/.test(d.Protector), 'Protecteur : armes de guerre');
+      const p = FEATURE_CHOICES['Primal Order'].desc;
+      ok(!/always prepared/i.test(p.Magician), 'Magicien : aucun sort toujours prepare dans cette option');
+      ok(/Druid cantrip/.test(p.Magician), 'Magicien : un sort mineur de Druide');
+      ok(/WIS modifier/.test(p.Magician), 'Magicien : un bonus egal au mod. de SAG');
+      ok(/Medium armor/.test(p.Warden), 'Gardien : armures intermediaires');
+      ok(!/Heavy/.test(p.Warden), 'Gardien : jamais les armures lourdes');
+    }
+
+    /* Les langues accordees par la classe. */
+    {
+      const r = languesDeClasse('Rogue', 1);
+      eq(r.accordees, ["Thieves' Cant"], 'Roublard : l argot des voleurs');
+      eq(r.choix.length, 1, 'Roublard : une langue de plus a choisir');
+      /* Le || {} evite qu une liste vide fasse PLANTER le test au lieu de le
+         faire echouer — toutes les assertions suivantes disparaitraient. */
+      const rc = r.choix[0] || {};
+      eq(rc.nb, 1, 'Roublard : une seule');
+      /* « from the language tables in Chapter 2 », au pluriel : c'est
+         l'aptitude qui ouvre la table rare, que l'origine interdit. */
+      eq((rc.tables || []).slice().sort(), ['rare','standard'], 'Roublard : les DEUX tables');
+      eq(rc.source, "Thieves' Cant", 'Roublard : la source est nommee');
+
+      const d = languesDeClasse('Druid', 1);
+      eq(d.accordees, ['Druidic'], 'Druide : le druidique');
+      eq(d.choix.length, 0, 'Druide : rien a choisir');
+
+      ['Wizard','Fighter','Bard','Cleric'].forEach(c => {
+        const l = languesDeClasse(c, 1);
+        eq(l.accordees.length, 0, c + ' : aucune langue de classe au niveau 1');
+        eq(l.choix.length, 0,     c + ' : aucun choix de langue au niveau 1');
+      });
+
+      /* Le niveau borne la lecture, et les bornes tiennent. */
+      eq(languesDeClasse('Rogue', 20).accordees, ["Thieves' Cant"], 'Roublard 20 : toujours une seule');
+      eq(languesDeClasse('Inconnue', 1).accordees, [], 'classe inconnue : rien, sans planter');
+      eq(languesDeClasse('Rogue', 0).accordees, ["Thieves' Cant"], 'niveau 0 : ramene a 1');
+      eq(languesDeClasse('Rogue', 99).accordees, ["Thieves' Cant"], 'niveau hors borne : ramene a 20');
+    }
+
+    /* Le druidique avait perdu son sort, et le jet n etait pas le bon. */
+    {
+      const dr = (CLASS_DATA.Druid.features[1] || []).find(f => f.name === 'Druidic');
+      ok(/Speak with Animals/.test(dr.desc), 'Druidique : Communication avec les animaux toujours prepare');
+      ok(/Investigation/.test(dr.desc), 'Druidique : le jet est une Investigation');
+      ok(!/Perception check/.test(dr.desc), 'Druidique : ce n est pas une Perception');
+      const tc = (CLASS_DATA.Rogue.features[1] || []).find(f => f.name === "Thieves' Cant");
+      ok(/one other language/.test(tc.desc), 'Argot des voleurs : la seconde langue est dite');
+    }
+
+    /* L ecran de creation ne puise plus dans la table rare pour l origine.
+       « Common plus two languages you roll or choose from the Standard
+       Languages table » : la table rare s ouvre par une aptitude. */
+    {
+      const i = J.indexOf('const langOpts =');
+      ok(i !== -1, 'le constructeur des menus de langue existe');
+      const bloc = J.slice(i, i + 700);
+      ok(/tables \|\| \['standard'\]/.test(bloc),
+         'creation : la table standard par defaut, la rare sur demande');
+      /* Les deux menus d origine s appellent sans table : donc standard. */
+      ok(/selLang1\.innerHTML = langOpts\(\);/.test(J), 'langue 1 : table standard');
+      ok(/selLang2\.innerHTML = langOpts\(\);/.test(J), 'langue 2 : table standard');
+      /* Et la langue accordee par la classe n est pas reproposee au choix. */
+      ok(/langOpts\('', ch\.tables, lg\.accordees\)/.test(J),
+         'la langue deja accordee est exclue du choix');
+      /* Les langues de classe arrivent sur la fiche. */
+      const k = J.indexOf("c.langues = ['Common'");
+      ok(k !== -1, 'les langues sont ecrites sur la fiche');
+      ok(/lg\.accordees/.test(J.slice(k - 300, k + 300)),
+         'la fiche recoit aussi les langues de la classe');
+    }
+  }
+
+
+  /* ── Bottes d'arme : les colonnes de progression ── */
+  {
+    /* Le Barbare et le Guerrier ont une COLONNE « Weapon Mastery » dans leur
+       table : le nombre d'armes augmente avec le niveau. Le site le figeait a
+       sa valeur du niveau 1 — un Guerrier 16 en maitrisait trois au lieu de six.
+       Chiffres releves dans les tables elles-memes, pas dans un resume : le
+       premier resume automatique annoncait « 3 puis 4 a partir du niveau 5 »
+       pour le Guerrier, ce que la table dement ligne par ligne. */
+    const noms = (cls, lvl) => (CLASS_DATA[cls]?.features?.[lvl] || []).map(f => f.name);
+    const palier = (cls, lvl, nb) => ok(noms(cls, lvl).includes('Weapon Mastery (' + nb + ' weapons)'),
+      cls + ' ' + lvl + ' : ' + nb + ' armes — trouve ' + JSON.stringify(noms(cls, lvl)));
+
+    palier('Barbarian',  4, 3);
+    palier('Barbarian', 10, 4);
+    palier('Fighter',    4, 4);
+    palier('Fighter',   10, 5);
+    palier('Fighter',   16, 6);
+
+    /* Et nulle part ailleurs : un palier de trop vaut un palier manquant. */
+    const paliersDe = (cls) => Object.entries(CLASS_DATA[cls].features || {})
+      .filter(([, l]) => (l || []).some(f => /^Weapon Mastery \(/.test(f.name)))
+      .map(([lv]) => +lv).sort((a, b) => a - b);
+    eq(paliersDe('Barbarian'), [4, 10],     'Barbare : deux paliers, pas plus');
+    eq(paliersDe('Fighter'),   [4, 10, 16], 'Guerrier : trois paliers');
+    /* Le Paladin, le Rodeur et le Roublard n'ont pas de colonne : deux armes
+       du niveau 1 au niveau 20. */
+    ['Paladin','Ranger','Rogue'].forEach(cls =>
+      eq(paliersDe(cls), [], cls + ' : aucun palier, le nombre ne bouge pas'));
+
+    /* Les cinq classes qui ont la capacite, et elles seules. */
+    const aLaCapacite = Object.keys(CLASS_DATA).filter(cls =>
+      (CLASS_DATA[cls].features?.[1] || []).some(f => f.name === 'Weapon Mastery'));
+    eq(aLaCapacite.sort(), ['Barbarian','Fighter','Paladin','Ranger','Rogue'],
+       'seules ces cinq classes ont des bottes d armes');
+    /* Le Barde, le Moine et l'Artificier n'en ont pas — ni dans la classe, ni
+       dans leurs sous-classes. */
+    ['Bard','Monk','Artificer','Druid','Cleric','Wizard','Sorcerer','Warlock'].forEach(cls =>
+      ok(!classeOffreCapacite(cls, 'Weapon Mastery'), cls + ' : aucune botte d arme'));
+
+    /* Les deux libelles qui etaient faux. */
+    {
+      const wm = (cls) => (CLASS_DATA[cls].features[1] || []).find(f => f.name === 'Weapon Mastery');
+      ok(/Melee/.test(wm('Barbarian').desc), 'Barbare : des armes de MELEE');
+      ok(!/Finesse or Ranged/.test(wm('Rogue').desc),
+         'Roublard : la restriction ne vient pas de la capacite');
+      ok(/proficient with/.test(wm('Rogue').desc),
+         'Roublard : les armes qu il maitrise');
+      ok(/3 kinds/.test(wm('Fighter').desc), 'Guerrier : trois au niveau 1');
+    }
+  }
+
+  /* ── PV saisis a la main a la montee de niveau ── */
+  {
+    const auNiveau = (hp) => {
+      const c = hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:4}], con:14, pvMax:36, pvActuel:36 });
+      applyLevelUp(c, planLevelUp(c, 'Fighter'), { hp });
+      return c.pvMax - 36;
+    };
+
+    /* Le contrat : ce qui est saisi est ce qui est applique. Pas de plafond au
+       maximum du de — un MJ qui accorde un forfait a le droit, et le refuser
+       obligerait a corriger la fiche juste apres. */
+    eq(auNiveau(11), 11, 'PV saisis : 11 appliques tels quels');
+    eq(auNiveau(1), 1, 'PV saisis : le minimum de 1 passe');
+    eq(auNiveau(99), 99, 'PV saisis : aucun plafond, le MJ decide');
+
+    /* Les valeurs qui ne veulent rien dire retombent sur la moyenne plutot que
+       d'offrir un niveau a 1 PV par inadvertance. */
+    const moyenne = planLevelUp(
+      hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:4}], con:14 }), 'Fighter').avgHp;
+    eq(auNiveau(0), moyenne, 'PV saisis : zero retombe sur la moyenne');
+    eq(auNiveau(''), moyenne, 'PV saisis : vide retombe sur la moyenne');
+    eq(auNiveau(undefined), moyenne, 'PV saisis : absent retombe sur la moyenne');
+    eq(auNiveau(-5), 1, 'PV saisis : un negatif ne retire pas de PV');
+
+    /* Les PV courants suivent les PV max : on monte de niveau repose. */
+    {
+      const c = hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:4}], con:14, pvMax:36, pvActuel:30 });
+      applyLevelUp(c, planLevelUp(c, 'Fighter'), { hp:11 });
+      eq(c.pvMax, 47, 'PV max apres saisie');
+      eq(c.pvActuel, 41, 'PV courants suivent le gain');
+      eq(c.nbDeVie, 3, 'un de de vie de plus');
+    }
+
+    /* Le plan de niveaux garde la trace du nombre saisi : sans ca, rouvrir
+       l'onglet plan afficherait une ligne vide pour ce niveau. */
+    {
+      const c = hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:4}], con:14, pvMax:36, pvActuel:36 });
+      applyLevelUp(c, planLevelUp(c, 'Fighter'), { hp:11 });
+      eq(c.levelPlan.rows[4].hp, 11, 'le plan de niveaux retient les PV saisis');
+    }
+  }
+
+  /* ── Cablage du champ de PV (lecture du source) ── */
+  {
+    /* « // Sous-classe » apparait deux fois dans le fichier : on borne la
+       recherche de la fin APRES le debut, sinon le bloc ressort vide et toutes
+       les assertions qui suivent passent a cote sans rien dire. */
+    const debutHp = J.indexOf("$('lvlup-hp-row').innerHTML");
+    const bloc = J.slice(debutHp, J.indexOf('// Sous-classe', debutHp));
+    ok(/id="lvlup-hp-input"/.test(bloc), 'PV : le champ de saisie existe');
+    ok(/type="number"/.test(bloc), 'PV : champ numerique');
+    ok(/min="1"/.test(bloc), 'PV : pas de valeur negative au clavier');
+
+    /* La regression exacte deja rencontree : le gestionnaire de frappe doit
+       lire le champ sans le reecrire, sinon on ne peut plus l'effacer pour
+       retaper — « 12 » passait par un « 1 » aussitot fige. */
+    const frappe = bloc.slice(bloc.indexOf("addEventListener('input'"));
+    ok(/ecrire:\s*false/.test(frappe.slice(0, 200)),
+       'PV : la frappe ne reecrit pas le champ');
+    ok(/addEventListener\('blur'/.test(bloc),
+       'PV : la sortie du champ remet la derniere valeur valable');
+
+    /* Les deux boutons passent par la meme porte que la frappe : sans ca, deux
+       verites concurrentes pour une seule valeur. */
+    const poses = bloc.match(/poserHp\(/g) || [];
+    ok(poses.length >= 4, 'PV : moyenne, jet, frappe et sortie passent tous par poserHp');
+    ok(!/lvlup-hp-pick/.test(bloc), 'PV : plus de valeur figee non modifiable');
+
+    /* L'avertissement de borne doit rester un avertissement : s'il devenait une
+       correction, le forfait du MJ serait ecrase en silence. */
+    ok(/kept as entered/.test(bloc), 'PV : hors bornes, la valeur est conservee');
+  }
+
+
+
+  /* ── Le style de combat ne s'ecrase plus en multiclasse ── */
+  {
+    /* Le scenario d'origine : un Guerrier/Rodeur a deux styles de combat.
+       Ranges sous le seul nom de la capacite, le second effacait le premier et
+       le joueur perdait un choix sans aucun signe. */
+    const gr = { classes: [{ classe:'Fighter', sousClasse:'Champion', niveau:5 },
+                           { classe:'Ranger',  sousClasse:'Hunter',   niveau:3 }] };
+    setFeatureChoice(gr, 'Fighting Style', 'Fighter', ['Defense']);
+    setFeatureChoice(gr, 'Fighting Style', 'Ranger', ['Archery']);
+    eq(getFeatureChoice(gr, 'Fighting Style', 'Fighter'), ['Defense'],
+       'multiclasse : le Guerrier garde son style');
+    eq(getFeatureChoice(gr, 'Fighting Style', 'Ranger'), ['Archery'],
+       'multiclasse : le Rodeur garde le sien');
+
+    /* La cle porte la classe : c'est ce qui rend les deux possibles. */
+    ok(Object.keys(gr.featureChoices).every(k => k.includes('::')),
+       'les cles portent la classe');
+
+    /* Effacer un choix ne doit pas emporter celui de l'autre classe. */
+    setFeatureChoice(gr, 'Fighting Style', 'Fighter', []);
+    eq(getFeatureChoice(gr, 'Fighting Style', 'Fighter'), [], 'choix du Guerrier efface');
+    eq(getFeatureChoice(gr, 'Fighting Style', 'Ranger'), ['Archery'],
+       'celui du Rodeur survit a l\'effacement de l\'autre');
+  }
+
+  /* ── Les fiches ecrites avant le changement de cle ── */
+  {
+    /* Une fiche existante range son choix sous le nom nu. Elle doit rester
+       lisible AVANT migration : une migration qui ne tourne pas ne doit pas
+       faire disparaitre un choix deja fait. */
+    const vieux = { classes: [{ classe:'Fighter', sousClasse:'Champion', niveau:5 }],
+                    featureChoices: { 'Fighting Style': ['Defense'] } };
+    eq(getFeatureChoice(vieux, 'Fighting Style', 'Fighter'), ['Defense'],
+       'ancienne cle : encore lue avant migration');
+
+    ok(migrerChoixCapacites(vieux), 'migration : elle a quelque chose a faire');
+    eq(getFeatureChoice(vieux, 'Fighting Style', 'Fighter'), ['Defense'],
+       'apres migration : le choix est toujours la');
+    eq(vieux.featureChoices['Fighter::Fighting Style'], ['Defense'],
+       'apres migration : range sous la classe');
+    eq(vieux.featureChoices['Fighting Style'], undefined,
+       'apres migration : l\'ancienne cle a disparu');
+    ok(!migrerChoixCapacites(vieux), 'migration : rien a refaire au second passage');
+
+    /* Une entree qui ne correspond a aucune classe du personnage est laissee
+       en place plutot que jetee — on ne detruit pas ce qu'on ne comprend pas. */
+    const orphelin = { classes: [{ classe:'Wizard', sousClasse:'', niveau:3 }],
+                       featureChoices: { 'Fighting Style': ['Defense'] } };
+    migrerChoixCapacites(orphelin);
+    eq(orphelin.featureChoices['Fighting Style'], ['Defense'],
+       'entree sans classe proprietaire : conservee, pas jetee');
+  }
+
+  /* ── Monter la CON releve les PV deja gagnes ── */
+  {
+    /* Le scenario : un Guerrier 7 passe au 8 et met son ASI en CON.
+       Le modificateur passe de +2 a +3, donc chaque niveau deja pris vaut un
+       point de vie de plus. Sans rattrapage, huit points disparaissaient. */
+    const g = hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:7}],
+                     con:14, pvMax:60, pvActuel:60 });
+    const plan = planLevelUp(g, 'Fighter');
+    const gain = plan.avgHp;                 /* calcule avec l'ancien modificateur */
+    applyLevelUp(g, plan, { asiMode:'abil', asiA:'con', asiB:'' });
+    eq(g.con, 16, 'CON montee de 2');
+    /* +gain pour le niveau, puis +1 par niveau du total (le nouveau compris). */
+    eq(g.pvMax, 60 + gain + 8, 'PV max : le niveau plus le rattrapage sur 8 niveaux');
+    eq(g.pvActuel, 60 + gain + 8, 'PV courants suivent');
+
+    /* Une CON qui monte sans changer de modificateur ne doit rien rattraper :
+       14 a 15, c'est toujours +2. */
+    const h2 = hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:7}],
+                      con:14, pvMax:60, pvActuel:60 });
+    const p2 = planLevelUp(h2, 'Fighter');
+    const g2 = p2.avgHp;
+    applyLevelUp(h2, p2, { asiMode:'abil', asiA:'con', asiB:'dex' });
+    eq(h2.con, 15, 'CON montee de 1');
+    eq(h2.pvMax, 60 + g2, 'modificateur inchange : aucun rattrapage');
+
+    /* Le +1 d'un don compte pareil : c'est le modificateur qui decide, pas le
+       chemin par lequel la caracteristique a monte. */
+    const h3 = hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:7}],
+                      con:15, pvMax:60, pvActuel:60 });
+    const p3 = planLevelUp(h3, 'Fighter');
+    const g3 = p3.avgHp;
+    applyLevelUp(h3, p3, { asiMode:'feat', feat:'Durable', featAbil:'con' });
+    eq(h3.con, 16, 'don : CON a 16');
+    eq(h3.pvMax, 60 + g3 + 8, 'don : rattrapage aussi');
+
+    /* Le journal doit le dire, sinon le joueur voit ses PV bouger sans savoir
+       pourquoi. */
+    const h4 = hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:7}],
+                      con:14, pvMax:60, pvActuel:60 });
+    const r4 = applyLevelUp(h4, planLevelUp(h4, 'Fighter'),
+                            { asiMode:'abil', asiA:'con', asiB:'' });
+    ok(r4.log.some(x => /rétroactif/.test(x)), 'le rattrapage est noté dans le journal');
+  }
+
   // PV : moyenne PHB = dé/2 + 1, plus CON, plus le bonus d'espèce
   {
     const c = hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:1}], con:14 });
@@ -413,17 +1467,38 @@ function ok(cond, label) {
   // ASI : lu dans la table de la classe, sur le niveau DE CLASSE
   [3,7,9,11,15].forEach(l => ok(planLevelUp(hero({ classes:[{classe:'Rogue',sousClasse:'Assassin',niveau:l}] }), 'Rogue').isAsi,
     `Roublard : ASI en montant au niveau ${l + 1}`));
-  [1,4,5,13,18].forEach(l => ok(!planLevelUp(hero({ classes:[{classe:'Rogue',sousClasse:'Assassin',niveau:l}] }), 'Rogue').isAsi,
+  /* 18 a quitte cette liste : le niveau 19 donne un don epique, donc un don.
+     L'y laisser verrouillait le defaut — tout correctif echouait au pre-commit. */
+  [1,4,5,13].forEach(l => ok(!planLevelUp(hero({ classes:[{classe:'Rogue',sousClasse:'Assassin',niveau:l}] }), 'Rogue').isAsi,
     `Roublard : pas d'ASI en montant au niveau ${l + 1}`));
   // Le Guerrier en a deux de plus (6 et 14) — une liste generique les raterait
   [3,5,7,11,13,15].forEach(l => ok(planLevelUp(hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:l}] }), 'Fighter').isAsi,
     `Guerrier : ASI en montant au niveau ${l + 1}`));
-  // Niveau 19 : don epique en 2024, pas un ASI
+  /* Niveau 19 : un don epique, donc un don — et l'assistant doit le proposer.
+     L'assertion inverse figeait le defaut : elle affirmait pour les 14 classes
+     que le niveau 19 n'offre rien, ce qui etait vrai du code et faux de la regle. */
   Object.keys(CLASS_DATA).forEach(cls => {
     const p19 = planLevelUp(hero({ classes:[{classe:cls,sousClasse:'',niveau:18}] }), cls);
-    ok(!p19.isAsi, `${cls} : le niveau 19 est un don epique, pas un ASI`);
+    ok(p19.isAsi, `${cls} : le niveau 19 propose un don`);
+    ok(p19.isEpic, `${cls} : et c'est un don epique`);
     ok(p19.newFeatures.some(f => f.type === 'epic'), `${cls} : don epique au niveau 19`);
+    /* Un ASI ordinaire ne doit pas se faire passer pour un don epique. */
+    const p4 = planLevelUp(hero({ classes:[{classe:cls,sousClasse:'',niveau:3}] }), cls);
+    if (p4.isAsi) ok(!p4.isEpic, `${cls} : le niveau 4 est un ASI, pas un don epique`);
   });
+
+  /* Le plafond depend du don : 30 pour un don epique, 20 sinon. */
+  {
+    const epique = hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:18}], for:20 });
+    applyLevelUp(epique, planLevelUp(epique, 'Fighter'),
+                 { asiMode:'feat', feat:'Boon of the Iron Mind', featAbil:'for' });
+    eq(epique.for, 21, 'don epique : la caracteristique depasse 20');
+
+    const ordinaire = hero({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:3}], for:20 });
+    applyLevelUp(ordinaire, planLevelUp(ordinaire, 'Fighter'),
+                 { asiMode:'feat', feat:'Durable', featAbil:'for' });
+    eq(ordinaire.for, 20, 'don ordinaire : le plafond de 20 tient');
+  }
   // Chaque classe a au minimum les ASI de base
   Object.entries(CLASS_DATA).forEach(([cls, d]) => {
     const lv = Object.entries(d.features).filter(([, fs]) => fs.some(f => f.type === 'asi')).map(([l]) => +l);
@@ -578,30 +1653,62 @@ function ok(cond, label) {
 
   /* -- Choix de capacites : style de combat, ordre divin, metamagie... -- */
   {
-    // Les options du style de combat dependent de la classe
-    // Arcana Unleashed ajoute Arcane Warrior, ouvert aux trois classes qui ont
-    // la capacite Fighting Style — d'ou un style de plus dans chaque liste.
-    eq(featureOptions('Fighting Style', 'Fighter').options.length, 7, 'Guerrier : sept styles de combat');
-    eq(featureOptions('Fighting Style', 'Paladin').options.length, 6, 'Paladin : six styles');
-    eq(featureOptions('Fighting Style', 'Ranger').options.length, 5, 'Rodeur : cinq styles');
-    ['Fighter', 'Paladin', 'Ranger'].forEach(cls =>
-      ok(featureOptions('Fighting Style', cls).options.includes('Arcane Warrior'),
-         `${cls} : Arcane Warrior propose`));
-    ok(!featureOptions('Fighting Style', 'Paladin').options.includes('Archery'),
-       'Archery n est pas propose au Paladin');
+    /* En 2024 les styles de combat sont des DONS de categorie « Fighting Style
+       Feat », ouverts aux trois classes : « You gain a Fighting Style feat of
+       your choice », chez le Guerrier comme chez le Paladin et le Rodeur.
+       Les assertions d'origine verrouillaient les listes cloisonnees de 2014 —
+       elles affirmaient notamment qu'Archery n'est pas propose au Paladin. */
+    const STYLES_PHB = ['Archery','Blind Fighting','Defense','Dueling','Great Weapon Fighting',
+                        'Interception','Protection','Thrown Weapon Fighting','Two-Weapon Fighting',
+                        'Unarmed Fighting'];
+    ['Fighter', 'Paladin', 'Ranger'].forEach(cls => {
+      const o = featureOptions('Fighting Style', cls).options;
+      STYLES_PHB.forEach(st => ok(o.includes(st), `${cls} : ${st} doit etre propose`));
+      /* Arcane Warrior est un don de cette categorie, d'Arcana Unleashed. */
+      ok(o.includes('Arcane Warrior'), `${cls} : Arcane Warrior propose`);
+      ok(/Arcana Unleashed/.test(livreSource('Arcane Warrior')),
+         'Arcane Warrior : son livre doit etre signale');
+    });
+    /* Blessed Warrior et Druidic Warrior ne sont PAS des dons : ce sont les
+       options exclusives de la capacite de classe. Le Guerrier n'en a aucune. */
+    eq(featureOptions('Fighting Style', 'Fighter').options.length, 11,
+       'Guerrier : les dix styles du PHB plus Arcane Warrior, rien d exclusif');
+    eq(featureOptions('Fighting Style', 'Paladin').options.length, 12, 'Paladin : plus Blessed Warrior');
+    eq(featureOptions('Fighting Style', 'Ranger').options.length, 12, 'Rodeur : plus Druidic Warrior');
+    ok(featureOptions('Fighting Style', 'Paladin').options.includes('Archery'),
+       'Archery est desormais ouvert au Paladin');
+    ok(featureOptions('Fighting Style', 'Ranger').options.includes('Dueling'),
+       'Dueling est desormais ouvert au Rodeur');
     ok(featureOptions('Fighting Style', 'Ranger').options.includes('Druidic Warrior'),
        'Druidic Warrior propre au Rodeur');
+    ok(!featureOptions('Fighting Style', 'Paladin').options.includes('Druidic Warrior'),
+       'Druidic Warrior reste refuse au Paladin');
     ok(featureOptions('Fighting Style', 'Paladin').options.includes('Blessed Warrior'),
        'Blessed Warrior propre au Paladin');
+    ok(!featureOptions('Fighting Style', 'Ranger').options.includes('Blessed Warrior'),
+       'Blessed Warrior reste refuse au Rodeur');
+    ok(!featureOptions('Fighting Style', 'Fighter').options.includes('Blessed Warrior'),
+       'le Guerrier n a aucune option exclusive');
+    /* Deux descriptions etaient celles de 2014. */
+    {
+      const d = FEATURE_CHOICES['Fighting Style'].desc;
+      ok(!/reroll/i.test(d['Great Weapon Fighting']),
+         'Great Weapon Fighting : plus de relance en 2024');
+      ok(/treat any 1 or 2/i.test(d['Great Weapon Fighting']),
+         'Great Weapon Fighting : les 1 et les 2 comptent pour 3');
+      ok(/all other attack/i.test(d['Protection']),
+         'Protection : le Desavantage s etend aux autres attaques contre la cible');
+      ok(/Shield/.test(d['Protection']), 'Protection : le bouclier est requis');
+    }
     eq(featureOptions('Metamagic', 'Sorcerer').pick, 2, 'Metamagie : deux options a retenir');
     eq(featureOptions('Second Wind', 'Fighter'), null, 'une capacite sans choix ne propose rien');
-    eq(featureOptions('Additional Fighting Style', 'Fighter').options.length, 7,
+    eq(featureOptions('Additional Fighting Style', 'Fighter').options.length, 11,
        'Champion : herite de la liste du Guerrier');
 
     // Chaque option a une description : sans elle l'infobulle serait vide
     Object.entries(FEATURE_CHOICES).forEach(([nom, def]) => {
       const src = def.inherit ? FEATURE_CHOICES[def.inherit] : def;
-      const toutes = src.perClass ? [].concat(...Object.values(src.perClass)) : src.options;
+      const toutes = [].concat(src.options || [], ...Object.values(src.perClassExtra || {}));
       [...new Set(toutes)].forEach(o =>
         ok(!!(src.desc || {})[o], `${nom} / ${o} : description manquante`));
       ok((def.pick || 1) >= 1, `${nom} : nombre a retenir invalide`);
@@ -613,8 +1720,16 @@ function ok(cond, label) {
     eq(featureChoicesAt('Cleric', null, 1).map(f => f.name), ['Divine Order'], 'Clerc niveau 1');
     eq(featureChoicesAt('Druid', null, 1).map(f => f.name), ['Primal Order'], 'Druide niveau 1');
     eq(featureChoicesAt('Sorcerer', null, 2).map(f => f.name), ['Metamagic'], 'Ensorceleur niveau 2');
-    eq(featureChoicesAt('Ranger', null, 2).map(f => f.name).sort(), ['Deft Explorer', 'Fighting Style'],
-       'Rodeur niveau 2 : deux capacites a choix');
+    /* Deft Explorer a quitte cette liste : en 2024 ses deux benefices sont
+       cumules — « you gain the following benefits » — et l'option « Canny »
+       n'existe plus. Le seul choix du niveau 2 est le style de combat.
+       L'assertion d'origine verrouillait le defaut. */
+    eq(featureChoicesAt('Ranger', null, 2).map(f => f.name), ['Fighting Style'],
+       'Rodeur niveau 2 : seul le style de combat se choisit');
+    eq(featureChoicesAt('Sorcerer', null, 10).map(f => f.name), ['Metamagic (2 more)'],
+       'Ensorceleur niveau 10 : deux options de metamagie de plus');
+    eq(featureChoicesAt('Sorcerer', null, 17).map(f => f.name), ['Metamagic (2 final)'],
+       'Ensorceleur niveau 17 : les deux dernieres');
     eq(featureChoicesAt('Fighter', 'Champion', 7).map(f => f.name), ['Additional Fighting Style'],
        'Champion niveau 7 : un second style');
     eq(featureChoicesAt('Fighter', 'Champion', 3), [], 'aucun choix a ce niveau');
@@ -623,11 +1738,34 @@ function ok(cond, label) {
     {
       const c3 = { classes: [{ classe: 'Fighter', sousClasse: 'Champion', niveau: 7 }] };
       eq(setFeatureChoice(c3, 'Fighting Style', 'Fighter', ['Defense']), ['Defense'], 'choix valide retenu');
-      eq(getFeatureChoice(c3, 'Fighting Style'), ['Defense'], 'choix relu correctement');
+      eq(getFeatureChoice(c3, 'Fighting Style', 'Fighter'), ['Defense'], 'choix relu correctement');
       eq(setFeatureChoice(c3, 'Fighting Style', 'Fighter', ['OptionBidon']), [],
          'option inexistante refusee');
-      eq(setFeatureChoice(c3, 'Fighting Style', 'Paladin', ['Archery']), [],
-         'option d une autre classe refusee');
+      /* Archery est desormais ouvert aux trois classes : l'option qui reste
+         refusee au Guerrier est celle qui appartient en propre a une autre
+         classe. Blessed Warrior n'est pas un don, c'est l'option exclusive du
+         Paladin. */
+      eq(setFeatureChoice(c3, 'Fighting Style', 'Fighter', ['Blessed Warrior']), [],
+         'option exclusive d une autre classe refusee');
+      eq(setFeatureChoice(c3, 'Fighting Style', 'Fighter', ['Druidic Warrior']), [],
+         'l option du Rodeur refusee au Guerrier');
+
+      /* classeOffreCapacite repond a « la classe a-t-elle cette capacite »,
+         ce que featureOptions ne sait plus faire depuis que les styles de
+         combat ont une liste commune aux trois classes. */
+      ok(classeOffreCapacite('Fighter', 'Fighting Style'), 'le Guerrier a un style de combat');
+      ok(classeOffreCapacite('Paladin', 'Fighting Style'), 'le Paladin aussi');
+      ok(classeOffreCapacite('Ranger',  'Fighting Style'), 'le Rodeur aussi');
+      ok(!classeOffreCapacite('Wizard', 'Fighting Style'), 'le Magicien, non');
+      ok(!classeOffreCapacite('Rogue',  'Metamagic'),      'le Roublard n a pas la metamagie');
+      ok(classeOffreCapacite('Sorcerer','Metamagic'),      'l Ensorceleur si');
+      /* Une capacite de sous-classe compte pour sa classe. */
+      ok(classeOffreCapacite('Fighter', 'Additional Fighting Style'),
+         'Additional Fighting Style appartient au Champion, donc au Guerrier');
+      ok(!classeOffreCapacite('Paladin', 'Additional Fighting Style'),
+         'mais pas au Paladin');
+      ok(!classeOffreCapacite('', 'Fighting Style'), 'classe vide : non');
+      ok(!classeOffreCapacite('Fighter', ''), 'capacite vide : non');
       eq(setFeatureChoice(c3, 'Metamagic', 'Sorcerer', ['Careful', 'Subtle', 'Twinned']),
          ['Careful', 'Subtle'], 'surplus tronque au nombre autorise');
       eq(getFeatureChoice({}, 'Fighting Style'), [], 'personnage sans choix enregistre');
@@ -659,7 +1797,7 @@ function ok(cond, label) {
       // Et applyLevelUp l'enregistre
       const r2 = applyLevelUp(p2, planLevelUp(p2, 'Paladin'),
                               { featureChoices: { 'Fighting Style': ['Dueling'] } });
-      eq(getFeatureChoice(p2, 'Fighting Style'), ['Dueling'], 'choix enregistre a la montee');
+      eq(getFeatureChoice(p2, 'Fighting Style', 'Paladin'), ['Dueling'], 'choix enregistre a la montee');
       ok(r2.log.some(x => /Fighting Style/.test(x)), 'choix note dans le journal');
     }
   }
@@ -1934,10 +3072,19 @@ function ok(cond, label) {
   eq(c.duperie, undefined, 'Roll20 : « 0 » ne vaut rien');
 
   // Les sections répétables sont regroupées par identifiant de ligne
-  eq(c.attaques.map(x => x.nom), ['Rapière'], 'Roll20 : attaques');
-  eq(c.attaques[0].degat, '1d8 + 4', 'Roll20 : dégâts recomposés');
-  eq(c.attaques[0].bonus, '+7', 'Roll20 : bonus d\'attaque conservé tel quel');
-  eq(c.attaques[0].atkType, '', 'Roll20 : caractéristique laissée vide — calcAtkBonus garde le bonus');
+  /* name/degats : la forme que la fiche lit. Les imports ecrivaient nom/degat,
+     et les attaques importees s'affichaient vides. */
+  eq(c.attaques.map(x => x.name), ['Rapière'], 'Roll20 : attaques');
+  /* Renommer la construction sans renommer le filtre final vidait toute la
+     liste : sans ce garde, les assertions suivantes plantaient au lieu de le
+     dire, et masquaient tout ce qui venait apres. */
+  const atk0 = c.attaques[0] || {};
+  ok(c.attaques.length === 1, 'Roll20 : une attaque, pas une liste vidée par le filtre');
+  eq(atk0.nom, undefined, 'Roll20 : plus de champ nom sur une attaque');
+  eq(atk0.degats, '1d8 + 4', 'Roll20 : dégâts recomposés');
+  eq(atk0.degat, undefined, 'Roll20 : plus de champ degat sur une attaque');
+  eq(atk0.bonus, '+7', 'Roll20 : bonus d\'attaque conservé tel quel');
+  eq(atk0.atkType, '', 'Roll20 : caractéristique laissée vide — calcAtkBonus garde le bonus');
   eq(c.spells.map(x => x.name + '@' + x.level),
      ['Minor Illusion@0', 'Shield@1', 'Misty Step@2'], 'Roll20 : sorts, cantrip au niveau 0');
   ok(c.spells[2].conc, 'Roll20 : concentration déduite de la durée');
@@ -2353,19 +3500,43 @@ function ok(cond, label) {
            d + ' : prerequis Familiar Friend');
       });
 
-    /* Les trois dons epiques sont reserves au niveau 19. Les lister plus tot
-       revient a proposer un choix que la regle refuse — c'est precisement ce
-       qui arrivait tant que GENERAL_FEATS etait affiche tel quel. */
-    const EPIQUES = ['Boon of Erupting Spellpower', 'Boon of Magic School Mastery',
-                     'Boon of the Iron Mind'];
+    /* Les dons epiques sont reserves au niveau 19. Les lister plus tot revient
+       a proposer un choix que la regle refuse — c'est precisement ce qui
+       arrivait tant que GENERAL_FEATS etait affiche tel quel.
+
+       Les douze du Player's Handbook 2024, verifies sur aidedd.org et
+       dnd2024.wikidot.com : les deux listes concordent exactement. Le site n'en
+       avait que trois, et les trois viennent d'un autre livre — le niveau 19 ne
+       proposait donc aucun don du livre de base. */
+    const EPIQUES_PHB = [
+      'Boon of Combat Prowess', 'Boon of Dimensional Travel', 'Boon of Energy Resistance',
+      'Boon of Fate', 'Boon of Fortitude', 'Boon of Irresistible Offense',
+      'Boon of Recovery', 'Boon of Skill', 'Boon of Speed', 'Boon of Spell Recall',
+      'Boon of the Night Spirit', 'Boon of Truesight',
+    ];
+    /* Ceux-la viennent d'Arcana Unleashed : ils restent, et l'infobulle doit le
+       dire maintenant que la liste melange deux livres. */
+    const EPIQUES_AU = ['Boon of Erupting Spellpower', 'Boon of Magic School Mastery',
+                        'Boon of the Iron Mind'];
+    const EPIQUES = [...EPIQUES_PHB, ...EPIQUES_AU];
     EPIQUES.forEach(d => {
       ok(R2.GENERAL_FEATS[d] && R2.GENERAL_FEATS[d].epic === true, d + ' : marque epique');
+      ok(R2.GENERAL_FEATS[d] && R2.GENERAL_FEATS[d].asi === true, d + ' : porte un +1');
+      ok(/^Level 19\+/.test(R2.GENERAL_FEATS[d]?.prereq || ''), d + ' : prerequis niveau 19');
+      ok(/\b30\b/.test(R2.GENERAL_FEATS[d]?.desc || ''), d + ' : le plafond de 30 est dit');
       ok(!R2.donsDisponibles(4).includes(d), d + ' : absent au niveau 4');
       ok(!R2.donsDisponibles(18).includes(d), d + ' : absent au niveau 18');
       ok(R2.donsDisponibles(19).includes(d), d + ' : propose au niveau 19');
     });
-    eq(R2.donsDisponibles(19).length - R2.donsDisponibles(4).length, 3,
-       'seuls les trois dons epiques s\'ajoutent au niveau 19');
+    EPIQUES_PHB.forEach(d => eq(R2.livreSource(d), '', d + ' : du PHB, aucun livre a signaler'));
+    EPIQUES_AU.forEach(d => ok(/Arcana Unleashed/.test(R2.livreSource(d)),
+       d + ' : vient d Arcana Unleashed et doit le dire'));
+    /* Aucun autre don ne doit porter le drapeau epique : un don ordinaire
+       marque epic disparaitrait de la liste avant le niveau 19. */
+    eq(Object.keys(R2.GENERAL_FEATS).filter(d => R2.GENERAL_FEATS[d].epic).sort(),
+       [...EPIQUES].sort(), 'la liste des dons epiques est exactement celle-la');
+    eq(R2.donsDisponibles(19).length - R2.donsDisponibles(4).length, EPIQUES.length,
+       'les quinze dons epiques s\'ajoutent au niveau 19, et rien d\'autre');
     /* Un appel sans niveau ne doit pas ouvrir les dons epiques par accident. */
     ok(!R2.donsDisponibles().some(d => EPIQUES.includes(d)),
        'sans niveau connu, pas de don epique');
@@ -2478,6 +3649,105 @@ function ok(cond, label) {
     ['items-arcana-unleashed.json', 'monsters-arcana-unleashed.json'].forEach(f =>
       ok(SW.includes(f), 'service worker : ' + f + ' pre-cache'));
   }
+}
+
+/* ══════════ Plaques 3D du calendrier (tools/calendrier-3d.js) ══════════ */
+{
+  /* Le générateur se charge depuis la version stagée, comme tout le reste : le
+     shebang doit sauter, new Function ne l'avale pas. */
+  const moduleFactice = { exports: {} };
+  new Function('require', 'module', '__dirname',
+    staged('tools/calendrier-3d.js').replace(/^#![^\n]*\n/, '')
+  )(require, moduleFactice, 'tools');
+  const G = moduleFactice.exports;
+
+  /* La police se valide toute seule au chargement : dix-sept glyphes déformés
+     étaient passés tant qu'un rembourrage silencieux corrigeait la taille. Si
+     le module se charge, c'est que les 39 glyphes font bien 7 rangs de 5. */
+  ok(Object.keys(G.GLYPHES).length >= 39, 'police : les glyphes sont là');
+  eq(G.pixelsGlyphe('1').length, 12, 'police : le 1 a ses douze pixels');
+  ok(G.pixelsGlyphe('É').length > G.pixelsGlyphe('E').length,
+     'police : É porte bien un accent de plus que E');
+  eq(G.pixelsGlyphe('@'), null, 'police : un caractère inconnu ne dessine rien');
+
+  const cal = G.analyser(staged('calendrier.html'));
+
+  /* Le générateur LIT le calendrier du site. Si ces chiffres bougent, c'est le
+     monde qui a changé et les plaques doivent suivre — pas l'inverse. */
+  eq(cal.mois.length, 9, 'calendrier : 9 mois');
+  eq(cal.total, 333, 'calendrier : 333 jours');
+  eq(cal.semaine.length, 9, 'calendrier : semaine de 9 jours');
+  eq(cal.lunes.length, 3, 'calendrier : 3 lunes');
+  eq(cal.semaine.length % cal.lunes.length, 0,
+     'calendrier : la semaine se divise en lunes — toute la grille en dépend');
+
+  /* Les décalages de début de mois sont ce qui place chaque jour dans sa
+     colonne. Le site les calcule de son côté (MONTH_STARTS) : les deux doivent
+     tomber pareil, sinon la plaque imprimée contredit la page. */
+  const depuisLaPage = G.litteral(staged('calendrier.html'), 'MONTHS')
+    .reduce((acc, m) => { acc.out.push(acc.cum % 9); acc.cum += m.days; return acc; },
+            { cum: 0, out: [] }).out;
+  eq(cal.mois.map(m => m.depart), depuisLaPage, 'calendrier : décalages de mois');
+
+  /* Le Zénith est au jour absolu 190, et la page le décrit comme « 3 Soillse ».
+     C'est le seul jour marqué du calendrier : s'il atterrit ailleurs, le cercle
+     gravé se retrouve sur le mauvais chiffre. */
+  const soillse = cal.mois[5];
+  eq(soillse.name, 'Soillse', 'Zénith : le mois attendu');
+  eq(190 - soillse.premierJourAbsolu + 1, 3, 'Zénith : troisième jour de Soillse');
+
+  /* Chaque jour du mois doit occuper une case, une seule, et dans la grille. */
+  cal.mois.forEach((m, i) => {
+    const cases = new Set();
+    const lignes = Math.ceil((m.depart + m.days) / 9);
+    for (let j = 1; j <= m.days; j++) {
+      const idx = m.depart + j - 1;
+      const col = idx % 9, ligne = Math.floor(idx / 9);
+      ok(ligne < lignes, m.name + ' : le jour ' + j + ' déborde de la grille');
+      ok(!cases.has(idx), m.name + ' : deux jours dans la même case');
+      cases.add(idx);
+    }
+    eq(cases.size, m.days, m.name + ' : ' + m.days + ' cases occupées');
+  });
+
+  /* Géométrie : on ne génère que deux mois par mode. Le contrôle est identique
+     pour tous et chaque plaque coûte une seconde — Réolta est le mois le plus
+     long (41 jours, 5 lignes), Soillse le plus court et le seul à porter un
+     jour marqué. Les deux cas particuliers sont donc couverts. */
+  [['saillant', {}], ['creusé', { creux: true }]].forEach(([mode, opts]) => {
+    [0, 5].forEach(i => {
+      const p = G.plaque(cal, i, opts);
+      const v = G.verifier(p);
+      ok(v.ok, p.mois.name + ' (' + mode + ') : ' + (v.ennuis.join(' · ') || 'ok'));
+      eq(p.maille.tri.length % 12, 0, p.mois.name + ' (' + mode + ') : maillage en boîtes');
+      ok(p.L <= 220 && p.H <= 220, p.mois.name + ' : tient sur un plateau de 220 mm');
+      ok(p.maille.tri.length > 1000, p.mois.name + ' (' + mode + ') : la plaque n\'est pas vide');
+
+      /* Le STL binaire annonce son compte de triangles à l'octet 80. Un fichier
+         qui ment là-dessus s'ouvre sur une pièce tronquée. */
+      const buf = p.maille.stl('test');
+      eq(buf.readUInt32LE(80), p.maille.tri.length, p.mois.name + ' : en-tête STL');
+      eq(buf.length, 84 + p.maille.tri.length * 50, p.mois.name + ' : taille du fichier STL');
+    });
+  });
+
+  /* Les contrôles doivent ATTRAPER, pas seulement passer : un test de maillage
+     qui ne casse jamais ne protège de rien. On casse donc exprès. */
+  {
+    const p = G.plaque(cal, 0, {});
+    const t = p.maille.tri[0];
+    p.maille.tri[0] = [t[0], t[2], t[1]];
+    ok(!G.verifier(p).ok, 'contrôle : une face retournée est refusée');
+  }
+  {
+    const p = G.plaque(cal, 0, {});
+    p.maille.tri.splice(20, 1);
+    ok(!G.verifier(p).ok, 'contrôle : une face manquante est refusée');
+  }
+  ok(!G.verifier(G.plaque(cal, 0, { relief: 0 })).ok,
+     'contrôle : un relief nul est refusé — la plaque sortirait vierge');
+  ok(!G.verifier(G.plaque(cal, 0, { cellule: 26 })).ok,
+     'contrôle : une plaque plus grande que le plateau est signalée');
 }
 
 /* ══════════ Verdict ══════════ */
