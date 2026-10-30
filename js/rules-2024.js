@@ -643,6 +643,39 @@ const BACKGROUND_DATA = {
   'Ward of the Sheltering Hands': { abilities:['con','sag','cha'], feat:'Arcane Safeguard',    skills:'Insight, Medicine',         skillKeys:['perspicacite','medecine'],    tool:"Cook's Utensils" },
 };
 
+/* ── Equipement de depart des historiques (PHB 2024, Arcana Unleashed) ──
+   « Choose A or B: (A) … ; or (B) 50 GP ». Relu sur dnd2024.wikidot.com,
+   pages background:*. outil:true — « (same as above) » : l'outil choisi
+   pour l'historique (Artisan's Tools, Gaming Set, Musical Instrument). */
+const BACKGROUND_EQUIP = {
+  'Acolyte': { gold:8, items:[{qty:1,name:'Calligrapher\'s Supplies'},{qty:1,name:'Book (prayers)'},{qty:1,name:'Holy Symbol'},{qty:1,name:'Parchment (10 sheets)'},{qty:1,name:'Robe'}] },
+  'Artisan': { gold:32, items:[{qty:1,name:'Artisan\'s Tools',outil:true},{qty:2,name:'Pouch'},{qty:1,name:'Traveler\'s Clothes'}] },
+  'Charlatan': { gold:15, items:[{qty:1,name:'Forgery Kit'},{qty:1,name:'Costume'},{qty:1,name:'Fine Clothes'}] },
+  'Criminal': { gold:16, items:[{qty:2,name:'Dagger'},{qty:1,name:'Thieves\' Tools'},{qty:1,name:'Crowbar'},{qty:2,name:'Pouch'},{qty:1,name:'Traveler\'s Clothes'}] },
+  'Entertainer': { gold:11, items:[{qty:1,name:'Musical Instrument',outil:true},{qty:2,name:'Costume'},{qty:1,name:'Mirror'},{qty:1,name:'Perfume'},{qty:1,name:'Traveler\'s Clothes'}] },
+  'Farmer': { gold:30, items:[{qty:1,name:'Sickle'},{qty:1,name:'Carpenter\'s Tools'},{qty:1,name:'Healer\'s Kit'},{qty:1,name:'Iron Pot'},{qty:1,name:'Shovel'},{qty:1,name:'Traveler\'s Clothes'}] },
+  'Guard': { gold:12, items:[{qty:1,name:'Spear'},{qty:1,name:'Light Crossbow'},{qty:20,name:'Bolt'},{qty:1,name:'Gaming Set',outil:true},{qty:1,name:'Hooded Lantern'},{qty:1,name:'Manacles'},{qty:1,name:'Quiver'},{qty:1,name:'Traveler\'s Clothes'}] },
+  'Guide': { gold:3, items:[{qty:1,name:'Shortbow'},{qty:20,name:'Arrow'},{qty:1,name:'Cartographer\'s Tools'},{qty:1,name:'Bedroll'},{qty:1,name:'Quiver'},{qty:1,name:'Tent'},{qty:1,name:'Traveler\'s Clothes'}] },
+  'Hermit': { gold:16, items:[{qty:1,name:'Quarterstaff'},{qty:1,name:'Herbalism Kit'},{qty:1,name:'Bedroll'},{qty:1,name:'Book (philosophy)'},{qty:1,name:'Lamp'},{qty:1,name:'Oil (3 flasks)'},{qty:1,name:'Traveler\'s Clothes'}] },
+  'Merchant': { gold:22, items:[{qty:1,name:'Navigator\'s Tools'},{qty:2,name:'Pouch'},{qty:1,name:'Traveler\'s Clothes'}] },
+  'Noble': { gold:29, items:[{qty:1,name:'Gaming Set',outil:true},{qty:1,name:'Fine Clothes'},{qty:1,name:'Perfume'}] },
+  'Sage': { gold:8, items:[{qty:1,name:'Quarterstaff'},{qty:1,name:'Calligrapher\'s Supplies'},{qty:1,name:'Book (history)'},{qty:1,name:'Parchment (8 sheets)'},{qty:1,name:'Robe'}] },
+  'Sailor': { gold:20, items:[{qty:1,name:'Dagger'},{qty:1,name:'Navigator\'s Tools'},{qty:1,name:'Rope'},{qty:1,name:'Traveler\'s Clothes'}] },
+  'Scribe': { gold:23, items:[{qty:1,name:'Calligrapher\'s Supplies'},{qty:1,name:'Fine Clothes'},{qty:1,name:'Lamp'},{qty:1,name:'Oil (3 flasks)'},{qty:1,name:'Parchment (12 sheets)'}] },
+  'Soldier': { gold:14, items:[{qty:1,name:'Spear'},{qty:1,name:'Shortbow'},{qty:20,name:'Arrow'},{qty:1,name:'Gaming Set',outil:true},{qty:1,name:'Healer\'s Kit'},{qty:1,name:'Quiver'},{qty:1,name:'Traveler\'s Clothes'}] },
+  'Wayfarer': { gold:16, items:[{qty:2,name:'Dagger'},{qty:1,name:'Thieves\' Tools'},{qty:1,name:'Gaming Set (any)'},{qty:1,name:'Bedroll'},{qty:2,name:'Pouch'},{qty:1,name:'Traveler\'s Clothes'}] },
+  'Agent of the Ninth Quill': { gold:17, items:[{qty:1,name:'Dagger'},{qty:1,name:'Light Hammer'},{qty:1,name:'Thieves\' Tools'},{qty:1,name:'Iron Spikes'},{qty:1,name:'Rope'},{qty:1,name:'Traveler\'s Clothes'}] },
+  'Bejeweled Conclave Spy': { gold:5, items:[{qty:1,name:'Disguise Kit'},{qty:1,name:'Fine Clothes'},{qty:1,name:'Perfume'}] },
+  'Cosmic Dawn Experiment': { gold:30, items:[{qty:1,name:'Artisan\'s Tools',outil:true},{qty:1,name:'Backpack'},{qty:1,name:'Robe'},{qty:1,name:'Traveler\'s Clothes'}] },
+  'Covenant of the Grave Recruit': { gold:16, items:[{qty:1,name:'Dagger'},{qty:1,name:'Herbalism Kit'},{qty:1,name:'Book (anatomy)'},{qty:1,name:'Shovel'}] },
+  'Crucible Storm Chaser': { gold:15, items:[{qty:1,name:'Glassblower\'s Tools'},{qty:1,name:'Backpack'},{qty:1,name:'Rope'},{qty:1,name:'Traveler\'s Clothes'}] },
+  'Familiar Trainer': { gold:44, items:[{qty:1,name:'Quarterstaff'},{qty:1,name:'Gaming Set',outil:true},{qty:1,name:'Bedroll'},{qty:1,name:'Bell'},{qty:1,name:'String'},{qty:1,name:'Tinderbox'},{qty:1,name:'Traveler\'s Clothes'},{qty:1,name:'Waterskin'}] },
+  'Horizon Weaver Initiate': { gold:18, items:[{qty:1,name:'Shortbow'},{qty:20,name:'Arrow'},{qty:1,name:'Weaver\'s Tools'},{qty:1,name:'Map'},{qty:1,name:'Quiver'},{qty:1,name:'Rope'},{qty:1,name:'Traveler\'s Clothes'}] },
+  'Phantasmic Circus Trouper': { gold:12, items:[{qty:1,name:'Disguise Kit'},{qty:1,name:'Gaming Set (any)'},{qty:1,name:'Costume'},{qty:1,name:'Mirror'},{qty:1,name:'Traveler\'s Clothes'}] },
+  'Seer Apprentice': { gold:11, items:[{qty:1,name:'Navigator\'s Tools'},{qty:8,name:'Candle'},{qty:1,name:'Ink'},{qty:1,name:'Ink Pen'},{qty:1,name:'Parchment (9 sheets)'},{qty:1,name:'Pouch'},{qty:1,name:'Tinderbox'},{qty:1,name:'Traveler\'s Clothes'}] },
+  'Ward of the Sheltering Hands': { gold:40, items:[{qty:1,name:'Cook\'s Utensils'},{qty:1,name:'Blanket'},{qty:1,name:'Healer\'s Kit'},{qty:1,name:'Lamp'},{qty:1,name:'Oil (3 flasks)'},{qty:1,name:'Tinderbox'},{qty:1,name:'Traveler\'s Clothes'},{qty:1,name:'Waterskin'}] },
+};
+
 /* ════════════════════════════════════════════════════════════
    D&D 2024 SPECIES DATA (PHB)
    traits: { niveau: [{name, desc}] } — lineages: { nom: {niveau: [...]}}

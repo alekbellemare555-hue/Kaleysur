@@ -52,6 +52,9 @@ function ok(cond, label) {
     extract(J, 'function getClasses(c)'),
     extract(J, 'function getTotalLevel(c)'),
     extract(J, 'function classesReelles(c)'),
+    extract(R, 'const BACKGROUND_EQUIP'),
+    extract(J, 'function equipementHistorique(bg, choix, outil)'),
+    extract(J, 'function fusionnerObjets(items, ajout)'),
     extract(J, 'function migrerInspiration(pd, c)'),
     extract(J, 'function relancerD20(mode, des, nouveau)'),
     extract(J, 'const RESSOURCES_2014'),
@@ -1984,6 +1987,14 @@ function ok(cond, label) {
     /* Le toast de des est en position: fixed ; un style en ligne « relative »
        le jetait au bas du document, hors de l ecran. */
     ok(!/t\.style\.position\s*=/.test(Jc), 'toast de des : pas de position en ligne');
+    /* Equipement d historique (PHB 2024) : A ou 50 po. */
+    eq(equipementHistorique('Acolyte', 'B', ''), { gold:50, items:[] }, 'historique B : 50 po');
+    eq(equipementHistorique('Acolyte', 'A', '').gold, 8, 'Acolyte A : 8 po');
+    eq(equipementHistorique('Artisan', 'A', "Smith's Tools").items[0].name, "Smith's Tools", 'same as above : l outil choisi');
+    eq(equipementHistorique('Criminal', 'A', '').items[0], { qty:2, name:'Dagger' }, 'Criminal : 2 dagues');
+    eq(equipementHistorique('Acolyte', '', ''), null, 'historique : passer');
+    eq(fusionnerObjets([{ name:'Dagger', qty:1 }], [{ name:'Dagger', qty:2 }, { name:'Rope', qty:1 }]).map(i => i.name + ':' + i.qty), ['Dagger:3', 'Rope:1'], 'fusion des objets');
+    ok(/const bgEq = equipementHistorique\(selBg\.value, selBgEquip\.value, outilHistorique\(\)\);/.test(Jc), 'creation : equipement d historique applique');
     ok(/#dice-toast \{\s*\n\s*position: fixed;/.test(J), 'toast de des : position fixe');
     /* Le jet de PV du plan : le de de vie, pas un d20 a cote. */
     ok(!/showDiceRoll\(\x60Lv \$\{i\+1\} HP/.test(Jc), 'plan de niveau : plus de d20 fantome');

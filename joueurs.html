@@ -9985,6 +9985,27 @@ function armorFromItem(item) {
 
 /* Le personnage maitrise-t-il cette categorie d'arme ?
    weaponProf est du texte libre par classe (« Simple and Martial weapons »). */
+/* Equipement de l'historique : 'A' (objets + or), 'B' (50 po), '' (rien).
+   outil : l'outil choisi a l'etape 4, qui remplace « (same as above) ». */
+function equipementHistorique(bg, choix, outil) {
+  const e = typeof BACKGROUND_EQUIP !== 'undefined' && BACKGROUND_EQUIP[bg];
+  if (!e || !choix) return null;
+  if (choix === 'B') return { gold: 50, items: [] };
+  return { gold: e.gold, items: e.items.map(it => ({ qty: it.qty, name: it.outil && outil ? outil : it.name })) };
+}
+
+/* Ajoute des objets a un inventaire : un nom deja present voit sa quantite
+   augmenter (la dague de la classe et celle de l'historique font 2 dagues). */
+function fusionnerObjets(items, ajout) {
+  const out = (items || []).map(it => ({ ...it }));
+  (ajout || []).forEach(a => {
+    const x = out.find(it => it.name === a.name);
+    if (x) x.qty = (parseInt(x.qty) || 0) + (parseInt(a.qty) || 0);
+    else out.push({ name: a.name, qty: a.qty, notes: '', cat: '' });
+  });
+  return out;
+}
+
 /* Bonus de caracteristiques de l'historique (PHB 2024) : « Increase one of
    these scores by 2 and a different one by 1, or increase all three by 1. »
    mode '21' ou '111'. Rend { cle: bonus }, ou null quand le +2 et le +1
@@ -14286,6 +14307,34 @@ ${car} characters of notes.
     }
     selEquip.addEventListener('change', previewEquip);
 
+    /* Equipement de l'historique (PHB 2024) : A, ou 50 po — en plus de celui
+       de la classe. */
+    const selBgEquip = document.getElementById('wiz-bg-equip');
+    const outilHistorique = () => {
+      const bd = BACKGROUND_DATA[selBg.value];
+      return bd && TOOL_CHOICES[bd.tool] ? selTool.value : '';
+    };
+    function refreshBgEquip() {
+      const e = BACKGROUND_EQUIP[selBg.value];
+      const wrap = document.getElementById('wiz-bg-equip-wrap');
+      if (!e) { wrap.style.display = 'none'; selBgEquip.innerHTML = ''; previewBgEquip(); return; }
+      wrap.style.display = '';
+      const cur = selBgEquip.value;
+      selBgEquip.innerHTML = '<option value="">— Passer —</option>'
+        + `<option value="A">Option A — items + ${e.gold} GP</option>`
+        + '<option value="B">Option B — 50 GP</option>';
+      selBgEquip.value = cur;   // garde le choix quand on revient sur l'etape
+      previewBgEquip();
+    }
+    function previewBgEquip() {
+      const box = document.getElementById('wiz-bg-equip-preview');
+      const eq = equipementHistorique(selBg.value, selBgEquip.value, outilHistorique());
+      if (!eq) { box.innerHTML = ''; return; }
+      box.innerHTML = eq.items.map(it => `<div>• ${it.qty} × ${esc(it.name)}</div>`).join('')
+        + `<div style="margin-top:0.35rem;">Bourse : <strong>+${eq.gold} po</strong></div>`;
+    }
+    selBgEquip.addEventListener('change', previewBgEquip);
+
     function previewBg() {
       const box = document.getElementById('wiz-bg-preview');
       const d = BACKGROUND_DATA[selBg.value];
@@ -14374,7 +14423,7 @@ ${car} characters of notes.
       if (step === 1) setTimeout(() => nameInp.focus(), 50);
       if (step === 4) { majLanguesClasse(); renderWizExpertise(); }  // dependent de l'etape 3
       if (step === 5) renderBgBonus();  // dépend du background choisi à l'étape 4
-      if (step === 6) { refreshEquip(); renderWizSummary(); }
+      if (step === 6) { refreshEquip(); refreshBgEquip(); renderWizSummary(); }
     }
 
     /* Récapitulatif de la dernière étape : signale ce qui restera vide. */
@@ -14406,7 +14455,7 @@ ${car} characters of notes.
     function closeModal() {
       overlay.classList.remove('open');
       nameInp.value = '';
-      [selSpecies, selLineage, selClass, selBg, selEquip, selLang1, selLang2].forEach(s => s.value = '');
+      [selSpecies, selLineage, selClass, selBg, selEquip, selBgEquip, selLang1, selLang2].forEach(s => s.value = '');
       document.getElementById('wiz-lang-warn')?.remove();
       refreshTool();
       abilBox.querySelectorAll('.wiz-abil-sel').forEach(s => s.value = '');
@@ -14414,7 +14463,7 @@ ${car} characters of notes.
       wizFc = {};
       wizExp = new Set();
       wizBgOk = true;
-      ['wiz-species-preview','wiz-class-preview','wiz-bg-preview','wiz-class-skills','wiz-expertise','wiz-bg-bonus','wiz-summary'].forEach(id =>
+      ['wiz-species-preview','wiz-class-preview','wiz-bg-preview','wiz-class-skills','wiz-expertise','wiz-bg-bonus','wiz-bg-equip-preview','wiz-summary'].forEach(id =>
         document.getElementById(id).innerHTML = '');
       refreshAbils();
       showStep(1);
@@ -14529,6 +14578,15 @@ ${car} characters of notes.
             { pp:0, gp:0, ep:0, sp:0, cp:0 }, slot.inventory.currency, { gp: eq.gold }
           );
         }
+      }
+      /* Equipement d'historique : s'ajoute a celui de la classe (objets
+         fusionnes, or additionne) ; ses armes deviennent des attaques. */
+      const bgEq = equipementHistorique(selBg.value, selBgEquip.value, outilHistorique());
+      if (bgEq) {
+        slot.inventory.items = fusionnerObjets(slot.inventory.items, bgEq.items);
+        slot.inventory.currency = Object.assign({ pp:0, gp:0, ep:0, sp:0, cp:0 }, slot.inventory.currency);
+        slot.inventory.currency.gp = (parseInt(slot.inventory.currency.gp) || 0) + bgEq.gold;
+        eqItems = eqItems.concat(bgEq.items);
       }
       applyStartingGear(c, selClass.value, eqItems);
 
@@ -15743,6 +15801,11 @@ document.addEventListener('keydown', e => {
             <select class="auth-input" id="wiz-equip"></select>
           </div>
           <div class="wiz-preview" id="wiz-equip-preview"></div>
+          <div class="auth-field" id="wiz-bg-equip-wrap" style="display:none;">
+            <label class="auth-label" for="wiz-bg-equip">Background equipment</label>
+            <select class="auth-input" id="wiz-bg-equip"></select>
+          </div>
+          <div class="wiz-preview" id="wiz-bg-equip-preview"></div>
           <div class="wiz-summary" id="wiz-summary"></div>
         </div>
 
