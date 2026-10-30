@@ -14600,7 +14600,11 @@ let _hpUndo = null;
 (function () {
   const _orig = applyHpChange;
   applyHpChange = function (delta) {
-    if (playerData) _hpUndo = { pvActuel: C().pvActuel, pvTemp: C().pvTemp || 0 };
+    /* Le personnage et le compte sont memorises avec les PV : sans eux, Ctrl+Z
+       apres un changement de personnage ecrivait les PV de l'ancien sur le
+       nouveau. */
+    if (playerData) _hpUndo = { user: currentUser, charId: playerData.activeCharId,
+                                pvActuel: C().pvActuel, pvTemp: C().pvTemp || 0 };
     _orig.apply(this, arguments);
   };
 })();
@@ -14613,8 +14617,12 @@ document.addEventListener('keydown', e => {
   /* Ctrl+Z → undo HP si pas en train d'écrire */
   if (e.ctrlKey && e.key === 'z' && !e.shiftKey && !typing && _hpUndo && playerData) {
     e.preventDefault();
-    Object.assign(C(), _hpUndo);
+    const { user, charId, ...pv } = _hpUndo;
     _hpUndo = null;
+    /* Un autre personnage (ou un autre compte) est actif depuis : l'annulation
+       ne le concerne pas, on l'oublie plutot que d'ecraser ses PV. */
+    if (user !== currentUser || charId !== playerData.activeCharId) return;
+    Object.assign(C(), pv);
     fillFields(); updateHpBar(); renderHero(); renderCharCards(); triggerSave();
     showSaveFlash();
     return;

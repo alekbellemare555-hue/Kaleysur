@@ -1353,6 +1353,20 @@ function ok(cond, label) {
     ok(/if \(choix === 'conflit'\) showConflictBanner\(savedUser\);/.test(ds), 'conflit : la banniere s affiche');
   }
 
+  /* ── Ctrl+Z n ecrit plus les PV d un personnage sur un autre ── */
+  {
+    /* _hpUndo ne savait pas a qui appartenaient les PV memorises : apres un
+       changement de personnage, Ctrl+Z ecrivait ceux de l ancien sur le
+       nouveau. Rejoue dans la page reelle : Bram reste a 40 PV. */
+    const mem = J.slice(J.indexOf('let _hpUndo = null;'), J.indexOf('let _hpUndo = null;') + 700);
+    ok(/_hpUndo = \{ user: currentUser, charId: playerData\.activeCharId,/.test(mem),
+       'les PV memorises portent leur personnage et leur compte');
+    const z = J.slice(J.indexOf("if (e.ctrlKey && e.key === 'z'"), J.indexOf("if (e.ctrlKey && e.key === 'z'") + 700);
+    ok(/if \(user !== currentUser \|\| charId !== playerData\.activeCharId\) return;/.test(z),
+       'Ctrl+Z ne s applique qu au personnage qui a subi le changement');
+    ok(z.indexOf('_hpUndo = null;') < z.indexOf('Object.assign(C(), pv)'), 'l annulation est consommee avant d etre appliquee');
+  }
+
   /* ── PV saisis a la main a la montee de niveau ── */
   {
     const auNiveau = (hp) => {
