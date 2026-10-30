@@ -444,6 +444,18 @@ const GENERAL_FEATS = {
   'Boon of Magic School Mastery':{ epic:true, asi:true, abil:'INT, SAG or CHA', prereq:'Level 19+, Spellcasting/Pact Magic', desc:"The chosen score can rise to 30. Pick a school of magic: a level-1 spell from it is always prepared and castable with no slot or components, and a level-7-or-lower spell from it is always prepared and castable once per Long Rest without a slot. Repeatable with a different school." },
   'Boon of the Iron Mind':{ epic:true, asi:true, abil:'choice', prereq:'Level 19+', desc:"The chosen score can rise to 30. You lose Concentration only if you start another Concentration effect, gain the Petrified or Unconscious condition, or die." },
 };
+/** Fiche d'un don, sous une seule forme qu'il soit general, epique ou
+    d'origine. Les dons d'origine n'ont ni +1 de caracteristique ni prerequis :
+    « another feat of your choice for which you qualify » les rend donc
+    disponibles a chaque ASI. */
+function ficheDon(nom) {
+  if (!nom) return null;
+  if (GENERAL_FEATS[nom]) return { ...GENERAL_FEATS[nom], origine: false };
+  if (typeof ORIGIN_FEATS !== 'undefined' && ORIGIN_FEATS[nom] !== undefined)
+    return { asi: false, abil: '', prereq: '', desc: ORIGIN_FEATS[nom], origine: true };
+  return null;
+}
+
 /** Dons proposables a ce niveau de personnage.
     Les dons epiques sont reserves au niveau 19 : les lister plus tot revient a
     proposer un choix que la regle refuse. */

@@ -8671,8 +8671,10 @@ function renderLvlupTab() {
 
     // Body: ASI — sélecteur de feat (PHB 2024) + note libre
     if (d.isAsi) {
-      const featOpts = donsDisponibles(d.totalLv).map(fn =>
-        `<option value="${esc(fn)}"${titreUA(fn)}>${esc(fn)}</option>`).join('');
+      const opt = fn => `<option value="${esc(fn)}"${titreUA(fn)}>${esc(fn)}</option>`;
+      /* Les dons d'origine sont valides a un ASI, comme dans la montee. */
+      const featOpts = `<optgroup label="General feats">${donsDisponibles(d.totalLv).map(opt).join('')}</optgroup>`
+        + `<optgroup label="Origin feats">${Object.keys(typeof ORIGIN_FEATS !== 'undefined' ? ORIGIN_FEATS : {}).map(opt).join('')}</optgroup>`;
       bodyHtml += `<div class="lvlrow-section">
         <div class="lvlrow-sec-title">⬆ ASI / Feat Decision</div>
         <div class="lvlrow-feat-pick">
@@ -8808,10 +8810,11 @@ function renderLvlupTab() {
     const desc = document.getElementById('featdesc-' + i);
     const ta   = rowsCont.querySelector(`[data-asi="${i}"]`);
     // Re-sélectionner le feat déjà noté (persistance à travers les re-renders)
-    const noted = Object.keys(GENERAL_FEATS).find(fn => (rows[i].asi || '').includes(fn));
+    const noted = [...Object.keys(GENERAL_FEATS), ...Object.keys(typeof ORIGIN_FEATS !== 'undefined' ? ORIGIN_FEATS : {})]
+      .find(fn => (rows[i].asi || '').includes(fn));
     if (noted) sel.value = noted;
     const paint = fn => {
-      const f = GENERAL_FEATS[fn];
+      const f = ficheDon(fn);
       if (!f) { desc.innerHTML = ''; return; }
       const tags = [
         f.asi ? `<span class="feat-tag">+1 ${f.abil}</span>` : '',
@@ -9330,6 +9333,32 @@ function topSlotLevel(slots) {
   return n;
 }
 
+/** Le personnage a-t-il ce don parmi ses capacites ? */
+function aLeDon(c, nom) {
+  return (c?.customFeatures || []).some(f => f && f.name === nom);
+}
+
+/** PV gagnes en plus a chaque niveau, hors de, CON et espece (regles 2024) :
+    Robuste, +2 par niveau de personnage ; Resilience draconique, +1 par niveau
+    d'Ensorceleur une fois la sous-classe acquise. Le bonus d'espece est compte
+    a part, il l'etait deja. */
+function pvBonusParNiveau(c, classeMontee, sousClasse) {
+  let n = 0;
+  if (aLeDon(c, 'Tough')) n += 2;
+  if (classeMontee === 'Sorcerer' && /Draconic/.test(sousClasse || '')) n += 1;
+  return n;
+}
+
+/** PV d'un coup quand on ACQUIERT ces capacites (regles 2024) : Robuste donne
+    deux fois le niveau de personnage, la Resilience draconique 3 au niveau 3.
+    Choisie plus tard — une fiche importee sans sous-classe —, elle rattrape le
+    total d'un Ensorceleur qui l'aurait prise au 3 : son niveau d'Ensorceleur. */
+function pvBonusAcquisition(nom, niveauPerso, niveauClasse) {
+  if (nom === 'Tough') return 2 * (parseInt(niveauPerso) || 1);
+  if (/Draconic/.test(nom || '')) return Math.max(3, parseInt(niveauClasse) || 3);
+  return 0;
+}
+
 /* Décrit la montée d'un niveau dans `className` sans modifier le personnage. */
 function planLevelUp(c, className, opts) {
   /* Les entrees vides sont ignorees ici ET dans applyLevelUp : les deux
@@ -9357,6 +9386,10 @@ function planLevelUp(c, className, opts) {
   const speciesFx = (typeof SPECIES_DATA !== 'undefined' && SPECIES_DATA[c.species]) || null;
   const fx        = Object.assign({}, speciesFx?.effects, speciesFx?.lineages?.[c.lineage]?.effects || {});
   const speciesHp = parseInt(fx.hpPerLevel) || 0;
+  /* Robuste et Resilience draconique : ignores jusqu'ici. La sous-classe est
+     celle que le personnage A deja ; celle qu'il choisit a ce niveau-ci compte
+     d'un coup dans applyLevelUp. */
+  const featHp = pvBonusParNiveau(c, className, idx >= 0 ? (classes[idx].sousClasse || '') : '');
 
   // Sous-classe : choisie au niveau 3 pour toutes les classes (PHB 2024)
   const currentSub  = idx >= 0 ? (classes[idx].sousClasse || '') : '';
@@ -9404,9 +9437,10 @@ function planLevelUp(c, className, opts) {
     ok: true, className, classIdx: idx, isNewClass: idx < 0,
     fromLevel, toLevel, totalBefore, totalAfter,
     hitDie, hitDieNum, conMod, speciesHp,
-    avgHp:  Math.max(1, Math.floor(hitDieNum / 2) + 1 + conMod + speciesHp),
-    maxHp:  Math.max(1, hitDieNum + conMod + speciesHp),
-    minHp:  Math.max(1, 1 + conMod + speciesHp),
+    featHp,
+    avgHp:  Math.max(1, Math.floor(hitDieNum / 2) + 1 + conMod + speciesHp + featHp),
+    maxHp:  Math.max(1, hitDieNum + conMod + speciesHp + featHp),
+    minHp:  Math.max(1, 1 + conMod + speciesHp + featHp),
     needsSubclass, subOptions, subName, subFeatures, isAsi, isEpic,
     newFeatures: [...clsFeatures, ...subFeatures],
     pbBefore: pb(totalBefore), pbAfter: pb(totalAfter),
@@ -9465,8 +9499,9 @@ function applyLevelUp(c, plan, choices) {
   if (plan.needsSubclass && ch.subclass && !plan.subOptions.includes(ch.subclass)) {
     return { ok:false, error:`Unknown subclass for ${plan.className} : ${ch.subclass}` };
   }
+  /* ficheDon couvre aussi les dons d'origine, valides a un ASI en 2024. */
   if (plan.isAsi && ch.asiMode === 'feat' && ch.feat
-      && typeof GENERAL_FEATS !== 'undefined' && !GENERAL_FEATS[ch.feat]) {
+      && typeof ficheDon === 'function' && !ficheDon(ch.feat)) {
     return { ok:false, error:`Unknown feat: ${ch.feat}` };
   }
 
@@ -9508,6 +9543,13 @@ function applyLevelUp(c, plan, choices) {
   if (plan.needsSubclass && ch.subclass) {
     c.classes[idx].sousClasse = ch.subclass;
     log.push(`Subclass : ${ch.subclass}`);
+    /* Resilience draconique : +3 PV max a l'acquisition (niveau 3). */
+    if (plan.className === 'Sorcerer' && /Draconic/.test(ch.subclass)) {
+      const pv = pvBonusAcquisition(ch.subclass, plan.totalAfter, plan.toLevel);
+      c.pvMax = (parseInt(c.pvMax) || 0) + pv;
+      c.pvActuel = (parseInt(c.pvActuel) || 0) + pv;
+      log.push(`+${pv} PV max (Draconic Resilience)`);
+    }
   }
 
   // ── Choix de capacites (style de combat, ordre divin, metamagie…) ──
@@ -9528,13 +9570,22 @@ function applyLevelUp(c, plan, choices) {
   // ── ASI ou don ──
   if (plan.isAsi) {
     if (ch.asiMode === 'feat' && ch.feat) {
-      const f = (typeof GENERAL_FEATS !== 'undefined' && GENERAL_FEATS[ch.feat]) || null;
+      const f = (typeof ficheDon === 'function' && ficheDon(ch.feat)) || null;
+      /* Robuste : deux fois le niveau de personnage d'un coup — sauf s'il etait
+         deja la, auquel cas ses +2 de ce niveau sont deja dans featHp. */
+      const avaitTough = aLeDon(c, 'Tough');
       c.customFeatures = c.customFeatures || [];
       c.customFeatures.push({
         name: ch.feat, source: `Feat — ${plan.className} ${plan.toLevel}`,
         desc: f?.desc || '', _open:false
       });
       log.push(`Feat : ${ch.feat}`);
+      if (ch.feat === 'Tough' && !avaitTough) {
+        const pv = pvBonusAcquisition('Tough', plan.totalAfter);
+        c.pvMax = (parseInt(c.pvMax) || 0) + pv;
+        c.pvActuel = (parseInt(c.pvActuel) || 0) + pv;
+        log.push(`+${pv} PV max (Tough)`);
+      }
       /* Resilient donne la maitrise des jets de sauvegarde de la caracteristique
          choisie, en plus du +1. C'est ecrit dans sa description, affichee au
          joueur au moment ou il le prend — et ce n'etait jamais applique. */
@@ -14211,6 +14262,10 @@ ${car} characters of notes.
               desc: (typeof ORIGIN_FEATS !== 'undefined' && ORIGIN_FEATS[bg.feat]) || '',
               _open: false,
             });
+            /* Robuste comme don d'origine : +2 au niveau 1. Les PV etaient deja
+               calcules plus haut, sans lui. */
+            const pv = pvBonusAcquisition(bg.feat, 1);
+            if (pv) { c.pvMax = (parseInt(c.pvMax) || 0) + pv; c.pvActuel = c.pvMax; }
           }
         }
       }
@@ -14442,6 +14497,7 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
     const detailHp = () => {
       const base = `${plan.hitDie} ${plan.conMod < 0 ? '−' : '+'} <strong>${Math.abs(plan.conMod)}</strong> CON`
         + (plan.speciesHp ? ` + <strong>${plan.speciesHp}</strong> species` : '')
+        + (plan.featHp ? ` + <strong>${plan.featHp}</strong> feats & features` : '')
         + ` — between ${plan.minHp} and ${plan.maxHp} HP.`;
       /* Hors bornes : on le signale, on ne l'interdit pas. Un MJ qui accorde un
          forfait a le droit, et le refuser obligerait a corriger la fiche apres
@@ -14516,9 +14572,13 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
       /* titreUA : la liste des dons epiques melange le PHB et Arcana Unleashed,
          l'infobulle dit lequel. Sans elle, rien ne distingue un don du livre de
          base d'un don d'un supplement que la table n'utilise peut-etre pas. */
+      /* Les dons d'origine aussi : « another feat of your choice for which you
+         qualify », et ils n'ont pas de prerequis. */
+      const generaux = donsDisponibles(plan.totalAfter).filter(f => f !== 'Ability Score Improvement');
+      const origines = Object.keys(typeof ORIGIN_FEATS !== 'undefined' ? ORIGIN_FEATS : {});
       $('lvlup-feat').innerHTML = '<option value="">— Choose a feat —</option>'
-        + donsDisponibles(plan.totalAfter).filter(f => f !== 'Ability Score Improvement')
-            .map(f => `<option${titreUA(f)}>${esc(f)}</option>`).join('');
+        + `<optgroup label="General feats">${generaux.map(f => `<option${titreUA(f)}>${esc(f)}</option>`).join('')}</optgroup>`
+        + `<optgroup label="Origin feats">${origines.map(f => `<option${titreUA(f)}>${esc(f)}</option>`).join('')}</optgroup>`;
       syncAsiNote();
     }
 
@@ -14575,7 +14635,7 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
 
   // Description du don + caractéristique associée
   $('lvlup-feat').addEventListener('change', () => {
-    const f = GENERAL_FEATS[$('lvlup-feat').value];
+    const f = ficheDon($('lvlup-feat').value);
     const wrap = $('lvlup-feat-abil-wrap');
     if (!f) { $('lvlup-feat-desc').innerHTML = ''; wrap.style.display = 'none'; return; }
     $('lvlup-feat-desc').innerHTML =

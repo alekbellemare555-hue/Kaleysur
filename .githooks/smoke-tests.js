@@ -106,6 +106,9 @@ function ok(cond, label) {
     extract(J, 'function cantripsAt(className, level)'),
     extract(J, 'function expertiseAt(className, level)'),
     extract(J, 'function topSlotLevel(slots)'),
+    extract(J, 'function aLeDon(c, nom)'),
+    extract(J, 'function pvBonusParNiveau(c, classeMontee, sousClasse)'),
+    extract(J, 'function pvBonusAcquisition(nom, niveauPerso, niveauClasse)'),
     extract(J, 'function planLevelUp(c, className, opts)'),
     extract(J, 'function applyLevelUp(c, plan, choices)'),
     extract(J, 'function applyStartingGear(c, className, items)'),
@@ -281,7 +284,7 @@ function ok(cond, label) {
           STARTING_SPELLS, LANGUAGES, TOOL_CHOICES, MULTICLASS_PREREQ, STARTING_ARMOR,
           FEATURE_CHOICES, estUA, nomUA, sourceUA, titreUA, STARTING_WEAPONS,
           CANTRIPS_KNOWN, CLASS_RESOURCES, infoUA, UA_SUBCLASSES,
-          SUBCLASS_RENOMMEES, SOURCE_LIVRE, livreSource, donsDisponibles,
+          SUBCLASS_RENOMMEES, SOURCE_LIVRE, livreSource, donsDisponibles, ficheDon,
           /* typeLanceur n'est pas repris ici : les declarations de fonction
              d'un eval direct fuient deja dans cette portee, et le redeclarer en
              const provoquerait un conflit de nom au chargement. */
@@ -291,7 +294,7 @@ function ok(cond, label) {
       + ' STARTING_SPELLS, LANGUAGES, TOOL_CHOICES, MULTICLASS_PREREQ, STARTING_ARMOR,'
       + ' FEATURE_CHOICES, estUA, nomUA, sourceUA, titreUA, STARTING_WEAPONS,'
       + ' CANTRIPS_KNOWN, CLASS_RESOURCES, infoUA, UA_SUBCLASSES,'
-      + ' SUBCLASS_RENOMMEES, SOURCE_LIVRE, livreSource, donsDisponibles,'
+      + ' SUBCLASS_RENOMMEES, SOURCE_LIVRE, livreSource, donsDisponibles, ficheDon,'
       + ' LANCEURS,'
       + ' SPELL_PREP_STYLE };')();
   /* L'invariant qui empeche la divergence de revenir : une classe ne peut pas
@@ -1589,6 +1592,78 @@ function ok(cond, label) {
     ok(/ddbPointsDeVie\(d, stats, level, modsDDB\)/.test(p), 'parseur : les PV passent par ddbPointsDeVie');
     ok(!/d\.modifiers\?\.item/.test(p), 'parseur : plus de modifiers.item, qui donne tous les objets');
     ok(/pvMax: maxHP, pvActuel: currentHP/.test(p), 'parseur : la fiche recoit les PV calcules');
+  }
+
+
+  /* ── Dons d'origine a l'ASI, Robuste et Resilience draconique ── */
+  {
+    /* « You gain the Ability Score Improvement feat or another feat of your
+       choice for which you qualify. » Les dons d origine n ont pas de
+       prerequis : ils sont valides a chaque ASI. Le site les refusait. */
+    eq(ficheDon('Lucky').origine, true, 'ficheDon : Lucky est un don d origine');
+    eq(ficheDon('Lucky').asi, false, 'ficheDon : un don d origine ne donne pas de +1');
+    ok(/Luck Points/.test(ficheDon('Lucky').desc), 'ficheDon : la description d un don d origine');
+    eq(ficheDon('Resilient').origine, false, 'ficheDon : Resilient est un don general');
+    eq(ficheDon('Resilient').asi, true, 'ficheDon : un don general garde son +1');
+    eq(ficheDon('Boon of Truesight').epic, true, 'ficheDon : un don epique garde son drapeau');
+    eq(ficheDon('Don imaginaire'), null, 'ficheDon : un nom inconnu');
+    eq(ficheDon(''), null, 'ficheDon : un nom vide');
+
+    /* Robuste : +2 par niveau ; Resilience draconique : +1 par niveau
+       d Ensorceleur, une fois acquise. Regles relues sur dnd2024.wikidot.com. */
+    const DRACO = Object.keys(SUBCLASS_DATA.Sorcerer).find(k => /Draconic/.test(k));
+    const dur = { customFeatures: [{ name: 'Tough' }] };
+    eq(pvBonusParNiveau(dur, 'Fighter', ''), 2, 'Robuste : +2 par niveau');
+    eq(pvBonusParNiveau({}, 'Sorcerer', DRACO), 1, 'Resilience draconique : +1 par niveau d Ensorceleur');
+    eq(pvBonusParNiveau({}, 'Rogue', DRACO), 0, 'Resilience draconique : rien quand on monte une autre classe');
+    eq(pvBonusParNiveau(dur, 'Sorcerer', DRACO), 3, 'les deux se cumulent');
+    eq(pvBonusParNiveau({}, 'Fighter', ''), 0, 'sans rien : 0');
+    eq(pvBonusAcquisition('Tough', 4), 8, 'Robuste pris au niveau 4 : deux fois le niveau');
+    eq(pvBonusAcquisition('Tough', 1), 2, 'Robuste a la creation : +2');
+    eq(pvBonusAcquisition(DRACO, 3, 3), 3, 'Resilience draconique acquise au niveau 3 : +3');
+    eq(pvBonusAcquisition(DRACO, 7, 5), 5, 'acquise en retard au niveau 5 : rattrape a +5');
+    eq(pvBonusAcquisition('Lucky', 4), 0, 'un autre don : rien');
+
+    /* La montee : Robuste deja la, les PV proposes l incluent. */
+    const guerrier = (extra) => hero(Object.assign({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:3,customSousClasse:''}], con:14 }, extra || {}));
+    const sansDon = planLevelUp(guerrier(), 'Fighter');
+    const avecDon = planLevelUp(guerrier({ customFeatures:[{ name:'Tough' }] }), 'Fighter');
+    eq(avecDon.featHp, 2, 'montee : Robuste compte dans le plan');
+    eq(avecDon.avgHp - sansDon.avgHp, 2, 'montee : la moyenne proposee inclut les +2');
+    eq(avecDon.maxHp - sansDon.maxHp, 2, 'montee : le maximum aussi');
+
+    /* Prendre Robuste a l ASI du niveau 4 : +8 d un coup, en plus du niveau. */
+    const g = guerrier();
+    const avant = g.pvMax;
+    const r = applyLevelUp(g, planLevelUp(g, 'Fighter'), { hp: 7, asiMode:'feat', feat:'Tough' });
+    ok(r.ok, 'Robuste a l ASI : accepte');
+    eq(g.pvMax - avant, 7 + 8, 'Robuste a l ASI : PV du niveau + deux fois le niveau 4');
+    /* (r.log || []) : un refus ne renvoie pas de journal, et le test planterait. */
+    ok((r.log || []).some(x => /\+8 PV max \(Tough\)/.test(x)), 'Robuste : le journal le dit');
+
+    /* Un don d origine sans effet chiffre : accepte, inscrit, sans +1. */
+    const l = guerrier();
+    const forAvant = l.for;
+    const rl = applyLevelUp(l, planLevelUp(l, 'Fighter'), { hp: 7, asiMode:'feat', feat:'Lucky', featAbil:'for' });
+    ok(rl.ok, 'Lucky a l ASI : accepte (« Unknown feat » avant)');
+    ok((l.customFeatures || []).some(f => f.name === 'Lucky' && /Luck Points/.test(f.desc)), 'Lucky : inscrit avec sa description');
+    eq(l.for, forAvant, 'Lucky : pas de +1, meme si une caracteristique est transmise');
+
+    /* La Resilience draconique acquise au niveau 3 : +3 d un coup. */
+    const e = hero({ classes:[{classe:'Sorcerer',sousClasse:'',niveau:2,customSousClasse:''}], con:12 });
+    const eAvant = e.pvMax;
+    const re = applyLevelUp(e, planLevelUp(e, 'Sorcerer', { subclass: DRACO }), { hp: 5, subclass: DRACO });
+    ok(re.ok, 'Ensorceleur 3 draconique : accepte');
+    eq(e.pvMax - eAvant, 5 + 3, 'Resilience draconique : +3 a l acquisition');
+    /* Puis +1 a chaque niveau d Ensorceleur. */
+    eq(planLevelUp(e, 'Sorcerer').featHp, 1, 'Ensorceleur 4 draconique : +1 dans le plan');
+
+    /* Les selecteurs proposent les dons d origine. */
+    ok(/<optgroup label="Origin feats">/.test(J.slice(J.indexOf("$('lvlup-feat').innerHTML"), J.indexOf("$('lvlup-feat').innerHTML") + 600)),
+       'montee : un groupe « Origin feats »');
+    ok(/Origin feats/.test(J.slice(J.indexOf('const featOpts ='), J.indexOf('const featOpts =') + 500)), 'onglet plan : aussi');
+    /* Robuste comme don d origine a la creation : +2. */
+    ok(/const pv = pvBonusAcquisition\(bg\.feat, 1\);/.test(J), 'creation : Robuste d historique donne +2');
   }
 
   /* ── PV saisis a la main a la montee de niveau ── */
