@@ -6507,7 +6507,10 @@ function renderHero() {
   if (hdEl) {
     const ndv = parseInt(c.nbDeVie) || 1;
     const dv  = c.deVie || '1d8';
-    hdEl.innerHTML = `<span style="font-size:15px;">${ndv}</span><span style="color:var(--text-label);font-size:11px;">/${ndv} ${dv}</span>`;
+    /* Les des RESTANTS sur le total : le bandeau affichait toujours N/N, sans
+       jamais lire les des depenses aux repos courts. */
+    const restants = Math.max(0, ndv - (parseInt(c.nbDeVieUtilises) || 0));
+    hdEl.innerHTML = `<span style="font-size:15px;">${restants}</span><span style="color:var(--text-label);font-size:11px;">/${ndv} ${esc(dv)}</span>`;
   }
 
   // Death save pips
@@ -8306,11 +8309,12 @@ function doLongRest() {
   (c.resources || []).forEach(r => { r.used = 0; });
   // Reset sorts utilisés
   c.emplacementsUtilises = {1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
-  // Dés de vie : PHB 2024 — on récupère la moitié du total (arrondi bas, min 1), pas tous
+  /* Des de vie : TOUS reviennent. « Vous recuperez tous les points de vie
+     perdus et tous les des de vie depenses » (glossaire 2024, Repos long). La
+     moitie etait la regle de 2014. */
   const totalHd  = parseInt(c.nbDeVie) || getTotalLevel(c) || 1;
   const spentHd  = parseInt(c.nbDeVieUtilises) || 0;
-  const regained = Math.max(1, Math.floor(totalHd / 2));
-  c.nbDeVieUtilises = Math.max(0, spentHd - regained);
+  c.nbDeVieUtilises = 0;
   // PV max
   c.pvActuel = c.pvMax || 0;
   c.pvTemp = 0;
@@ -8323,8 +8327,8 @@ function doLongRest() {
   // Exhaustion -1 level
   if (c.exhaustion > 0) c.exhaustion = c.exhaustion - 1;
   renderAll(); triggerSave();
-  const hdLeft = totalHd - c.nbDeVieUtilises;
-  showToast(`Long Rest — full HP, spells and resources restored · hit dice ${hdLeft}/${totalHd} (+${Math.min(regained, spentHd)})`);
+  showToast(`Long Rest — full HP, spells, resources and hit dice restored · hit dice ${totalHd}/${totalHd}`
+            + (spentHd ? ` (+${spentHd})` : ''));
 }
 function showToast(msg, type) {
   let t = document.getElementById('rest-toast');
@@ -15048,7 +15052,10 @@ document.getElementById('death-save-roll-btn')?.addEventListener('click', e => {
   const c = C();
   let succ = parseInt(c.mortSucces) || 0;
   let fail = parseInt(c.mortEchecs) || 0;
-  if      (roll === 20) { succ = Math.min(3, succ + 2); }
+  /* Regle 2024 : un 20 naturel rend 1 point de vie, et le personnage n'est plus
+     mourant. La fiche ajoutait deux succes et le laissait a 0 PV. applyHpChange
+     remet aussi les jets de mort a zero, comme tout soin recu a 0 PV. */
+  if      (roll === 20) { if ((parseInt(c.pvActuel) || 0) <= 0) applyHpChange(1); succ = 0; fail = 0; }
   else if (roll === 1)  { fail = Math.min(3, fail + 2); }
   else if (roll >= 10)  { succ = Math.min(3, succ + 1); }
   else                  { fail = Math.min(3, fail + 1); }
@@ -15061,11 +15068,13 @@ document.getElementById('death-save-roll-btn')?.addEventListener('click', e => {
     });
   });
   renderHero(); triggerSave();
-  const msg = roll === 20 ? '✦ Critical! +2 successes'
-            : roll === 1  ? '✕ Disaster! +2 failures'
+  const msg = roll === 20 ? '✦ Natural 20 — you regain 1 HP'
+            : roll === 1  ? '✕ Natural 1 — two failures'
             : roll >= 10  ? '✓ Success' : '✗ Failure';
-  showDiceRoll('Jet de Mort', 0, 'normal');
-  document.getElementById('dice-total').textContent = msg;
+  /* Le de affiche est celui qui compte. showDiceRoll tirait un SECOND d20,
+     independant de celui-ci — on pouvait voir « 1 » avec « ✓ Success », et le
+     partage publiait ce faux nombre — et consommait l'Inspiration au passage. */
+  showDamageRoll('Death Save', { total: roll, detail: msg }, roll === 20 ? ' nat20' : roll === 1 ? ' nat1' : '');
 });
 
 /* Une modal ouverte doit absorber les raccourcis. Le test du focus ne suffit

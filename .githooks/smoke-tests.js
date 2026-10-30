@@ -1381,6 +1381,28 @@ function ok(cond, label) {
     ok(/initiativeManuelle: initiative !== dexMod/.test(J), 'import D&D Beyond : l initiative importee est gardee');
   }
 
+  /* ── Jet contre la mort et repos long : les regles 2024 ── */
+  {
+    /* « Si vous obtenez un 20 sur le d20, vous recuperez 1 point de vie. » La
+       fiche ajoutait deux succes et laissait le personnage a 0 PV. Rejoue dans
+       la page, des forces : 20 → 1 PV ; 1 → deux echecs ; 12 → un succes. */
+    const m = J.slice(J.indexOf("getElementById('death-save-roll-btn')"), J.indexOf("getElementById('death-save-roll-btn')") + 2400);
+    ok(/if\s+\(roll === 20\) \{ if \(\(parseInt\(c\.pvActuel\) \|\| 0\) <= 0\) applyHpChange\(1\); succ = 0; fail = 0; \}/.test(m),
+       'jet contre la mort : un 20 rend 1 PV');
+    ok(!/succ \+ 2/.test(m), 'jet contre la mort : plus de « +2 succes »');
+    /* Le de affiche est celui qui compte : plus de second d20 tire a part. */
+    ok(/showDamageRoll\('Death Save', \{ total: roll, detail: msg \}/.test(m), 'jet contre la mort : le de affiche est celui qui compte');
+    ok(!/showDiceRoll\(/.test(m), 'jet contre la mort : plus de second de, ni d Inspiration consommee');
+
+    /* « Vous recuperez ... tous les des de vie depenses. » La moitie est 2014. */
+    const r = J.slice(J.indexOf('function doLongRest()'), J.indexOf('function showToast('));
+    ok(/c\.nbDeVieUtilises = 0;/.test(r), 'repos long : tous les des de vie reviennent');
+    ok(!/Math\.floor\(totalHd \/ 2\)/.test(r), 'repos long : plus de moitie (regle 2014)');
+    /* Le bandeau montre les des restants, plus N/N en permanence. */
+    const b = J.slice(J.indexOf("getElementById('vb-hero-hd')"), J.indexOf("getElementById('vb-hero-hd')") + 700);
+    ok(/const restants = Math\.max\(0, ndv - \(parseInt\(c\.nbDeVieUtilises\) \|\| 0\)\);/.test(b), 'bandeau : les des restants sur le total');
+  }
+
   /* ── PV saisis a la main a la montee de niveau ── */
   {
     const auNiveau = (hp) => {
