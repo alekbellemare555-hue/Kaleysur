@@ -97,6 +97,9 @@ function ok(cond, label) {
     extract(J, 'function effacerAttente(u)'),
     extract(J, 'function choisirAuDemarrage(local, distant, attente)'),
     extract(J, 'function ddConcentration(degats)'),
+    extract(J, 'function ddbModsActifs(d)'),
+    extract(J, 'function ddbCaracteristiques(d, mods)'),
+    extract(J, 'function ddbPointsDeVie(d, stats, niveauTotal, mods)'),
     extract(J, 'function migrerNomsAttaques(c)'),
     extract(J, 'function setFeatureChoice(c, featureName, className, selection)'),
     extract(J, 'function pendingFeatureChoices(c)'),
@@ -1475,6 +1478,117 @@ function ok(cond, label) {
        qui est connecte : sinon la vue afficherait les mods du visiteur. */
     const bc = J.slice(J.indexOf('function bonusCompetence(c, key, attr)'), J.indexOf('function bonusInitiative(c)'));
     ok(!/abilScore\(|getMod\(/.test(bc), 'les calculs partages ne lisent pas le personnage connecte');
+  }
+
+
+  /* ── Import D&D Beyond : caracteristiques et PV max ── */
+  {
+    /* Le parseur ne lisait que stats / bonusStats / overrideStats, et prenait
+       baseHitPoints — qui n inclut pas la CON — comme PV max. Le calcul suit
+       maintenant ddb-importer (Foundry VTT). Ces echantillons sont construits
+       d apres sa structure : aucun vrai export n etait disponible. */
+    const bonus = (sub, id, value, extra) => Object.assign({ type:'bonus', subType: sub, entityId: id, value, restriction:'' }, extra || {});
+
+    /* 1. Guerrier 5, regles 2024 : l historique accorde l augmentation (don
+          « Ability Scores ») ; l espece, ancienne, ne doit donc pas compter. */
+    const guerrier = {
+      stats: [{id:1,value:15},{id:2,value:12},{id:3,value:14},{id:4,value:8},{id:5,value:10},{id:6,value:13}],
+      bonusStats: [], overrideStats: [],
+      background: { definition: { grantedFeats: [{ name: 'Ability Scores', featIds: [7001] }] } },
+      modifiers: {
+        feat: [bonus('strength-score', 1, 2), bonus('constitution-score', 3, 1), bonus('strength-score', 1, 1)],
+        race: [bonus('charisma-score', 6, 2)],
+        class: [
+          bonus('strength-score', 1, 4, { componentId: 120 }),   // capacite du niveau 20 : pas atteinte
+        ],
+        background: [], item: [{ type:'bonus', subType:'speed', value: 30 }],
+      },
+      classes: [{ definition: { name: 'Fighter' }, level: 5,
+                  classFeatures: [{ definition: { id: 101, requiredLevel: 1 } }, { definition: { id: 120, requiredLevel: 20 } }] }],
+      inventory: [
+        /* Bottes de vitesse au fond du sac : ne doivent rien donner. */
+        { equipped: false, isAttuned: false, definition: { canEquip: true, canAttune: true,
+          grantedModifiers: [{ type:'bonus', subType:'speed', value: 30 }] } },
+      ],
+      baseHitPoints: 34, bonusHitPoints: 0, overrideHitPoints: null, removedHitPoints: 6,
+    };
+    const mG = ddbModsActifs(guerrier);
+    const cG = ddbCaracteristiques(guerrier, mG);
+    eq(cG.for, 18, 'D&D Beyond : FOR 15 + 2 (historique) + 1 (ASI) = 18');
+    eq(cG.con, 15, 'D&D Beyond : CON 14 + 1 = 15');
+    eq(cG.cha, 13, 'D&D Beyond : l espece ancienne ne double pas l augmentation de l historique 2024');
+    eq(mG.classe.length, 0, 'D&D Beyond : capacite de classe pas encore atteinte ecartee');
+    eq(mG.objets.length, 0, 'D&D Beyond : objet ni equipe ni harmonise sans effet');
+    const pG = ddbPointsDeVie(guerrier, cG, 5, mG);
+    eq(pG.pvMax, 44, 'D&D Beyond : PV max 34 + CON +2 x 5 = 44');
+    eq(pG.pvActuel, 38, 'D&D Beyond : PV actuels = max - degats subis');
+
+    /* 2. Personnage 2014 : l espece donne l augmentation ; don Robuste (+2 par
+          niveau total) ; Resilience draconique (+1 par niveau d Ensorceleur). */
+    const multi = {
+      stats: [{id:1,value:8},{id:2,value:15},{id:3,value:14},{id:4,value:10},{id:5,value:10},{id:6,value:16}],
+      bonusStats: [], overrideStats: [],
+      background: { definition: { grantedFeats: [] } },
+      modifiers: {
+        race: [bonus('dexterity-score', 2, 2)],
+        feat: [{ type:'bonus', subType:'hit-points-per-level', value: 2, restriction:'', componentId: 999 }],
+        class: [{ type:'bonus', subType:'hit-points-per-level', value: 1, restriction:'', componentId: 301 }],
+        background: [],
+      },
+      classes: [
+        { definition: { name: 'Rogue' }, level: 2, classFeatures: [{ definition: { id: 201, requiredLevel: 1 } }] },
+        { definition: { name: 'Sorcerer' }, level: 3, classFeatures: [{ definition: { id: 301, requiredLevel: 3 } }] },
+      ],
+      inventory: [], baseHitPoints: 28, removedHitPoints: 0,
+    };
+    const mM = ddbModsActifs(multi);
+    const cM = ddbCaracteristiques(multi, mM);
+    eq(cM.dex, 17, 'D&D Beyond 2014 : l espece donne bien +2 DEX');
+    const pM = ddbPointsDeVie(multi, cM, 5, mM);
+    /* 28 + CON +2 x 5 + Robuste 2 x 5 + Resilience 1 x 3 (niveau d Ensorceleur) */
+    eq(pM.pvMax, 51, 'D&D Beyond : Robuste par niveau total, Resilience par niveau de sa classe');
+
+    /* 3. Valeurs forcees sur D&D Beyond. */
+    const force = { ...guerrier, overrideStats: [{ id: 1, value: 12 }], overrideHitPoints: 50, bonusHitPoints: 5, removedHitPoints: 10 };
+    const mF = ddbModsActifs(force);
+    const cF = ddbCaracteristiques(force, mF);
+    eq(cF.for, 12, 'D&D Beyond : une valeur forcee remplace tout');
+    const pF = ddbPointsDeVie(force, cF, 5, mF);
+    eq(pF.pvMax, 55, 'D&D Beyond : PV forces + modificateur de PV max');
+    eq(pF.pvActuel, 45, 'D&D Beyond : PV actuels sur le max force');
+
+    /* 4. Gantelets de puissance d ogre : FOR 19 s ils sont harmonises ET portes. */
+    const gantelets = (harmonise) => ({
+      stats: [{id:1,value:12},{id:2,value:10},{id:3,value:10},{id:4,value:10},{id:5,value:10},{id:6,value:10}],
+      modifiers: {}, classes: [], baseHitPoints: 10,
+      inventory: [{ equipped: true, isAttuned: harmonise, definition: { canEquip: true, canAttune: true,
+        grantedModifiers: [{ type:'set', subType:'strength-score', value: 19, restriction:'' }] } }],
+    });
+    eq(ddbCaracteristiques(gantelets(true),  ddbModsActifs(gantelets(true))).for, 19, 'D&D Beyond : gantelets harmonises, FOR 19');
+    eq(ddbCaracteristiques(gantelets(false), ddbModsActifs(gantelets(false))).for, 12, 'D&D Beyond : gantelets non harmonises, sans effet');
+
+    /* 5. Plafond de 20, et bonusStats qui passe outre. */
+    const haut = {
+      stats: [{id:1,value:19},{id:2,value:10},{id:3,value:10},{id:4,value:10},{id:5,value:10},{id:6,value:10}],
+      bonusStats: [{ id: 2, value: 1 }],
+      modifiers: { feat: [bonus('strength-score', 1, 2), bonus('dexterity-score', 2, 10)] },
+      classes: [], inventory: [], baseHitPoints: 10,
+    };
+    const cH = ddbCaracteristiques(haut, ddbModsActifs(haut));
+    eq(cH.for, 20, 'D&D Beyond : 19 + 2 plafonne a 20');
+    eq(cH.dex, 21, 'D&D Beyond : bonusStats s ajoute au-dela du plafond (20 + 1)');
+
+    /* 6. Fiche quasi vide : rien ne plante, tout vaut 10. */
+    const vide = ddbCaracteristiques({}, ddbModsActifs({}));
+    eq(vide, { for:10, dex:10, con:10, int:10, sag:10, cha:10 }, 'D&D Beyond : fiche vide, caracteristiques a 10');
+    eq(ddbPointsDeVie({}, vide, 1, ddbModsActifs({})).pvMax, 1, 'D&D Beyond : fiche vide, au moins 1 PV');
+
+    /* Le parseur s en sert, et ne lit plus modifiers.item. */
+    const p = J.slice(J.indexOf('function parseDnDBeyondJSON(raw)'), J.indexOf('function parseDnDBeyondJSON(raw)') + 8000);
+    ok(/const stats = ddbCaracteristiques\(d, modsDDB\);/.test(p), 'parseur : les caracteristiques passent par ddbCaracteristiques');
+    ok(/ddbPointsDeVie\(d, stats, level, modsDDB\)/.test(p), 'parseur : les PV passent par ddbPointsDeVie');
+    ok(!/d\.modifiers\?\.item/.test(p), 'parseur : plus de modifiers.item, qui donne tous les objets');
+    ok(/pvMax: maxHP, pvActuel: currentHP/.test(p), 'parseur : la fiche recoit les PV calcules');
   }
 
   /* ── PV saisis a la main a la montee de niveau ── */

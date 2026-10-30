@@ -7819,6 +7819,113 @@ function parseRoll20JSON(raw) {
   };
 }
 
+/** Modificateurs D&D Beyond reellement actifs, tries par origine.
+
+    Objets : les grantedModifiers de l'inventaire, seulement pour un objet
+    equipe (et harmonise s'il le demande) — ou qui agit sans etre ni equipe ni
+    harmonise. modifiers.item, lu jusqu'ici, les donne TOUS.
+    Classe : sans ceux des capacites d'un niveau pas encore atteint.
+    Meme filtre que ddb-importer (DDBModifiers.getActiveItemModifiers). */
+function ddbModsActifs(d) {
+  const objets = (d.inventory || []).filter(it => {
+    const def = it.definition || {};
+    return (!def.canEquip && !def.canAttune && !def.isConsumable)
+        || (it.isAttuned && it.equipped)
+        || (it.isAttuned && !def.canEquip)
+        || (!def.canAttune && it.equipped);
+  }).flatMap(it => it.definition?.grantedModifiers || []);
+  const nonAtteintes = new Set();
+  (d.classes || []).forEach(cl => {
+    const niv = cl.level || 1;
+    (cl.classFeatures || []).forEach(f => {
+      const req = f.definition?.requiredLevel;
+      if (req != null && req > niv && f.definition?.id != null) nonAtteintes.add(f.definition.id);
+    });
+  });
+  return {
+    classe:     (d.modifiers?.class || []).filter(m => !nonAtteintes.has(m.componentId)),
+    race:       d.modifiers?.race || [],
+    historique: d.modifiers?.background || [],
+    don:        d.modifiers?.feat || [],
+    objets,
+  };
+}
+
+/** Caracteristiques finales d'un personnage D&D Beyond.
+
+    Base + bonus « *-score » (classe, historique, objets actifs, dons — et
+    l'espece seulement si l'historique n'accorde pas lui-meme l'augmentation,
+    comme en 2024), plafonnes a 20 sauf mention ; puis bonusStats, qui passe
+    outre le plafond ; un « set » d'objet (Gantelets de puissance d'ogre) releve
+    la valeur si elle est plus basse ; overrideStats remplace tout.
+    Meme calcul que ddb-importer (abilities.ts). */
+function ddbCaracteristiques(d, mods) {
+  const STAT  = { 1:'for', 2:'dex', 3:'con', 4:'int', 5:'sag', 6:'cha' };
+  const LONG  = { 1:'strength', 2:'dexterity', 3:'constitution', 4:'intelligence', 5:'wisdom', 6:'charisma' };
+  const OK    = [null, undefined, '', '+2 to score maximum', '+4 to score maximum', '+2 to maximum score',
+                 '+4 to maximum score', "Can't be an Ability Score you already increased with this trait.",
+                 'That you do not have Saving Throw Proficiency in.'];
+  const PLAFOND = /^(?:Your maximum is now |Maximum of |maximum of )(\d*)/;
+  const histDonneAsi = (d.background?.definition?.grantedFeats || []).some(f => /Ability Score/.test(f.name || ''));
+  const sources = [...mods.classe, ...mods.historique, ...mods.objets, ...mods.don, ...(histDonneAsi ? [] : mods.race)];
+  const tous    = [...mods.classe, ...mods.race, ...mods.historique, ...mods.don, ...mods.objets];
+  const out = {};
+  Object.entries(STAT).forEach(([idTxt, cle]) => {
+    const id = +idTxt, sub = LONG[id] + '-score';
+    const base = (d.stats || []).find(x => x.id === id)?.value || 10;
+    const deType = type => sources.filter(m => m.type === type && m.subType === sub);
+    const bonus = deType('bonus')
+      .filter(m => m.entityId === id && Number.isInteger(m.value) && OK.includes(m.restriction))
+      .reduce((t, m) => t + m.value, 0);
+    const plafondMax = 20 + tous
+      .filter(m => m.type === 'bonus' && m.subType === 'ability-score-maximum' && m.statId === id && [null, undefined, ''].includes(m.restriction))
+      .reduce((t, m) => t + (parseInt(m.value) || 0), 0);
+    const plafonne = deType('bonus')
+      .filter(m => m.entityId === id && m.restriction && Number.isInteger(m.value) && PLAFOND.test(m.restriction))
+      .reduce((acc, m) => ({ value: acc.value + m.value, cap: Math.max(acc.cap, parseInt(PLAFOND.exec(m.restriction)[1]) || 20) }),
+              { value: 0, cap: plafondMax });
+    const fixe = Math.max(0, ...deType('set')
+      .filter(m => Number.isInteger(m.value) && [null, undefined, '', 'if not already higher'].includes(m.restriction))
+      .map(m => m.value));
+    const bonusStat = (d.bonusStats || []).find(x => x.id === id)?.value || 0;
+    const remplace  = (d.overrideStats || []).find(x => x.id === id)?.value || 0;
+    const ajuste = Math.min(plafonne.cap, base + bonus + plafonne.value) + bonusStat;
+    out[cle] = remplace || (ajuste > fixe ? ajuste : fixe);
+  });
+  return out;
+}
+
+/** PV d'un personnage D&D Beyond.
+
+    baseHitPoints n'inclut PAS la Constitution : max = base + mod CON x
+    niveaux + bonus par niveau (Robuste, Resilience draconique : niveau de la
+    classe si la capacite en vient, sinon niveau total) + bonus fixes ; ou
+    overrideHitPoints s'il est pose. Le modificateur de PV max saisi sur D&D
+    Beyond (bonusHitPoints) s'ajoute. Meme calcul que ddb-importer (hp.ts). */
+function ddbPointsDeVie(d, stats, niveauTotal, mods) {
+  const tous = [...mods.classe, ...mods.race, ...mods.historique, ...mods.don, ...mods.objets];
+  const sansRestriction = m => [null, undefined, ''].includes(m.restriction);
+  const niveauDe = id => {
+    const cl = (d.classes || []).find(c => (c.classFeatures || []).some(f => f.definition?.id === id));
+    return cl ? (cl.level || 1) : niveauTotal;
+  };
+  const parNiveau = tous
+    .filter(m => m.type === 'bonus' && m.subType === 'hit-points-per-level' && sansRestriction(m))
+    .reduce((t, m) => t + niveauDe(m.componentId) * (parseInt(m.value) || 0), 0);
+  /* Les « hit-points » sans valeur mais avec un de sont des soins en plus
+     (« regagnez 1d4 de plus »), pas un maximum. */
+  const fixes = tous
+    .filter(m => m.type === 'bonus' && m.subType === 'hit-points' && sansRestriction(m)
+              && !(m.dice && (m.value === null || m.value === undefined)))
+    .map(m => Number(m.value ?? m.fixedValue))
+    .filter(Number.isFinite)
+    .reduce((t, v) => t + v, 0);
+  const conMod = Math.floor(((stats.con || 10) - 10) / 2);
+  const calcule = (d.baseHitPoints || 0) + conMod * niveauTotal + parNiveau + fixes;
+  const pvMax = Math.max(1, (d.overrideHitPoints || calcule) + (d.bonusHitPoints || 0));
+  return { pvMax, pvActuel: Math.max(0, pvMax - (d.removedHitPoints || 0)) };
+}
+
 function parseDnDBeyondJSON(raw) {
   const d = raw.data || raw;
   if (!d.name && !d.classes) throw new Error("JSON format not recognized — make sure you use the /character/ID/json URL");
@@ -7848,11 +7955,10 @@ function parseDnDBeyondJSON(raw) {
   const stripHtml = s => (s||'').replace(/<[^>]*>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/\s+/g,' ').trim().substring(0,600);
 
   // ── Ability scores ──────────────────────────────────────────────
-  const stats = {};
-  Object.values(STAT_MAP).forEach(k => stats[k] = 10);
-  (d.stats||[]).forEach(s => { if (STAT_MAP[s.id]) stats[STAT_MAP[s.id]] = s.value||10; });
-  (d.bonusStats||[]).forEach(s => { if (STAT_MAP[s.id] && s.value) stats[STAT_MAP[s.id]] += s.value; });
-  (d.overrideStats||[]).forEach(s => { if (STAT_MAP[s.id] && s.value!=null) stats[STAT_MAP[s.id]] = s.value; });
+  /* Avec les bonus d'espece, d'historique, d'ASI, de dons et d'objets : lire
+     seulement stats/bonusStats/overrideStats les perdait tous. */
+  const modsDDB = ddbModsActifs(d);
+  const stats = ddbCaracteristiques(d, modsDDB);
 
   // ── Classes (multiclass support) ────────────────────────────────
   const classesArr = (d.classes||[]).map(cl => ({
@@ -7867,15 +7973,15 @@ function parseDnDBeyondJSON(raw) {
   const level     = classesArr.reduce((s,c) => s + c.niveau, 0) || 1;
 
   // ── HP ──────────────────────────────────────────────────────────
-  const baseHP    = d.baseHitPoints || 0;
-  const currentHP = Math.max(0, baseHP - (d.removedHitPoints||0));
+  /* baseHitPoints n'inclut pas la Constitution : les PV max importes etaient
+     ceux d'un personnage a CON 10. */
+  const { pvMax: maxHP, pvActuel: currentHP } = ddbPointsDeVie(d, stats, level, modsDDB);
   const tempHP    = d.temporaryHitPoints || 0;
 
   // ── All modifiers (class + race + background + feat + item) ─────
+  /* Les objets ACTIFS seulement, et pas les capacites de classe non atteintes. */
   const allMods = [
-    ...(d.modifiers?.class||[]), ...(d.modifiers?.race||[]),
-    ...(d.modifiers?.background||[]), ...(d.modifiers?.feat||[]),
-    ...(d.modifiers?.item||[]),
+    ...modsDDB.classe, ...modsDDB.race, ...modsDDB.historique, ...modsDDB.don, ...modsDDB.objets,
   ];
 
   // Skill & save proficiencies
@@ -8090,7 +8196,7 @@ function parseDnDBeyondJSON(raw) {
     ...stats, ...saveProfs, ...skillProfs,
     ca: ac, initiative: initiative, vitesse: speed,
     initiativeManuelle: initiative !== dexMod, // Alert & co : ne pas ramener a la seule DEX
-    pvMax: baseHP, pvActuel: currentHP, pvTemp: tempHP,
+    pvMax: maxHP, pvActuel: currentHP, pvTemp: tempHP,
     deVie: deVieStr, nbDeVie: level, nbDeVieUtilises:0,
     mortSucces:0, mortEchecs:0,
     attaques,
@@ -8107,7 +8213,7 @@ function parseDnDBeyondJSON(raw) {
 
   return { character, inventory, currency,
     _meta: { name:d.name, classe:className, subClass, level, ac, initiative, speed,
-             pvMax: baseHP, deVie: deVieStr,
+             pvMax: maxHP, deVie: deVieStr,
              spells:spells.length, items:inventory.length,
              skills:Object.keys(skillProfs).length, saves:Object.keys(saveProfs).length,
              attacks:attaques.length, features:customFeatures.length,
