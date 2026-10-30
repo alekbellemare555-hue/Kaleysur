@@ -105,6 +105,8 @@ function ok(cond, label) {
     extract(J, 'function pendingFeatureChoices(c)'),
     extract(J, 'function cantripsAt(className, level)'),
     extract(J, 'function expertiseAt(className, level)'),
+    extract(J, 'function bonusHistorique(abilities, mode, b2, b1)'),
+    extract(J, 'function appliquerExpertise(c, cles, n)'),
     extract(J, 'function topSlotLevel(slots)'),
     extract(J, 'function aLeDon(c, nom)'),
     extract(J, 'function pvBonusParNiveau(c, classeMontee, sousClasse)'),
@@ -751,7 +753,7 @@ function ok(cond, label) {
     /* Trois endroits appellent abilBox.querySelectorAll — on visait par erreur
        celui qui VIDE les cases. On ancre donc sur la ligne qui calcule le
        bonus, qui n'existe que dans le bloc voulu. */
-    const debutAbil = J.indexOf("const bonus = (bgOk && k === b2 ? 2 : 0)");
+    const debutAbil = J.indexOf("const bonus = bgBonus[k] || 0;");
     const bloc = J.slice(Math.max(0, debutAbil - 400), debutAbil + 400);
     ok(/if \(!s\.value && !bonus\) return/.test(bloc),
        'bonus d\'historique : une case vide ne le fait plus disparaitre');
@@ -1804,6 +1806,49 @@ function ok(cond, label) {
 
     /* La carte d armure propose le mode. */
     ok(/v:'unarmoredDraco'/.test(J), 'carte d armure : le mode Draconic Resilience');
+  }
+
+
+  /* ── Createur : +1/+1/+1 d historique, Expertise du Roublard au niveau 1 ── */
+  {
+    /* « Increase one of these scores by 2 and a different one by 1, or
+       increase all three by 1. » Le createur n offrait que +2/+1. */
+    eq(bonusHistorique(['for','dex','con'], '21', 'for', 'dex'), { for:2, dex:1 }, 'historique : +2 / +1');
+    eq(bonusHistorique(['for','dex','con'], '111'), { for:1, dex:1, con:1 }, 'historique : +1 / +1 / +1 sur les trois');
+    eq(bonusHistorique(['for','dex','con'], '111', 'for', 'for'), { for:1, dex:1, con:1 }, 'historique : en +1/+1/+1 les selecteurs +2/+1 ne comptent pas');
+    eq(bonusHistorique(['for','dex','con'], '21', 'for', 'for'), null, 'historique : +2 et +1 sur la meme, refuse');
+    eq(bonusHistorique(undefined, '21', undefined, undefined), null, 'historique : rien de choisi');
+    /* Chaque historique a bien trois caracteristiques a proposer. */
+    Object.entries(BACKGROUND_DATA).forEach(([n, d]) =>
+      eq(Object.keys(bonusHistorique(d.abilities, '111') || {}).length, 3, n + ' : trois caracteristiques pour le +1/+1/+1'));
+
+    /* Le createur s en sert pour l apercu, la validation et l application. */
+    const wiz = J.slice(J.indexOf('function renderBgBonus()'), J.indexOf('function renderBgBonus()') + 4000);
+    ok(/data-bgb="mode"/.test(wiz) && /value="111"/.test(wiz), 'createur : le choix +1/+1/+1');
+    ok(/bonusHistorique\(d\.abilities, sm\.value/.test(wiz), 'createur : l apercu passe par bonusHistorique');
+    ok(/wizBgOk = !!bonus/.test(wiz), 'createur : la validation aussi');
+    ok(!/wiz-bgb-warn'\)\.textContent\s*=\s*\n?\s*\S*\s*\?\s*ic\(/.test(wiz) && /wiz-bgb-warn'\)\.innerHTML/.test(wiz), 'createur : l avertissement rend l icone (innerHTML)');
+    ok(/const bgBonus = bonusHistorique\(BACKGROUND_DATA\[selBg\.value\]\?\.abilities/.test(J), 'creation : le bonus applique passe par bonusHistorique');
+
+    /* Expertise : sur des competences maitrisees, pas plus que le nombre accorde. */
+    eq(expertiseAt('Rogue', 1), 2, 'Roublard 1 : deux Expertises');
+    eq(expertiseAt('Fighter', 1), 0, 'Guerrier 1 : aucune');
+    const r = { disc:1, acro:1, athl:0, perc:1 };
+    eq(appliquerExpertise(r, ['disc','athl','acro'], 2), ['disc'], 'Expertise : une competence non maitrisee est ignoree, et le quota compte les choix');
+    eq(r.disc, 2, 'Expertise : posee');
+    eq(r.athl, 0, 'Expertise : pas sur une competence non maitrisee');
+    eq(r.acro, 1, 'Expertise : au-dela du nombre accorde, rien');
+    eq(appliquerExpertise({ disc:1 }, null, 2), [], 'Expertise : aucun choix');
+
+    /* Au createur : proposee a l etape 4, appliquee apres les competences de
+       classe ET d historique (sinon une competence d historique serait refusee). */
+    ok(/<div class="wiz-skills" id="wiz-expertise"><\/div>/.test(J), 'createur : le bloc Expertise a l etape 4');
+    ok(/if \(step === 4\) \{[^}]*renderWizExpertise\(\)/.test(J), 'createur : rendu a l arrivee a l etape 4');
+    const iBg = J.indexOf("(bg.skillKeys || []).forEach(k => { c[k] = 1; });");
+    const iExp = J.indexOf('appliquerExpertise(c, [...wizExp], expertiseAt(selClass.value, 1))');
+    ok(iBg > 0 && iExp > iBg, 'creation : l Expertise s applique apres les competences d historique');
+    /* Le monteur de niveau passe par la meme fonction. */
+    ok(/appliquerExpertise\(c, ch\.expertise, plan\.expertiseCount\)/.test(J), 'montee : meme fonction');
   }
 
   /* ── PV saisis a la main a la montee de niveau ── */

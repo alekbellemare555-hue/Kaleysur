@@ -9572,9 +9572,7 @@ function applyLevelUp(c, plan, choices) {
 
   // ── Expertise ── uniquement sur des competences deja maitrisees
   if (plan.expertiseCount && Array.isArray(ch.expertise)) {
-    ch.expertise.slice(0, plan.expertiseCount).forEach(k => {
-      if ((parseInt(c[k]) || 0) >= 1) { c[k] = 2; log.push(`Expertise : ${k}`); }
-    });
+    appliquerExpertise(c, ch.expertise, plan.expertiseCount).forEach(k => log.push(`Expertise : ${k}`));
   }
 
   // ── ASI ou don ──
@@ -9881,6 +9879,27 @@ function armorFromItem(item) {
 
 /* Le personnage maitrise-t-il cette categorie d'arme ?
    weaponProf est du texte libre par classe (« Simple and Martial weapons »). */
+/* Bonus de caracteristiques de l'historique (PHB 2024) : « Increase one of
+   these scores by 2 and a different one by 1, or increase all three by 1. »
+   mode '21' ou '111'. Rend { cle: bonus }, ou null quand le +2 et le +1
+   visent la meme caracteristique (ou manquent). */
+function bonusHistorique(abilities, mode, b2, b1) {
+  if (mode === '111') return Object.fromEntries((abilities || []).map(a => [a, 1]));
+  if (!b2 || !b1 || b2 === b1) return null;
+  return { [b2]: 2, [b1]: 1 };
+}
+
+/* Expertise : seulement sur des competences deja maitrisees (regle 2024), et
+   pas plus que le nombre accorde. Rend les cles passees en Expertise. Sert au
+   monteur de niveau et au createur (Roublard 1). */
+function appliquerExpertise(c, cles, n) {
+  const faites = [];
+  (cles || []).slice(0, n).forEach(k => {
+    if ((parseInt(c[k]) || 0) >= 1) { c[k] = 2; faites.push(k); }
+  });
+  return faites;
+}
+
 /** Maitrises qu'apporte un choix de capacite (regles 2024) : l'Ordre divin
     Protecteur (Clerc) et l'Ordre primordial Gardien (Druide) ajoutent les armes
     de guerre et une armure. Lu dans le choix enregistre, quel que soit le chemin
@@ -13930,30 +13949,42 @@ ${car} characters of notes.
       if (!d) { box.innerHTML = ''; return; }
       const opts = sel => d.abilities.map(a =>
         `<option value="${a}"${sel === a ? ' selected' : ''}>${ABIL_LABEL[a]}</option>`).join('');
+      const curMode = box.querySelector('[data-bgb="mode"]')?.value || '21';
       const cur2 = box.querySelector('[data-bgb="2"]')?.value || d.abilities[0];
       const cur1 = box.querySelector('[data-bgb="1"]')?.value || d.abilities[1];
       box.innerHTML = `<div class="wiz-bgb-row">
           <span class="field-label">${esc(selBg.value)} :</span>
-          <strong>+2</strong> <select class="wiz-bgb-sel" data-bgb="2">${opts(cur2)}</select>
-          <strong>+1</strong> <select class="wiz-bgb-sel" data-bgb="1">${opts(cur1)}</select>
+          <select class="wiz-bgb-sel" data-bgb="mode" title="PHB 2024 : +2 and +1, or +1 to all three">
+            <option value="21"${curMode === '21' ? ' selected' : ''}>+2 / +1</option>
+            <option value="111"${curMode === '111' ? ' selected' : ''}>+1 / +1 / +1</option>
+          </select>
+          <span class="wiz-bgb-21">
+            <strong>+2</strong> <select class="wiz-bgb-sel" data-bgb="2">${opts(cur2)}</select>
+            <strong>+1</strong> <select class="wiz-bgb-sel" data-bgb="1">${opts(cur1)}</select>
+          </span>
+          <span class="wiz-bgb-111"><strong>+1</strong> ${d.abilities.map(a => ABIL_LABEL[a]).join(' · ')}</span>
         </div>
         <div class="wiz-bgb-warn" id="wiz-bgb-warn"></div>`;
+      const sm = box.querySelector('[data-bgb="mode"]');
       const s2 = box.querySelector('[data-bgb="2"]'), s1 = box.querySelector('[data-bgb="1"]');
       const sync = () => {
-        const same = s2.value === s1.value;
-        wizBgOk = !same;   // bloque « Suivant » : sinon les +2/+1 sont perdus en silence
-        document.getElementById('wiz-bgb-warn').textContent =
-          same ? ic('warn') + ' Pick two different abilities (or set +1/+1/+1 by hand on the sheet).' : '';
+        box.querySelector('.wiz-bgb-21').hidden  = sm.value === '111';
+        box.querySelector('.wiz-bgb-111').hidden = sm.value !== '111';
+        const bonus = bonusHistorique(d.abilities, sm.value, s2.value, s1.value);
+        wizBgOk = !!bonus;   // bloque « Suivant » : sinon les bonus sont perdus en silence
+        /* innerHTML : ic() rend du SVG, textContent l'affichait en balisage brut. */
+        document.getElementById('wiz-bgb-warn').innerHTML =
+          bonus ? '' : ic('warn') + ' Pick two different abilities, or take +1 / +1 / +1.';
         // Aperçu du total dans les cellules
         abilBox.querySelectorAll('.wiz-abil-cell').forEach(cell => {
           const k = cell.querySelector('.wiz-abil-sel').dataset.abil;
           const base = parseInt(cell.querySelector('.wiz-abil-sel').value) || 0;
-          const bonus = (!same && k === s2.value ? 2 : 0) + (!same && k === s1.value ? 1 : 0);
+          const plus = (bonus || {})[k] || 0;
           const tot = cell.querySelector('.wiz-abil-total');
-          if (tot) tot.textContent = base && bonus ? `→ ${base + bonus}` : '';
+          if (tot) tot.textContent = base && plus ? `→ ${base + plus}` : '';
         });
       };
-      s2.addEventListener('change', sync); s1.addEventListener('change', sync);
+      [sm, s2, s1].forEach(x => x.addEventListener('change', sync));
       sync();
     }
 
@@ -14009,6 +14040,7 @@ ${car} characters of notes.
     /* ── Compétences de classe : chips à quota, comme dans la fiche ── */
     let wizSkills = new Set();
     let wizFc = {};                 // choix de capacites de niveau 1
+    let wizExp = new Set();         // Expertise de niveau 1 (Roublard)
     function renderWizSkills() {
       const box = document.getElementById('wiz-class-skills');
       const d = CLASS_DATA[selClass.value];
@@ -14033,6 +14065,36 @@ ${car} characters of notes.
       });
     }
 
+
+    /* Expertise de niveau 1 (Roublard : deux competences). Proposee a l'etape
+       4, quand les competences de classe et d'historique sont toutes connues :
+       la regle 2024 la pose sur des competences deja maitrisees. */
+    function renderWizExpertise() {
+      const box = document.getElementById('wiz-expertise');
+      if (!box) return;
+      const n = selClass.value ? expertiseAt(selClass.value, 1) : 0;
+      if (!n) { box.innerHTML = ''; wizExp = new Set(); return; }
+      const maitrisees = [...new Set([...wizSkills, ...(BACKGROUND_DATA[selBg.value]?.skillKeys || [])])];
+      wizExp.forEach(k => { if (!maitrisees.includes(k)) wizExp.delete(k); });
+      const plein = wizExp.size >= n;
+      box.innerHTML = `<div class="wiz-skills-head">
+          <span class="field-label">Expertise — choose ${n} of your proficient skills</span>
+          <span class="cf-skill-count${plein ? ' done' : ''}">${wizExp.size}/${n}</span>
+        </div>`
+        + (maitrisees.length
+          ? `<div class="cf-skill-chips">${maitrisees.map(k => {
+              const sk = SKILLS.find(x => x.key === k);
+              const on = wizExp.has(k);
+              return `<button type="button" class="cf-skill-chip${on ? ' on' : ''}${!on && plein ? ' muted' : ''}" data-wiz-exp="${k}">${sk ? sk.label : k}</button>`;
+            }).join('')}</div>`
+          : `<div class="wiz-fc-note">Pick your class skills (step 3) and a background first.</div>`);
+      box.querySelectorAll('[data-wiz-exp]').forEach(chip => chip.addEventListener('click', () => {
+        const k = chip.dataset.wizExp;
+        if (wizExp.has(k)) wizExp.delete(k);
+        else if (wizExp.size < n) wizExp.add(k);
+        renderWizExpertise();
+      }));
+    }
 
     /* Choix de capacites disponibles des le niveau 1 (style de combat du
        Guerrier, ordre divin du Clerc, ordre primordial du Druide). Les autres
@@ -14074,6 +14136,7 @@ ${car} characters of notes.
 
     function previewClass() {
       wizSkills = new Set();   // la classe change → on repart de zéro
+      wizExp = new Set();
       renderWizSkills();
       wizFc = {};
       renderWizFeatureChoices();
@@ -14128,6 +14191,7 @@ ${car} characters of notes.
         + `<div class="wiz-trait"><span class="wiz-trait-name">${d.feat}</span> — ${ORIGIN_FEATS[d.feat] || ''}</div>`;
     }
     selBg.addEventListener('change', previewBg);
+    selBg.addEventListener('change', () => renderWizExpertise());
 
     /* Outil « (choice) » : on fait choisir plutôt que d'écrire « (choice) » sur la fiche */
     function refreshTool() {
@@ -14201,7 +14265,7 @@ ${car} characters of notes.
       btnOk.style.display   = step === TOTAL_STEPS ? '' : 'none';
       btnBlank.style.display = step === 1 ? '' : 'none';
       if (step === 1) setTimeout(() => nameInp.focus(), 50);
-      if (step === 4) majLanguesClasse();  // depend de la classe choisie a l'etape 3
+      if (step === 4) { majLanguesClasse(); renderWizExpertise(); }  // dependent de l'etape 3
       if (step === 5) renderBgBonus();  // dépend du background choisi à l'étape 4
       if (step === 6) { refreshEquip(); renderWizSummary(); }
     }
@@ -14241,8 +14305,9 @@ ${car} characters of notes.
       abilBox.querySelectorAll('.wiz-abil-sel').forEach(s => s.value = '');
       wizSkills = new Set();
       wizFc = {};
+      wizExp = new Set();
       wizBgOk = true;
-      ['wiz-species-preview','wiz-class-preview','wiz-bg-preview','wiz-class-skills','wiz-bg-bonus','wiz-summary'].forEach(id =>
+      ['wiz-species-preview','wiz-class-preview','wiz-bg-preview','wiz-class-skills','wiz-expertise','wiz-bg-bonus','wiz-summary'].forEach(id =>
         document.getElementById(id).innerHTML = '');
       refreshAbils();
       showStep(1);
@@ -14264,16 +14329,18 @@ ${car} characters of notes.
 
       // Caractéristiques du tableau standard + bonus du background (+2/+1, PHB 2024)
       const bgBox = document.getElementById('wiz-bg-bonus');
-      const b2 = bgBox.querySelector('[data-bgb="2"]')?.value;
-      const b1 = bgBox.querySelector('[data-bgb="1"]')?.value;
-      const bgOk = b2 && b1 && b2 !== b1;   // ignoré si les deux pointent la même caractéristique
+      /* +2/+1 ou +1/+1/+1 ; rien si le +2 et le +1 pointent la meme caracteristique. */
+      const bgBonus = bonusHistorique(BACKGROUND_DATA[selBg.value]?.abilities,
+        bgBox.querySelector('[data-bgb="mode"]')?.value || '21',
+        bgBox.querySelector('[data-bgb="2"]')?.value,
+        bgBox.querySelector('[data-bgb="1"]')?.value) || {};
       /* Le bonus d'historique s'applique meme sans valeur choisie dans le
          tableau : la boucle sautait ces caracteristiques, et le +2/+1 partait
          avec elles sans que rien ne le dise. A defaut de choix, on part de ce
          que la fiche porte deja. */
       abilBox.querySelectorAll('.wiz-abil-sel').forEach(s => {
         const k = s.dataset.abil;
-        const bonus = (bgOk && k === b2 ? 2 : 0) + (bgOk && k === b1 ? 1 : 0);
+        const bonus = bgBonus[k] || 0;
         if (!s.value && !bonus) return;
         const base = s.value ? parseInt(s.value) : (parseInt(c[k]) || 10);
         c[k] = base + bonus;
@@ -14337,6 +14404,10 @@ ${car} characters of notes.
           }
         }
       }
+
+      /* Expertise de niveau 1 (Roublard), choisie a l'etape 4 : apres les
+         competences de classe et d'historique, sur lesquelles elle se pose. */
+      if (selClass.value && wizExp.size) appliquerExpertise(c, [...wizExp], expertiseAt(selClass.value, 1));
 
       // Équipement de départ → inventaire + bourse, puis CA et attaques dérivées
       const eqOpts = STARTING_EQUIP[selClass.value];
@@ -15515,6 +15586,7 @@ document.addEventListener('keydown', e => {
           </div>
           <div class="wiz-lang-note">You speak <strong>Commun</strong> by default, plus two languages from your origin — drawn from the Standard table. Rare languages come from class features, not from your origin.</div>
           <div id="wiz-lang-classe" style="display:none;"></div>
+          <div class="wiz-skills" id="wiz-expertise"></div>
           <div class="wiz-preview" id="wiz-bg-preview"></div>
         </div>
 
