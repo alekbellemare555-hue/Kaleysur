@@ -91,6 +91,11 @@ function ok(cond, label) {
     extract(J, 'function getFeatureChoice(c, featureName, className)'),
     extract(J, 'function migrerChoixCapacites(c)'),
     extract(J, 'function deDeVie(c)'),
+    extract(J, 'function attenteKey(u)'),
+    extract(J, 'function lireAttente(u)'),
+    extract(J, 'function marquerAttente(u, revCloud)'),
+    extract(J, 'function effacerAttente(u)'),
+    extract(J, 'function choisirAuDemarrage(local, distant, attente)'),
     extract(J, 'function migrerNomsAttaques(c)'),
     extract(J, 'function setFeatureChoice(c, featureName, className, selection)'),
     extract(J, 'function pendingFeatureChoices(c)'),
@@ -1265,6 +1270,87 @@ function ok(cond, label) {
          'Roublard : les armes qu il maitrise');
       ok(/3 kinds/.test(wm('Fighter').desc), 'Guerrier : trois au niveau 1');
     }
+  }
+
+
+  /* ── Les modifications faites hors ligne survivent a la reouverture ── */
+  {
+    /* La restauration de session chargeait toujours le cloud et ecrasait la
+       copie locale : tout ce qui avait ete fait hors ligne disparaissait, sans
+       message. Scenario rejoue dans la page reelle avant et apres correction. */
+    const f = (rev) => ({ _rev: rev });
+    eq(choisirAuDemarrage(f(7), f(5), { base: 5 }), 'local',
+       'hors ligne puis reouverture, cloud inchange : on reprend la copie locale');
+    eq(choisirAuDemarrage(f(7), f(7), { base: 5 }), 'distant',
+       'le cloud a deja recu nos modifs (envoi a la fermeture abouti) : on charge le cloud');
+    eq(choisirAuDemarrage(f(7), f(6), { base: 5 }), 'conflit',
+       'quelqu un d autre a ecrit entre-temps : conflit, notre version mise de cote');
+    eq(choisirAuDemarrage(f(7), f(9), { base: 5 }), 'conflit',
+       'le cloud est passe devant : conflit aussi');
+    eq(choisirAuDemarrage(f(4), f(5), null), 'distant',
+       'rien en attente : le cloud gagne, comme avant');
+    eq(choisirAuDemarrage(null, f(5), { base: 5 }), 'distant',
+       'pas de copie locale : le cloud');
+    /* Premiere sauvegarde d un compte : pas de _rev du tout. */
+    eq(choisirAuDemarrage({}, {}, { base: null }), 'distant', 'aucune revision des deux cotes : identiques');
+    eq(choisirAuDemarrage(f(1), {}, { base: null }), 'local', 'premiere sauvegarde jamais arrivee : on la reprend');
+
+    /* La base n'est posee qu'au debut d'une serie de sauvegardes restees
+       locales : les suivantes gardent la revision ou le cloud etait reste. */
+    const memoire = {};
+    const precedent = globalThis.localStorage;
+    globalThis.localStorage = {
+      getItem: k => (k in memoire ? memoire[k] : null),
+      setItem: (k, v) => { memoire[k] = String(v); },
+      removeItem: k => { delete memoire[k]; },
+    };
+    try {
+      eq(lireAttente('u1'), null, 'au depart, rien en attente');
+      eq(marquerAttente('u1', 5), { base: 5 }, 'premiere sauvegarde locale : base 5');
+      eq(marquerAttente('u1', 6), { base: 5 }, 'la suivante garde la base 5');
+      eq(marquerAttente('u1', 7), { base: 5 }, 'et la suivante aussi');
+      eq(lireAttente('u2'), null, 'un autre compte n est pas touche');
+      effacerAttente('u1');
+      eq(lireAttente('u1'), null, 'effacee une fois le cloud a jour');
+      eq(marquerAttente('u1', 8), { base: 8 }, 'une nouvelle serie repart de la revision courante');
+      eq(marquerAttente('u3', undefined), { base: null }, 'sans revision : base nulle');
+      /* Une cle illisible ne doit pas faire planter la sauvegarde. */
+      memoire[attenteKey('u4')] = '{pas du json';
+      eq(lireAttente('u4'), null, 'cle illisible : traitee comme absente');
+    } finally { globalThis.localStorage = precedent; }
+
+    /* Les chemins de sauvegarde utilisent la base, pas la revision locale. */
+    const ts = J.slice(J.indexOf('function triggerSave()'), J.indexOf('function flushPendingSave()'));
+    ok(/const attente = marquerAttente\(currentUser, prevRev\);/.test(ts), 'triggerSave marque l attente');
+    ok(/sbUpdateDataGuarded\(currentUser, _json, attente\.base\)/.test(ts),
+       'triggerSave attend la revision ou le cloud etait reste');
+    ok(/_lastSaveAt = Date\.now\(\);\s*\n\s*effacerAttente\(currentUser\);/.test(ts), 'succes : l attente est effacee');
+    ok(/saveConflictSnapshot\(currentUser, _json\);\s*\n\s*effacerAttente\(currentUser\);/.test(ts),
+       'conflit : la copie de conflit prend le relais');
+    const fl = J.slice(J.indexOf('function flushPendingSave()'), J.indexOf('function flushPendingSave()') + 2600);
+    ok(/marquerAttente\(u, prevRev\)/.test(fl), 'fermeture : l attente est marquee');
+    /* keepalive est refuse au-dela de 64 Ko : le compte se fait en OCTETS. Une
+       chaine de 40 000 « é » fait 80 000 octets — le nombre de caracteres
+       l aurait laissee passer. */
+    ok(/new TextEncoder\(\)\.encode\(body\)\.length < 64000/.test(fl), 'fermeture : la taille se compte en octets');
+    ok(/keepalive: petit/.test(fl), 'fermeture : keepalive seulement sous 64 Ko');
+    ok(/rows\.length\) effacerAttente\(u\)/.test(fl), 'fermeture : l attente n est effacee que si le cloud a accepte');
+
+    /* Retour du reseau : plus d ecriture forcee. */
+    const on = J.slice(J.indexOf("window.addEventListener('online'"), J.indexOf("window.addEventListener('online'") + 900);
+    ok(/if \(lireAttente\(currentUser\)\) triggerSave\(\);/.test(on), 'retour du reseau : par le chemin garde');
+    ok(!/sbUpdateData\(currentUser, playerData\)/.test(on), 'retour du reseau : plus d ecriture sans garde');
+
+    /* Deconnexion : la derniere modification part d abord. */
+    const lo = J.slice(J.indexOf("getElementById('btn-logout').addEventListener"), J.indexOf("getElementById('btn-logout').addEventListener") + 600);
+    const iFlush = lo.indexOf('flushPendingSave();'), iVide = lo.indexOf('playerData = null');
+    ok(iFlush !== -1 && iVide !== -1 && iFlush < iVide, 'deconnexion : la sauvegarde en attente part avant de vider la fiche');
+
+    /* Le demarrage passe par la decision. */
+    ok(/if \(savedUser\) demarrerSession\(savedUser\);/.test(J), 'la restauration passe par demarrerSession');
+    const ds = J.slice(J.indexOf('function demarrerSession(savedUser)'), J.indexOf('function demarrerSession(savedUser)') + 1800);
+    ok(/choisirAuDemarrage\(local, row\.data, lireAttente\(savedUser\)\)/.test(ds), 'demarrerSession consulte la copie locale');
+    ok(/if \(choix === 'conflit'\) showConflictBanner\(savedUser\);/.test(ds), 'conflit : la banniere s affiche');
   }
 
   /* ── PV saisis a la main a la montee de niveau ── */

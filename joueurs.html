@@ -4926,6 +4926,88 @@ function saveLocal(u, data, _json) {
   } catch(e) {}
 }
 
+/* ── Modifications locales pas encore arrivees dans le cloud ──
+   Une petite cle a part note la revision ou le cloud etait reste quand une
+   serie de sauvegardes a commence sans pouvoir l'atteindre (hors ligne, echec,
+   page fermee avant l'envoi). Sans elle, la reouverture chargeait toujours le
+   cloud et ecrasait la copie locale : tout ce qui avait ete fait hors ligne
+   disparaissait sans un mot. */
+function attenteKey(u) { return 'kaleysur_attente_' + u; }
+
+function lireAttente(u) {
+  try { return JSON.parse(localStorage.getItem(attenteKey(u)) || 'null'); }
+  catch (e) { return null; }
+}
+
+/* La base n'est posee qu'au debut d'une serie : les sauvegardes suivantes,
+   encore locales, gardent la revision ou le cloud etait reste. */
+function marquerAttente(u, revCloud) {
+  const deja = lireAttente(u);
+  if (deja) return deja;
+  const a = { base: revCloud ?? null };
+  try { localStorage.setItem(attenteKey(u), JSON.stringify(a)); } catch (e) {}
+  return a;
+}
+
+function effacerAttente(u) {
+  try { localStorage.removeItem(attenteKey(u)); } catch (e) {}
+}
+
+/** Au demarrage, quelle version charger.
+    'distant' : rien n'etait en attente, ou le cloud a deja recu nos modifs.
+    'local'   : le cloud n'a pas bouge depuis notre derniere synchro ; la copie
+                locale en est la suite directe — on la reprend et on l'envoie.
+    'conflit' : quelqu'un d'autre a ecrit entre-temps (autre appareil, le MJ) ;
+                on charge le cloud et notre version est mise de cote. */
+function choisirAuDemarrage(local, distant, attente) {
+  if (!attente || !local) return 'distant';
+  const rl = local._rev ?? null, rd = distant?._rev ?? null;
+  if (rl === rd) return 'distant';
+  if (rd === (attente.base ?? null)) return 'local';
+  return 'conflit';
+}
+
+/** Restaure la session enregistree : charge la fiche, et decide entre le cloud
+    et la copie locale (choisirAuDemarrage). Sortie du code d'initialisation
+    pour pouvoir se tester : c'est elle qui decide si les modifications faites
+    hors ligne survivent a la reouverture. Renvoie la promesse. */
+function demarrerSession(savedUser) {
+  return sbGetPlayer(savedUser).then(row => {
+    if (row) {
+      currentUser = savedUser;
+      /* La copie locale peut porter des modifications jamais arrivees dans le
+         cloud — faites hors ligne, ou page fermee avant l'envoi. Charger le
+         cloud sans la regarder les effacait sans un mot. */
+      let local = null;
+      try { local = JSON.parse(localStorage.getItem(localKey(savedUser)) || 'null')?.data || null; } catch (e) {}
+      const choix = choisirAuDemarrage(local, row.data, lireAttente(savedUser));
+      if (choix === 'local') {
+        playerData = local;
+        openDashboard();
+        triggerSave(); // repart vers le cloud, sur la revision ou il etait reste
+      } else {
+        if (choix === 'conflit') saveConflictSnapshot(savedUser, JSON.stringify(local));
+        effacerAttente(savedUser);
+        playerData = row.data;
+        saveLocal(savedUser, row.data); // met à jour le cache local
+        openDashboard();
+        if (choix === 'conflit') showConflictBanner(savedUser);
+      }
+    } else clearSession();
+  }).catch(() => {
+    // Supabase indisponible — tenter le cache local
+    const cached = localStorage.getItem(localKey(savedUser));
+    if (cached) {
+      try {
+        const { data } = JSON.parse(cached);
+        currentUser = savedUser; playerData = data;
+        openDashboard();
+        updateConnIndicator('offline');
+      } catch(e) { clearSession(); }
+    } else clearSession();
+  });
+}
+
 /* ── Indicateur de connexion ── */
 function updateConnIndicator(state) {
   const el = document.getElementById('conn-indicator');
@@ -5023,18 +5105,24 @@ function triggerSave() {
     playerData._rev = (prevRev || 0) + 1;
     const _json = JSON.stringify(playerData); // stringify une seule fois (peut peser plusieurs MB avec images)
     saveLocal(currentUser, null, _json); // backup local toujours
+    /* La revision ou le cloud doit se trouver : celle d'avant la premiere
+       sauvegarde restee locale, s'il y en a une en attente. Sans ca, apres une
+       coupure, la sauvegarde suivante attendait une revision que le cloud n'a
+       jamais recue, et tombait en faux conflit. */
+    const attente = marquerAttente(currentUser, prevRev);
     if (!navigator.onLine) {
       badge.textContent = '● Local'; badge.className = 'save-badge';
       updateConnIndicator('offline');
       return;
     }
     try {
-      const res = await sbUpdateDataGuarded(currentUser, _json, prevRev);
+      const res = await sbUpdateDataGuarded(currentUser, _json, attente.base);
       if (res === 'conflict') {
         // Écriture concurrente (autre appareil / admin DM) : on recharge le distant
         // plutôt que de l'écraser. Mais on met notre version de côté d'abord :
         // sans ça, des notes en cours de frappe disparaissaient sans un mot.
         saveConflictSnapshot(currentUser, _json);
+        effacerAttente(currentUser); // c'est la copie de conflit qui porte notre version
         try {
           const row = await sbGetPlayer(currentUser);
           if (row?.data) {
@@ -5048,6 +5136,7 @@ function triggerSave() {
         return;
       }
       _lastSaveAt = Date.now();
+      effacerAttente(currentUser); // le cloud a tout recu
       badge.textContent = 'Saved ✓'; badge.className = 'save-badge ok';
       updateConnIndicator('online');
       setTimeout(() => { badge.textContent = ''; badge.className = 'save-badge'; }, 2500);
@@ -5070,17 +5159,31 @@ function flushPendingSave() {
   playerData._rev = (prevRev || 0) + 1;
   const _json = JSON.stringify(playerData);
   saveLocal(currentUser, null, _json); // synchrone — survit à la fermeture de la page
+  /* En attente tant qu'on ne sait pas si l'envoi aboutit : si la page meurt
+     avant, la reouverture retrouvera la copie locale et l'enverra. */
+  const u = currentUser;
+  const attente = marquerAttente(u, prevRev);
   _lastSaveAt = Date.now();
   if (!navigator.onLine) return;
-  // keepalive : le navigateur laisse la requête aboutir même si la page se ferme
-  const revCond = (prevRev === undefined || prevRev === null) ? 'is.null' : `eq.${prevRev}`;
+  const base = attente.base;
+  const revCond = (base === undefined || base === null) ? 'is.null' : `eq.${base}`;
+  const body = `{"data":${_json}}`;
+  /* keepalive laisse la requete aboutir si la page se ferme, mais les
+     navigateurs le refusent au-dela de 64 Ko de corps : la sauvegarde echouait
+     alors en silence. Au-dela, envoi ordinaire, qui aboutit tant que la page
+     vit (onglet change, telephone verrouille) ; si elle meurt, la copie en
+     attente prend le relais a la reouverture. */
+  let petit = false;
+  try { petit = new TextEncoder().encode(body).length < 64000; } catch {}
   try {
-    fetch(`${SB_URL}/rest/v1/players?username=eq.${encodeURIComponent(currentUser)}&data->>_rev=${revCond}`, {
+    fetch(`${SB_URL}/rest/v1/players?username=eq.${encodeURIComponent(u)}&data->>_rev=${revCond}&select=username`, {
       method: 'PATCH',
-      headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
-      body: `{"data":${_json}}`,
-      keepalive: true
-    }).catch(() => {});
+      headers: { ...SB_HEADERS, 'Prefer': 'return=representation' },
+      body,
+      keepalive: petit
+    }).then(r => r.ok ? r.json() : null)
+      .then(rows => { if (Array.isArray(rows) && rows.length) effacerAttente(u); })
+      .catch(() => {});
   } catch {}
 }
 document.addEventListener('visibilitychange', () => {
@@ -12208,6 +12311,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   /* ── Déconnexion ── */
   document.getElementById('btn-logout').addEventListener('click', () => {
+    /* Une modification faite dans les 900 ms precedentes attendait encore son
+       envoi : vider playerData avant la perdait. */
+    flushPendingSave();
     clearSession(); currentUser = null; playerData = null;
     showScreen('screen-auth');
   });
@@ -13020,32 +13126,18 @@ ${car} characters of notes.
 
   /* ── Restauration de session ── */
   const savedUser = loadSession();
-  if (savedUser) {
-    sbGetPlayer(savedUser).then(row => {
-      if (row) {
-        currentUser = savedUser; playerData = row.data;
-        saveLocal(savedUser, row.data); // met à jour le cache local
-        openDashboard();
-      } else clearSession();
-    }).catch(() => {
-      // Supabase indisponible — tenter le cache local
-      const cached = localStorage.getItem(localKey(savedUser));
-      if (cached) {
-        try {
-          const { data } = JSON.parse(cached);
-          currentUser = savedUser; playerData = data;
-          openDashboard();
-          updateConnIndicator('offline');
-        } catch(e) { clearSession(); }
-      } else clearSession();
-    });
-  }
+  if (savedUser) demarrerSession(savedUser);
 
   /* ── Synchronisation en ligne / hors ligne ── */
-  window.addEventListener('online', async () => {
+  window.addEventListener('online', () => {
     updateConnIndicator('online');
     if (!currentUser || !playerData) return;
-    try { await sbUpdateData(currentUser, playerData); } catch(e) {}
+    /* Ce qui est reste local pendant la coupure part par le chemin normal : il
+       sait le poser sur la revision ou le cloud etait reste, et bascule sur la
+       banniere de conflit si quelqu'un d'autre a ecrit entre-temps. L'ancien
+       envoi forcait l'ecriture sans garde : il ecrasait ce que le MJ avait pu
+       modifier pendant la coupure. */
+    if (lireAttente(currentUser)) triggerSave();
   });
   window.addEventListener('offline', () => updateConnIndicator('offline'));
   updateConnIndicator(navigator.onLine ? 'online' : 'offline');
