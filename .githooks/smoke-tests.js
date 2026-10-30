@@ -1367,6 +1367,20 @@ function ok(cond, label) {
     ok(z.indexOf('_hpUndo = null;') < z.indexOf('Object.assign(C(), pv)'), 'l annulation est consommee avant d etre appliquee');
   }
 
+  /* ── L initiative du bandeau ne compte plus deux fois la DEX ── */
+  {
+    /* c.initiative est le bonus TOTAL ; le bandeau y rajoutait la DEX, et +3
+       devenait +6 des le second rendu. Rejoue dans la page : +3 sur trois
+       rendus, +5 en manuel. */
+    const h = J.slice(J.indexOf('if (initEl) {'), J.indexOf('if (initEl) {') + 900);
+    ok(/const base  = c\.initiativeManuelle \? \(parseInt\(c\.initiative\) \|\| 0\) : mod\(abilScore\('dex'\)\);/.test(h),
+       'bandeau : la base est soit la saisie, soit la DEX — jamais les deux');
+    ok(/const total = base \+ getMod\('init'\);/.test(h), 'bandeau : rien d autre ne s ajoute');
+    /* Les imports gardent une initiative qui differe de la DEX (Alert). */
+    ok(/initiativeManuelle: initiative !== mod\(stats\.dex\)/.test(J), 'import Roll20 : l initiative importee est gardee');
+    ok(/initiativeManuelle: initiative !== dexMod/.test(J), 'import D&D Beyond : l initiative importee est gardee');
+  }
+
   /* ── PV saisis a la main a la montee de niveau ── */
   {
     const auNiveau = (hp) => {

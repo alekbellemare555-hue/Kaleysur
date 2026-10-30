@@ -6489,9 +6489,12 @@ function renderHero() {
   if (caEl)   caEl.textContent  = (parseInt(c.ca) || 10) + getMod('ac') || '10';
   if (spdEl)  spdEl.textContent = c.vitesse || '30';
   if (initEl) {
-    const dexMod = Math.floor((abilScore('dex') - 10) / 2);
-    const bonus  = parseInt(c.initiative) || 0;
-    const total  = dexMod + bonus + getMod('init');
+    /* c.initiative EST le bonus total (DEX en auto, saisie en manuel), et le MJ
+       le lit ainsi. Y rajouter la DEX faisait passer +3 a +6 des le second
+       rendu. En auto on relit la DEX courante : c.initiative peut dater d'avant
+       un changement de caracteristique. */
+    const base  = c.initiativeManuelle ? (parseInt(c.initiative) || 0) : mod(abilScore('dex'));
+    const total = base + getMod('init');
     initEl.textContent = (total >= 0 ? '+' : '') + total;
     initEl.className = 'vb-mini-stat-val roll-trigger';
     initEl.dataset.rollLabel = 'Initiative';
@@ -7739,6 +7742,10 @@ function parseRoll20JSON(raw) {
     alignement: val('alignment'), xp: num('experience', 'xp'), inspiration: prof('inspiration'),
     ...stats, ...saveProfs, ...skillProfs,
     ca, initiative, vitesse,
+    /* Une initiative qui differe de la DEX (le don Alert ajoute le bonus de
+       maitrise) est gardee telle quelle : en mode automatique, le premier rendu
+       la ramenait a la seule DEX. */
+    initiativeManuelle: initiative !== mod(stats.dex),
     pvMax, pvActuel, pvTemp: num('hp_temp', 'temp_hp'),
     deVie: val('hitdietype') ? niveauTotal + String(val('hitdietype')).replace(/^1?d?/, 'd') : niveauTotal + 'd8',
     nbDeVie: niveauTotal, nbDeVieUtilises: 0,
@@ -8041,6 +8048,7 @@ function parseDnDBeyondJSON(raw) {
     alignement:'', xp: d.currentXp||0, inspiration:false,
     ...stats, ...saveProfs, ...skillProfs,
     ca: ac, initiative: initiative, vitesse: speed,
+    initiativeManuelle: initiative !== dexMod, // Alert & co : ne pas ramener a la seule DEX
     pvMax: baseHP, pvActuel: currentHP, pvTemp: tempHP,
     deVie: deVieStr, nbDeVie: level, nbDeVieUtilises:0,
     mortSucces:0, mortEchecs:0,
