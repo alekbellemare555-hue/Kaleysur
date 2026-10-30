@@ -1347,6 +1347,17 @@ body.sidebar-open #sidebar-backdrop{display:block;}
   .cond-badge{padding:0.28rem 0.6rem;font-size:0.7rem;}
   .resource-pip{width:18px;height:18px;}
 }
+
+/* ─── Telephone (≤600px) : la barre du MJ passe sur plusieurs lignes ───
+   Sur une seule ligne, la moitie des boutons etaient dessines hors de l'ecran
+   (Groupe, Butin, Fiches, ↺, Deco.). Apres le bloc ≤768px, qui sinon
+   reimposerait son remplissage. --nav-h suit la hauteur reelle de la barre,
+   mesuree par suivreHauteurNav ; 104px n'est que la valeur du premier rendu. */
+@media(max-width:600px){
+  :root{--nav-h:104px;}
+  #dm-nav{height:auto;min-height:54px;flex-wrap:wrap;align-content:center;row-gap:0.3rem;padding:0.3rem 0.5rem;}
+  .brand{display:none;}
+}
 </style>
 </head>
 <body>
@@ -4341,6 +4352,27 @@ async function appliquerButin() {
       e.target.click();
     }
   });
+})();
+
+/* ── Sur telephone, --nav-h suit la hauteur reelle de la barre du MJ ──
+   Sous 600 px la barre passe sur deux ou trois lignes selon la largeur, et tous
+   les decalages de la page dependent de --nav-h. Ailleurs on laisse la valeur
+   du CSS : la barre y est dimensionnee PAR --nav-h, et la faire suivre sa
+   propre hauteur bouclerait. */
+(function suivreHauteurNav() {
+  const nav = document.getElementById('dm-nav');
+  if (!nav || !window.ResizeObserver || !window.matchMedia) return;
+  const telephone = window.matchMedia('(max-width:600px)');
+  const suivre = () => {
+    /* 0 px : la barre est cachee avec l'ecran du MJ, avant la connexion. La
+       mesurer a ce moment ecrivait --nav-h: 0px ; on garde alors la valeur du
+       CSS, et la connexion redeclenche la mesure en affichant la barre. */
+    if (telephone.matches && nav.offsetHeight > 0) document.documentElement.style.setProperty('--nav-h', nav.offsetHeight + 'px');
+    else if (!telephone.matches) document.documentElement.style.removeProperty('--nav-h');
+  };
+  new ResizeObserver(suivre).observe(nav);
+  telephone.addEventListener('change', suivre);
+  suivre();
 })();
 
 /* ══════════════════════════════════════════

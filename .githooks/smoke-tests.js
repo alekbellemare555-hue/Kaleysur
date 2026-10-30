@@ -2628,6 +2628,26 @@ function ok(cond, label) {
     ok(/querySelector\('\[data-modifie\]'\)/.test(rt), 'temps reel : pas de redessin pendant une saisie du MJ');
   }
 
+  /* ── Sur telephone, la barre du MJ tient dans l ecran ── */
+  {
+    /* Sur une seule ligne, la moitie des boutons etaient hors de l ecran a
+       400 px (Groupe, Butin, Fiches, ↺, Deco.). Mesure dans la page avant et
+       apres, a 320, 360, 400 et 1024 px. */
+    const i = D.indexOf('@media(max-width:600px){\n  :root{--nav-h:104px;}');
+    ok(i !== -1, 'telephone : un bloc ≤600px reserve deux lignes a la barre');
+    const m = D.slice(i, i + 400);
+    ok(/#dm-nav\{height:auto;[^}]*flex-wrap:wrap/.test(m), 'telephone : la barre passe a la ligne');
+    /* Apres le bloc ≤768px, qui reimposerait sinon son remplissage. */
+    ok(i > D.indexOf('Petite tablette / phablet'), 'le bloc telephone vient apres le bloc ≤768px');
+    const js = D.slice(D.indexOf('(function suivreHauteurNav()'), D.indexOf('(function suivreHauteurNav()') + 1400);
+    ok(/matchMedia\('\(max-width:600px\)'\)/.test(js), '--nav-h ne suit la barre que sur telephone');
+    /* Sur ordinateur la barre est dimensionnee par --nav-h : la faire suivre sa
+       propre hauteur bouclerait. Et a 0 px la barre est cachee avant la
+       connexion : on ne l ecrit pas. */
+    ok(/telephone\.matches && nav\.offsetHeight > 0/.test(js), 'une barre cachee (0 px) n impose pas sa hauteur');
+    ok(/removeProperty\('--nav-h'\)/.test(js), 'hors telephone, la valeur du CSS revient');
+  }
+
   /* -- Actions de groupe : degats avec PV temporaires, soins, sauvegardes -- */
   eval([
     extract(D, 'function applyDamageWithTemp(cible, degats)'),
