@@ -1739,9 +1739,12 @@ const SB_KEY  = 'sb_publishable_TDTCogCSFP-Lvus2x3rAAg_60l036tq';
 const SB_HDR  = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' };
 const ADMIN_USER = 'dm';
 const POLL_MS = 10000;
+/* Toutes les conditions decrites dans CONDITION_DESC, sauf Exhaustion qui va
+   par niveaux et ne se resume pas a une etiquette. Paralyzed et Petrified
+   manquaient : Hold Person et Flesh to Stone ne pouvaient pas se noter. */
 const ALL_CONDITIONS = [
   'Blinded','Charmed','Deafened','Frightened','Grappled',
-  'Incapacitated','Invisible','Poisoned','Prone',
+  'Incapacitated','Invisible','Paralyzed','Petrified','Poisoned','Prone',
   'Restrained','Stunned','Unconscious','Concentrating'
 ];
 
@@ -1817,11 +1820,15 @@ function saveDmState() {
       panelNotes: _panelNotes,
       encounters,
       monsterStats,
-      initState: {
-        ...initState,
-        // Ne pas persister les joueurs dans l'initiative — seulement monstres et NPCs
-        combatants: initState.combatants.filter(c => c.type !== 'player')
-      }
+      initState: (() => {
+        /* Ne pas persister les joueurs dans l'initiative — seulement monstres et
+           NPCs (choix du 2026-05-20). Mais l'indice du tour doit suivre la liste
+           raccourcie : sauvegarde tel quel, il ne designait plus personne au
+           retour, et « Tour suivant » faisait rejouer un monstre. */
+        const restants = initState.combatants.filter(c => c.type !== 'player');
+        return { ...initState, combatants: restants,
+                 currentIdx: indiceApresRetrait(initState.combatants, restants, initState.currentIdx) };
+      })()
     }));
   } catch(e) {}
 }
@@ -2863,10 +2870,13 @@ function renderPlayerPanel(panel, key) {
         </div>` : ''}
       </div>
 
-      ${(Array.isArray(c.ressources) && c.ressources.length) ? `<div class="panel-res">
-        ${c.ressources.map((r,ri) => {
+      ${(Array.isArray(c.resources) && c.resources.length) ? `<div class="panel-res">
+        ${c.resources.map((r,ri) => {
+          /* c.resources et r.used : la forme que la fiche ecrit. Le panneau
+             lisait c.ressources et r.actuel, que rien n'ecrit — le bloc ne
+             s'affichait donc jamais. */
           const max = parseInt(r.max)||0;
-          const act = parseInt(r.actuel)||0;
+          const act = Math.min(parseInt(r.used)||0, max);
           return `<div class="res-row">
             <span class="res-name">${esc(r.name||r.nom||'Resource')}</span>
             <span class="res-pips">${Array.from({length:max},(_,pi)=>`<span class="res-pip${pi<act?' used':''}" data-res-key="${esc(key)}" data-res-i="${ri}" data-res-pip="${pi}"></span>`).join('')}</span>
@@ -2948,13 +2958,15 @@ function attachPlayerPanelEvents(panel, key, username, charId) {
       const data = getPlayerData(username);
       if (!data) return;
       const c = data.characters?.[charId]?.character;
-      if (!c || !Array.isArray(c.ressources)) return;
+      if (!c || !Array.isArray(c.resources)) return;
       const ri  = parseInt(pip.dataset.resI);
       const pi  = parseInt(pip.dataset.resPip);
-      const res = c.ressources[ri];
+      const res = c.resources[ri];
       if (!res) return;
-      const cur = parseInt(res.actuel) || 0;
-      res.actuel = (pi < cur) ? pi : pi + 1;
+      /* Meme geste que sur la fiche : une case deja depensee vide jusqu'a
+         elle, sinon on remplit jusqu'a elle. */
+      const cur = parseInt(res.used) || 0;
+      res.used = (pi < cur) ? pi : pi + 1;
       updatePanel(key);
       schedulePlayerSave(username, data);
     });
@@ -3295,9 +3307,12 @@ function longRest(username, charId, key) {
   const max = c.emplacementsSort || {};
   c.emplacementsUtilises = {};
   for (let i = 1; i <= 9; i++) c.emplacementsUtilises[i] = 0;
-  // Reset resources
+  /* Toutes les ressources reviennent : un repos long rend aussi ce qu'un repos
+     court rendrait, comme le fait le Repos long de « Groupe ». L'ancien test,
+     r.recharge === 'long', portait sur une cle qui n'existe pas (la fiche ecrit
+     reset) : il ne rendait jamais rien. */
   if (Array.isArray(c.resources)) {
-    c.resources.forEach(r => { if (r.recharge === 'long') r.used = 0; });
+    c.resources.forEach(r => { r.used = 0; });
   }
   updatePanel(key);
   renderInitChips();
@@ -3886,9 +3901,13 @@ function renderInitChips() {
       renderInitChips();
     });
     chip.querySelector('.init-chip-inp').addEventListener('change', e => {
+      /* Le tour reste au combattant qui l'avait, comme dans addNewCombatants :
+         le placer sur celui qu'on corrige faisait commencer le round sur le
+         dernier joueur saisi. */
+      const curId = initState.combatants[initState.currentIdx]?.id;
       ct.initVal = parseInt(e.target.value) || 0;
       initState.combatants.sort((a,b) => b.initVal - a.initVal);
-      initState.currentIdx = initState.combatants.findIndex(x => x.id === ct.id);
+      if (curId) initState.currentIdx = initState.combatants.findIndex(x => x.id === curId);
       renderInitChips();
       saveDmState();
     });
@@ -3913,10 +3932,35 @@ function syncActivePanelHighlight() {
   if (ct) document.getElementById('panel-' + ct.id)?.classList.add('panel-active-turn');
 }
 
+/** Indice du tour apres avoir retire des combattants de l'ordre.
+
+    Le combattant actif garde la main s'il reste. S'il est sorti, la main passe
+    au premier survivant qui le suivait, sans changer de round. S'il ne restait
+    personne apres lui, on se place sur le dernier : « Tour suivant » bouclera
+    alors et comptera le nouveau round lui-meme.
+
+    Sans ce calcul l'indice restait le meme alors que la liste avait raccourci :
+    il designait le combattant d'apres, ou personne. Sert a la suppression d'une
+    creature et a la sauvegarde, qui retire les joueurs. */
+function indiceApresRetrait(avant, apres, currentIdx) {
+  if (!apres.length) return -1;
+  const actif = avant[currentIdx];
+  if (!actif) return currentIdx < 0 ? -1 : Math.min(currentIdx, apres.length - 1);
+  const ici = apres.indexOf(actif);
+  if (ici >= 0) return ici;
+  for (let k = currentIdx + 1; k < avant.length; k++) {
+    const j = apres.indexOf(avant[k]);
+    if (j >= 0) return j;
+  }
+  return apres.length - 1;
+}
+
 function removeInitCombatant(key) {
-  initState.combatants = initState.combatants.filter(c => c.id !== key);
-  if (initState.currentIdx >= initState.combatants.length) initState.currentIdx = Math.max(0, initState.combatants.length - 1);
+  const avant = initState.combatants;
+  initState.combatants = avant.filter(c => c.id !== key);
+  initState.currentIdx = indiceApresRetrait(avant, initState.combatants, initState.currentIdx);
   renderInitChips();
+  saveDmState();
 }
 
 /* ══════════════════════════════════════════
@@ -4305,10 +4349,10 @@ document.addEventListener('click', closeAllMenus);
 document.addEventListener('keydown', e => {
   const tag = e.target.tagName;
   if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-  if (e.key === ' ') {
-    e.preventDefault();
-    document.getElementById('init-next').click();
-  } else if (e.key === '/') {
+  /* Espace n'est PAS traite ici : l'ecouteur de l'initiative s'en charge deja,
+     avec ses garde-fous. Le traiter deux fois faisait sauter un combattant a
+     chaque appui, et avancer le tour quand on activait une puce au clavier. */
+  if (e.key === '/') {
     e.preventDefault();
     document.getElementById('player-search')?.focus();
   } else if (e.key === 'Escape') {

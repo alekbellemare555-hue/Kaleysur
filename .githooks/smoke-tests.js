@@ -2480,6 +2480,99 @@ function ok(cond, label) {
   const perc = dc.profSkills.find(x => x.sk.key === 'perception');
   eq(perc && perc.prof, 2, 'dmCalc Perception expertise');
 
+
+  /* ── Le pointeur de tour survit au retrait d'un combattant ── */
+  {
+    eval(extract(D, 'function indiceApresRetrait(avant, apres, currentIdx)'));
+    const A = { id:'A' }, B = { id:'B' }, Cc = { id:'C' }, Dd = { id:'D' };
+    const ordre = [A, B, Cc, Dd];
+    const sans = (x) => ordre.filter(c => c !== x);
+
+    /* Supprimer une creature deja passee : le tour reste a C. L'ancien code
+       gardait l'indice 2, qui designait alors D — C perdait son tour. */
+    eq(indiceApresRetrait(ordre, sans(A), 2), 1, 'retrait de A pendant le tour de C : C garde la main');
+    /* Supprimer une creature qui n'a pas encore joue : le tour ne bouge pas. */
+    eq(indiceApresRetrait(ordre, sans(Dd), 2), 2, 'retrait de D pendant le tour de C : C garde la main');
+    /* Supprimer l'actif lui-meme : la main passe a celui qui le suivait. */
+    eq(indiceApresRetrait(ordre, sans(B), 1), 1, 'retrait de B pendant son tour : la main passe a C');
+    /* L'actif etait le dernier : on se place sur le nouveau dernier, et
+       « Tour suivant » bouclera en comptant le round. */
+    eq(indiceApresRetrait(ordre, sans(Dd), 3), 2, 'retrait du dernier pendant son tour : on reste en fin de round');
+    /* Plus personne. */
+    eq(indiceApresRetrait([A], [], 0), -1, 'liste videe : aucun tour');
+    /* Combat pas encore commence. */
+    eq(indiceApresRetrait(ordre, sans(A), -1), -1, 'avant le premier tour : toujours aucun tour');
+
+    /* Le rechargement retire les joueurs : meme calcul. Aria > B > Bram > C > D,
+       tour de C (indice 3). L'ancien code sauvegardait 3, hors de la liste
+       restante B > C > D. */
+    const Aria = { id:'Aria', type:'player' }, Bram = { id:'Bram', type:'player' };
+    const B2 = { id:'B', type:'monster' }, C2 = { id:'C', type:'monster' }, D2 = { id:'D', type:'monster' };
+    const avant = [Aria, B2, Bram, C2, D2];
+    const restants = avant.filter(c => c.type !== 'player');
+    eq(indiceApresRetrait(avant, restants, 3), 1, 'rechargement pendant le tour de C : C garde la main');
+    /* Pendant le tour d'un joueur : la main passe au monstre qui le suivait. */
+    eq(indiceApresRetrait(avant, restants, 2), 1, 'rechargement pendant le tour de Bram : la main passe a C');
+
+    /* Les deux chemins passent bien par la fonction. */
+    const rm = D.slice(D.indexOf('function removeInitCombatant(key)'), D.indexOf('function removeInitCombatant(key)') + 400);
+    ok(/indiceApresRetrait\(/.test(rm), 'la suppression recalcule le tour');
+    ok(/saveDmState\(\)/.test(rm), 'la suppression est sauvegardee');
+    const sv = D.slice(D.indexOf('function saveDmState'), D.indexOf('function restoreDmState'));
+    ok(/indiceApresRetrait\(initState\.combatants, restants/.test(sv), 'la sauvegarde recalcule le tour');
+    ok(/type !== 'player'/.test(sv), 'les joueurs restent hors de la sauvegarde (choix du 20 mai)');
+
+    /* Corriger une initiative ne deplace pas le tour sur le combattant corrige. */
+    const ch = D.slice(D.indexOf(".init-chip-inp').addEventListener('change'"),
+                       D.indexOf(".init-chip-inp').addEventListener('change'") + 900);
+    ok(/const curId = initState\.combatants\[initState\.currentIdx\]\?\.id;/.test(ch),
+       'saisie d initiative : l actif est memorise avant le tri');
+    ok(!/findIndex\(x => x\.id === ct\.id\)/.test(ch),
+       'saisie d initiative : le tour ne saute plus sur le combattant corrige');
+  }
+
+  /* ── Espace n'avance que d'un tour ── */
+  {
+    /* Deux ecouteurs traitaient Espace : un appui faisait sauter un combattant.
+       Seul celui de l'initiative, qui a ses garde-fous, doit le traiter. */
+    const ecouteurs = D.split("document.addEventListener('keydown'").slice(1)
+      .map(b => b.slice(0, 900))
+      .filter(b => /e\.key === ' '/.test(b) && /init-next/.test(b));
+    eq(ecouteurs.length, 1, 'un seul ecouteur fait avancer le tour sur Espace');
+    ok(/initState\.open/.test(ecouteurs[0] || ''), 'et c est celui qui verifie que l initiative est ouverte');
+  }
+
+  /* ── Les conditions du MJ ── */
+  {
+    /* Un const declare dans un eval direct ne fuit pas : on le fait renvoyer. */
+    const ALL_CONDITIONS = new Function(extract(D, 'const ALL_CONDITIONS') + ' return ALL_CONDITIONS;')();
+    const desc = D.slice(D.indexOf('const CONDITION_DESC'), D.indexOf('};', D.indexOf('const CONDITION_DESC')));
+    const decrites = (desc.match(/'([A-Z][a-zA-Z]+)'\s*:/g) || []).map(x => x.replace(/[':\s]/g, ''));
+    ok(decrites.length >= 15, 'CONDITION_DESC lue : ' + decrites.length + ' conditions');
+    /* Toute condition decrite est dans le menu, sauf Exhaustion qui va par
+       niveaux. Paralyzed et Petrified manquaient : Hold Person et Flesh to
+       Stone ne pouvaient pas se noter sur un monstre. */
+    decrites.filter(c => c !== 'Exhaustion').forEach(c =>
+      ok(ALL_CONDITIONS.includes(c), 'menu des conditions du MJ : ' + c));
+    ALL_CONDITIONS.forEach(c => ok(decrites.includes(c), c + ' : a une description'));
+    eq(new Set(ALL_CONDITIONS).size, ALL_CONDITIONS.length, 'aucune condition en double');
+  }
+
+  /* ── Les ressources de classe sur le panneau joueur ── */
+  {
+    /* Le panneau lisait c.ressources et r.actuel, que la fiche n'ecrit jamais.
+       Le repos long testait r.recharge === 'long', une cle qui n'existe pas. */
+    /* Sur le code seul : les commentaires citent les anciens noms pour
+       expliquer le correctif, ils ne doivent pas faire echouer le test. */
+    const code = D.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
+    ok(!/c\.ressources/.test(code), 'plus aucune lecture de c.ressources');
+    ok(!/\.actuel\b/.test(code), 'plus aucune lecture de r.actuel');
+    ok(!/r\.recharge === 'long'/.test(code), 'le repos long ne teste plus une cle inexistante');
+    ok(/c\.resources\.map\(\(r,ri\)/.test(D), 'le panneau parcourt c.resources');
+    const pips = D.slice(D.indexOf(".res-pip').forEach"), D.indexOf(".res-pip').forEach") + 700);
+    ok(/res\.used = \(pi < cur\) \? pi : pi \+ 1;/.test(pips), 'clic sur une case : meme geste que la fiche');
+  }
+
   /* -- Actions de groupe : degats avec PV temporaires, soins, sauvegardes -- */
   eval([
     extract(D, 'function applyDamageWithTemp(cible, degats)'),
