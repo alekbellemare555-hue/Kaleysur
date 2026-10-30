@@ -96,6 +96,7 @@ function ok(cond, label) {
     extract(J, 'function marquerAttente(u, revCloud)'),
     extract(J, 'function effacerAttente(u)'),
     extract(J, 'function choisirAuDemarrage(local, distant, attente)'),
+    extract(J, 'function ddConcentration(degats)'),
     extract(J, 'function migrerNomsAttaques(c)'),
     extract(J, 'function setFeatureChoice(c, featureName, className, selection)'),
     extract(J, 'function pendingFeatureChoices(c)'),
@@ -1401,6 +1402,33 @@ function ok(cond, label) {
     /* Le bandeau montre les des restants, plus N/N en permanence. */
     const b = J.slice(J.indexOf("getElementById('vb-hero-hd')"), J.indexOf("getElementById('vb-hero-hd')") + 700);
     ok(/const restants = Math\.max\(0, ndv - \(parseInt\(c\.nbDeVieUtilises\) \|\| 0\)\);/.test(b), 'bandeau : les des restants sur le total');
+  }
+
+  /* ── Perception passive et jet de concentration ── */
+  {
+    /* « Le DD est egal a 10 ou a la moitie des degats subis (arrondir a
+       l inferieur) ... jusqu a un DD maximal de 30. » Le site arrondissait au
+       superieur et ne plafonnait pas. */
+    [[1,10],[19,10],[20,10],[21,10],[22,11],[25,12],[59,29],[60,30],[61,30],[200,30],[0,10]]
+      .forEach(([d, dd]) => eq(ddConcentration(d), dd, 'DD de concentration pour ' + d + ' degats'));
+
+    /* Les passives lisent le meme bonus que la liste : Expertise et mods
+       compris. Rejoue dans la page : Perception +6 en liste, 16 en passive. */
+    const pas = J.slice(J.indexOf('function renderPassiveSkills()'), J.indexOf('function renderPassiveSkills()') + 1400);
+    ok(/10 \+ bonusCompetence\(c, p\.key, p\.attr\)/.test(pas), 'passives : 10 + le bonus de la competence');
+    ok(/ppEl\.textContent = 10 \+ bonusCompetence\(c, 'perception', 'sag'\)/.test(pas), 'badge PP : meme calcul');
+    ok(/const val = bonusCompetence\(c, sk\.key, sk\.attr\);/.test(J), 'la liste des competences lit la meme fonction');
+    ok(/const val  = bonusSauvegarde\(c, sv\.key, sv\.attr\);/.test(J), 'la liste des sauvegardes aussi');
+    const bc = J.slice(J.indexOf('function bonusCompetence(c, key, attr)'), J.indexOf('function bonusCompetence(c, key, attr)') + 500);
+    ok(/bonus \* niveau/.test(bc), 'l Expertise double le bonus de maitrise');
+
+    /* Le jet de concentration : DD partage, bonus de la liste, de affiche tel
+       quel, et plus d Inspiration consommee en douce. */
+    const cc = J.slice(J.indexOf('Jet de concentration auto'), J.indexOf('Jet de concentration auto') + 2200);
+    ok(/const dc = ddConcentration\(dmg\);/.test(cc), 'concentration : le DD de la regle');
+    ok(/bonusSauvegarde\(c, 'saveCon', 'con'\)/.test(cc), 'concentration : le bonus de sauvegarde, mods compris');
+    ok(!/showDiceRoll\(/.test(cc), 'concentration : plus de showDiceRoll, qui consommait l Inspiration');
+    ok(!/maintenue/.test(cc), 'concentration : plus de message en francais');
   }
 
   /* ── PV saisis a la main a la montee de niveau ── */
