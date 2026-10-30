@@ -2032,6 +2032,15 @@ function ok(cond, label) {
   eq(purseValue({ pp:1, gp:1, ep:1, sp:1, cp:1 }), 11.61, 'toutes les denominations');
   eq(purseValue({}), 0, 'bourse vide');
   eq(itemsValue([{ name:'A', cost:15, qty:2 }]), { total:30, sansPrix:0 }, 'prix multiplie par la quantite');
+  /* Une quantite 0 (objet epuise) vaut 0, comme dans le poids : la valeur la
+     comptait pour 1, et la fiche l affichait « 1 ». */
+  eq(itemsValue([{ name:'A', cost:15, qty:0 }]), { total:0, sansPrix:0 }, 'quantite 0 : ne vaut rien');
+  eq(itemsValue([{ name:'A', cost:15 }]), { total:15, sansPrix:0 }, 'quantite absente : 1 par defaut');
+  eq(itemsValue([{ name:'A', cost:15, qty:'' }]), { total:15, sansPrix:0 }, 'quantite vide : 1 par defaut');
+  /* Recherche litterale : une regex mal echappee ($ non protege) laissait
+     passer le defaut au controle negatif. */
+  eq(J.split('value="${item.qty||1}"').length - 1, 0, 'plus aucun champ de quantite n affiche 1 pour 0');
+  eq(J.split('value="${item.qty ?? 1}"').length - 1, 2, 'les deux champs de quantite affichent 0 tel quel');
   eq(itemsValue([{ name:'A', cost:15 }, { name:'B' }]), { total:15, sansPrix:1 },
      'objet sans prix signale, pas compte a zero');
   eq(itemsValue([{ name:'A', cost:2.5 }]), { total:2.5, sansPrix:0 }, 'quantite absente = 1');

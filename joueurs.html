@@ -10061,7 +10061,9 @@ function itemsValue(items) {
   (items || []).forEach(it => {
     const c = parseFloat(it.cost);
     if (isNaN(c)) { sansPrix++; return; }
-    total += c * (parseInt(it.qty) || 1);
+    /* Comme le poids : une quantite 0 (objet epuise) vaut 0, pas 1. */
+    const q = parseInt(it.qty);
+    total += c * (isNaN(q) ? 1 : q);
   });
   return { total: Math.round(total * 100) / 100, sansPrix };
 }
@@ -10135,7 +10137,7 @@ function renderInventory() {
     const tr = document.createElement('tr');
     tr.className = (item.equipped ? 'inv-row-equipped ' : '') + (item.attuned ? 'inv-row-attuned' : '');
     tr.innerHTML = `
-      <td><input class="inv-inp" style="width:50px;text-align:center;" data-item="${i}" data-ik="qty"   type="number" value="${item.qty||1}" min="0"></td>
+      <td><input class="inv-inp" style="width:50px;text-align:center;" data-item="${i}" data-ik="qty"   type="number" value="${item.qty ?? 1}" min="0"></td>
       <td><input class="inv-inp" data-item="${i}" data-ik="name"  value="${esc(item.name||'')}"  placeholder="Item name"></td>
       <td><input class="inv-inp" data-item="${i}" data-ik="notes" value="${esc(item.notes||'')}" placeholder="Description"></td>
       <td><input class="inv-inp" style="width:52px;text-align:center;" data-item="${i}" data-ik="weight" type="number" step="0.1" min="0" value="${item.weight ?? ''}" placeholder="—" title="Unit weight (lb)"></td>
@@ -10827,7 +10829,7 @@ function renderAdminModalTab() {
   } else if (adminActiveTab === 'inventaire') {
     const itemRows = items.map((item, i) => `
       <tr>
-        <td><input class="inv-inp ae-item" style="width:55px;text-align:center;" data-item="${i}" data-ik="qty" type="number" value="${item.qty||1}" min="0"></td>
+        <td><input class="inv-inp ae-item" style="width:55px;text-align:center;" data-item="${i}" data-ik="qty" type="number" value="${item.qty ?? 1}" min="0"></td>
         <td><input class="inv-inp ae-item" data-item="${i}" data-ik="name" value="${esc(item.name)}" placeholder="Name"></td>
         <td><input class="inv-inp ae-item" data-item="${i}" data-ik="notes" value="${esc(item.notes)}" placeholder="Description"></td>
         <td><button class="atk-del ae-del-item" data-del-item="${i}" title="Delete">✕</button></td>
