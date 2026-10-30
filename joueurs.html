@@ -2148,6 +2148,16 @@
 .dice-toast-d20.nat1  { color: var(--danger); }
 .dice-toast-label { font-size: 0.65rem; color: var(--gold-text); text-transform: uppercase; }
 .dice-toast-total { font-size: 0.85rem; color: var(--j-text, #e2cfa0); }
+/* Le toast laisse passer les clics (pointer-events: none) ; ses boutons, une
+   fois visibles, doivent les recevoir — le partage n'etait pas cliquable. */
+#dice-toast.visible #dice-share-btn, #dice-toast.visible #dice-reroll-btn { pointer-events: auto; }
+#dice-reroll-btn {
+  margin-top: 0.35rem; background: rgba(240,192,64,0.12); border: 1px solid #b08020; color: #f0c040;
+  border-radius: 4px; font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.05em;
+  padding: 0.2rem 0.65rem; cursor: pointer;
+}
+#dice-reroll-btn:hover { background: rgba(240,192,64,0.25); }
+#dice-reroll-btn[hidden] { display: none; }
 
 /* ── Dice tray ── */
 #dice-tray-btn { font-size:0.8rem; padding:0.3rem 0.65rem; }
@@ -3182,7 +3192,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
       <div class="dash-actions">
         <span class="conn-indicator" id="conn-indicator" title="Cloud connection status">…</span>
         <span class="save-badge" id="save-badge"></span>
-        <button class="inspiration-btn" id="btn-inspiration" title="Inspiration (advantage on one roll)" aria-label="Inspiration (advantage on one roll)">✦</button>
+        <button class="inspiration-btn" id="btn-inspiration" title="Heroic Inspiration — after a roll, reroll one die" aria-label="Heroic Inspiration — after a roll, reroll one die">✦</button>
         <button class="btn btn-sm btn-gold" id="btn-new-char" title="New character" onclick="openNewCharModal()" style="font-size:1rem;padding:0 0.55rem;line-height:1;">+</button>
         <button class="btn btn-sm" id="btn-layout-edit" title="Rearrange sections">⠿</button>
         <button class="btn btn-sm" id="btn-undo" title="Cancel (Ctrl+Z)" disabled style="opacity:0.4;">↩</button>
@@ -5980,12 +5990,38 @@ function renderDashboard() {
   renderInspiration();
 }
 
+/* ── Inspiration heroique (regles 2024) ──
+   Un seul etat, c.inspiration, par personnage : la case de la fiche, le
+   bouton de la barre, le MJ et l'admin lisent le meme. */
 function renderInspiration() {
   const btn = document.getElementById('btn-inspiration');
   if (!btn || !playerData) return;
-  const active = !!playerData.inspiration;
+  const active = !!C().inspiration;
   btn.classList.toggle('active', active);
-  btn.title = active ? 'Inspiration active — click to use' : 'Inspiration (advantage on one roll)';
+  btn.title = active ? 'Heroic Inspiration — after a roll, reroll one die' : 'Heroic Inspiration (none)';
+  const box = document.querySelector('[data-f="inspiration"]');
+  if (box) box.checked = active;
+  if (typeof majRelance === 'function') majRelance();
+}
+
+/* L'ancien etat vivait sur le compte (playerData.inspiration) : il passe au
+   personnage actif, une fois. true si quelque chose a change. */
+function migrerInspiration(pd, c) {
+  if (!pd || !Object.prototype.hasOwnProperty.call(pd, 'inspiration')) return false;
+  if (pd.inspiration && c) c.inspiration = true;
+  delete pd.inspiration;
+  return true;
+}
+
+/* « Reroll any die immediately after rolling it, and you must use the new
+   roll. » Sur un d20 : le de qui compte est relance. En avantage comme en
+   desavantage, c'est le plus bas qu'on a interet a relancer (avantage : le
+   plus haut reste acquis ; desavantage : le plus bas est celui qui compte). */
+function relancerD20(mode, des, nouveau) {
+  if ((mode === 'adv' || mode === 'dis') && Array.isArray(des) && des.length === 2) {
+    return des[0] <= des[1] ? [nouveau, des[1]] : [des[0], nouveau];
+  }
+  return [nouveau];
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -6460,6 +6496,7 @@ function _renderTab(tabId) {
 
 function renderAll() {
   migrateToMulticlass(C());
+  if (migrerInspiration(playerData, C())) triggerSave();
   migrateAttunement(INV());
   fillFields();
   populateSpeciesUI();
@@ -8848,7 +8885,9 @@ function renderLvlupTab() {
       let hp;
       if (i===0) { hp = Math.max(1, d.hitDieNum + d.conMod); }
       else { const r = rollDiceExpr(d.hitDie); hp = Math.max(1, r.total + d.conMod);
-             showDiceRoll(`Lv ${i+1} HP (${d.hitDie}+CON)`, d.conMod); }
+             /* Le de affiche est celui qui compte : showDiceRoll tirait un d20 a part. */
+             showDamageRoll(`Lv ${i+1} HP (${d.hitDie}+CON)`,
+               { total: hp, detail: `${r.total} ${d.conMod >= 0 ? '+' : '−'} ${Math.abs(d.conMod)} = ${hp}` }); }
       rows[i].hp = hp; triggerSave();
       setTimeout(() => renderLvlupTab(), i===0?0:380);
     })
@@ -12805,6 +12844,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       else C()[el.dataset.f] = el.value;
 
       if (el.dataset.f === 'characterName') { activeSlot().name = el.value || 'Unnamed'; renderCharCards(); }
+      if (el.dataset.f === 'inspiration') renderInspiration();
       if (el.dataset.f === 'niveau') { syncClassesToLegacy(C()); updateProfBonus(); renderSaves(); renderSkills(); renderPassiveSkills(); renderClassFeatures(); renderMulticlasses(); }
       if (el.dataset.f === 'classe') { autoFillClass(el.value); updateCharSummary(); renderCharCards(); }
       if (['for','dex','con','int','sag','cha'].includes(el.dataset.f)) { updateModifier(el.dataset.f); debouncedStats(() => { renderSaves(); renderSkills(); renderPassiveSkills(); updateSpellCalcs(); renderAttacks(); if (C().armorConfig?.mode && C().armorConfig.mode !== 'custom') calcAndSetAC(); }); }
@@ -13802,10 +13842,10 @@ ${car} characters of notes.
   /* ── Inspiration ── */
   document.getElementById('btn-inspiration')?.addEventListener('click', () => {
     if (!playerData) return;
-    playerData.inspiration = !playerData.inspiration;
+    C().inspiration = !C().inspiration;
     renderInspiration();
     triggerSave();
-    showToast(playerData.inspiration ? '✦ Inspiration gained!' : '✦ Inspiration used.');
+    showToast(C().inspiration ? '✦ Heroic Inspiration gained!' : '✦ Heroic Inspiration removed.');
   });
 
   /* ── Épuisement (pips) ── */
@@ -15017,6 +15057,7 @@ function _handleIdentiteField(el) {
   else C()[f] = el.value;
   if (f === 'characterName') { activeSlot().name = el.value || 'Unnamed'; renderCharCards(); renderHero(); }
   if (f === 'species' || f === 'xp') renderHero();
+  if (f === 'inspiration') renderInspiration();
   updateCharSummary();
   triggerSave();
 }
@@ -15229,13 +15270,39 @@ document.addEventListener('keydown', e => {
   // Inject toast DOM
   const t = document.createElement('div');
   t.id = 'dice-toast';
-  t.innerHTML = '<button id="dice-share-btn" title="Share to chat" aria-label="Share to chat">' + ic('export') + '</button><div class="dice-toast-d20" id="dice-d20">—</div><div class="dice-toast-label" id="dice-label"></div><div class="dice-toast-total" id="dice-total"></div>';
-  t.style.position = 'relative';
+  t.innerHTML = '<button id="dice-share-btn" title="Share to chat" aria-label="Share to chat">' + ic('export') + '</button><div class="dice-toast-d20" id="dice-d20">—</div><div class="dice-toast-label" id="dice-label"></div><div class="dice-toast-total" id="dice-total"></div>'
+    + '<button id="dice-reroll-btn" type="button" hidden title="Spend Heroic Inspiration to reroll this d20 — the new roll stands">✦ Reroll</button>';
+  /* Pas de position en ligne : #dice-toast est en position: fixed, ce qui sert
+     deja de repere au bouton de partage. Un « relative » ici l'ecrasait, et le
+     toast tombait au bas du document, hors de l'ecran. */
   document.body.appendChild(t);
 
   let _diceTimer;
-  window.showDiceRoll = function(label, bonus) {
-    const roll = Math.floor(Math.random() * 20) + 1;
+  /* Le dernier d20 affiche, pour la relance de l'Inspiration heroique. */
+  window._dernierD20 = null;
+  window.majRelance = function () {
+    const b = document.getElementById('dice-reroll-btn');
+    if (!b) return;
+    const d = window._dernierD20;
+    b.hidden = !(d && !d.relance && playerData && C().inspiration);
+  };
+  /* Tant que la relance est possible, le toast reste plus longtemps. */
+  window._dureeToast = base => (window._dernierD20 && !window._dernierD20.relance && playerData && C().inspiration) ? 7000 : base;
+  document.getElementById('dice-reroll-btn').addEventListener('click', e => {
+    e.stopPropagation();
+    const d = window._dernierD20;
+    if (!d || d.relance || !playerData || !C().inspiration) return;
+    C().inspiration = false;
+    const des = relancerD20(d.mode, d.des, Math.floor(Math.random() * 20) + 1);
+    window.showDiceRoll('✦ ' + d.label, d.bonus, d.mode, des);
+    if (window._dernierD20) window._dernierD20.relance = true;
+    renderInspiration();
+    triggerSave();
+  });
+
+  window.showDiceRoll = function(label, bonus, _mode, force) {
+    const roll = force || Math.floor(Math.random() * 20) + 1;
+    window._dernierD20 = { label, bonus, mode: 'normal', des: [roll] };
     const total = roll + (parseInt(bonus) || 0);
     const d20El = document.getElementById('dice-d20');
     const lblEl = document.getElementById('dice-label');
@@ -15246,8 +15313,10 @@ document.addEventListener('keydown', e => {
     totEl.textContent = bonus !== 0 ? `${roll} ${bonus >= 0 ? '+' : ''}${bonus} = ${total}` : '';
     _lastShareText = 'd20 · ' + label + (bonus !== 0 ? ` (${bonus >= 0 ? '+' : ''}${bonus})` : '') + ' → **' + total + '**' + (roll === 20 ? ' — crit!' : roll === 1 ? ' — fumble!' : '');
     t.classList.add('visible');
+    window.majRelance();
     clearTimeout(_diceTimer);
-    _diceTimer = setTimeout(() => t.classList.remove('visible'), 2800);
+    clearTimeout(window._diceTimerAdv);
+    _diceTimer = setTimeout(() => t.classList.remove('visible'), window._dureeToast(2800));
     window._logRoll?.(label + (bonus !== 0 ? ` (${bonus >= 0 ? '+' : ''}${bonus})` : ''), total, roll === 20 ? 'nat20' : roll === 1 ? 'nat1' : '');
   };
 
@@ -15255,6 +15324,8 @@ document.addEventListener('keydown', e => {
      "showDiceRoll puis override du DOM" qui faussait le partage 📤 et consommait
      l'inspiration sur de simples jets de dégâts. */
   window.showDamageRoll = function(label, res, cls = '') {
+    window._dernierD20 = null;
+    window.majRelance();
     const d20El = document.getElementById('dice-d20');
     document.getElementById('dice-label').textContent = label;
     d20El.textContent = res.total;
@@ -15417,22 +15488,15 @@ document.addEventListener('dblclick', e => {
   showDamageRoll(name + ' · ' + expr, res);
 });
 
-/* ── 15. ADV / DIS roll mode + inspiration auto-advantage ── */
+/* ── 15. ADV / DIS roll mode ──
+   L'Inspiration ne donne plus d'avantage automatique (regle de 2014) : en
+   2024, on la depense APRES le jet, pour relancer (bouton du toast). */
 window._rollMode = 'normal';
 
 (function () {
   const _orig = window.showDiceRoll;
-  window.showDiceRoll = function (label, bonus, modeOverride) {
+  window.showDiceRoll = function (label, bonus, modeOverride, des) {
     let mode = modeOverride || window._rollMode || 'normal';
-
-    // Inspiration → gratuitous advantage (consumes it)
-    if (mode === 'normal' && playerData?.inspiration) {
-      playerData.inspiration = false;
-      renderInspiration();
-      triggerSave();
-      mode = 'adv';
-      label = '✦ ' + label;
-    }
 
     // Reset mode UI
     window._rollMode = 'normal';
@@ -15440,8 +15504,10 @@ window._rollMode = 'normal';
       b.classList.toggle('active', b.id === 'drm-norm'));
 
     if (mode === 'adv' || mode === 'dis') {
-      const r1 = Math.floor(Math.random() * 20) + 1;
-      const r2 = Math.floor(Math.random() * 20) + 1;
+      /* des : impose par une relance d'Inspiration ; sinon on tire. */
+      const r1 = (des && des[0]) || Math.floor(Math.random() * 20) + 1;
+      const r2 = (des && des[1]) || Math.floor(Math.random() * 20) + 1;
+      window._dernierD20 = { label, bonus, mode, des: [r1, r2] };
       const roll = mode === 'adv' ? Math.max(r1, r2) : Math.min(r1, r2);
       const bonusNum = parseInt(bonus) || 0;
       const total = roll + bonusNum;
@@ -15455,11 +15521,12 @@ window._rollMode = 'normal';
       totEl.textContent = `(${r1}, ${r2})` + (bonusNum !== 0 ? ` ${bonusNum >= 0 ? '+' : ''}${bonusNum} = ${total}` : '');
       _lastShareText = 'd20 · ' + (mode === 'adv' ? '⬆ ' : '⬇ ') + label + (bonusNum !== 0 ? ` (${bonusNum >= 0 ? '+' : ''}${bonusNum})` : '') + ` (${r1},${r2}) → **${total}**` + (roll === 20 ? ' — crit!' : roll === 1 ? ' — fumble!' : '');
       t.classList.add('visible');
+      window.majRelance?.();
       clearTimeout(window._diceTimerAdv);
-      window._diceTimerAdv = setTimeout(() => t.classList.remove('visible'), 3200);
+      window._diceTimerAdv = setTimeout(() => t.classList.remove('visible'), window._dureeToast ? window._dureeToast(3200) : 3200);
       window._logRoll?.((mode === 'adv' ? '⬆ ' : '⬇ ') + label + ` (${r1},${r2})` + (bonusNum !== 0 ? ` ${bonusNum >= 0 ? '+' : ''}${bonusNum}` : ''), total, roll === 20 ? 'nat20' : roll === 1 ? 'nat1' : '');
     } else {
-      _orig(label, bonus);
+      _orig(label, bonus, 'normal', des && des[0]);
     }
   };
 })();

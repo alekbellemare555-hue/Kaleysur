@@ -52,6 +52,8 @@ function ok(cond, label) {
     extract(J, 'function getClasses(c)'),
     extract(J, 'function getTotalLevel(c)'),
     extract(J, 'function classesReelles(c)'),
+    extract(J, 'function migrerInspiration(pd, c)'),
+    extract(J, 'function relancerD20(mode, des, nouveau)'),
     extract(J, 'const RESSOURCES_2014'),
     extract(J, 'const RESSOURCES_RENOMMEES'),
     extract(J, 'function migrerRessources2024(c)'),
@@ -1945,6 +1947,47 @@ function ok(cond, label) {
     /* L editeur admin lit used : il remettait tout a zero en enregistrant. */
     ok(/ae-resource-cur" data-ri="\$\{i\}" value="\$\{r\.used\|\|0\}"/.test(J), 'admin : affiche r.used');
     ok(!/r\.current\|\|0/.test(J), 'admin : plus de r.current');
+  }
+
+
+  /* ── Inspiration heroique (2024) : une relance apres le jet, un seul etat ── */
+  {
+    /* « Reroll any die immediately after rolling it, and you must use the new roll. » */
+    eq(relancerD20('normal', [4], 17), [17], 'relance : le d20 est remplace');
+    eq(relancerD20('adv', [3, 15], 9), [9, 15], 'relance en avantage : le plus bas');
+    eq(relancerD20('adv', [15, 3], 9), [15, 9], 'relance en avantage : le plus bas, a droite');
+    eq(relancerD20('dis', [3, 15], 18), [18, 15], 'relance en desavantage : le plus bas (celui qui compte)');
+    eq(relancerD20('dis', [7, 7], 2), [2, 7], 'relance : egalite, un seul de');
+    eq(relancerD20('normal', undefined, 5), [5], 'relance : sans des connus');
+
+    /* Un seul etat : c.inspiration. L ancien etat du compte passe au personnage. */
+    const c1 = {}, pd1 = { inspiration: true };
+    eq(migrerInspiration(pd1, c1), true, 'migration : signalee');
+    eq(c1.inspiration, true, 'migration : le personnage actif la recoit');
+    eq('inspiration' in pd1, false, 'migration : plus d etat sur le compte');
+    const c2 = { inspiration: true }, pd2 = { inspiration: false };
+    migrerInspiration(pd2, c2);
+    eq(c2.inspiration, true, 'migration : un false du compte n efface pas celle du personnage');
+    eq(migrerInspiration({}, {}), false, 'migration : rien a faire');
+    eq(migrerInspiration(null, {}), false, 'migration : pas de compte');
+
+    const Jc = J.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+    eq((Jc.match(/playerData\??\.inspiration/g) || []).length, 0, 'plus aucune lecture de playerData.inspiration');
+    ok(/const active = !!C\(\)\.inspiration;/.test(Jc), 'le bouton lit le personnage');
+    ok(/C\(\)\.inspiration = !C\(\)\.inspiration;/.test(Jc), 'le bouton ecrit le personnage');
+    ok(!/mode = 'adv';\s*\n\s*label = '✦ '/.test(Jc), 'plus d avantage automatique');
+    ok(/id="dice-reroll-btn"/.test(J), 'le toast propose la relance');
+    ok(/relancerD20\(d\.mode, d\.des, /.test(Jc), 'la relance passe par relancerD20');
+    ok(/window\._dernierD20 = null;\s*\n\s*window\.majRelance\(\);/.test(Jc), 'un jet de degats ne propose pas de relance');
+    ok(/#dice-toast\.visible #dice-share-btn, #dice-toast\.visible #dice-reroll-btn \{ pointer-events: auto; \}/.test(J), 'les boutons du toast recoivent les clics');
+    ok(/if \(migrerInspiration\(playerData, C\(\)\)\) triggerSave\(\);/.test(Jc), 'la migration passe au rendu');
+    /* Le toast de des est en position: fixed ; un style en ligne « relative »
+       le jetait au bas du document, hors de l ecran. */
+    ok(!/t\.style\.position\s*=/.test(Jc), 'toast de des : pas de position en ligne');
+    ok(/#dice-toast \{\s*\n\s*position: fixed;/.test(J), 'toast de des : position fixe');
+    /* Le jet de PV du plan : le de de vie, pas un d20 a cote. */
+    ok(!/showDiceRoll\(\x60Lv \$\{i\+1\} HP/.test(Jc), 'plan de niveau : plus de d20 fantome');
+    ok(/showDamageRoll\(\x60Lv \$\{i\+1\} HP/.test(Jc), 'plan de niveau : le de de vie affiche');
   }
 
   /* ── PV saisis a la main a la montee de niveau ── */
