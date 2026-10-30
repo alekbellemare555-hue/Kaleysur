@@ -128,6 +128,7 @@ function ok(cond, label) {
     extract(J, 'function isAttunable(item)'),
     extract(J, 'function attunedItems(inv)'),
     extract(J, 'function migrateAttunement(inv)'),
+    extract(J, 'function maitrisesDeChoix(c, classe)'),
     extract(J, 'function isProficientWith(c, weaponCat, props)'),
     extract(J, 'function attackFromItem(item, c)'),
     extract(J, 'function syncAttackForItem(c, item, equipped)'),
@@ -1664,6 +1665,34 @@ function ok(cond, label) {
     ok(/Origin feats/.test(J.slice(J.indexOf('const featOpts ='), J.indexOf('const featOpts =') + 500)), 'onglet plan : aussi');
     /* Robuste comme don d origine a la creation : +2. */
     ok(/const pv = pvBonusAcquisition\(bg\.feat, 1\);/.test(J), 'creation : Robuste d historique donne +2');
+  }
+
+  /* ── Les ordres Protecteur et Gardien accordent leurs maitrises ── */
+  {
+    /* « Protector ... proficiency with Martial weapons and training with Heavy
+       armor. » « Warden ... Martial weapons and training with Medium armor. »
+       Le choix s enregistrait et rien ne suivait. */
+    const clerc = (ordre) => { const c = hero({ classes:[{ classe:'Cleric', sousClasse:'', niveau:1, customSousClasse:'' }] });
+      if (ordre) setFeatureChoice(c, 'Divine Order', 'Cleric', [ordre]); return c; };
+    const druide = (ordre) => { const c = hero({ classes:[{ classe:'Druid', sousClasse:'', niveau:1, customSousClasse:'' }] });
+      if (ordre) setFeatureChoice(c, 'Primal Order', 'Druid', [ordre]); return c; };
+    const hache = { finesse:false, light:false };
+    ok(!isProficientWith(clerc(), 'martial', hache), 'Clerc sans ordre : pas d arme de guerre');
+    ok(!isProficientWith(clerc('Thaumaturge'), 'martial', hache), 'Clerc Thaumaturge : pas d arme de guerre');
+    ok(isProficientWith(clerc('Protector'), 'martial', hache), 'Clerc Protecteur : armes de guerre');
+    ok(isProficientWith(druide('Warden'), 'martial', hache), 'Druide Gardien : armes de guerre');
+    ok(!isProficientWith(druide('Magician'), 'martial', hache), 'Druide Magicien : pas d arme de guerre');
+    eq(maitrisesDeChoix(clerc('Protector'), 'Cleric')?.armure, 'Heavy armor', 'Protecteur : armure lourde');
+    eq(maitrisesDeChoix(druide('Warden'), 'Druid')?.armure, 'Medium armor', 'Gardien : armure intermediaire');
+    eq(maitrisesDeChoix(clerc('Protector'), 'Druid'), null, 'l ordre d une classe ne vaut pas pour une autre');
+    eq(maitrisesDeChoix(hero({}), 'Wizard'), null, 'une classe sans ordre : rien');
+    /* Multiclasse : le Protecteur vaut quelle que soit la classe principale. */
+    const mc = hero({ classes:[{ classe:'Wizard', sousClasse:'', niveau:3, customSousClasse:'' }, { classe:'Cleric', sousClasse:'', niveau:1, customSousClasse:'' }] });
+    setFeatureChoice(mc, 'Divine Order', 'Cleric', ['Protector']);
+    ok(isProficientWith(mc, 'martial', hache), 'Magicien / Clerc Protecteur : armes de guerre');
+    /* Le panneau de classe et le createur l affichent. */
+    ok(/const ordre = maitrisesDeChoix\(c, classe\);/.test(J), 'panneau de classe : lit l ordre');
+    ok(/const ordre = maitrisesDeChoix\(c, selClass\.value\);/.test(J), 'createur : lit l ordre');
   }
 
   /* ── PV saisis a la main a la montee de niveau ── */

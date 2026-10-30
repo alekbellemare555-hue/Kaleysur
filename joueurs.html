@@ -5362,6 +5362,8 @@ function renderClassFeatures() {
 
   /* ── Proficiencies from primary class ── */
   const data = CLASS_DATA[classe];
+  /* L'Ordre Protecteur ou Gardien ajoute ses maitrises a celles de la classe. */
+  const ordre = maitrisesDeChoix(c, classe);
 
   /* Rappel de sous-classe : PHB 2024 — toutes les classes choisissent au niveau 3.
      On alerte pour chaque classe qui a atteint le palier sans choix enregistré. */
@@ -5396,8 +5398,8 @@ function renderClassFeatures() {
       <span class="cf-alert-hint">(Identity tab)</span></div>` : ''}
     <div class="cf-profs">
       <div class="cf-prof-item"><span class="cf-prof-label">Saving Throws:</span> ${data.saves.map(s=>ABIL_LABEL[s]||s.toUpperCase()).join(' &amp; ')}</div>
-      ${data.armorProf  ? `<div class="cf-prof-item"><span class="cf-prof-label">Armor:</span> ${data.armorProf}</div>` : ''}
-      ${data.weaponProf ? `<div class="cf-prof-item"><span class="cf-prof-label">Weapons:</span> ${data.weaponProf}</div>` : ''}
+      ${data.armorProf  ? `<div class="cf-prof-item"><span class="cf-prof-label">Armor:</span> ${data.armorProf}${ordre ? ', ' + ordre.armure + ' (' + ordre.option + ')' : ''}</div>` : ''}
+      ${data.weaponProf ? `<div class="cf-prof-item"><span class="cf-prof-label">Weapons:</span> ${data.weaponProf}${ordre ? ', ' + ordre.armes + ' (' + ordre.option + ')' : ''}</div>` : ''}
       ${skillPick}
     </div>
     <div class="cf-progress-bar"><div class="cf-progress-fill" style="width:${Math.round(totalLvl/20*100)}%"></div></div>
@@ -9853,12 +9855,31 @@ function armorFromItem(item) {
 
 /* Le personnage maitrise-t-il cette categorie d'arme ?
    weaponProf est du texte libre par classe (« Simple and Martial weapons »). */
+/** Maitrises qu'apporte un choix de capacite (regles 2024) : l'Ordre divin
+    Protecteur (Clerc) et l'Ordre primordial Gardien (Druide) ajoutent les armes
+    de guerre et une armure. Lu dans le choix enregistre, quel que soit le chemin
+    qui l'a pose — creation ou multiclassage. null si rien. */
+function maitrisesDeChoix(c, classe) {
+  const ORDRES = {
+    Cleric: { feature: 'Divine Order', option: 'Protector', armes: 'Martial weapons', armure: 'Heavy armor' },
+    Druid:  { feature: 'Primal Order', option: 'Warden',    armes: 'Martial weapons', armure: 'Medium armor' },
+  };
+  const o = ORDRES[classe];
+  if (!o || typeof getFeatureChoice !== 'function') return null;
+  return getFeatureChoice(c, o.feature, classe).includes(o.option) ? o : null;
+}
+
 function isProficientWith(c, weaponCat, props) {
   /* Une liste par classe, pas un texte concatene : deux classes multiclassees
      cumulent leurs maitrises, et une forme conditionnelle lue dans la bouillie
      des deux ne veut plus rien dire. */
   const listes = getClasses(c)
-    .map(cl => (typeof CLASS_DATA !== 'undefined' && CLASS_DATA[cl.classe]?.weaponProf) || '')
+    .map(cl => {
+      const base = (typeof CLASS_DATA !== 'undefined' && CLASS_DATA[cl.classe]?.weaponProf) || '';
+      /* Protecteur et Gardien ajoutent les armes de guerre, sans condition. */
+      const ordre = maitrisesDeChoix(c, cl.classe);
+      return ordre ? [base, ordre.armes].filter(Boolean).join(' and ') : base;
+    })
     .filter(Boolean)
     .map(t => t.toLowerCase());
   if (!listes.length) return true;              // classe inconnue : on n'invente pas un malus
@@ -14299,9 +14320,11 @@ ${car} characters of notes.
            choisir a la place du joueur. */
         const outils = [cd?.toolProf, tool].filter(Boolean);
         const memeOutil = cd?.toolProf && tool && cd.toolProf === tool;
+        /* L'Ordre choisi a l'etape 3 (Protecteur, Gardien) ajoute ses maitrises. */
+        const ordre = maitrisesDeChoix(c, selClass.value);
         const list = [
-          cd?.armorProf  && `Armor: ${cd.armorProf}`,
-          cd?.weaponProf && `Weapons: ${cd.weaponProf}`,
+          cd?.armorProf  && `Armor: ${cd.armorProf}${ordre ? ', ' + ordre.armure : ''}`,
+          cd?.weaponProf && `Weapons: ${cd.weaponProf}${ordre ? ', ' + ordre.armes : ''}`,
           outils.length  && `Tools: ${[...new Set(outils)].join(', ')}`
                             + (memeOutil ? ' — already granted twice, pick another of the same kind' : ''),
         ].filter(Boolean);
