@@ -2573,6 +2573,61 @@ function ok(cond, label) {
     ok(/res\.used = \(pi < cur\) \? pi : pi \+ 1;/.test(pips), 'clic sur une case : meme geste que la fiche');
   }
 
+
+  /* ── Le tiroir « Fiches » n'ecrase plus la fiche avec des valeurs perimees ── */
+  {
+    /* La sauvegarde relisait TOUS les champs du formulaire. Le temps reel
+       remplace l'objet du joueur sans redessiner le tiroir : corriger un seul
+       champ renvoyait les PV de l'ouverture et effacait les degats subis
+       depuis. Le scenario a ete rejoue dans la page reelle avant correction.
+       Ces assertions portent sur la forme du code, le DOM n'etant pas
+       disponible ici. */
+    const debut = D.indexOf('async function commitDrawerSave()');
+    const cds = D.slice(debut, D.indexOf('\n}\n', debut));
+    ok(debut !== -1, 'commitDrawerSave existe');
+    ok(/\[data-field\]\[data-modifie\]/.test(cds), 'fiche : seuls les champs modifies sont ecrits');
+    ok(/\[data-inv-currency\]\[data-modifie\]/.test(cds), 'bourse : seules les pieces modifiees sont ecrites');
+    ok(/\[data-inv-k\]\[data-modifie\]/.test(cds), 'inventaire : seuls les champs modifies sont ecrits');
+    ok(!/querySelectorAll\('\[data-field\]'\)\.forEach/.test(cds),
+       'fiche : plus de relecture de tous les champs');
+    /* Chaque ligne d'inventaire verifie que l'objet est toujours celui affiche :
+       sinon une suppression faite par le joueur decalait toutes les lignes. */
+    ok(/row\.dataset\.invNom/.test(cds), 'inventaire : la ligne verifie l identite de son objet');
+    ok(/decale = true/.test(cds), 'inventaire : une ligne decalee est refusee, pas ecrite');
+    ok(/delete el\.dataset\.modifie/.test(cds), 'apres ecriture, les champs redeviennent neutres');
+    /* L'avertissement doit rester visible : place avant le statut, il etait
+       recouvert aussitot par « Sauvegarde ✓ ». */
+    const iStatut = cds.indexOf("dot.className = 'save-dot saved'");
+    const iNote = cds.indexOf('showDrawerNote(');
+    ok(iStatut !== -1 && iNote > iStatut, 'l avertissement de ligne refusee vient apres le statut');
+
+    /* Les lignes portent le nom de leur objet. */
+    ok(/<tr data-inv-row="\$\{i\}" data-inv-nom="\$\{esc\(it\.name\|\|''\)\}">/.test(D),
+       'chaque ligne d inventaire porte l identite de son objet');
+    /* Une quantite 0 reste 0. */
+    ok(/data-inv-k="qty" value="\$\{it\.qty \?\? 1\}"/.test(D), 'une quantite 0 s affiche 0, pas 1');
+
+    /* Ajouter / Supprimer agissent sur l'objet relu, et la suppression verifie
+       la ligne. */
+    const del = D.slice(D.indexOf("body.querySelectorAll('[data-del-inv]')"), D.indexOf("body.querySelectorAll('[data-del-inv]')") + 900);
+    ok(/drawerSlotFrais\(\)/.test(del), 'supprimer : sur l objet relu');
+    ok(/dataset\.invNom/.test(del), 'supprimer : la ligne doit toujours designer le meme objet');
+    const add = D.slice(D.indexOf("getElementById('ds-btn-add-item')"), D.indexOf("getElementById('ds-btn-add-item')") + 500);
+    ok(/drawerSlotFrais\(\)/.test(add), 'ajouter : sur l objet relu');
+
+    /* Les trois saisies marquent ce qu'elles touchent. */
+    eq((D.match(/el\.dataset\.modifie = '1'; scheduleDrawerSave\(\);/g) || []).length, 5,
+       'les cinq ecouteurs de saisie marquent le champ touche');
+
+    /* Le temps reel redessine le tiroir ouvert sur ce joueur, sauf saisie en cours. */
+    const rt = D.slice(D.indexOf("event: 'UPDATE'"), D.indexOf("event: 'UPDATE'") + 2600);
+    /* La condition exacte, suivie du redessin : chercher la seule sous-chaine
+       laissait passer un « false && » glisse devant (controle negatif). */
+    ok(/if \(row\.username === _drawerPlayer\s*\n\s*&& document\.getElementById\('player-drawer'\)[\s\S]{0,500}if \(!enCours\) renderDrawerBody\(\);/.test(rt),
+       'temps reel : le tiroir ouvert sur ce joueur suit sa fiche');
+    ok(/querySelector\('\[data-modifie\]'\)/.test(rt), 'temps reel : pas de redessin pendant une saisie du MJ');
+  }
+
   /* -- Actions de groupe : degats avec PV temporaires, soins, sauvegardes -- */
   eval([
     extract(D, 'function applyDamageWithTemp(cible, degats)'),
