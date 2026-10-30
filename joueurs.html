@@ -6499,8 +6499,7 @@ function renderHero() {
        le lit ainsi. Y rajouter la DEX faisait passer +3 a +6 des le second
        rendu. En auto on relit la DEX courante : c.initiative peut dater d'avant
        un changement de caracteristique. */
-    const base  = c.initiativeManuelle ? (parseInt(c.initiative) || 0) : mod(abilScore('dex'));
-    const total = base + getMod('init');
+    const total = bonusInitiative(c);
     initEl.textContent = (total >= 0 ? '+' : '') + total;
     initEl.className = 'vb-mini-stat-val roll-trigger';
     initEl.dataset.rollLabel = 'Initiative';
@@ -6621,9 +6620,14 @@ const SAVES = [
   { key:'saveCha', attr:'cha', label:'Charisma' }
 ];
 /* ── Modificateurs actifs — helper ── */
+/** Somme des modificateurs actifs d'un personnage pour une cible donnee. */
+function modsDe(c, cible) {
+  return (c?.mods || []).filter(m => m.on && m.cible === cible)
+    .reduce((s, m) => s + (parseInt(m.val) || 0), 0);
+}
+
 function getMod(cible) {
-  const mods = C()?.mods || [];
-  return mods.filter(m => m.on && m.cible === cible).reduce((s, m) => s + (parseInt(m.val) || 0), 0);
+  return modsDe(C(), cible);
 }
 
 /* Bonus de dégâts actifs, sous forme d'expression à accoler à un jet.
@@ -6738,18 +6742,27 @@ function renderSaves() {
     Expertise (double), Touche-a-tout sur les competences non maitrisees, mods.
     Partage par la liste et par les passives — les passives en avaient une copie
     sans l'Expertise ni les mods. */
+/* Ces calculs lisent le personnage QU'ON LEUR PASSE, pas le personnage
+   connecte : la vue partagee s'en sert pour un autre personnage. */
 function bonusCompetence(c, key, attr) {
   const bonus = pb(getTotalLevel(c));
   const niveau = Math.min(2, Math.max(0, parseInt(c[key]) || (c[key] === true ? 1 : 0)));
   const jat = (c.jackOfAllTrades && niveau === 0) ? Math.floor(bonus / 2) : 0;
-  return mod(abilScore(attr)) + bonus * niveau + jat + getMod('all_sk') + getMod(attr);
+  return mod(parseInt(c[attr]) || 10) + bonus * niveau + jat + modsDe(c, 'all_sk') + modsDe(c, attr);
 }
 
 /** Bonus total d'un jet de sauvegarde, tel que la liste l'affiche. */
 function bonusSauvegarde(c, key, attr) {
   const bonus = pb(getTotalLevel(c));
-  return mod(abilScore(attr)) + (c[key] ? bonus : 0)
-       + getMod('all_sv') + getMod('sv_' + attr) + getMod(attr);
+  return mod(parseInt(c[attr]) || 10) + (c[key] ? bonus : 0)
+       + modsDe(c, 'all_sv') + modsDe(c, 'sv_' + attr) + modsDe(c, attr);
+}
+
+/** Bonus total d'initiative. c.initiative est le total saisi en mode manuel ;
+    en automatique c'est la DEX courante. Plus les modificateurs. */
+function bonusInitiative(c) {
+  const base = c.initiativeManuelle ? (parseInt(c.initiative) || 0) : mod(parseInt(c.dex) || 10);
+  return base + modsDe(c, 'init');
 }
 
 /** DD du jet de concentration apres des degats (regle 2024) : 10 ou la moitie
@@ -11600,7 +11613,7 @@ function renderViewSheet(el, pd, c, slot, username) {
      niveau TOTAL apres un import : lui faire confiance donnait +3 a un
      Guerrier 5 / Magicien 5. On additionne les classes. */
   const niveau = getTotalLevel(c);
-  const profBonus = Math.ceil(niveau/4) + 1;
+  const profBonus = pb(niveau);
   // ── HP
   const pvCur = parseInt(c.pvActuel)||0; const pvMax = parseInt(c.pvMax)||1;
   const hpPct = Math.round((pvCur/pvMax)*100);
@@ -11629,9 +11642,11 @@ function renderViewSheet(el, pd, c, slot, username) {
     {key:'saveCon',attr:'con',label:'CON'},{key:'saveInt',attr:'int',label:'INT'},
     {key:'saveSag',attr:'sag',label:'WIS'},{key:'saveCha',attr:'cha',label:'CHA'},
   ];
+  /* Les memes calculs que la fiche, modificateurs compris : la vue en avait une
+     copie qui les ignorait. */
   const savesHtml = SAVES_V.map(sv => {
     const prof = !!c[sv.key];
-    const val = mod(abilScore(sv.attr)) + (prof ? profBonus : 0);
+    const val = bonusSauvegarde(c, sv.key, sv.attr);
     return `<div class="view-skill"><span class="view-skill-dot ${prof?'prof':''}"></span>${esc(sv.label)} <strong style="color:var(--j-text,#e8e0d0);margin-left:auto">${fmtMod(val)}</strong></div>`;
   }).join('');
   // ── Skills — stored as c[sk.key] = 0|1|2 (or bool true=1, false=0)
@@ -11646,11 +11661,9 @@ function renderViewSheet(el, pd, c, slot, username) {
     {key:'prestidig',attr:'dex',label:'Sleight of Hand'},{key:'religion',attr:'int',label:'Religion'},
     {key:'survie',attr:'sag',label:'Survival'},{key:'perspicacite',attr:'sag',label:'Insight'},
   ];
-  const jat = !!c.jackOfAllTrades; const halfBonus = Math.floor(profBonus/2);
   const skillsHtml = [...SKILLS_V].sort((a,b)=>a.label.localeCompare(b.label)).map(sk => {
     const profLevel = Math.min(2, Math.max(0, parseInt(c[sk.key]) || (c[sk.key]===true?1:0)));
-    const jatBonus = (jat && profLevel===0) ? halfBonus : 0;
-    const val = mod(abilScore(sk.attr)) + (profLevel>=1?profBonus:0) + (profLevel>=2?profBonus:0) + jatBonus;
+    const val = bonusCompetence(c, sk.key, sk.attr);
     const dotCls = profLevel===2?'expert':profLevel===1?'prof':'';
     return `<div class="view-skill"><span class="view-skill-dot ${dotCls}"></span>${esc(sk.label)} <strong style="color:var(--j-text,#e8e0d0);margin-left:auto">${fmtMod(val)}</strong></div>`;
   }).join('');
@@ -11661,7 +11674,7 @@ function renderViewSheet(el, pd, c, slot, username) {
     <div class="view-header">
       ${avatarBloc}
       <div>
-        <div class="view-char-name">${esc(c.characterName||'Unnamed')}</div>
+        <div class="view-char-name">${esc(c.characterName || slot?.name || 'Unnamed')}</div>
         <div class="view-char-sub">${esc(classes)}${c.species?' · '+esc(c.species):''}</div>
         <div class="view-char-sub" style="margin-top:0.15rem;">${esc(pd.username||username||'')}</div>
       </div>
@@ -11679,8 +11692,8 @@ function renderViewSheet(el, pd, c, slot, username) {
     <div class="view-section">
       <div class="view-section-title">Combat</div>
       <div class="view-combat-grid">
-        <div class="view-combat-item"><div class="view-combat-label">AC</div><div class="view-combat-val">${parseInt(c.ca)||10}</div></div>
-        <div class="view-combat-item"><div class="view-combat-label">Initiative</div><div class="view-combat-val">${fmtMod(parseInt(c.initiative)||mod(abilScore('dex')))}</div></div>
+        <div class="view-combat-item"><div class="view-combat-label">AC</div><div class="view-combat-val">${(parseInt(c.ca)||10) + modsDe(c, 'ac')}</div></div>
+        <div class="view-combat-item"><div class="view-combat-label">Initiative</div><div class="view-combat-val">${fmtMod(bonusInitiative(c))}</div></div>
         <div class="view-combat-item"><div class="view-combat-label">Speed</div><div class="view-combat-val">${esc(c.vitesse||'30 ft')}</div></div>
         <div class="view-combat-item"><div class="view-combat-label">Prof.</div><div class="view-combat-val">+${profBonus}</div></div>
       </div>
@@ -11697,7 +11710,7 @@ function renderViewSheet(el, pd, c, slot, username) {
       <div class="view-section-title">Skills</div>
       <div class="view-skills-grid">${skillsHtml}</div>
     </div>
-    <div class="view-refresh-note">Auto-refresh every 30s · ${now}</div>`;
+    <div class="view-refresh-note">Updated ${now}</div>`;
 }
 
 /* ════════════════════════════════════════════════════════════

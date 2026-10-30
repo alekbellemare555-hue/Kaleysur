@@ -1373,10 +1373,19 @@ function ok(cond, label) {
     /* c.initiative est le bonus TOTAL ; le bandeau y rajoutait la DEX, et +3
        devenait +6 des le second rendu. Rejoue dans la page : +3 sur trois
        rendus, +5 en manuel. */
+    /* La formule vit dans bonusInitiative, partagee par le bandeau et la vue
+       partagee : on la teste par ses valeurs. */
     const h = J.slice(J.indexOf('if (initEl) {'), J.indexOf('if (initEl) {') + 900);
-    ok(/const base  = c\.initiativeManuelle \? \(parseInt\(c\.initiative\) \|\| 0\) : mod\(abilScore\('dex'\)\);/.test(h),
-       'bandeau : la base est soit la saisie, soit la DEX — jamais les deux');
-    ok(/const total = base \+ getMod\('init'\);/.test(h), 'bandeau : rien d autre ne s ajoute');
+    ok(/const total = bonusInitiative\(c\);/.test(h), 'bandeau : passe par bonusInitiative');
+    eval(extract(J, 'function modsDe(c, cible)'));
+    eval(extract(J, 'function bonusInitiative(c)'));
+    eq(bonusInitiative({ dex:16 }), 3, 'auto : la DEX, une seule fois');
+    eq(bonusInitiative({ dex:16, initiative:3 }), 3, 'auto : c.initiative deja ecrit n est pas ajoute a la DEX');
+    eq(bonusInitiative({ dex:16, initiative:5, initiativeManuelle:true }), 5, 'manuel : la saisie seule (Alert)');
+    eq(bonusInitiative({ dex:8 }), -1, 'auto : DEX negative');
+    eq(bonusInitiative({ dex:14, mods:[{ on:true, cible:'init', val:'2' }, { on:false, cible:'init', val:'5' }] }), 4,
+       'les mods actifs s ajoutent, les inactifs non');
+    eq(bonusInitiative({}), 0, 'fiche vide : +0');
     /* Les imports gardent une initiative qui differe de la DEX (Alert). */
     ok(/initiativeManuelle: initiative !== mod\(stats\.dex\)/.test(J), 'import Roll20 : l initiative importee est gardee');
     ok(/initiativeManuelle: initiative !== dexMod/.test(J), 'import D&D Beyond : l initiative importee est gardee');
@@ -1447,6 +1456,25 @@ function ok(cond, label) {
     /* Une section de classe masquee est videe : l onglet actif forcait son
        affichage avec les capacites du personnage precedent. */
     ok(/section\.style\.display = 'none'; if \(body\) body\.innerHTML = ''; return;/.test(J), 'la section Classe masquee est videe');
+  }
+
+  /* ── La vue partagee lit les memes calculs que la fiche ── */
+  {
+    /* Elle recalculait tout dans son coin, sans les modificateurs : un anneau
+       de protection n y changeait ni la CA ni les sauvegardes. Rejoue dans la
+       page : CA 16, DEX +7, CON +3, Perception +8, identiques a la fiche. */
+    const v = J.slice(J.indexOf('function renderViewSheet('), J.indexOf('function renderViewSheet(') + 9000);
+    ok(/const val = bonusSauvegarde\(c, sv\.key, sv\.attr\);/.test(v), 'vue : les sauvegardes de la fiche');
+    ok(/const val = bonusCompetence\(c, sk\.key, sk\.attr\);/.test(v), 'vue : les competences de la fiche');
+    ok(/\(parseInt\(c\.ca\)\|\|10\) \+ modsDe\(c, 'ac'\)/.test(v), 'vue : la CA avec ses modificateurs');
+    ok(/fmtMod\(bonusInitiative\(c\)\)/.test(v), 'vue : l initiative de la fiche');
+    ok(/const profBonus = pb\(niveau\);/.test(v), 'vue : le bonus de maitrise de pb()');
+    ok(/c\.characterName \|\| slot\?\.name \|\| 'Unnamed'/.test(v), 'vue : le nom du personnage, pas « Unnamed »');
+    ok(!/every 30s/.test(v), 'vue : plus de rafraichissement de 30 s annonce a tort');
+    /* Les calculs partages lisent le personnage qu on leur passe, pas celui
+       qui est connecte : sinon la vue afficherait les mods du visiteur. */
+    const bc = J.slice(J.indexOf('function bonusCompetence(c, key, attr)'), J.indexOf('function bonusInitiative(c)'));
+    ok(!/abilScore\(|getMod\(/.test(bc), 'les calculs partages ne lisent pas le personnage connecte');
   }
 
   /* ── PV saisis a la main a la montee de niveau ── */
