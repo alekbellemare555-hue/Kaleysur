@@ -5308,7 +5308,9 @@ function renderClassFeatures() {
   const slotsNote = document.getElementById('cf-slots-note');
 
   const validClasses = classes.filter(cl => cl.classe && CLASS_DATA[cl.classe]);
-  if (!validClasses.length) { section.style.display = 'none'; return; }
+  /* Videe en plus d'etre masquee : sur telephone, l'onglet actif force
+     l'affichage, et montrait alors les capacites du personnage precedent. */
+  if (!validClasses.length) { section.style.display = 'none'; if (body) body.innerHTML = ''; return; }
 
   section.style.display = '';
   const totalLvl = getTotalLevel(c);
@@ -6401,6 +6403,10 @@ function renderAll() {
   _markAllDirty();
   const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab || 'personnage';
   _renderTab(activeTab);
+  /* Les sections Classe, Espece, Historique apparaissent ou disparaissent selon
+     le personnage. La barre de sections du telephone n'etait construite qu'a
+     l'ouverture : celles qui apparaissaient ensuite restaient sans onglet. */
+  buildSecTabBar();
 }
 
 /* ════════════════════════════════════════════════
@@ -12267,14 +12273,25 @@ const SEC_LABELS = {
   features: 'Features', sorts: 'Spells', mods: 'Mods'
 };
 
+/* Signature des sections visibles lors de la derniere construction : renderAll
+   rappelle buildSecTabBar souvent, on ne reconstruit que si elle change. */
+let _secTabSignature = null;
+
 function buildSecTabBar() {
   const bar = document.getElementById('sec-tab-bar');
   if (!bar) return;
-  bar.innerHTML = '';
   const sections = Array.from(document.querySelectorAll(
     '#layout-wrapper .sheet-section[data-sec]:not(.sec-hidden), ' +
     '#layout-bottom .sheet-section[data-sec]:not(.sec-hidden)'
   )).filter(s => s.style.display !== 'none');
+  const signature = sections.map(s => s.dataset.sec).join('|');
+  if (signature === _secTabSignature && bar.children.length) return;
+  _secTabSignature = signature;
+  /* L'onglet actif reste actif s'il existe encore : un rendu ne doit pas
+     renvoyer le joueur au premier onglet. */
+  const actif = bar.querySelector('.sec-tab-btn.active')?.dataset.sec;
+  const premiereFois = !bar.children.length;
+  bar.innerHTML = '';
   if (!sections.length) return;
   sections.forEach(sec => {
     const secId = sec.dataset.sec;
@@ -12290,10 +12307,13 @@ function buildSecTabBar() {
     btn.addEventListener('click', () => activateSecTab(secId));
     bar.appendChild(btn);
   });
-  activateSecTab(sections[0].dataset.sec, false);
+  const garde = sections.some(s => s.dataset.sec === actif) ? actif : sections[0].dataset.sec;
+  /* A l'ouverture, on centre le bouton actif dans la barre ; lors d'une
+     reconstruction, rien ne bouge — renderAll ne doit pas faire sauter la page. */
+  activateSecTab(garde, false, premiereFois);
 }
 
-function activateSecTab(secId, autoScroll = true) {
+function activateSecTab(secId, autoScroll = true, centrerBouton = true) {
   document.querySelectorAll('.sec-tab-btn').forEach(b =>
     b.classList.toggle('active', b.dataset.sec === secId)
   );
@@ -12302,7 +12322,7 @@ function activateSecTab(secId, autoScroll = true) {
   ).forEach(s => s.classList.toggle('sec-tab-active', s.dataset.sec === secId));
   // Faire défiler le bouton actif dans la barre
   const activeBtn = document.querySelector(`.sec-tab-btn[data-sec="${secId}"]`);
-  activeBtn?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  if (centrerBouton) activeBtn?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
   // Scroller vers la section pour passer le vb-hero
   if (autoScroll) {
     const sec = document.querySelector(`.sheet-section[data-sec="${secId}"]`);

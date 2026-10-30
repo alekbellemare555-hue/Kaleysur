@@ -1431,6 +1431,24 @@ function ok(cond, label) {
     ok(!/maintenue/.test(cc), 'concentration : plus de message en francais');
   }
 
+  /* ── Sur telephone, les sections qui apparaissent ont leur onglet ── */
+  {
+    /* La barre de sections n etait construite qu a l ouverture : Classe, Espece
+       et Historique, masquees pour un personnage vierge, restaient sans onglet
+       apres la creation. Rejoue dans la page a 400 px : les trois onglets
+       apparaissent apres la creation, disparaissent au retour sur un vierge. */
+    const ra = J.slice(J.indexOf('function renderAll()'), J.indexOf('function renderAll()') + 900);
+    ok(/_renderTab\(activeTab\);[\s\S]*buildSecTabBar\(\);\s*\n\}/.test(ra), 'renderAll reconstruit la barre de sections, apres le rendu');
+    const bs = J.slice(J.indexOf('function buildSecTabBar()'), J.indexOf('function activateSecTab('));
+    ok(/if \(signature === _secTabSignature && bar\.children\.length\) return;/.test(bs),
+       'reconstruction seulement si les sections visibles ont change');
+    ok(/sections\.some\(s => s\.dataset\.sec === actif\) \? actif/.test(bs), 'l onglet actif reste actif s il existe encore');
+    ok(/activateSecTab\(garde, false, premiereFois\)/.test(bs), 'une reconstruction ne fait pas defiler la page');
+    /* Une section de classe masquee est videe : l onglet actif forcait son
+       affichage avec les capacites du personnage precedent. */
+    ok(/section\.style\.display = 'none'; if \(body\) body\.innerHTML = ''; return;/.test(J), 'la section Classe masquee est videe');
+  }
+
   /* ── PV saisis a la main a la montee de niveau ── */
   {
     const auNiveau = (hp) => {
