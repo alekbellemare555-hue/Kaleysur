@@ -6223,7 +6223,14 @@ function migrerNomsSousClasse(c) {
   let change = false;
   (c.classes || []).forEach(cl => {
     const neuf = SUBCLASS_RENOMMEES[cl.sousClasse];
-    if (neuf) { cl.sousClasse = neuf; change = true; }
+    if (neuf) {
+      cl.sousClasse = neuf; change = true;
+      /* La Resilience draconique 2024 donne 10 + DEX + CHA sans armure, que
+         la fiche ne savait pas calculer. Le renommage ne passe qu'une fois :
+         c'est le moment de poser le mode, sans revenir ensuite sur un choix
+         du joueur. */
+      if (cl.classe === 'Sorcerer' && /Draconic/.test(neuf) && typeof poserCADraconique === 'function') poserCADraconique(c);
+    }
   });
   const neufLegacy = SUBCLASS_RENOMMEES[c.sousClasse];
   if (neufLegacy) { c.sousClasse = neufLegacy; change = true; }
@@ -9551,6 +9558,7 @@ function applyLevelUp(c, plan, choices) {
       c.pvMax = (parseInt(c.pvMax) || 0) + pv;
       c.pvActuel = (parseInt(c.pvActuel) || 0) + pv;
       log.push(`+${pv} PV max (Draconic Resilience)`);
+      if (poserCADraconique(c)) log.push('Unarmored AC : 10 + DEX + CHA (Draconic Resilience)');
     }
   }
 
@@ -9662,6 +9670,11 @@ function applyLevelUp(c, plan, choices) {
           : `+2 ${(ch.asiA || '').toUpperCase()}`);
   }
 
+  // ── CA : un +1 DEX a l'ASI, ou la Resilience draconique, la changent. Elle
+  //    n'etait recalculee qu'a l'ouverture de l'onglet Inventaire. Meme garde
+  //    qu'a la saisie d'une caracteristique : une CA « Custom » ne bouge pas. ──
+  if (c.armorConfig?.mode && c.armorConfig.mode !== 'custom') c.ca = calculerCA(c).ca;
+
   if (plan.pbAfter > plan.pbBefore) log.push(`Proficiency bonus +${plan.pbBefore} → +${plan.pbAfter}`);
   const prepAfter = preparedTotal(c);
   if (prepAfter > plan.preparedBefore) log.push(`Prepared spells ${plan.preparedBefore} → ${prepAfter}`);
@@ -9744,13 +9757,17 @@ function applyStartingGear(c, className, items) {
   if (atks.length) c.attaques = atks;
 }
 
-function calcAndSetAC() {
-  if (!playerData) return;
-  const cfg = C().armorConfig || {};
+/* CA d'un personnage d'apres sa configuration d'armure. Fonction pure sur `c`
+   (testable hors navigateur) : calcAndSetAC() l'affiche ; la montee de niveau
+   s'en sert pour garder c.ca a jour sans passer par l'onglet Inventaire. */
+function calculerCA(c) {
+  const cfg = c?.armorConfig || {};
   const mode = cfg.mode || 'unarmored';
-  const dex  = mod(abilScore('dex'));
-  const con  = mod(abilScore('con'));
-  const wis  = mod(abilScore('sag'));
+  const m = k => Math.floor(((parseInt(c?.[k]) || 10) - 10) / 2);
+  const dex  = m('dex');
+  const con  = m('con');
+  const wis  = m('sag');
+  const cha  = m('cha');
 
   let base = 10, formula = '';
   switch (mode) {
@@ -9783,6 +9800,10 @@ function calcAndSetAC() {
       base = 10 + dex + wis;
       formula = `10 + ${dex>=0?'+':''}${dex} DEX + ${wis>=0?'+':''}${wis} SAG`;
       break;
+    case 'unarmoredDraco': // Resilience draconique (Ensorceleur, 2024)
+      base = 10 + dex + cha;
+      formula = `10 + ${dex>=0?'+':''}${dex} DEX + ${cha>=0?'+':''}${cha} CHA`;
+      break;
     case 'natural':
       base = cfg.baseAC || 10;
       formula = `${base} (Armure naturelle)`;
@@ -9801,7 +9822,12 @@ function calcAndSetAC() {
   if (shield) formula += ` + 2 (Bouclier)`;
   if (other)  formula += ` + ${other>=0?'+':''}${other} (Bonus)`;
   base += shield + other;
+  return { ca: base, formula };
+}
 
+function calcAndSetAC() {
+  if (!playerData) return;
+  const { ca: base, formula } = calculerCA(C());
   C().ca = base;
   const inpCA = document.getElementById('inp-ca');
   if (inpCA) inpCA.value = base;
@@ -10004,8 +10030,26 @@ function defaultArmorConfig(c) {
   const classes = getClasses(c).map(x => x.classe);
   const mode = classes.includes('Barbarian') ? 'unarmoredBarb'
              : classes.includes('Monk')      ? 'unarmoredMonk'
+             : aResilienceDraconique(c)      ? 'unarmoredDraco'
              : 'unarmored';
   return { mode, baseAC: 10, armorName: '', shield: !!c.armorConfig?.shield, otherBonus: c.armorConfig?.otherBonus || 0 };
+}
+
+/* Resilience draconique (Ensorceleur draconique, niveau 3) : sans armure, la
+   CA de base vaut 10 + DEX + CHA. */
+function aResilienceDraconique(c) {
+  return getClasses(c).some(x => x.classe === 'Sorcerer' && /Draconic/.test(x.sousClasse || ''));
+}
+
+/* Pose ce mode quand la Resilience arrive. Seulement si le personnage etait
+   simplement « sans armure » : une armure portee, l'Armure du mage ou un mode
+   choisi par le joueur restent tels quels. true si quelque chose a change. */
+function poserCADraconique(c) {
+  const cfg = c.armorConfig || {};
+  if ((cfg.mode || 'unarmored') !== 'unarmored') return false;
+  c.armorConfig = Object.assign({ baseAC: 10, armorName: '', shield: false, otherBonus: 0 }, cfg, { mode: 'unarmoredDraco' });
+  c.ca = calculerCA(c).ca;
+  return true;
 }
 
 /* L'armure configuree correspond-elle a un objet reellement equipe ?
@@ -10121,6 +10165,7 @@ function renderWornArmor() {
     { v:'mageArmor',     l:'Mage Armor' },
     { v:'unarmoredBarb', l:'Unarmored Defense — Barbarian' },
     { v:'unarmoredMonk', l:'Unarmored Defense — Monk' },
+    { v:'unarmoredDraco', l:'Draconic Resilience — Sorcerer' },
     { v:'natural',       l:'Armure naturelle' },
     { v:'custom',        l:'Custom' },
   ];
@@ -10129,11 +10174,13 @@ function renderWornArmor() {
   const dex = mod(abilScore('dex'));
   const con = mod(abilScore('con'));
   const wis = mod(abilScore('sag'));
+  const cha = mod(abilScore('cha'));
   let hint = '';
   if (mode==='unarmored')     hint = `10 + DEX (${dex>=0?'+':''}${dex})`;
   else if (mode==='mageArmor') hint = `13 + DEX (${dex>=0?'+':''}${dex})`;
   else if (mode==='unarmoredBarb') hint = `10 + DEX (${dex>=0?'+':''}${dex}) + CON (${con>=0?'+':''}${con})`;
   else if (mode==='unarmoredMonk') hint = `10 + DEX (${dex>=0?'+':''}${dex}) + WIS (${wis>=0?'+':''}${wis})`;
+  else if (mode==='unarmoredDraco') hint = `10 + DEX (${dex>=0?'+':''}${dex}) + CHA (${cha>=0?'+':''}${cha})`;
 
   container.innerHTML = `
   <div class="worn-armor-card">
@@ -10177,7 +10224,7 @@ function renderWornArmor() {
     if (modeEl.value === 'light')   { cfg.baseAC = 11; cfg.armorName = ''; }
     if (modeEl.value === 'medium')  { cfg.baseAC = 12; cfg.armorName = ''; }
     if (modeEl.value === 'heavy')   { cfg.baseAC = 14; cfg.armorName = ''; }
-    if (modeEl.value === 'mageArmor' || modeEl.value === 'unarmored' || modeEl.value === 'unarmoredBarb' || modeEl.value === 'unarmoredMonk') {
+    if (modeEl.value === 'mageArmor' || modeEl.value === 'unarmored' || modeEl.value === 'unarmoredBarb' || modeEl.value === 'unarmoredMonk' || modeEl.value === 'unarmoredDraco') {
       cfg.baseAC = 10; cfg.armorName = '';
     }
     renderWornArmor(); // full re-render for show/hide logic

@@ -123,6 +123,9 @@ function ok(cond, label) {
     extract(J, 'function armorFromItem(item)'),
     extract(J, 'function isEquippable(item)'),
     extract(J, 'function defaultArmorConfig(c)'),
+    extract(J, 'function aResilienceDraconique(c)'),
+    extract(J, 'function poserCADraconique(c)'),
+    extract(J, 'function calculerCA(c)'),
     extract(J, 'function equippedArmorMismatch(c, inv)'),
     extract(J, 'const ATTUNE_MAX'),
     extract(J, 'function isAttunable(item)'),
@@ -1695,6 +1698,114 @@ function ok(cond, label) {
     ok(/const ordre = maitrisesDeChoix\(c, selClass\.value\);/.test(J), 'createur : lit l ordre');
   }
 
+  /* ── Sous-classes d Ensorceleur et d Occultiste : contenu 2024 ── */
+  {
+    /* Relu sur dnd2024.wikidot.com. Ces sous-classes portaient leurs noms de
+       2014, et une partie de leur contenu aussi. Une ligne par ecart releve. */
+    const cap = (cl, sc, lvl) => (SUBCLASS_DATA[cl]?.[sc]?.[lvl] || []);
+    const nom = (cl, sc, lvl) => cap(cl, sc, lvl).map(f => f.name);
+    const txt = (cl, sc, lvl, n) => (cap(cl, sc, lvl).find(f => f.name === n) || {}).desc || '';
+    ok(/10 \+ your DEX and CHA/.test(txt('Sorcerer','Draconic Sorcery',3,'Draconic Resilience')), 'Draconic : CA 10 + DEX + CHA (2014 : 13 + DEX)');
+    ok(/increases by 3/.test(txt('Sorcerer','Draconic Sorcery',3,'Draconic Resilience')), 'Draconic : +3 PV au niveau 3');
+    ok(nom('Sorcerer','Draconic Sorcery',6).includes('Elemental Affinity'), 'Draconic : Elemental Affinity au niveau 6');
+    ok(nom('Sorcerer','Draconic Sorcery',18).includes('Dragon Companion'), 'Draconic : Dragon Companion au 18 (2014 : Draconic Presence)');
+    ok(/on a 20/.test(txt('Sorcerer','Wild Magic Sorcery',3,'Wild Magic Surge')), 'Wild Magic : le Surge sur un 20 (2014 : sur un 1)');
+    ok(/spend 1 Sorcery Point/.test(txt('Sorcerer','Wild Magic Sorcery',6,'Bend Luck')), 'Wild Magic : Bend Luck a 1 point (2014 : 2)');
+    ok(nom('Sorcerer','Wild Magic Sorcery',18).includes('Tamed Surge'), 'Wild Magic : Tamed Surge au 18 (2014 : Spell Bombardment)');
+    ok(nom('Sorcerer','Aberrant Sorcery',6).includes('Psychic Defenses'), 'Aberrant : Psychic Defenses au niveau 6');
+    ok(/CHA modifier/.test(txt('Sorcerer','Clockwork Sorcery',3,'Restore Balance')), 'Clockwork : Restore Balance au mod. de CHA');
+    ok(/d8s/.test(txt('Sorcerer','Clockwork Sorcery',6,'Bastion of Law')), 'Clockwork : Bastion of Law en d8');
+    ok(!/Force/.test(txt('Sorcerer','Clockwork Sorcery',18,'Clockwork Cavalcade')), 'Clockwork : Cavalcade n inflige pas de degats');
+    ok(/Reaction when you take damage/.test(txt('Warlock','Archfey Patron',6,'Misty Escape')), 'Archfey : Misty Escape est un Misty Step en reaction');
+    ok(/about to make a Death Saving Throw/.test(txt('Warlock','Celestial Patron',14,'Searing Vengeance')), 'Celestial : Searing Vengeance se declenche sur un jet contre la mort');
+    ok(/CHA modifier \(min 1\) per Long Rest/.test(txt('Warlock','Fiend Patron',6,"Dark One's Own Luck")), 'Fiend : Dark One s Own Luck au mod. de CHA par repos long');
+    ok(nom('Warlock','Great Old One Patron',3).includes('Psychic Spells'), 'Grand Ancien : Psychic Spells au niveau 3');
+    ok(nom('Warlock','Great Old One Patron',6).includes('Clairvoyant Combatant'), 'Grand Ancien : Clairvoyant Combatant au 6 (2014 : Entropic Ward)');
+    ok(nom('Warlock','Great Old One Patron',10).includes('Eldritch Hex'), 'Grand Ancien : Eldritch Hex au niveau 10');
+    ok(/Summon Aberration/.test(txt('Warlock','Great Old One Patron',14,'Create Thrall')), 'Grand Ancien : Create Thrall passe par Summon Aberration');
+    /* Plus aucune capacite propre a 2014 dans ces sous-classes. */
+    const tous = ['Draconic Sorcery','Wild Magic Sorcery','Aberrant Sorcery','Clockwork Sorcery'].flatMap(sc => Object.values(SUBCLASS_DATA.Sorcerer[sc] || {}).flat())
+      .concat(['Archfey Patron','Celestial Patron','Fiend Patron','Great Old One Patron'].flatMap(sc => Object.values(SUBCLASS_DATA.Warlock[sc] || {}).flat()));
+    ['Spell Bombardment','Draconic Presence','Entropic Ward','Elemental Affinity (Resistance)'].forEach(n =>
+      ok(!tous.some(f => f.name === n), n + ' : capacite de 2014, retiree'));
+  }
+
+
+  /* ── CA : Resilience draconique, et recalcul a la montee ── */
+  {
+    /* « While you aren't wearing armor, your base Armor Class equals 10 plus
+       your Dexterity and Charisma modifiers. » La fiche n avait pas ce mode. */
+    const DRACO = Object.keys(SUBCLASS_DATA.Sorcerer).find(k => /Draconic/.test(k));
+    const sorc = (sc, extra) => hero(Object.assign({ classes:[{ classe:'Sorcerer', sousClasse:sc, niveau:3, customSousClasse:'' }], dex:14, cha:16 }, extra || {}));
+
+    /* Le calcul, mode par mode : la sortie de calcAndSetAC n a pas change. */
+    eq(calculerCA(sorc(DRACO, { armorConfig:{ mode:'unarmoredDraco' } })).ca, 15, 'Draconique : 10 + 2 DEX + 3 CHA');
+    eq(calculerCA(sorc(DRACO, { armorConfig:{ mode:'unarmoredDraco', shield:true } })).ca, 17, 'Draconique : le bouclier s ajoute');
+    ok(/CHA/.test(calculerCA(sorc(DRACO, { armorConfig:{ mode:'unarmoredDraco' } })).formula), 'Draconique : la formule nomme le CHA');
+    eq(calculerCA(sorc(DRACO, { armorConfig:{ mode:'unarmored' } })).ca, 12, 'sans armure : 10 + DEX');
+    eq(calculerCA(hero({ dex:14, con:16, armorConfig:{ mode:'unarmoredBarb' } })).ca, 15, 'Barbare : 10 + DEX + CON');
+    eq(calculerCA(hero({ dex:14, sag:16, armorConfig:{ mode:'unarmoredMonk' } })).ca, 15, 'Moine : 10 + DEX + SAG');
+    eq(calculerCA(hero({ dex:18, armorConfig:{ mode:'medium', baseAC:14 } })).ca, 16, 'armure intermediaire : DEX plafonnee a +2');
+    eq(calculerCA(hero({ dex:18, armorConfig:{ mode:'heavy', baseAC:18, otherBonus:1 } })).ca, 19, 'armure lourde : sans DEX, bonus compris');
+    eq(calculerCA({}).ca, 10, 'fiche vide : 10');
+
+    /* Retrait d armure : on rend la Resilience. */
+    eq(defaultArmorConfig(sorc(DRACO)).mode, 'unarmoredDraco', 'retrait d armure : Ensorceleur draconique');
+    eq(defaultArmorConfig(sorc('Wild Magic Sorcery')).mode, 'unarmored', 'retrait d armure : autre Ensorceleur');
+
+    /* Pose du mode : seulement depuis « sans armure ». */
+    const nu = sorc(DRACO, { armorConfig:{ mode:'unarmored', shield:false, otherBonus:0 } });
+    eq(poserCADraconique(nu), true, 'pose : depuis sans armure');
+    eq(nu.armorConfig.mode, 'unarmoredDraco', 'pose : le mode');
+    eq(nu.ca, 15, 'pose : c.ca suit');
+    const mage = sorc(DRACO, { armorConfig:{ mode:'mageArmor' }, ca:15 });
+    eq(poserCADraconique(mage), false, 'pose : l Armure du mage reste');
+    eq(mage.armorConfig.mode, 'mageArmor', 'pose : mode inchange');
+    eq(poserCADraconique(sorc(DRACO, { armorConfig:{ mode:'light', baseAC:11 } })), false, 'pose : une armure portee reste');
+
+    /* Migration d une fiche 2014 : le renommage pose le mode, une fois. */
+    const vieux = hero({ classes:[{ classe:'Sorcerer', sousClasse:'Draconic Bloodline', niveau:5, customSousClasse:'' }], dex:14, cha:18, ca:12 });
+    eq(migrerNomsSousClasse(vieux), true, 'migration draconique : signalee');
+    eq(vieux.classes[0].sousClasse, DRACO, 'migration draconique : nouveau nom');
+    eq((vieux.armorConfig || {}).mode, 'unarmoredDraco', 'migration draconique : CA 10 + DEX + CHA');
+    eq(vieux.ca, 16, 'migration draconique : c.ca recalculee');
+    (vieux.armorConfig = vieux.armorConfig || {}).mode = 'unarmored';
+    eq(migrerNomsSousClasse(vieux), false, 'migration draconique : un choix du joueur n est pas repris');
+    eq(vieux.armorConfig.mode, 'unarmored', 'migration draconique : le mode choisi reste');
+    const vieuxMage = hero({ classes:[{ classe:'Sorcerer', sousClasse:'Draconic Bloodline', niveau:5, customSousClasse:'' }], armorConfig:{ mode:'mageArmor' } });
+    migrerNomsSousClasse(vieuxMage);
+    eq(vieuxMage.armorConfig.mode, 'mageArmor', 'migration draconique : l Armure du mage reste');
+
+    /* Montee au niveau 3 draconique : le mode est pose et c.ca suit. */
+    const e = hero({ classes:[{ classe:'Sorcerer', sousClasse:'', niveau:2, customSousClasse:'' }], dex:14, cha:16, ca:12,
+                     armorConfig:{ mode:'unarmored', baseAC:10, armorName:'', shield:false, otherBonus:0 } });
+    const re = applyLevelUp(e, planLevelUp(e, 'Sorcerer', { subclass: DRACO }), { hp: 5, subclass: DRACO });
+    ok(re.ok, 'Ensorceleur 3 draconique : accepte');
+    eq(e.armorConfig.mode, 'unarmoredDraco', 'montee draconique : mode pose');
+    eq(e.ca, 15, 'montee draconique : CA 10 + DEX + CHA');
+    ok((re.log || []).some(x => /10 \+ DEX \+ CHA/.test(x)), 'montee draconique : le journal le dit');
+
+    /* Un +2 DEX a l ASI : la CA suit tout de suite (elle attendait l onglet Inventaire). */
+    const g = hero({ classes:[{ classe:'Fighter', sousClasse:'Champion', niveau:3, customSousClasse:'' }], dex:14, ca:13,
+                     armorConfig:{ mode:'light', baseAC:11, armorName:'Leather', shield:false, otherBonus:0 } });
+    const rg = applyLevelUp(g, planLevelUp(g, 'Fighter'), { hp: 7, asiMode:'abil', asiA:'dex', asiB:'' });
+    ok(rg.ok, 'ASI DEX : accepte');
+    eq(g.dex, 16, 'ASI DEX : +2');
+    eq(g.ca, 14, 'ASI DEX : la CA suit (11 + 3)');
+    /* Une CA « Custom » ne bouge pas. */
+    const k = hero({ classes:[{ classe:'Fighter', sousClasse:'Champion', niveau:3, customSousClasse:'' }], dex:14, ca:21,
+                     armorConfig:{ mode:'custom', baseAC:21, armorName:'', shield:false, otherBonus:0 } });
+    applyLevelUp(k, planLevelUp(k, 'Fighter'), { hp: 7, asiMode:'abil', asiA:'dex', asiB:'' });
+    eq(k.ca, 21, 'CA Custom : inchangee');
+    /* Sans configuration d armure (vieille fiche, CA saisie a la main) : on n y touche pas. */
+    const m = hero({ classes:[{ classe:'Fighter', sousClasse:'Champion', niveau:3, customSousClasse:'' }], dex:14, ca:18 });
+    applyLevelUp(m, planLevelUp(m, 'Fighter'), { hp: 7, asiMode:'abil', asiA:'dex', asiB:'' });
+    eq(m.ca, 18, 'CA saisie a la main : inchangee');
+
+    /* La carte d armure propose le mode. */
+    ok(/v:'unarmoredDraco'/.test(J), 'carte d armure : le mode Draconic Resilience');
+  }
+
   /* ── PV saisis a la main a la montee de niveau ── */
   {
     const auNiveau = (hp) => {
@@ -2851,7 +2962,20 @@ function ok(cond, label) {
         ok(!parNomTout.has(ancien), `renommage : « ${ancien} » existe encore comme sous-classe`);
         ok(parNomTout.has(neuf), `renommage : « ${neuf} » n'existe pas`);
       });
-      eq(Object.keys(SUBCLASS_RENOMMEES).length, 8, 'huit écoles de magie renommées');
+      /* Huit écoles de magie, puis onze sous-classes restées sous leur nom de
+         2014 : Ensorceleur, Occultiste, et trois noms approchants. */
+      eq(Object.keys(SUBCLASS_RENOMMEES).length, 19, 'dix-neuf sous-classes renommées');
+      [['Draconic Bloodline','Draconic Sorcery'],['Wild Magic','Wild Magic Sorcery'],
+       ['Aberrant Mind','Aberrant Sorcery'],['Clockwork Soul','Clockwork Sorcery'],
+       ['The Archfey','Archfey Patron'],['The Celestial','Celestial Patron'],
+       ['The Fiend','Fiend Patron'],['The Great Old One','Great Old One Patron'],
+       ['Circle of Stars','Circle of the Stars'],['Warrior of the Four Elements','Warrior of the Elements'],
+       ['Oath of Ancients','Oath of the Ancients']]
+        .forEach(([a, b]) => eq(SUBCLASS_RENOMMEES[a], b, 'renommage 2024 : ' + a + ' → ' + b));
+      /* Une fiche d Occultiste 2014 suit au premier rendu. */
+      const occ = { classes: [{ classe: 'Warlock', sousClasse: 'The Fiend', niveau: 5 }] };
+      eq(migrerNomsSousClasse(occ), true, 'migration : un Occultiste de 2014 change de nom');
+      eq(occ.classes[0].sousClasse, 'Fiend Patron', 'migration : The Fiend → Fiend Patron');
 
       // La migration réécrit les deux endroits où le nom est stocké
       const fiche = {

@@ -1185,7 +1185,7 @@ const CLASS_DATA = {
     ],
     3: [
       { name:'Deflect Attacks', type:'feature', desc:"Reaction: when hit by an attack, reduce damage by 1d10 + DEX modifier + Monk level. If damage is reduced to 0, you can spend 1 Focus Point to redirect it: make a ranged attack (20/60 ft) using the absorbed energy, dealing the original damage type." },
-      { name:'Monk Subclass', type:'subclass', desc:"Choose a Monastic Tradition: Mercy, Open Hand, Shadow, or Four Elements. You gain the first subclass feature." }
+      { name:'Monk Subclass', type:'subclass', desc:"Choose a Monk subclass: Warrior of Mercy, of Shadow, of the Elements, or of the Open Hand. You gain the first subclass feature." }
     ],
     4: [
       { name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." },
@@ -1413,7 +1413,7 @@ const CLASS_DATA = {
       { name:'Font of Magic', type:'feature', desc:"You have Sorcery Points = your Sorcerer level. Flexible Casting: create spell slots from Sorcery Points (2 pts = 1st, 3 = 2nd, 4 = 3rd, 5 = 4th, 6 = 5th) or convert spell slots into Sorcery Points (slot level = points gained)." },
       { name:'Metamagic', type:'feature', desc:"Choose 2 Metamagic options: Careful (protect allies from spells), Distant (double range), Empowered (reroll damage dice), Extended (double duration), Heightened (disadvantage on save), Quickened (cast with Bonus Action), Seeking (reroll missed attacks), Subtle (no verbal/somatic components), Transmuted (change damage type), or Twinned (target two creatures)." }
     ],
-    3: [{ name:'Sorcerous Origin', type:'subclass', desc:"Choose your magical origin: Aberrant Mind, Clockwork Soul, Draconic Bloodline, Shadow Magic, or Wild Magic. You gain spells and the first subclass feature." }],
+    3: [{ name:'Sorcerous Origin', type:'subclass', desc:"Choose your Sorcerer subclass: Aberrant Sorcery, Clockwork Sorcery, Draconic Sorcery, Wild Magic Sorcery, or others. You gain spells and the first subclass feature." }],
     4: [{ name:'Ability Score Improvement', type:'asi', desc:"Increase one ability score by 2, or two scores by 1. Alternatively, take a feat." }],
     5: [{ name:'Sorcerous Restoration', type:'feature', desc:"When you roll Initiative and have fewer Sorcery Points than half your Sorcerer level (rounded up), you regain Sorcery Points up to half your Sorcerer level. 1/Long Rest." }],
     6: [{ name:'Subclass Feature', type:'subclass', desc:"You gain a feature from your Sorcerous Origin." }],
@@ -1860,7 +1860,7 @@ const SUBCLASS_DATA = {
     10:[{ name:'Stormborn', desc:'Gain a Fly speed equal to your walking speed.' }],
     14:[{ name:'Oceanic Gift', desc:'Cast Control Water once per Long Rest without a spell slot.' }],
   },
-  'Circle of Stars': {
+  'Circle of the Stars': {
     3:[
       { name:'Star Map', desc:'Your spellbook is a star chart. You can cast Guidance and Guiding Bolt (WIS mod uses/Long Rest) without spell slots. Both are always prepared.' },
       { name:'Starry Form', desc:'Wild Shape → starry form instead of a Beast: Archer (Bonus Action ranged attack, 1d8+WIS Radiant), Chalice (healing spells also heal self or ally for 1d8+WIS), Dragon (advantage on Concentration saves; spells deal +10 Radiant).' }
@@ -2090,7 +2090,7 @@ const SUBCLASS_DATA = {
     11:[{ name:'Cloak of Shadows', desc:'Bonus Action, 3 Focus Points: become Invisible until end of turn (ends if you attack, cast, or enter bright light).' }],
     17:[{ name:'Opportunist', desc:'Reaction: when an ally hits a creature within 5 ft of you, make one Unarmed Strike against it.' }],
   },
-  'Warrior of the Four Elements': {
+  'Warrior of the Elements': {
     3:[
       { name:'Elemental Attunement', desc:'Learn 2 Elemental Disciplines. Many cost Focus Points to use (1 Focus Point = 1st-level equivalent). Examples: Fangs of the Fire Snake, Fist of Unbroken Air, Rush of the Gale Spirits, Shape the Flowing River, etc.' },
       { name:'Elemental Burst', desc:'When you hit with an Unarmed Strike, spend 1 Focus Point to deal extra elemental damage (Acid/Cold/Fire/Lightning/Thunder) = 1 Martial Arts die.' }
@@ -2166,7 +2166,7 @@ const SUBCLASS_DATA = {
 },
 
 'Paladin': {
-  'Oath of Ancients': {
+  'Oath of the Ancients': {
     3:[
       { name:'Oath Spells', desc:'Always prepared: Ensnaring Strike, Speak with Animals (1st); Misty Step, Moonbeam (3rd); Plant Growth, Protection from Energy (5th); Ice Storm, Stoneskin (7th); Commune with Nature, Tree Stride (9th).' },
       { name:'Nature\'s Wrath', desc:'Channel Divinity: spectral vines restrain creatures you choose within 10 ft (STR or DEX save, their choice) until end of their next turn.' }
@@ -2487,41 +2487,45 @@ const SUBCLASS_DATA = {
 },
 
 'Sorcerer': {
-  'Draconic Bloodline': {
+  /* Contenu 2024, relu sur dnd2024.wikidot.com (sorcerer:*-sorcery). */
+  'Draconic Sorcery': {
     3:[
-      { name:'Draconic Resilience', desc:'AC = 13+DEX when unarmored. HP max increases by 1 per Sorcerer level.' },
-      { name:'Elemental Affinity', desc:'Choose a damage type (Acid, Cold, Fire, Lightning, Poison). Add CHA mod to one damage roll of spells dealing that type.' }
+      { name:'Draconic Resilience', desc:"Your Hit Point maximum increases by 3, and by 1 more whenever you gain another Sorcerer level. While you aren't wearing armor, your base AC equals 10 + your DEX and CHA modifiers." },
+      { name:'Draconic Spells', desc:"Always prepared: Alter Self, Chromatic Orb, Command, Dragon's Breath (Sorcerer 3); Fear, Fly (5); Arcane Eye, Charm Monster (7); Legend Lore, Summon Dragon (9)." }
     ],
-    6:[{ name:'Elemental Affinity (Resistance)', desc:'Spend 1 Sorcery Point when using Elemental Affinity to gain resistance to the chosen damage type for 1 hour.' }],
-    14:[{ name:'Dragon Wings', desc:'Bonus Action: sprout wings, gain Fly speed = walking speed for 1 hour. 1/Long Rest.' }],
-    18:[{ name:'Draconic Presence', desc:'Spend 5 Sorcery Points: 60-ft aura of awe or fear. Creatures that enter or start their turn in it make WIS save or are Charmed (awe) or Frightened (fear) for 1 minute.' }],
+    6:[{ name:'Elemental Affinity', desc:"Choose Acid, Cold, Fire, Lightning or Poison: you have Resistance to that type, and when a spell you cast deals that type, add your CHA modifier to one damage roll of that spell." }],
+    14:[{ name:'Dragon Wings', desc:"Bonus Action: draconic wings for 1 hour (dismissed freely), Fly Speed 60 ft. Once per Long Rest, or spend 3 Sorcery Points to use it again." }],
+    18:[{ name:'Dragon Companion', desc:"You can cast Summon Dragon without a Material component, and once per Long Rest without a spell slot. When you cast it, you can make it not require Concentration; its duration then becomes 1 minute." }]
   },
-  'Wild Magic': {
+  'Wild Magic Sorcery': {
     3:[
-      { name:'Wild Magic Surge', desc:'When you cast a 1st+ spell, the DM can ask you to roll d20. On a 1, roll on the Wild Magic Surge table.' },
-      { name:'Tides of Chaos', desc:'Gain advantage on one attack, ability check, or saving throw. The DM may trigger a Wild Magic Surge before you recharge it.' }
+      { name:'Wild Magic Surge', desc:"Once per turn, right after you cast a Sorcerer spell with a spell slot, you can roll 1d20: on a 20, roll on the Wild Magic Surge table. A spell created by a surge can't be affected by Metamagic." },
+      { name:'Tides of Chaos', desc:"Gain Advantage on one D20 Test before you roll. You regain the use when you cast a Sorcerer spell with a spell slot — which then automatically rolls on the Wild Magic Surge table — or when you finish a Long Rest." }
     ],
-    6:[{ name:'Bend Luck', desc:'Reaction, 2 Sorcery Points: roll 1d4 and add or subtract it from any creature\'s roll within 60 ft.' }],
-    14:[{ name:'Controlled Chaos', desc:'Roll twice on Wild Magic Surge table and choose which result to use.' }],
-    18:[{ name:'Spell Bombardment', desc:'Once per turn, when you roll max damage on any spell damage die, roll that die again and add it.' }],
+    6:[{ name:'Bend Luck', desc:"Reaction right after another creature you can see rolls the d20 for a D20 Test: spend 1 Sorcery Point, roll 1d4 and apply it as a bonus or a penalty to that roll." }],
+    14:[{ name:'Controlled Chaos', desc:"Whenever you roll on the Wild Magic Surge table, you can roll twice and use either number." }],
+    18:[{ name:'Tamed Surge', desc:"Right after you cast a Sorcerer spell with a spell slot, you can create any Wild Magic Surge effect except the final row instead of rolling. Once per Long Rest." }]
   },
-  'Aberrant Mind': {
+  'Aberrant Sorcery': {
     3:[
-      { name:'Psionic Spells', desc:'Always prepared: Arms of Hadar, Dissonant Whispers (1st); Calm Emotions, Detect Thoughts (3rd); Hunger of Hadar, Sending (5th); Evard\'s Black Tentacles, Summon Aberration (7th); Telepathic Bond, Wall of Force (9th).' },
-      { name:'Telepathic Speech', desc:'Bonus Action: telepathic link with one creature within 30 ft for CHA mod minutes. Communicate over 1 mile.' }
+      { name:'Psionic Spells', desc:"Always prepared: Arms of Hadar, Calm Emotions, Detect Thoughts, Dissonant Whispers, Mind Sliver (Sorcerer 3); Hunger of Hadar, Sending (5); Evard's Black Tentacles, Summon Aberration (7); Rary's Telepathic Bond, Telekinesis (9)." },
+      { name:'Telepathic Speech', desc:"Bonus Action: telepathic link with a creature you can see within 30 ft, usable within CHA modifier miles (min 1), for a number of minutes equal to your Sorcerer level. You need a language in common." }
     ],
-    6:[{ name:'Psionic Sorcery', desc:'When casting a Psionic Spell, pay Sorcery Points = spell\'s level to remove all components (except expensive materials).' }],
-    14:[{ name:'Revelation in Flesh', desc:'Bonus Action, spend 1+ Sorcery Points for 10 min: 1pt = see invisible; 2pts = swim + breathe water; 3pts = fly; 4pts = squeeze through Tiny spaces.' }],
-    18:[{ name:'Warping Implosion', desc:'Action: teleport up to 120 ft. Creatures within 30 ft of origin make STR save or take 3d10 Force and are pulled to origin. 1/Long Rest or 5 Sorcery Points.' }],
+    6:[
+      { name:'Psionic Sorcery', desc:"You can cast your level 1+ Psionic Spells by spending Sorcery Points equal to the spell's level instead of a slot; cast that way, they need no Verbal, Somatic or non-costly Material components." },
+      { name:'Psychic Defenses', desc:"Resistance to Psychic damage, and Advantage on saving throws to avoid or end the Charmed or Frightened condition." }
+    ],
+    14:[{ name:'Revelation in Flesh', desc:"Bonus Action, spend 1+ Sorcery Points: for 10 minutes, one benefit per point — Swim Speed equal to twice your Speed and water breathing; Fly Speed (hover); see Invisible creatures within 60 ft; squeeze through 1-inch spaces and slip nonmagical restraints." }],
+    18:[{ name:'Warping Implosion', desc:"Magic action: teleport up to 120 ft. Each creature within 30 ft of the space you left makes a STR save: 3d10 Force and pulled toward that space on a failure, half damage on a success. Once per Long Rest, or 5 Sorcery Points." }]
   },
-  'Clockwork Soul': {
+  'Clockwork Sorcery': {
     3:[
-      { name:'Clockwork Spells', desc:'Always prepared: Alarm, Protection from Evil and Good (1st); Aid, Lesser Restoration (3rd); Dispel Magic, Protection from Energy (5th); Freedom of Movement, Summon Construct (7th); Greater Restoration, Wall of Force (9th).' },
-      { name:'Restore Balance', desc:'Reaction: prevent advantage or disadvantage on any roll made by a creature within 60 ft. Uses = PB/Long Rest.' }
+      { name:'Clockwork Spells', desc:"Always prepared: Aid, Alarm, Lesser Restoration, Protection from Evil and Good (Sorcerer 3); Dispel Magic, Protection from Energy (5); Freedom of Movement, Summon Construct (7); Greater Restoration, Wall of Force (9)." },
+      { name:'Restore Balance', desc:"Reaction when a creature you can see within 60 ft is about to roll a d20 with Advantage or Disadvantage: it rolls with neither. Uses equal to your CHA modifier (min 1) per Long Rest." }
     ],
-    6:[{ name:'Bastion of Law', desc:'Magic action, 1-5 Sorcery Points: create a ward on one creature within 30 ft with HP = 5× points spent. Absorbs damage before the creature does.' }],
-    14:[{ name:'Trance of Order', desc:'Bonus Action: any d20 roll of 9 or lower = 10, for 1 minute. 1/Long Rest or 5 Sorcery Points.' }],
-    18:[{ name:'Clockwork Cavalcade', desc:'In a 30-ft cube: restore 100 HP, repair magic items, dispel spells ≤6th level, deal 6d10 Force to hostiles (CON save half). 1/Long Rest.' }],
+    6:[{ name:'Bastion of Law', desc:"Magic action, spend 1 to 5 Sorcery Points: a ward of that many d8s on you or a creature within 30 ft. When the warded creature takes damage, it can roll some of those dice and reduce the damage by the total. Lasts until your next Long Rest or until you use this again." }],
+    14:[{ name:'Trance of Order', desc:"Bonus Action, for 1 minute: attack rolls against you can't have Advantage, and on your D20 Tests you can treat a roll of 9 or lower as a 10. Once per Long Rest, or 5 Sorcery Points." }],
+    18:[{ name:'Clockwork Cavalcade', desc:"Magic action, 30-ft Cube from you: restore up to 100 HP divided among creatures of your choice, repair damaged objects, and end every spell of level 6 or lower on creatures and objects of your choice. Once per Long Rest, or 7 Sorcery Points." }]
   },
   'Spellfire Sorcery': {
     3:[
@@ -2617,41 +2621,46 @@ const SUBCLASS_DATA = {
 },
 
 'Warlock': {
-  'The Archfey': {
+  /* Contenu 2024, relu sur dnd2024.wikidot.com (warlock:*-patron). */
+  'Archfey Patron': {
     3:[
-      { name:'Patron Spells', desc:'Always prepared: Calm Emotions, Faerie Fire, Misty Step, Phantasmal Force, Sleep.' },
-      { name:'Steps of the Fey', desc:'When you cast Misty Step: also Charm one creature within 10 ft of your origin (CHA save) or Frighten one until end of your next turn.' }
+      { name:'Archfey Spells', desc:"Always prepared: Calm Emotions, Faerie Fire, Misty Step, Phantasmal Force, Sleep (Warlock 3); Blink, Plant Growth (5); Dominate Beast, Greater Invisibility (7); Dominate Person, Seeming (9)." },
+      { name:'Steps of the Fey', desc:"Cast Misty Step without a slot a number of times equal to your CHA modifier (min 1) per Long Rest. Each casting adds one effect: Refreshing Step (you or a creature within 10 ft gains 1d10 Temporary HP) or Taunting Step (creatures within 5 ft of where you left: WIS save or Disadvantage on attacks against anyone but you until your next turn)." }
     ],
-    6:[{ name:'Misty Escape', desc:'Reaction when you take damage: become Invisible and teleport 60 ft. Invisibility lasts until start of your next turn. 1/Short or Long Rest.' }],
-    10:[{ name:'Beguiling Defenses', desc:'Immune to Charmed. Reaction when a creature tries to Charm you: it must make WIS save or become Charmed by you for 1 minute. 1/Long Rest.' }],
-    14:[{ name:'Bewitching Magic', desc:'When you cast an Enchantment or Illusion spell with a Pact slot, also cast Misty Step for free as part of the same action.' }],
+    6:[{ name:'Misty Escape', desc:"You can cast Misty Step as a Reaction when you take damage. New Steps of the Fey options: Disappearing Step (Invisible until your next turn, or until you attack, deal damage or cast a spell) and Dreadful Step (creatures within 5 ft of where you left or arrive: WIS save or 2d10 Psychic)." }],
+    10:[{ name:'Beguiling Defenses', desc:"Immune to the Charmed condition. Reaction right after a creature you can see hits you: halve the damage, and the attacker makes a WIS save or takes Psychic damage equal to the damage you take. Once per Long Rest, or expend a Pact Magic slot." }],
+    14:[{ name:'Bewitching Magic', desc:"Right after you cast an Enchantment or Illusion spell using an action and a spell slot, you can cast Misty Step as part of the same action, without a slot." }]
   },
-  'The Celestial': {
+  'Celestial Patron': {
     3:[
-      { name:'Patron Spells', desc:'Always prepared: Cure Wounds, Guiding Bolt (1st); Flaming Sphere, Lesser Restoration (3rd); Daylight, Revivify (5th); Guardian of Faith, Wall of Fire (7th); Flame Strike, Mass Cure Wounds (9th).' },
-      { name:'Healing Light', desc:'Bonus Action: spend dice from a pool of d6s (= 1+Warlock level) to restore HP. Refills on Long Rest.' }
+      { name:'Celestial Spells', desc:"Always prepared: Aid, Cure Wounds, Guiding Bolt, Lesser Restoration, Light, Sacred Flame (Warlock 3); Daylight, Revivify (5); Guardian of Faith, Wall of Fire (7); Greater Restoration, Summon Celestial (9)." },
+      { name:'Healing Light', desc:"Pool of d6s equal to 1 + your Warlock level. Bonus Action: heal yourself or a creature within 60 ft, rolling up to your CHA modifier (min 1) in dice from the pool. The pool refills on a Long Rest." }
     ],
-    6:[{ name:'Radiant Soul', desc:'Resistance to Radiant and Fire damage. Add CHA mod to one damage roll of spells dealing Radiant or Fire.' }],
-    10:[{ name:'Celestial Resilience', desc:'After a Short or Long Rest, you and up to 5 allies gain temp HP = Warlock level + CHA mod.' }],
-    14:[{ name:'Searing Vengeance', desc:'When you are restored from 0 HP, each creature within 30 ft makes DEX save or takes 2d8+CHA Radiant and is Blinded until end of your next turn. You can also fly half your speed.' }],
+    6:[{ name:'Radiant Soul', desc:"Resistance to Radiant damage. Once per turn, when a spell you cast deals Radiant or Fire damage, add your CHA modifier to that spell's damage against one target." }],
+    10:[{ name:'Celestial Resilience', desc:"When you use Magical Cunning or finish a Short or Long Rest, gain Temporary HP equal to your Warlock level + CHA modifier; up to five creatures you can see gain half your Warlock level + CHA modifier." }],
+    14:[{ name:'Searing Vengeance', desc:"When you or an ally within 60 ft is about to make a Death Saving Throw, that creature instead regains half its HP maximum and can end Prone; creatures of your choice within 30 ft of it take 2d8 + CHA modifier Radiant damage and are Blinded until the end of the turn. Once per Long Rest." }]
   },
-  'The Fiend': {
+  'Fiend Patron': {
     3:[
-      { name:'Patron Spells', desc:'Always prepared: Burning Hands, Command (1st); Blindness/Deafness, Scorching Ray (3rd); Fireball, Stinking Cloud (5th); Fire Shield, Wall of Fire (7th); Flame Strike, Hallow (9th).' },
-      { name:'Dark One\'s Blessing', desc:'When you reduce a hostile creature to 0 HP, gain temp HP = CHA mod + Warlock level.' }
+      { name:"Dark One's Blessing", desc:"When you reduce an enemy to 0 HP — or someone else does within 10 ft of you — gain Temporary HP equal to your CHA modifier + Warlock level (min 1)." },
+      { name:'Fiend Spells', desc:"Always prepared: Burning Hands, Command, Scorching Ray, Suggestion (Warlock 3); Fireball, Stinking Cloud (5); Fire Shield, Wall of Fire (7); Geas, Insect Plague (9)." }
     ],
-    6:[{ name:'Dark One\'s Own Luck', desc:'Add 1d10 to one ability check or saving throw. 1/Short or Long Rest.' }],
-    10:[{ name:'Fiendish Resilience', desc:'After a Short or Long Rest, choose a damage type. Gain resistance to it until next Short or Long Rest.' }],
-    14:[{ name:'Hurl Through Hell', desc:'Reaction when you hit a creature: it disappears and travels through Hell. It returns at start of your next turn, Incapacitated, and takes 8d10 Psychic (if not a Fiend). 1/Long Rest.' }],
+    6:[{ name:"Dark One's Own Luck", desc:"Add 1d10 to an ability check or saving throw, after seeing the roll but before its effects. Uses equal to your CHA modifier (min 1) per Long Rest, at most once per roll." }],
+    10:[{ name:'Fiendish Resilience', desc:"When you finish a Short or Long Rest, choose a damage type other than Force: you have Resistance to it until you choose another." }],
+    14:[{ name:'Hurl Through Hell', desc:"Once per turn when you hit a creature with an attack roll: CHA save or it vanishes through the Lower Planes, taking 8d10 Psychic damage (unless it is a Fiend) and Incapacitated until the end of your next turn. Once per Long Rest, or expend a Pact Magic slot." }]
   },
-  'The Great Old One': {
+  'Great Old One Patron': {
     3:[
-      { name:'Patron Spells', desc:'Always prepared: Detect Thoughts, Dissonant Whispers (1st); Phantasmal Force, Sending (3rd); Hunger of Hadar, Telekinesis (5th); Summon Aberration, Black Tentacles (7th); Telepathic Bond, Weird (9th).' },
-      { name:'Awakened Mind', desc:'Bonus Action: telepathic link with one creature within 30 ft for 10 minutes. No shared language required. 1/Long Rest.' }
+      { name:'Awakened Mind', desc:"Bonus Action: telepathic link with a creature you can see within 30 ft, usable within CHA modifier miles (min 1), for a number of minutes equal to your Warlock level. You need a language in common." },
+      { name:'Great Old One Spells', desc:"Always prepared: Detect Thoughts, Dissonant Whispers, Phantasmal Force, Tasha's Hideous Laughter (Warlock 3); Clairvoyance, Hunger of Hadar (5); Confusion, Summon Aberration (7); Modify Memory, Telekinesis (9)." },
+      { name:'Psychic Spells', desc:"Your Warlock spells that deal damage can deal Psychic damage instead. Your Enchantment and Illusion Warlock spells need no Verbal or Somatic components." }
     ],
-    6:[{ name:'Entropic Ward', desc:'Reaction: impose disadvantage on one attack roll vs you. If it misses, advantage on your next attack vs it. 1/Short or Long Rest.' }],
-    10:[{ name:'Thought Shield', desc:'Thoughts can\'t be read. Resistance to Psychic damage. When you take Psychic damage, the attacker takes the same amount.' }],
-    14:[{ name:'Create Thrall', desc:'Action: touch an incapacitated Humanoid. It is Charmed (cured by Remove Curse) and you share a telepathic link with it over any distance on the same plane.' }],
+    6:[{ name:'Clairvoyant Combatant', desc:"When you form an Awakened Mind link, the creature makes a WIS save: on a failure it has Disadvantage on attacks against you and you have Advantage against it while the link lasts. Once per Short or Long Rest, or expend a Pact Magic slot." }],
+    10:[
+      { name:'Eldritch Hex', desc:"Hex is always prepared. When you cast it, the target also has Disadvantage on saving throws of the chosen ability." },
+      { name:'Thought Shield', desc:"Your thoughts can't be read unless you allow it. Resistance to Psychic damage, and a creature that deals Psychic damage to you takes the same amount." }
+    ],
+    14:[{ name:'Create Thrall', desc:"When you cast Summon Aberration, you can make it not require Concentration (duration 1 minute). The Aberration gains Temporary HP equal to your Warlock level + CHA modifier, and the first time each turn it hits a creature under your Hex, it deals extra Psychic damage equal to that spell's bonus damage." }]
   },
 
   /* ── Unearthed Arcana ── */
@@ -3037,6 +3046,18 @@ const CLASS_RESOURCES = {
    cette table, un magicien perdrait sa sous-classe au prochain chargement.
    Elle est appliquée une fois, au premier rendu, puis ne matche plus rien. */
 const SUBCLASS_RENOMMEES = {
+  /* Noms 2014 → 2024, relus sur dnd2024.wikidot.com. */
+  'Draconic Bloodline':           'Draconic Sorcery',
+  'Wild Magic':                   'Wild Magic Sorcery',
+  'Aberrant Mind':                'Aberrant Sorcery',
+  'Clockwork Soul':               'Clockwork Sorcery',
+  'The Archfey':                  'Archfey Patron',
+  'The Celestial':                'Celestial Patron',
+  'The Fiend':                    'Fiend Patron',
+  'The Great Old One':            'Great Old One Patron',
+  'Circle of Stars':              'Circle of the Stars',
+  'Warrior of the Four Elements': 'Warrior of the Elements',
+  'Oath of Ancients':             'Oath of the Ancients',
   'School of Abjuration':    'Abjurer',
   'School of Conjuration':   'Conjurer',
   'School of Divination':    'Diviner',
