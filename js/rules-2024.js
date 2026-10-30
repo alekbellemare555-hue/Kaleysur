@@ -2975,36 +2975,44 @@ const SUBCLASS_DATA = {
 
 }; // end SUBCLASS_DATA
 
-/* ── Ressources de classe par défaut ── */
+/* ── Ressources de classe par défaut ──
+   Regles 2024 : colonnes des tables de classe et texte des capacites, relus
+   sur dnd2024.wikidot.com. reset :
+     'long'   — tout revient au repos long ;
+     'short'  — tout revient au repos court (et au long) ;
+     'short1' — UNE utilisation revient au repos court, toutes au repos long
+                (Rage, Conduit divin, Forme sauvage, Second souffle).
+   `c` (facultatif) sert aux maxima qui dependent d'une caracteristique ;
+   sans lui, max reste null et se saisit a la main. */
 const CLASS_RESOURCES = {
   Barbarian: lvl => [
-    { name:'Rages', used:0, max:[2,2,3,3,4,4,4,4,4,4,4,5,5,5,5,5,6,6,6,99][Math.min(lvl,20)-1], reset:'long' }
+    { name:'Rages', used:0, max:[2,2,3,3,3,4,4,4,4,4,4,5,5,5,5,5,6,6,6,6][Math.min(lvl,20)-1], reset:'short1' }
   ],
-  Bard: lvl => {
-    const r = [{ name:'Bardic Inspiration', used:0, max:null, reset:'short', note:'= CHA mod' }];
-    if (lvl >= 5) r.push({ name:'Font of Inspiration', used:0, max:1, reset:'short' });
-    return r;
-  },
-  Cleric: lvl => [
-    { name:'Channel Divinity', used:0, max:lvl>=18?3:lvl>=6?2:1, reset:'short' }
+  Bard: (lvl, c) => [
+    /* Font of Inspiration (5) les rend au repos court : pas une ressource a part. */
+    { name:'Bardic Inspiration', used:0,
+      max: c ? Math.max(1, Math.floor(((parseInt(c.cha) || 10) - 10) / 2)) : null,
+      reset: lvl >= 5 ? 'short' : 'long', note:'= CHA mod (min 1)' }
   ],
-  Druid: lvl => {
-    const r = [{ name:'Wild Shape', used:0, max:2, reset:'short' }];
-    if (lvl >= 18) r.push({ name:'Beast Spells', used:0, max:1, reset:'long' });
-    return r;
-  },
+  Cleric: lvl => lvl < 2 ? [] : [
+    { name:'Channel Divinity', used:0, max:lvl>=18?4:lvl>=6?3:2, reset:'short1' }
+  ],
+  Druid: lvl => lvl < 2 ? [] : [
+    { name:'Wild Shape', used:0, max:lvl>=17?4:lvl>=6?3:2, reset:'short1' }
+  ],
   Fighter: lvl => {
-    const r = [{ name:'Second Wind', used:0, max:1, reset:'short' }];
+    const r = [{ name:'Second Wind', used:0, max:lvl>=10?4:lvl>=4?3:2, reset:'short1' }];
     if (lvl >= 2) r.push({ name:'Action Surge', used:0, max:lvl>=17?2:1, reset:'short' });
     if (lvl >= 9) r.push({ name:'Indomitable', used:0, max:lvl>=17?3:lvl>=13?2:1, reset:'long' });
     return r;
   },
-  Monk: lvl => [
-    { name:'Discipline Points', used:0, max:lvl, reset:'short' }
+  Monk: lvl => lvl < 2 ? [] : [
+    { name:'Focus Points', used:0, max:lvl, reset:'short' },
+    { name:'Uncanny Metabolism', used:0, max:1, reset:'long' }
   ],
   Paladin: lvl => {
     const r = [{ name:'Lay on Hands', used:0, max:lvl*5, reset:'long' }];
-    if (lvl >= 2) r.push({ name:'Channel Divinity', used:0, max:lvl>=11?3:lvl>=6?2:1, reset:'short' });
+    if (lvl >= 3) r.push({ name:'Channel Divinity', used:0, max:lvl>=11?3:2, reset:'short1' });
     return r;
   },
   Psion: lvl => [
@@ -3015,24 +3023,29 @@ const CLASS_RESOURCES = {
       max:[4,4,4,4,6,6,6,6,8,8,8,8,10,10,10,10,12,12,12,12][Math.min(lvl,20)-1], reset:'long' }
   ],
   Ranger: lvl => [
-    { name:"Hunter's Mark", used:0, max:lvl>=17?3:lvl>=9?2:1, reset:'long' }
+    /* Favored Enemy : Hunter's Mark sans emplacement. */
+    { name:"Hunter's Mark", used:0, max:lvl>=17?6:lvl>=13?5:lvl>=9?4:lvl>=5?3:2, reset:'long' }
   ],
-  Rogue: lvl => {
-    const r = [];
-    if (lvl >= 5) r.push({ name:'Uncanny Dodge', used:0, max:1, reset:'short' });
-    if (lvl >= 7) r.push({ name:'Evasion', used:0, max:1, reset:'short' });
+  /* Esquive instinctive (une reaction) et Derobade (permanente) ne se
+     comptent pas. */
+  Rogue: lvl => lvl >= 20 ? [{ name:'Stroke of Luck', used:0, max:1, reset:'short' }] : [],
+  Sorcerer: lvl => {
+    const r = [{ name:'Innate Sorcery', used:0, max:2, reset:'long' }];
+    if (lvl >= 2) r.push({ name:'Sorcery Points', used:0, max:lvl, reset:'long' });
+    if (lvl >= 5) r.push({ name:'Sorcerous Restoration', used:0, max:1, reset:'long' });
     return r;
   },
-  Sorcerer: lvl => [
-    { name:'Sorcery Points', used:0, max:lvl, reset:'long' }
-  ],
-  Warlock: lvl => [
-    { name:'Spell Slots', used:0, max:lvl>=17?4:lvl>=11?3:lvl>=2?2:1, reset:'short' },
-    { name:'Mystic Arcanum', used:0, max:lvl>=17?4:lvl>=15?3:lvl>=13?2:lvl>=11?1:0, reset:'long' }
-  ],
-  Wizard: lvl => [
-    { name:'Arcane Recovery', used:0, max:1, reset:'long' }
-  ],
+  Warlock: lvl => {
+    const r = [{ name:'Spell Slots', used:0, max:lvl>=17?4:lvl>=11?3:lvl>=2?2:1, reset:'short' }];
+    if (lvl >= 2)  r.push({ name:'Magical Cunning', used:0, max:1, reset:'long' });
+    if (lvl >= 11) r.push({ name:'Mystic Arcanum', used:0, max:lvl>=17?4:lvl>=15?3:lvl>=13?2:1, reset:'long' });
+    return r;
+  },
+  Wizard: lvl => {
+    const r = [{ name:'Arcane Recovery', used:0, max:1, reset:'long' }];
+    if (lvl >= 20) r.push({ name:'Signature Spells', used:0, max:2, reset:'short' });
+    return r;
+  },
   Artificer: lvl => [
     { name:'Infuse Item', used:0, max:Math.floor(lvl/2)+1, reset:'long' }
   ]

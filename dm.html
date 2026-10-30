@@ -3578,7 +3578,11 @@ function restCombatant(key, type) {
     let n = 0;
     if (Array.isArray(c.resources)) {
       c.resources.forEach(r => {
-        if ((r.reset || r.recharge) === 'short') { r.used = 0; n++; }
+        const recharge = r.reset || r.recharge;
+        if (recharge === 'short') { r.used = 0; n++; }
+        /* Regles 2024 : Rage, Conduit divin, Forme sauvage, Second souffle
+           ne rendent qu'une utilisation au repos court. */
+        else if (recharge === 'short1' && (parseInt(r.used) || 0) > 0) { r.used = (parseInt(r.used) || 0) - 1; n++; }
       });
     }
     // Occultiste : les emplacements de pacte reviennent au repos court

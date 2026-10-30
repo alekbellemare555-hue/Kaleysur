@@ -52,6 +52,10 @@ function ok(cond, label) {
     extract(J, 'function getClasses(c)'),
     extract(J, 'function getTotalLevel(c)'),
     extract(J, 'function classesReelles(c)'),
+    extract(J, 'const RESSOURCES_2014'),
+    extract(J, 'const RESSOURCES_RENOMMEES'),
+    extract(J, 'function migrerRessources2024(c)'),
+    extract(J, 'function reposCourtRessources(resources)'),
     extract(R, 'const MULTICLASS_SLOTS'),
     extract(R, 'const FULL_CASTER_SLOTS'),
     extract(R, 'const HALF_CASTER_SLOTS'),
@@ -1849,6 +1853,98 @@ function ok(cond, label) {
     ok(iBg > 0 && iExp > iBg, 'creation : l Expertise s applique apres les competences d historique');
     /* Le monteur de niveau passe par la meme fonction. */
     ok(/appliquerExpertise\(c, ch\.expertise, plan\.expertiseCount\)/.test(J), 'montee : meme fonction');
+  }
+
+
+  /* ── Ressources de classe : tables 2024 ── */
+  {
+    /* Colonnes relues sur dnd2024.wikidot.com, niveau 1 a 20. */
+    const col = (classe, nom, c) => Array.from({ length: 20 }, (_, i) =>
+      ((CLASS_RESOURCES[classe](i + 1, c) || []).find(r => r.name === nom) || {}).max ?? '-');
+    const T = s => s.split(' ').map(x => x === '-' ? '-' : +x);
+    eq(col('Barbarian', 'Rages'), T('2 2 3 3 3 4 4 4 4 4 4 5 5 5 5 5 6 6 6 6'), 'Rages (2024 : 3 au niveau 5, 6 au 20)');
+    eq(col('Cleric', 'Channel Divinity'), T('- 2 2 2 2 3 3 3 3 3 3 3 3 3 3 3 3 4 4 4'), 'Conduit divin du Clerc');
+    eq(col('Paladin', 'Channel Divinity'), T('- - 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 3 3'), 'Conduit divin du Paladin');
+    eq(col('Druid', 'Wild Shape'), T('- 2 2 2 2 3 3 3 3 3 3 3 3 3 3 3 4 4 4 4'), 'Forme sauvage');
+    eq(col('Fighter', 'Second Wind'), T('2 2 2 3 3 3 3 3 3 4 4 4 4 4 4 4 4 4 4 4'), 'Second souffle');
+    eq(col('Fighter', 'Action Surge'), T('- 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2'), 'Fougue');
+    eq(col('Fighter', 'Indomitable'), T('- - - - - - - - 1 1 1 1 2 2 2 2 3 3 3 3'), 'Inflexible');
+    eq(col('Monk', 'Focus Points'), T('- 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20'), 'points de Focus (des le niveau 2)');
+    eq(col('Ranger', "Hunter's Mark"), T('2 2 2 2 3 3 3 3 4 4 4 4 5 5 5 5 6 6 6 6'), 'Marque du chasseur gratuite');
+    eq(col('Sorcerer', 'Sorcery Points'), T('- 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20'), 'points de sorcellerie (des le niveau 2)');
+    eq(col('Warlock', 'Spell Slots'), T('1 2 2 2 2 2 2 2 2 2 3 3 3 3 3 3 4 4 4 4'), 'emplacements de pacte');
+    eq(col('Warlock', 'Mystic Arcanum'), T('- - - - - - - - - - 1 1 2 2 3 3 4 4 4 4'), 'Arcanum mystique (plus d entree a 0)');
+    eq(col('Sorcerer', 'Innate Sorcery')[0], 2, 'Innate Sorcery : deux fois par repos long');
+    eq(col('Rogue', 'Stroke of Luck')[19], 1, 'Roublard 20 : Stroke of Luck');
+    /* Ce qui n est pas une ressource. */
+    const tousNoms = Object.keys(CLASS_RESOURCES).flatMap(k => Array.from({ length: 20 }, (_, i) => CLASS_RESOURCES[k](i + 1, {})).flat().map(r => r.name));
+    ['Uncanny Dodge', 'Evasion', 'Font of Inspiration', 'Beast Spells', 'Discipline Points'].forEach(n =>
+      ok(!tousNoms.includes(n), n + ' : pas une ressource en 2024'));
+    /* Recharges. */
+    const rech = (k, n, l) => (CLASS_RESOURCES[k](l, {}).find(r => r.name === n) || {}).reset;
+    ['Barbarian:Rages:5', 'Cleric:Channel Divinity:5', 'Paladin:Channel Divinity:5', 'Druid:Wild Shape:5', 'Fighter:Second Wind:5'].forEach(x => {
+      const [k, n, l] = x.split(':');
+      eq(rech(k, n, +l), 'short1', n + ' (' + k + ') : une utilisation au repos court');
+    });
+    eq(rech('Monk', 'Focus Points', 5), 'short', 'Focus : tout au repos court');
+    eq(rech('Fighter', 'Action Surge', 5), 'short', 'Fougue : repos court');
+    /* Inspiration bardique : mod. de CHA (min 1), repos court des le niveau 5. */
+    eq(CLASS_RESOURCES.Bard(4, { cha: 16 })[0].max, 3, 'Inspiration bardique : mod. de CHA');
+    eq(CLASS_RESOURCES.Bard(4, { cha: 8 })[0].max, 1, 'Inspiration bardique : minimum 1');
+    eq(CLASS_RESOURCES.Bard(4)[0].max, null, 'Inspiration bardique : sans fiche, a saisir');
+    eq(CLASS_RESOURCES.Bard(4, {})[0].reset, 'long', 'Inspiration bardique : repos long avant le niveau 5');
+    eq(CLASS_RESOURCES.Bard(5, {})[0].reset, 'short', 'Inspiration bardique : Font of Inspiration au niveau 5');
+
+    /* Repos court : 'short' en entier, 'short1' une seule, 'long' rien. */
+    const res = [{ name:'Rages', used:2, max:3, reset:'short1' }, { name:'Action Surge', used:1, max:1, reset:'short' },
+                 { name:'Indomitable', used:1, max:1, reset:'long' }, { name:'Wild Shape', used:0, max:2, reset:'short1' }];
+    eq(reposCourtRessources(res), ['Rages (+1)', 'Action Surge'], 'repos court : ce qui revient');
+    eq(res.map(r => r.used), [1, 0, 1, 0], 'repos court : une rage, toute la Fougue, rien d Inflexible');
+    ok(/reposCourtRessources\(c2\.resources\)/.test(J), 'fiche : le repos court applique la regle');
+    ok(/reposCourtRessources\(\(c\.resources \|\| \[\]\)\.map\(r => \(\{ \.\.\.r \}\)\)\)/.test(J), 'fiche : l apercu travaille sur une copie');
+    const D = staged('dm.html');
+    ok(/else if \(recharge === 'short1' && \(parseInt\(r\.used\) \|\| 0\) > 0\) \{ r\.used = \(parseInt\(r\.used\) \|\| 0\) - 1; n\+\+; \}/.test(D), 'MJ : le repos court de groupe rend une utilisation');
+
+    /* Migration d une fiche de 2014 : une fois. */
+    const bar = { classes:[{ classe:'Barbarian', niveau:5 }], resources:[{ name:'Rages', used:4, max:4, reset:'long' }, { name:'Torche', used:1, max:3, reset:'long' }] };
+    eq(migrerRessources2024(bar), true, 'migration : signalee');
+    eq(bar.resources[0], { name:'Rages', used:3, max:3, reset:'short1' }, 'migration : Rages 4 → 3 au niveau 5, utilisation plafonnee');
+    eq(bar.resources[1], { name:'Torche', used:1, max:3, reset:'long' }, 'migration : une ressource maison reste');
+    bar.resources[0].max = 5;
+    eq(migrerRessources2024(bar), false, 'migration : une seule fois');
+    eq(bar.resources[0].max, 5, 'migration : un maximum retouche ensuite reste');
+
+    const moine = { classes:[{ classe:'Monk', niveau:5 }], resources:[{ name:'Discipline Points', used:2, max:5, reset:'short' }] };
+    migrerRessources2024(moine);
+    eq(moine.resources.map(r => r.name), ['Focus Points', 'Uncanny Metabolism'], 'migration : Discipline → Focus, Uncanny Metabolism ajoute');
+    eq(moine.resources[0].used, 2, 'migration : l utilisation suit le renommage');
+    const moine1 = { classes:[{ classe:'Monk', niveau:1 }], resources:[{ name:'Discipline Points', used:0, max:1, reset:'short' }] };
+    migrerRessources2024(moine1);
+    eq(moine1.resources, [], 'migration : pas de Focus au niveau 1');
+    const roub = { classes:[{ classe:'Rogue', niveau:7 }], resources:[{ name:'Uncanny Dodge', used:0, max:1, reset:'short' }, { name:'Evasion', used:0, max:1, reset:'short' }] };
+    migrerRessources2024(roub);
+    eq(roub.resources, [], 'migration : Esquive instinctive et Derobade retirees');
+    const barde = { classes:[{ classe:'Bard', niveau:6 }], cha:18, resources:[{ name:'Bardic Inspiration', used:1, max:null, reset:'short' }, { name:'Font of Inspiration', used:0, max:1, reset:'short' }] };
+    migrerRessources2024(barde);
+    eq(barde.resources, [{ name:'Bardic Inspiration', used:1, max:4, reset:'short' }], 'migration : Inspiration au mod. de CHA, Font retiree');
+    const ens = { classes:[{ classe:'Sorcerer', niveau:5 }], resources:[{ name:'Sorcery Points', used:1, max:5, reset:'long' }] };
+    migrerRessources2024(ens);
+    eq(ens.resources.map(r => r.name + ':' + r.max), ['Sorcery Points:5', 'Innate Sorcery:2', 'Sorcerous Restoration:1'], 'migration : les ressources 2024 manquantes ajoutees');
+    const clerc1 = { classes:[{ classe:'Cleric', niveau:1 }], resources:[{ name:'Channel Divinity', used:0, max:1, reset:'short' }] };
+    migrerRessources2024(clerc1);
+    eq(clerc1.resources, [], 'migration : pas de Conduit divin au niveau 1');
+    /* Multiclasse : la ressource commune reste si une classe la donne encore. */
+    const multi = { classes:[{ classe:'Cleric', niveau:1 }, { classe:'Paladin', niveau:3 }], resources:[{ name:'Channel Divinity', used:0, max:1, reset:'short' }] };
+    migrerRessources2024(multi);
+    eq(multi.resources.map(r => r.name + ':' + r.max), ['Channel Divinity:2', 'Lay on Hands:15'], 'migration multiclasse : Conduit du Paladin 3');
+    eq(migrerRessources2024({ classes:[{ classe:'Fighter', niveau:3 }] }), false, 'migration : sans ressources, rien');
+    eq(migrerRessources2024(null), false, 'migration : fiche absente');
+
+    /* Les fiches neuves portent le drapeau : la migration ne les touchera pas. */
+    ok(/c\.resources = CLASS_RESOURCES\[selClass\.value\]\(1, c\)[^\n]*\n\s*c\.ressources2024 = true;/.test(J), 'creation : drapeau pose');
+    /* L editeur admin lit used : il remettait tout a zero en enregistrant. */
+    ok(/ae-resource-cur" data-ri="\$\{i\}" value="\$\{r\.used\|\|0\}"/.test(J), 'admin : affiche r.used');
+    ok(!/r\.current\|\|0/.test(J), 'admin : plus de r.current');
   }
 
   /* ── PV saisis a la main a la montee de niveau ── */

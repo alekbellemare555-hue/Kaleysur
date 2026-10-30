@@ -5243,7 +5243,10 @@ function autoFillClass(classe) {
     Object.entries(saveMap).forEach(([attr, key]) => { C()[key] = classSaves.includes(attr); });
   }
   if (CLASS_RESOURCES[classe] && !(C().resources || []).length) {
-    C().resources = CLASS_RESOURCES[classe](getTotalLevel(C())).map(r => ({ ...r }));
+    /* Le niveau DE CETTE CLASSE, pas le niveau total (multiclasse). */
+    const nivClasse = parseInt(getClasses(C()).find(x => x.classe === classe)?.niveau) || getTotalLevel(C());
+    C().resources = CLASS_RESOURCES[classe](nivClasse, C()).map(r => ({ ...r }));
+    C().ressources2024 = true;
     renderResources();
   }
   fillFields();
@@ -6250,6 +6253,7 @@ function migrateToMulticlass(c) {
      que ce soit s'en serve. */
   if (migrerChoixCapacites(c)) migre = true;
   if (migrerNomsAttaques(c)) migre = true;
+  if (migrerRessources2024(c)) migre = true;
   if (migre) triggerSave();
 }
 
@@ -6266,6 +6270,65 @@ function getTotalLevel(c) {
    Une fiche vierge porte une entree vide : la compter donnait un niveau total
    de 1 a un personnage sans classe, puis de 2 des sa premiere montee, avec une
    classe fantome a cote de la vraie. */
+/* ── Ressources de classe : de 2014 a 2024 ──
+   Maxima et recharges remis aux tables 2024, une seule fois (drapeau
+   ressources2024) : ensuite, un maximum retouche a la main par le joueur —
+   un objet magique, une regle maison — n'est plus repris. Ne touche qu'aux
+   ressources que le site generait pour les classes du personnage ; une
+   ressource ajoutee a la main reste telle quelle. */
+const RESSOURCES_2014 = {
+  Barbarian:['Rages'], Bard:['Bardic Inspiration','Font of Inspiration'], Cleric:['Channel Divinity'],
+  Druid:['Wild Shape','Beast Spells'], Fighter:['Second Wind','Action Surge','Indomitable'],
+  Monk:['Discipline Points'], Paladin:['Lay on Hands','Channel Divinity'], Ranger:["Hunter's Mark"],
+  Rogue:['Uncanny Dodge','Evasion'], Sorcerer:['Sorcery Points'], Warlock:['Spell Slots','Mystic Arcanum'],
+  Wizard:['Arcane Recovery'],
+};
+const RESSOURCES_RENOMMEES = { 'Discipline Points': 'Focus Points' };
+function migrerRessources2024(c) {
+  if (!c || c.ressources2024 || typeof CLASS_RESOURCES === 'undefined') return false;
+  if (!Array.isArray(c.resources) || !c.resources.length) return false;
+  c.ressources2024 = true;
+  const classes = classesReelles(c);
+  const frais = {};
+  classes.forEach(cl => (CLASS_RESOURCES[cl.classe]?.(parseInt(cl.niveau) || 1, c) || [])
+    .forEach(r => { frais[r.name] = r; }));
+  const anciens = new Set(classes.flatMap(cl => RESSOURCES_2014[cl.classe] || []));
+  const nomDe = r => RESSOURCES_RENOMMEES[r.name] || r.name;
+  /* Ce que le site generait et que 2024 ne connait pas (ou pas a ce niveau) part. */
+  c.resources = c.resources.filter(r => frais[nomDe(r)] || !anciens.has(r.name));
+  c.resources.forEach(r => {
+    r.name = nomDe(r);
+    const f = frais[r.name];
+    if (!f) return;
+    if (f.max !== null && f.max !== undefined) r.max = f.max;
+    r.reset = f.reset;
+    r.used = Math.min(parseInt(r.used) || 0, parseInt(r.max) || 0);
+  });
+  /* Les ressources 2024 qui manquaient (Innate Sorcery, Uncanny Metabolism…),
+     pour les classes dont la fiche suivait deja les ressources. */
+  classes.forEach(cl => {
+    const suivies = (RESSOURCES_2014[cl.classe] || []).some(n => c.resources.some(r => r.name === (RESSOURCES_RENOMMEES[n] || n)));
+    if (!suivies) return;
+    (CLASS_RESOURCES[cl.classe]?.(parseInt(cl.niveau) || 1, c) || []).forEach(f => {
+      if (!c.resources.some(r => r.name === f.name)) c.resources.push({ ...f });
+    });
+  });
+  return true;
+}
+
+/* Repos court sur les ressources : 'short' revient en entier, 'short1'
+   rend une utilisation. Rend les noms de ce qui est revenu. */
+function reposCourtRessources(resources) {
+  const rendues = [];
+  (resources || []).forEach(r => {
+    const used = parseInt(r.used) || 0;
+    if (!used) return;
+    if (r.reset === 'short')  { r.used = 0; rendues.push(r.name || r.nom); }
+    if (r.reset === 'short1') { r.used = used - 1; rendues.push((r.name || r.nom) + ' (+1)'); }
+  });
+  return rendues;
+}
+
 function classesReelles(c) {
   return getClasses(c).filter(cl => cl.classe);
 }
@@ -7472,7 +7535,8 @@ function renderResources() {
     const usedVal = Math.min(parseInt(r.used) || 0, maxVal);
     const isDepleted = maxVal > 0 && usedVal >= maxVal;
     card.className = 'res-card' + (isDepleted ? ' depleted' : '');
-    const resetLabel = r.reset === 'short' ? 'Short Rest' : r.reset === 'long' ? 'Long Rest' : '';
+    const resetLabel = r.reset === 'short' ? 'Short Rest' : r.reset === 'short1' ? 'Short Rest: 1 · Long Rest: all'
+                     : r.reset === 'long' ? 'Long Rest' : '';
     const pips = maxVal > 0
       ? Array.from({length: maxVal}, (_, j) =>
           `<div class="res-pip${j < usedVal ? ' used' : ''}" data-ri="${i}" data-pidx="${j}" title="Case ${j+1}/${maxVal}"></div>`
@@ -8401,9 +8465,10 @@ function openShortRestModal() {
 
   // Aperçu de ce que le repos va restaurer
   const isWarlock = getClasses(c).some(cl => cl.classe === 'Warlock');
-  const shortRes  = (c.resources || []).filter(r => r.reset === 'short' && (parseInt(r.used) || 0) > 0);
+  /* Apercu sur une copie : rien n'est touche avant « Appliquer ». */
+  const shortRes  = reposCourtRessources((c.resources || []).map(r => ({ ...r })));
   const restoreBits = [
-    ...shortRes.map(r => r.name || r.nom),
+    ...shortRes,
     isWarlock ? 'Emplacements de Pacte' : ''
   ].filter(Boolean);
   document.getElementById('sr-total').textContent = restoreBits.length
@@ -8435,7 +8500,7 @@ function openShortRestModal() {
     const c2 = C();
     c2.pvActuel = Math.min(parseInt(c2.pvMax)||0, (parseInt(c2.pvActuel)||0) + pendingHealing);
     c2.nbDeVieUtilises = (parseInt(c2.nbDeVieUtilises)||0) + diceRolled;
-    (c2.resources || []).forEach(r => { if (r.reset === 'short') r.used = 0; });
+    reposCourtRessources(c2.resources);
     // PHB 2024 : la Magie de Pacte du Warlock récupère ses emplacements sur un repos court
     if (getClasses(c2).some(cl => cl.classe === 'Warlock')) {
       const wLvl  = getClasses(c2).find(cl => cl.classe === 'Warlock')?.niveau || 1;
@@ -9647,10 +9712,12 @@ function applyLevelUp(c, plan, choices) {
   // ── Ressources de classe ── on re-dérive en conservant la consommation
   if (typeof CLASS_RESOURCES !== 'undefined' && CLASS_RESOURCES[plan.className]) {
     const used = new Map((c.resources || []).map(r => [r.name, r.used]));
-    const fresh = CLASS_RESOURCES[plan.className](c.classes[idx].niveau).map(r => ({ ...r }));
+    const fresh = CLASS_RESOURCES[plan.className](c.classes[idx].niveau, c).map(r => ({ ...r }));
     // On ne remplace que les ressources de cette classe, les autres (multiclasse) restent
     const keep = (c.resources || []).filter(r => !fresh.some(f => f.name === r.name));
-    c.resources = [...keep, ...fresh.map(r => ({ ...r, used: used.get(r.name) ?? 0 }))];
+    c.resources = [...keep, ...fresh.map(r => ({ ...r,
+      used: Math.min(used.get(r.name) ?? 0, r.max ?? Infinity) }))];
+    c.ressources2024 = true;
   }
 
   // ── Journal : on alimente le Level Plan existant plutôt que d'ouvrir un second registre ──
@@ -10962,13 +11029,13 @@ function renderAdminModalTab() {
       <!-- Ressources -->
       <div class="sheet-section">
         <div class="sheet-section-title">Class Resources</div>
-        <div style="font-size:0.8rem;color:var(--text-dim);font-style:italic;margin-bottom:0.5rem;">Current values (maximums are automatically calculated based on class and level)</div>
+        <div style="font-size:0.8rem;color:var(--text-dim);font-style:italic;margin-bottom:0.5rem;">Uses spent (maximums are automatically calculated based on class and level)</div>
         <div id="ae-resources-wrap" style="display:flex;flex-wrap:wrap;gap:0.75rem;">
           ${(c.resources||[]).map((r,i) => `
             <div style="background:var(--j-panel,#140f08);border:1px solid var(--j-border-col,#4a3510);border-radius:6px;padding:0.5rem 0.75rem;min-width:120px;">
               <div style="font-size:0.75rem;color:var(--gold);font-family:'Cinzel',serif;margin-bottom:0.3rem;">${esc(r.name)}</div>
               <div style="display:flex;align-items:center;gap:0.4rem;">
-                <input type="number" class="field-input ae-resource-cur" data-ri="${i}" value="${r.current||0}" min="0" max="${r.max||99}" style="width:55px;text-align:center;">
+                <input type="number" class="field-input ae-resource-cur" data-ri="${i}" value="${r.used||0}" min="0" max="${r.max||99}" style="width:55px;text-align:center;">
                 <span style="color:var(--text-label);">/</span>
                 <span style="color:var(--text-dim);font-size:0.82rem;">${r.max||0}</span>
               </div>
@@ -14375,7 +14442,8 @@ ${car} characters of notes.
         c.pvActuel = c.pvMax;
         // Ressources de départ de la classe
         if (typeof CLASS_RESOURCES !== 'undefined' && CLASS_RESOURCES[selClass.value]) {
-          c.resources = CLASS_RESOURCES[selClass.value](1).map(r => ({ ...r }));
+          c.resources = CLASS_RESOURCES[selClass.value](1, c).map(r => ({ ...r }));
+          c.ressources2024 = true;
         }
       }
 
