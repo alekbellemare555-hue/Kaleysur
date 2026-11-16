@@ -5446,6 +5446,7 @@ function renderClassFeatures() {
     if (!clData) return;
     const sousClasse = clEntry.sousClasse === '__custom__' ? '' : (clEntry.sousClasse || '');
     const subData = (sousClasse && SUBCLASS_DATA[clName]) ? SUBCLASS_DATA[clName][sousClasse] : null;
+    const remplacees = capacitesRemplacees(clName, sousClasse, clLvl);
 
     // Class header (only if multiclassing)
     if (validClasses.length > 1) {
@@ -5459,7 +5460,7 @@ function renderClassFeatures() {
   for (let lvl = 1; lvl <= 20; lvl++) {
     if (lvl > clLvl) continue; // locked = invisible
 
-    const baseFeats = clData.features[lvl] || [];
+    const baseFeats = (clData.features[lvl] || []).filter(f => !remplacees.has(f.name));
     const subFeats  = subData ? (subData[lvl] || []) : [];
     if (!baseFeats.length && !subFeats.length) continue;
 
@@ -6428,6 +6429,7 @@ function renderMulticlasses() {
     subSel.addEventListener('change', () => {
       classes[idx].sousClasse = subSel.value; classes[idx].customSousClasse = '';
       syncClassesToLegacy(c);
+      if (syncRessourceLameEbene(c)) renderResources();
       renderMulticlasses(); renderClassFeatures(); updateCharSummary(); triggerSave();
     });
     niveauInp.addEventListener('input', () => {
@@ -9299,6 +9301,40 @@ function languesDeClasse(className, niveau) {
   return out;
 }
 
+/* Capacites de classe qu'une sous-classe remplace, jusqu'a ce niveau de classe
+   (champ remplace d'une capacite de sous-classe). */
+function capacitesRemplacees(className, subclassName, niveau) {
+  const out = new Set();
+  const paliers = (typeof SUBCLASS_DATA !== 'undefined' && SUBCLASS_DATA[className]?.[subclassName]) || {};
+  Object.entries(paliers).forEach(([lv, liste]) => {
+    if (+lv > niveau) return;
+    liste.forEach(f => { if (f.remplace) out.add(f.remplace); });
+  });
+  return out;
+}
+
+/* Sous-classes dont une capacite est annoncee des le niveau 1 : le createur
+   doit pouvoir les proposer, le choix habituel n'arrivant qu'au niveau 3. */
+function sousClassesDuNiveau1(className) {
+  const subs = (typeof SUBCLASS_DATA !== 'undefined' && SUBCLASS_DATA[className]) || {};
+  return Object.keys(subs).filter(s => (subs[s][1] || []).length > 0);
+}
+
+/* Oath of the Ebon Blade : Death Coil prend la place de Lay on Hands dans le
+   suivi des ressources, et la lui rend si le joueur change de sous-classe.
+   Ne fait rien pour une fiche qui ne suit pas cette ressource. */
+function syncRessourceLameEbene(c) {
+  if (!Array.isArray(c?.resources) || typeof CLASS_RESOURCES === 'undefined') return false;
+  const pal = getClasses(c).find(x => x.classe === 'Paladin');
+  if (!pal) return false;
+  const frais = CLASS_RESOURCES.Paladin(parseInt(pal.niveau) || 1, c)[0];
+  const ancien = frais.name === 'Death Coil' ? 'Lay on Hands' : 'Death Coil';
+  const i = c.resources.findIndex(r => r.name === ancien);
+  if (i < 0) return false;
+  c.resources[i] = { ...frais };
+  return true;
+}
+
 /* Capacites a choix debloquees a un niveau de classe donne (classe + sous-classe). */
 function featureChoicesAt(className, subclassName, level) {
   const out = [];
@@ -9528,7 +9564,8 @@ function planLevelUp(c, className, opts) {
   const isAsi  = featsIci.some(f => f.type === 'asi') || isEpic;
 
   // Capacités débloquées à ce niveau de classe (+ celles de la sous-classe)
-  const clsFeatures = featsIci.map(f => ({ ...f, source: className }));
+  const remplacees = capacitesRemplacees(className, subName, toLevel);
+  const clsFeatures = featsIci.filter(f => !remplacees.has(f.name)).map(f => ({ ...f, source: className }));
   const subFeatures = (subName && SUBCLASS_DATA?.[className]?.[subName]?.[toLevel] || [])
     .map(f => ({ ...f, source: subName }));
 
@@ -9756,6 +9793,10 @@ function applyLevelUp(c, plan, choices) {
     const keep = (c.resources || []).filter(r => !fresh.some(f => f.name === r.name));
     c.resources = [...keep, ...fresh.map(r => ({ ...r,
       used: Math.min(used.get(r.name) ?? 0, r.max ?? Infinity) }))];
+    /* Death Coil et Lay on Hands s'excluent : garder l'autre ferait deux reserves. */
+    const exclue = fresh.some(f => f.name === 'Death Coil') ? 'Lay on Hands'
+                 : fresh.some(f => f.name === 'Lay on Hands') ? 'Death Coil' : '';
+    if (exclue) c.resources = c.resources.filter(r => r.name !== exclue);
     c.ressources2024 = true;
   }
 
@@ -14262,7 +14303,25 @@ ${car} characters of notes.
       }));
     }
 
+    /* Sous-classes dont une capacite arrive des le niveau 1 (Oath of the Ebon
+       Blade, Demon Hunter) : facultatif, on peut toujours choisir au niveau 3. */
+    const selSub1 = document.getElementById('wiz-sub1');
+    function refreshSub1() {
+      const liste = selClass.value ? sousClassesDuNiveau1(selClass.value) : [];
+      selSub1.innerHTML = '<option value="">— Choose at level 3 —</option>'
+        + liste.map(s => `<option value="${esc(s)}"${titreUA(s)}>${esc(nomUA(s))}</option>`).join('');
+      document.getElementById('wiz-sub1-wrap').style.display = liste.length ? 'block' : 'none';
+      previewSub1();
+    }
+    function previewSub1() {
+      const box = document.getElementById('wiz-sub1-preview');
+      const niv1 = selSub1.value ? (SUBCLASS_DATA[selClass.value]?.[selSub1.value]?.[1] || []) : [];
+      box.innerHTML = niv1.map(f => `<div class="wiz-trait"><span class="wiz-trait-name">${esc(f.name)}</span> — ${f.desc}</div>`).join('');
+    }
+    selSub1.addEventListener('change', previewSub1);
+
     function previewClass() {
+      refreshSub1();
       wizSkills = new Set();   // la classe change → on repart de zéro
       wizExp = new Set();
       renderWizSkills();
@@ -14455,7 +14514,7 @@ ${car} characters of notes.
     function closeModal() {
       overlay.classList.remove('open');
       nameInp.value = '';
-      [selSpecies, selLineage, selClass, selBg, selEquip, selBgEquip, selLang1, selLang2].forEach(s => s.value = '');
+      [selSpecies, selLineage, selClass, selBg, selEquip, selBgEquip, selSub1, selLang1, selLang2].forEach(s => s.value = '');
       document.getElementById('wiz-lang-warn')?.remove();
       refreshTool();
       abilBox.querySelectorAll('.wiz-abil-sel').forEach(s => s.value = '');
@@ -14463,7 +14522,7 @@ ${car} characters of notes.
       wizFc = {};
       wizExp = new Set();
       wizBgOk = true;
-      ['wiz-species-preview','wiz-class-preview','wiz-bg-preview','wiz-class-skills','wiz-expertise','wiz-bg-bonus','wiz-bg-equip-preview','wiz-summary'].forEach(id =>
+      ['wiz-species-preview','wiz-class-preview','wiz-bg-preview','wiz-class-skills','wiz-expertise','wiz-bg-bonus','wiz-bg-equip-preview','wiz-sub1-preview','wiz-summary'].forEach(id =>
         document.getElementById(id).innerHTML = '');
       refreshAbils();
       showStep(1);
@@ -14516,7 +14575,8 @@ ${car} characters of notes.
       if (selClass.value) {
         c.classe  = selClass.value;
         c.niveau  = 1;
-        c.classes = [{ classe: selClass.value, sousClasse: '', niveau: 1, customSousClasse: '' }];
+        c.classes = [{ classe: selClass.value, sousClasse: selSub1.value || '', niveau: 1, customSousClasse: '' }];
+        c.sousClasse = selSub1.value || '';
         const cd = CLASS_DATA[selClass.value];
         const saveMap = { for:'saveFor', dex:'saveDex', con:'saveCon', int:'saveInt', sag:'saveSag', cha:'saveCha' };
         Object.entries(saveMap).forEach(([a, k]) => { c[k] = cd.saves.includes(a); });
@@ -15754,6 +15814,11 @@ document.addEventListener('keydown', e => {
           </div>
           <div class="wiz-skills" id="wiz-class-skills"></div>
           <div class="wiz-skills" id="wiz-class-fc"></div>
+          <div class="auth-field" id="wiz-sub1-wrap" style="display:none;">
+            <label class="auth-label" for="wiz-sub1">Subclass with level 1 features (optional)</label>
+            <select class="auth-input" id="wiz-sub1"></select>
+          </div>
+          <div class="wiz-preview" id="wiz-sub1-preview"></div>
           <div class="wiz-preview" id="wiz-class-preview"></div>
         </div>
 

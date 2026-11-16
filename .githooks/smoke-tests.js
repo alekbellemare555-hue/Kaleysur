@@ -95,6 +95,9 @@ function ok(cond, label) {
     extract(J, 'function featureOptions(featureName, className)'),
     extract(J, 'function classeOffreCapacite(className, featureName)'),
     extract(J, 'function languesDeClasse(className, niveau)'),
+    extract(J, 'function capacitesRemplacees(className, subclassName, niveau)'),
+    extract(J, 'function sousClassesDuNiveau1(className)'),
+    extract(J, 'function syncRessourceLameEbene(c)'),
     extract(J, 'function featureChoicesAt(className, subclassName, level)'),
     extract(J, 'function cleChoix(className, featureName)'),
     extract(J, 'function getFeatureChoice(c, featureName, className)'),
@@ -2001,6 +2004,89 @@ function ok(cond, label) {
     ok(/showDamageRoll\(\x60Lv \$\{i\+1\} HP/.test(Jc), 'plan de niveau : le de de vie affiche');
   }
 
+
+  /* ── Sous-classes parues en 2026 : World of Warcraft, Ravenloft, Drops ── */
+  {
+    const cap = (cl, sc, lvl) => (SUBCLASS_DATA[cl]?.[sc]?.[lvl] || []);
+    const nom = (cl, sc, lvl) => cap(cl, sc, lvl).map(f => f.name);
+    const txt = (cl, sc, lvl, n) => (cap(cl, sc, lvl).find(f => f.name === n) || {}).desc || '';
+    /* Les huit nouvelles existent dans la bonne classe, avec leur livre. */
+    const NEUVES = [['Barbarian','Path of the Elements'],['Cleric','Discipline Domain'],['Cleric','Shadow Domain'],['Monk','Warrior of Mystic Brews'],
+      ['Paladin','Oath of the Ebon Blade'],['Paladin','Oath of the Holy'],['Ranger','Demon Hunter'],['Fighter','Sorrow Knight']];
+    NEUVES.forEach(([cl, sc]) => {
+      ok(!!SUBCLASS_DATA[cl]?.[sc], cl + '/' + sc + ' : presente');
+      ok(!estUA(sc), sc + ' : pas du playtest');
+      ok(livreSource(sc) !== '', sc + ' : le livre est indique');
+      ok(titreUA(sc).includes(livreSource(sc)), sc + ' : le livre passe dans l infobulle');
+    });
+    /* Les huit sorties du playtest, relues sur le texte publie. */
+    ['Path of the Spiritual Guardian','Swashbuckler','College of Spirits','Grave Domain','Hollow Warden','Phantom','Shadow Sorcery','Undead Patron','Reanimator'].forEach(sc => {
+      ok(!UA_SUBCLASSES[sc], sc + ' : sortie de la table de playtest');
+      ok(/World of Warcraft|Ravenloft/.test(livreSource(sc)), sc + ' : livre indique');
+    });
+    /* Quelques faits du texte publie, un par sous-classe. */
+    ok(nom('Barbarian','Path of the Spiritual Guardian',14).includes("Spirits' Fury"), 'Gardien spirituel : Spirits Fury au 14 (ex Vengeful Spirits)');
+    ok(nom('Rogue','Swashbuckler',13).includes('Dashing Strikes'), 'Swashbuckler : Dashing Strikes au 13 (ex Elegant Maneuver)');
+    ok(/Death Ward/.test(txt('Cleric','Grave Domain',3,'Grave Domain Spells')), 'Grave Domain : Death Ward dans la liste publiee');
+    ok(nom('Ranger','Hollow Warden',15).includes('Ancient Might'), 'Hollow Warden : Ancient Might au 15');
+    ok(nom('Sorcerer','Shadow Sorcery',3).includes('Power of Shadow'), 'Shadow Sorcery : Power of Shadow au 3');
+    ok(nom('Warlock','Undead Patron',6).includes('Grave Touched'), 'Undead Patron : Grave Touched au 6');
+    ok(nom('Artificer','Reanimator',9).includes('Macabre Modifications'), 'Reanimator : Macabre Modifications au 9');
+    ok(/Shadow Word: Pain/.test(txt('Cleric','Shadow Domain',3,'Shadow Spells')), 'Shadow Domain : Shadow Word: Pain');
+    ok(/Elementalism/.test(txt('Barbarian','Path of the Elements',6,'Echo of the Elements')), 'Path of the Elements : Elementalism');
+    ok(nom('Fighter','Sorrow Knight',18).includes('Grieving Mantle'), 'Sorrow Knight : Grieving Mantle au 18');
+
+    /* Remplacements : une capacite de sous-classe peut retirer une capacite de classe. */
+    eq(cap('Paladin','Oath of the Ebon Blade',1)[0].remplace, 'Lay on Hands', 'Death Coil remplace Lay on Hands');
+    eq(cap('Paladin','Oath of the Ebon Blade',2)[0].remplace, "Paladin's Smite", 'Runic Smite remplace Paladin s Smite');
+    ok(cap('Paladin','Oath of the Ebon Blade',11).some(f => f.remplace === 'Radiant Strikes'), 'Runic Strikes remplace Radiant Strikes');
+    ok(cap('Paladin','Oath of the Ebon Blade',14).some(f => f.remplace === 'Restoring Touch'), 'Improved Death Coil remplace Restoring Touch');
+    ok(cap('Ranger','Demon Hunter',18).some(f => f.remplace === 'Feral Senses'), 'Improved Spectral Sight remplace Feral Senses');
+    /* Chaque remplace vise une capacite que la classe a vraiment. */
+    Object.entries(SUBCLASS_DATA).forEach(([cl, subs]) => Object.entries(subs).forEach(([sc, byLv]) =>
+      Object.values(byLv).flat().forEach(f => { if (f.remplace) ok(classeOffreCapacite(cl, f.remplace), cl + '/' + sc + ' : remplace « ' + f.remplace + ' » qui n existe pas'); })));
+    eq([...capacitesRemplacees('Paladin', 'Oath of the Ebon Blade', 3)].sort(), ['Lay on Hands', "Paladin's Smite"], 'remplacees au niveau 3');
+    eq([...capacitesRemplacees('Paladin', 'Oath of the Ebon Blade', 20)].length, 4, 'remplacees au niveau 20');
+    eq([...capacitesRemplacees('Paladin', 'Oath of Devotion', 20)].length, 0, 'un serment ordinaire ne remplace rien');
+    eq([...capacitesRemplacees('Paladin', '', 20)].length, 0, 'sans sous-classe : rien');
+    ok(/const baseFeats = \(clData\.features\[lvl\] \|\| \[\]\)\.filter\(f => !remplacees\.has\(f\.name\)\)/.test(J), 'fiche : la capacite remplacee disparait');
+    /* Montee de niveau : Lay on Hands n est pas annonce a un Paladin de la Lame d ebene. */
+    const pal = hero({ classes:[{ classe:'Paladin', sousClasse:'Oath of the Ebon Blade', niveau:10, customSousClasse:'' }], cha:16 });
+    const p11 = planLevelUp(pal, 'Paladin');
+    ok(p11.ok && !p11.newFeatures.some(f => f.name === 'Radiant Strikes'), 'montee 11 : Radiant Strikes retire');
+    ok(p11.ok && p11.newFeatures.some(f => f.name === 'Runic Strikes'), 'montee 11 : Runic Strikes annonce');
+    const dev = hero({ classes:[{ classe:'Paladin', sousClasse:'Oath of Devotion', niveau:10, customSousClasse:'' }] });
+    ok(planLevelUp(dev, 'Paladin').newFeatures.some(f => f.name === 'Radiant Strikes'), 'montee 11 Devotion : Radiant Strikes garde');
+
+    /* Choix de sous-classe au niveau 1, seulement celles qui y ont une capacite. */
+    eq(sousClassesDuNiveau1('Paladin'), ['Oath of the Ebon Blade'], 'niveau 1 : la Lame d ebene');
+    eq(sousClassesDuNiveau1('Ranger'), ['Demon Hunter'], 'niveau 1 : le Demon Hunter');
+    eq(sousClassesDuNiveau1('Fighter'), [], 'niveau 1 : aucun Guerrier');
+    eq(sousClassesDuNiveau1('Classe inconnue'), [], 'niveau 1 : classe inconnue');
+    ok(/sousClasse: selSub1\.value \|\| ''/.test(J), 'creation : la sous-classe du niveau 1 est posee');
+
+    /* Death Coil prend la place de Lay on Hands dans les ressources. */
+    const ebene = { classes:[{ classe:'Paladin', sousClasse:'Oath of the Ebon Blade', niveau:3 }], cha:16 };
+    eq(CLASS_RESOURCES.Paladin(3, ebene)[0], { name:'Death Coil', used:0, max:4, reset:'long', note:'d8s = 1 + CHA mod (min 1)' }, 'ressources : Death Coil 1 + CHA');
+    eq(CLASS_RESOURCES.Paladin(3, { classes:[{ classe:'Paladin', sousClasse:'Oath of the Ebon Blade', niveau:3 }], cha:6 })[0].max, 1, 'ressources : Death Coil minimum 1');
+    eq(CLASS_RESOURCES.Paladin(3, { classes:[{ classe:'Paladin', sousClasse:'Oath of Devotion', niveau:3 }] })[0].name, 'Lay on Hands', 'ressources : Lay on Hands sinon');
+    eq(CLASS_RESOURCES.Paladin(3)[0].name, 'Lay on Hands', 'ressources : sans fiche, Lay on Hands');
+    const c1 = { classes:[{ classe:'Paladin', sousClasse:'Oath of the Ebon Blade', niveau:3 }], cha:16, resources:[{ name:'Lay on Hands', used:5, max:15, reset:'long' }] };
+    eq(syncRessourceLameEbene(c1), true, 'sync : bascule');
+    eq(c1.resources[0].name, 'Death Coil', 'sync : Death Coil en place');
+    c1.classes[0].sousClasse = 'Oath of Devotion';
+    eq(syncRessourceLameEbene(c1), true, 'sync : retour');
+    eq(c1.resources[0], { name:'Lay on Hands', used:0, max:15, reset:'long' }, 'sync : Lay on Hands rendu');
+    eq(syncRessourceLameEbene({ classes:[{ classe:'Fighter', niveau:3 }], resources:[{ name:'Second Wind', used:0, max:2, reset:'short1' }] }), false, 'sync : pas de Paladin');
+    eq(syncRessourceLameEbene({ classes:[{ classe:'Paladin', niveau:3 }] }), false, 'sync : sans ressources');
+    /* La montee de niveau ne garde pas les deux reserves. */
+    const e2 = hero({ classes:[{ classe:'Paladin', sousClasse:'', niveau:2, customSousClasse:'' }], cha:16, con:14, resources:[{ name:'Lay on Hands', used:0, max:10, reset:'long' }] });
+    const r2 = applyLevelUp(e2, planLevelUp(e2, 'Paladin', { subclass:'Oath of the Ebon Blade' }), { hp:7, subclass:'Oath of the Ebon Blade' });
+    ok(r2.ok, 'Paladin 3 Lame d ebene : accepte');
+    eq(e2.resources.filter(r => /Lay on Hands|Death Coil/.test(r.name)).map(r => r.name), ['Death Coil'], 'montee : une seule reserve, Death Coil');
+    ok(/syncRessourceLameEbene\(c\)\) renderResources\(\);/.test(J), 'fiche : changer de sous-classe bascule la ressource');
+  }
+
   /* ── PV saisis a la main a la montee de niveau ── */
   {
     const auNiveau = (hp) => {
@@ -2938,10 +3024,17 @@ function ok(cond, label) {
   // La premiere capacite d'une sous-classe tombe au niveau 3 (PHB 2024).
   // Un reliquat 2014 (niveau 2 pour Druide/Magicien) laisserait le joueur sans
   // aucune capacite entre le niveau 3 et le niveau 6.
+  /* Deux sous-classes de D&D: World of Warcraft (2026) derogent de source :
+     leurs premieres capacites remplacent ou ajustent des capacites de classe
+     des les niveaux 1 et 2 (Death Coil remplace Lay on Hands ; Spellcasting,
+     Deft Explorer et Fighting Style du Demon Hunter). Exception nommee, pas
+     une regle : toute autre sous-classe doit toujours commencer au niveau 3. */
+  const HORS_NORME = { 'Oath of the Ebon Blade': [1, 2, 3, 5, 7, 11, 14, 15, 20], 'Demon Hunter': [1, 2, 3, 7, 11, 15, 18] };
   Object.entries(SUBCLASS_DATA).forEach(([cls, subs]) => {
     Object.entries(subs).forEach(([sub, byLevel]) => {
       const levels = Object.keys(byLevel).map(Number).filter(n => !isNaN(n)).sort((a, b) => a - b);
       if (!levels.length) return;
+      if (HORS_NORME[sub]) { eq(levels, HORS_NORME[sub], `${cls}/${sub} : paliers de la source`); return; }
       eq(levels[0], 3, `${cls}/${sub} : premiere capacite au niveau ${levels[0]} au lieu de 3`);
     });
   });
@@ -3002,7 +3095,7 @@ function ok(cond, label) {
       if (!permis) return;
       Object.entries(subs).forEach(([sub, byLevel]) =>
         Object.keys(byLevel).map(Number).forEach(lvl =>
-          ok(permis.includes(lvl), `${cls}/${sub} : palier ${lvl} hors de ${permis.join('/')}`)));
+          ok(permis.includes(lvl) || (HORS_NORME[sub] || []).includes(lvl), `${cls}/${sub} : palier ${lvl} hors de ${permis.join('/')}`)));
     });
 
     /* ── Barde ──
@@ -3097,7 +3190,9 @@ function ok(cond, label) {
        'Freedom Domain : Unencumbered Grace au niveau 3');
     ok(SUBCLASS_DATA.Wizard.Imaskarcanist[14].some(f => f.name === 'Doom of Unlight'),
        'Imaskarcanist : Doom of Unlight au niveau 14');
-    eq(Object.keys(UA_SUBCLASSES).length, 34, '34 sous-classes encore en playtest');
+    /* 34 moins les huit parues en livre en 2026 (Ravenloft : The Horrors
+       Within ; D&D: World of Warcraft pour le Gardien spirituel). */
+    eq(Object.keys(UA_SUBCLASSES).length, 26, '26 sous-classes encore en playtest');
 
     /* ── Magicien ──
        Les huit « School of … » venaient de 2014. Quatre ont une version 2024
