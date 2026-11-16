@@ -2148,6 +2148,16 @@
 .dice-toast-d20.nat1  { color: var(--danger); }
 .dice-toast-label { font-size: 0.65rem; color: var(--gold-text); text-transform: uppercase; }
 .dice-toast-total { font-size: 0.85rem; color: var(--j-text, #e2cfa0); }
+/* Le toast laisse passer les clics (pointer-events: none) ; ses boutons, une
+   fois visibles, doivent les recevoir — le partage n'etait pas cliquable. */
+#dice-toast.visible #dice-share-btn, #dice-toast.visible #dice-reroll-btn { pointer-events: auto; }
+#dice-reroll-btn {
+  margin-top: 0.35rem; background: rgba(240,192,64,0.12); border: 1px solid #b08020; color: #f0c040;
+  border-radius: 4px; font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.05em;
+  padding: 0.2rem 0.65rem; cursor: pointer;
+}
+#dice-reroll-btn:hover { background: rgba(240,192,64,0.25); }
+#dice-reroll-btn[hidden] { display: none; }
 
 /* ── Dice tray ── */
 #dice-tray-btn { font-size:0.8rem; padding:0.3rem 0.65rem; }
@@ -3182,7 +3192,7 @@ html.has-char-bg .vb-mini-stat { background: rgba(0,0,0,0.35) !important; }
       <div class="dash-actions">
         <span class="conn-indicator" id="conn-indicator" title="Cloud connection status">…</span>
         <span class="save-badge" id="save-badge"></span>
-        <button class="inspiration-btn" id="btn-inspiration" title="Inspiration (advantage on one roll)" aria-label="Inspiration (advantage on one roll)">✦</button>
+        <button class="inspiration-btn" id="btn-inspiration" title="Heroic Inspiration — after a roll, reroll one die" aria-label="Heroic Inspiration — after a roll, reroll one die">✦</button>
         <button class="btn btn-sm btn-gold" id="btn-new-char" title="New character" onclick="openNewCharModal()" style="font-size:1rem;padding:0 0.55rem;line-height:1;">+</button>
         <button class="btn btn-sm" id="btn-layout-edit" title="Rearrange sections">⠿</button>
         <button class="btn btn-sm" id="btn-undo" title="Cancel (Ctrl+Z)" disabled style="opacity:0.4;">↩</button>
@@ -4926,6 +4936,88 @@ function saveLocal(u, data, _json) {
   } catch(e) {}
 }
 
+/* ── Modifications locales pas encore arrivees dans le cloud ──
+   Une petite cle a part note la revision ou le cloud etait reste quand une
+   serie de sauvegardes a commence sans pouvoir l'atteindre (hors ligne, echec,
+   page fermee avant l'envoi). Sans elle, la reouverture chargeait toujours le
+   cloud et ecrasait la copie locale : tout ce qui avait ete fait hors ligne
+   disparaissait sans un mot. */
+function attenteKey(u) { return 'kaleysur_attente_' + u; }
+
+function lireAttente(u) {
+  try { return JSON.parse(localStorage.getItem(attenteKey(u)) || 'null'); }
+  catch (e) { return null; }
+}
+
+/* La base n'est posee qu'au debut d'une serie : les sauvegardes suivantes,
+   encore locales, gardent la revision ou le cloud etait reste. */
+function marquerAttente(u, revCloud) {
+  const deja = lireAttente(u);
+  if (deja) return deja;
+  const a = { base: revCloud ?? null };
+  try { localStorage.setItem(attenteKey(u), JSON.stringify(a)); } catch (e) {}
+  return a;
+}
+
+function effacerAttente(u) {
+  try { localStorage.removeItem(attenteKey(u)); } catch (e) {}
+}
+
+/** Au demarrage, quelle version charger.
+    'distant' : rien n'etait en attente, ou le cloud a deja recu nos modifs.
+    'local'   : le cloud n'a pas bouge depuis notre derniere synchro ; la copie
+                locale en est la suite directe — on la reprend et on l'envoie.
+    'conflit' : quelqu'un d'autre a ecrit entre-temps (autre appareil, le MJ) ;
+                on charge le cloud et notre version est mise de cote. */
+function choisirAuDemarrage(local, distant, attente) {
+  if (!attente || !local) return 'distant';
+  const rl = local._rev ?? null, rd = distant?._rev ?? null;
+  if (rl === rd) return 'distant';
+  if (rd === (attente.base ?? null)) return 'local';
+  return 'conflit';
+}
+
+/** Restaure la session enregistree : charge la fiche, et decide entre le cloud
+    et la copie locale (choisirAuDemarrage). Sortie du code d'initialisation
+    pour pouvoir se tester : c'est elle qui decide si les modifications faites
+    hors ligne survivent a la reouverture. Renvoie la promesse. */
+function demarrerSession(savedUser) {
+  return sbGetPlayer(savedUser).then(row => {
+    if (row) {
+      currentUser = savedUser;
+      /* La copie locale peut porter des modifications jamais arrivees dans le
+         cloud — faites hors ligne, ou page fermee avant l'envoi. Charger le
+         cloud sans la regarder les effacait sans un mot. */
+      let local = null;
+      try { local = JSON.parse(localStorage.getItem(localKey(savedUser)) || 'null')?.data || null; } catch (e) {}
+      const choix = choisirAuDemarrage(local, row.data, lireAttente(savedUser));
+      if (choix === 'local') {
+        playerData = local;
+        openDashboard();
+        triggerSave(); // repart vers le cloud, sur la revision ou il etait reste
+      } else {
+        if (choix === 'conflit') saveConflictSnapshot(savedUser, JSON.stringify(local));
+        effacerAttente(savedUser);
+        playerData = row.data;
+        saveLocal(savedUser, row.data); // met à jour le cache local
+        openDashboard();
+        if (choix === 'conflit') showConflictBanner(savedUser);
+      }
+    } else clearSession();
+  }).catch(() => {
+    // Supabase indisponible — tenter le cache local
+    const cached = localStorage.getItem(localKey(savedUser));
+    if (cached) {
+      try {
+        const { data } = JSON.parse(cached);
+        currentUser = savedUser; playerData = data;
+        openDashboard();
+        updateConnIndicator('offline');
+      } catch(e) { clearSession(); }
+    } else clearSession();
+  });
+}
+
 /* ── Indicateur de connexion ── */
 function updateConnIndicator(state) {
   const el = document.getElementById('conn-indicator');
@@ -5023,18 +5115,24 @@ function triggerSave() {
     playerData._rev = (prevRev || 0) + 1;
     const _json = JSON.stringify(playerData); // stringify une seule fois (peut peser plusieurs MB avec images)
     saveLocal(currentUser, null, _json); // backup local toujours
+    /* La revision ou le cloud doit se trouver : celle d'avant la premiere
+       sauvegarde restee locale, s'il y en a une en attente. Sans ca, apres une
+       coupure, la sauvegarde suivante attendait une revision que le cloud n'a
+       jamais recue, et tombait en faux conflit. */
+    const attente = marquerAttente(currentUser, prevRev);
     if (!navigator.onLine) {
       badge.textContent = '● Local'; badge.className = 'save-badge';
       updateConnIndicator('offline');
       return;
     }
     try {
-      const res = await sbUpdateDataGuarded(currentUser, _json, prevRev);
+      const res = await sbUpdateDataGuarded(currentUser, _json, attente.base);
       if (res === 'conflict') {
         // Écriture concurrente (autre appareil / admin DM) : on recharge le distant
         // plutôt que de l'écraser. Mais on met notre version de côté d'abord :
         // sans ça, des notes en cours de frappe disparaissaient sans un mot.
         saveConflictSnapshot(currentUser, _json);
+        effacerAttente(currentUser); // c'est la copie de conflit qui porte notre version
         try {
           const row = await sbGetPlayer(currentUser);
           if (row?.data) {
@@ -5048,6 +5146,7 @@ function triggerSave() {
         return;
       }
       _lastSaveAt = Date.now();
+      effacerAttente(currentUser); // le cloud a tout recu
       badge.textContent = 'Saved ✓'; badge.className = 'save-badge ok';
       updateConnIndicator('online');
       setTimeout(() => { badge.textContent = ''; badge.className = 'save-badge'; }, 2500);
@@ -5070,17 +5169,31 @@ function flushPendingSave() {
   playerData._rev = (prevRev || 0) + 1;
   const _json = JSON.stringify(playerData);
   saveLocal(currentUser, null, _json); // synchrone — survit à la fermeture de la page
+  /* En attente tant qu'on ne sait pas si l'envoi aboutit : si la page meurt
+     avant, la reouverture retrouvera la copie locale et l'enverra. */
+  const u = currentUser;
+  const attente = marquerAttente(u, prevRev);
   _lastSaveAt = Date.now();
   if (!navigator.onLine) return;
-  // keepalive : le navigateur laisse la requête aboutir même si la page se ferme
-  const revCond = (prevRev === undefined || prevRev === null) ? 'is.null' : `eq.${prevRev}`;
+  const base = attente.base;
+  const revCond = (base === undefined || base === null) ? 'is.null' : `eq.${base}`;
+  const body = `{"data":${_json}}`;
+  /* keepalive laisse la requete aboutir si la page se ferme, mais les
+     navigateurs le refusent au-dela de 64 Ko de corps : la sauvegarde echouait
+     alors en silence. Au-dela, envoi ordinaire, qui aboutit tant que la page
+     vit (onglet change, telephone verrouille) ; si elle meurt, la copie en
+     attente prend le relais a la reouverture. */
+  let petit = false;
+  try { petit = new TextEncoder().encode(body).length < 64000; } catch {}
   try {
-    fetch(`${SB_URL}/rest/v1/players?username=eq.${encodeURIComponent(currentUser)}&data->>_rev=${revCond}`, {
+    fetch(`${SB_URL}/rest/v1/players?username=eq.${encodeURIComponent(u)}&data->>_rev=${revCond}&select=username`, {
       method: 'PATCH',
-      headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
-      body: `{"data":${_json}}`,
-      keepalive: true
-    }).catch(() => {});
+      headers: { ...SB_HEADERS, 'Prefer': 'return=representation' },
+      body,
+      keepalive: petit
+    }).then(r => r.ok ? r.json() : null)
+      .then(rows => { if (Array.isArray(rows) && rows.length) effacerAttente(u); })
+      .catch(() => {});
   } catch {}
 }
 document.addEventListener('visibilitychange', () => {
@@ -5140,7 +5253,10 @@ function autoFillClass(classe) {
     Object.entries(saveMap).forEach(([attr, key]) => { C()[key] = classSaves.includes(attr); });
   }
   if (CLASS_RESOURCES[classe] && !(C().resources || []).length) {
-    C().resources = CLASS_RESOURCES[classe](getTotalLevel(C())).map(r => ({ ...r }));
+    /* Le niveau DE CETTE CLASSE, pas le niveau total (multiclasse). */
+    const nivClasse = parseInt(getClasses(C()).find(x => x.classe === classe)?.niveau) || getTotalLevel(C());
+    C().resources = CLASS_RESOURCES[classe](nivClasse, C()).map(r => ({ ...r }));
+    C().ressources2024 = true;
     renderResources();
   }
   fillFields();
@@ -5205,7 +5321,9 @@ function renderClassFeatures() {
   const slotsNote = document.getElementById('cf-slots-note');
 
   const validClasses = classes.filter(cl => cl.classe && CLASS_DATA[cl.classe]);
-  if (!validClasses.length) { section.style.display = 'none'; return; }
+  /* Videe en plus d'etre masquee : sur telephone, l'onglet actif force
+     l'affichage, et montrait alors les capacites du personnage precedent. */
+  if (!validClasses.length) { section.style.display = 'none'; if (body) body.innerHTML = ''; return; }
 
   section.style.display = '';
   const totalLvl = getTotalLevel(c);
@@ -5257,6 +5375,8 @@ function renderClassFeatures() {
 
   /* ── Proficiencies from primary class ── */
   const data = CLASS_DATA[classe];
+  /* L'Ordre Protecteur ou Gardien ajoute ses maitrises a celles de la classe. */
+  const ordre = maitrisesDeChoix(c, classe);
 
   /* Rappel de sous-classe : PHB 2024 — toutes les classes choisissent au niveau 3.
      On alerte pour chaque classe qui a atteint le palier sans choix enregistré. */
@@ -5291,8 +5411,8 @@ function renderClassFeatures() {
       <span class="cf-alert-hint">(Identity tab)</span></div>` : ''}
     <div class="cf-profs">
       <div class="cf-prof-item"><span class="cf-prof-label">Saving Throws:</span> ${data.saves.map(s=>ABIL_LABEL[s]||s.toUpperCase()).join(' &amp; ')}</div>
-      ${data.armorProf  ? `<div class="cf-prof-item"><span class="cf-prof-label">Armor:</span> ${data.armorProf}</div>` : ''}
-      ${data.weaponProf ? `<div class="cf-prof-item"><span class="cf-prof-label">Weapons:</span> ${data.weaponProf}</div>` : ''}
+      ${data.armorProf  ? `<div class="cf-prof-item"><span class="cf-prof-label">Armor:</span> ${data.armorProf}${ordre ? ', ' + ordre.armure + ' (' + ordre.option + ')' : ''}</div>` : ''}
+      ${data.weaponProf ? `<div class="cf-prof-item"><span class="cf-prof-label">Weapons:</span> ${data.weaponProf}${ordre ? ', ' + ordre.armes + ' (' + ordre.option + ')' : ''}</div>` : ''}
       ${skillPick}
     </div>
     <div class="cf-progress-bar"><div class="cf-progress-fill" style="width:${Math.round(totalLvl/20*100)}%"></div></div>
@@ -5326,6 +5446,7 @@ function renderClassFeatures() {
     if (!clData) return;
     const sousClasse = clEntry.sousClasse === '__custom__' ? '' : (clEntry.sousClasse || '');
     const subData = (sousClasse && SUBCLASS_DATA[clName]) ? SUBCLASS_DATA[clName][sousClasse] : null;
+    const remplacees = capacitesRemplacees(clName, sousClasse, clLvl);
 
     // Class header (only if multiclassing)
     if (validClasses.length > 1) {
@@ -5339,7 +5460,7 @@ function renderClassFeatures() {
   for (let lvl = 1; lvl <= 20; lvl++) {
     if (lvl > clLvl) continue; // locked = invisible
 
-    const baseFeats = clData.features[lvl] || [];
+    const baseFeats = (clData.features[lvl] || []).filter(f => !remplacees.has(f.name));
     const subFeats  = subData ? (subData[lvl] || []) : [];
     if (!baseFeats.length && !subFeats.length) continue;
 
@@ -5870,12 +5991,38 @@ function renderDashboard() {
   renderInspiration();
 }
 
+/* ── Inspiration heroique (regles 2024) ──
+   Un seul etat, c.inspiration, par personnage : la case de la fiche, le
+   bouton de la barre, le MJ et l'admin lisent le meme. */
 function renderInspiration() {
   const btn = document.getElementById('btn-inspiration');
   if (!btn || !playerData) return;
-  const active = !!playerData.inspiration;
+  const active = !!C().inspiration;
   btn.classList.toggle('active', active);
-  btn.title = active ? 'Inspiration active — click to use' : 'Inspiration (advantage on one roll)';
+  btn.title = active ? 'Heroic Inspiration — after a roll, reroll one die' : 'Heroic Inspiration (none)';
+  const box = document.querySelector('[data-f="inspiration"]');
+  if (box) box.checked = active;
+  if (typeof majRelance === 'function') majRelance();
+}
+
+/* L'ancien etat vivait sur le compte (playerData.inspiration) : il passe au
+   personnage actif, une fois. true si quelque chose a change. */
+function migrerInspiration(pd, c) {
+  if (!pd || !Object.prototype.hasOwnProperty.call(pd, 'inspiration')) return false;
+  if (pd.inspiration && c) c.inspiration = true;
+  delete pd.inspiration;
+  return true;
+}
+
+/* « Reroll any die immediately after rolling it, and you must use the new
+   roll. » Sur un d20 : le de qui compte est relance. En avantage comme en
+   desavantage, c'est le plus bas qu'on a interet a relancer (avantage : le
+   plus haut reste acquis ; desavantage : le plus bas est celui qui compte). */
+function relancerD20(mode, des, nouveau) {
+  if ((mode === 'adv' || mode === 'dis') && Array.isArray(des) && des.length === 2) {
+    return des[0] <= des[1] ? [nouveau, des[1]] : [des[0], nouveau];
+  }
+  return [nouveau];
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -6116,7 +6263,14 @@ function migrerNomsSousClasse(c) {
   let change = false;
   (c.classes || []).forEach(cl => {
     const neuf = SUBCLASS_RENOMMEES[cl.sousClasse];
-    if (neuf) { cl.sousClasse = neuf; change = true; }
+    if (neuf) {
+      cl.sousClasse = neuf; change = true;
+      /* La Resilience draconique 2024 donne 10 + DEX + CHA sans armure, que
+         la fiche ne savait pas calculer. Le renommage ne passe qu'une fois :
+         c'est le moment de poser le mode, sans revenir ensuite sur un choix
+         du joueur. */
+      if (cl.classe === 'Sorcerer' && /Draconic/.test(neuf) && typeof poserCADraconique === 'function') poserCADraconique(c);
+    }
   });
   const neufLegacy = SUBCLASS_RENOMMEES[c.sousClasse];
   if (neufLegacy) { c.sousClasse = neufLegacy; change = true; }
@@ -6136,6 +6290,7 @@ function migrateToMulticlass(c) {
      que ce soit s'en serve. */
   if (migrerChoixCapacites(c)) migre = true;
   if (migrerNomsAttaques(c)) migre = true;
+  if (migrerRessources2024(c)) migre = true;
   if (migre) triggerSave();
 }
 
@@ -6152,6 +6307,65 @@ function getTotalLevel(c) {
    Une fiche vierge porte une entree vide : la compter donnait un niveau total
    de 1 a un personnage sans classe, puis de 2 des sa premiere montee, avec une
    classe fantome a cote de la vraie. */
+/* ── Ressources de classe : de 2014 a 2024 ──
+   Maxima et recharges remis aux tables 2024, une seule fois (drapeau
+   ressources2024) : ensuite, un maximum retouche a la main par le joueur —
+   un objet magique, une regle maison — n'est plus repris. Ne touche qu'aux
+   ressources que le site generait pour les classes du personnage ; une
+   ressource ajoutee a la main reste telle quelle. */
+const RESSOURCES_2014 = {
+  Barbarian:['Rages'], Bard:['Bardic Inspiration','Font of Inspiration'], Cleric:['Channel Divinity'],
+  Druid:['Wild Shape','Beast Spells'], Fighter:['Second Wind','Action Surge','Indomitable'],
+  Monk:['Discipline Points'], Paladin:['Lay on Hands','Channel Divinity'], Ranger:["Hunter's Mark"],
+  Rogue:['Uncanny Dodge','Evasion'], Sorcerer:['Sorcery Points'], Warlock:['Spell Slots','Mystic Arcanum'],
+  Wizard:['Arcane Recovery'],
+};
+const RESSOURCES_RENOMMEES = { 'Discipline Points': 'Focus Points' };
+function migrerRessources2024(c) {
+  if (!c || c.ressources2024 || typeof CLASS_RESOURCES === 'undefined') return false;
+  if (!Array.isArray(c.resources) || !c.resources.length) return false;
+  c.ressources2024 = true;
+  const classes = classesReelles(c);
+  const frais = {};
+  classes.forEach(cl => (CLASS_RESOURCES[cl.classe]?.(parseInt(cl.niveau) || 1, c) || [])
+    .forEach(r => { frais[r.name] = r; }));
+  const anciens = new Set(classes.flatMap(cl => RESSOURCES_2014[cl.classe] || []));
+  const nomDe = r => RESSOURCES_RENOMMEES[r.name] || r.name;
+  /* Ce que le site generait et que 2024 ne connait pas (ou pas a ce niveau) part. */
+  c.resources = c.resources.filter(r => frais[nomDe(r)] || !anciens.has(r.name));
+  c.resources.forEach(r => {
+    r.name = nomDe(r);
+    const f = frais[r.name];
+    if (!f) return;
+    if (f.max !== null && f.max !== undefined) r.max = f.max;
+    r.reset = f.reset;
+    r.used = Math.min(parseInt(r.used) || 0, parseInt(r.max) || 0);
+  });
+  /* Les ressources 2024 qui manquaient (Innate Sorcery, Uncanny Metabolism…),
+     pour les classes dont la fiche suivait deja les ressources. */
+  classes.forEach(cl => {
+    const suivies = (RESSOURCES_2014[cl.classe] || []).some(n => c.resources.some(r => r.name === (RESSOURCES_RENOMMEES[n] || n)));
+    if (!suivies) return;
+    (CLASS_RESOURCES[cl.classe]?.(parseInt(cl.niveau) || 1, c) || []).forEach(f => {
+      if (!c.resources.some(r => r.name === f.name)) c.resources.push({ ...f });
+    });
+  });
+  return true;
+}
+
+/* Repos court sur les ressources : 'short' revient en entier, 'short1'
+   rend une utilisation. Rend les noms de ce qui est revenu. */
+function reposCourtRessources(resources) {
+  const rendues = [];
+  (resources || []).forEach(r => {
+    const used = parseInt(r.used) || 0;
+    if (!used) return;
+    if (r.reset === 'short')  { r.used = 0; rendues.push(r.name || r.nom); }
+    if (r.reset === 'short1') { r.used = used - 1; rendues.push((r.name || r.nom) + ' (+1)'); }
+  });
+  return rendues;
+}
+
 function classesReelles(c) {
   return getClasses(c).filter(cl => cl.classe);
 }
@@ -6215,6 +6429,7 @@ function renderMulticlasses() {
     subSel.addEventListener('change', () => {
       classes[idx].sousClasse = subSel.value; classes[idx].customSousClasse = '';
       syncClassesToLegacy(c);
+      if (syncRessourceLameEbene(c)) renderResources();
       renderMulticlasses(); renderClassFeatures(); updateCharSummary(); triggerSave();
     });
     niveauInp.addEventListener('input', () => {
@@ -6283,6 +6498,7 @@ function _renderTab(tabId) {
 
 function renderAll() {
   migrateToMulticlass(C());
+  if (migrerInspiration(playerData, C())) triggerSave();
   migrateAttunement(INV());
   fillFields();
   populateSpeciesUI();
@@ -6298,6 +6514,10 @@ function renderAll() {
   _markAllDirty();
   const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab || 'personnage';
   _renderTab(activeTab);
+  /* Les sections Classe, Espece, Historique apparaissent ou disparaissent selon
+     le personnage. La barre de sections du telephone n'etait construite qu'a
+     l'ouverture : celles qui apparaissaient ensuite restaient sans onglet. */
+  buildSecTabBar();
 }
 
 /* ════════════════════════════════════════════════
@@ -6386,9 +6606,11 @@ function renderHero() {
   if (caEl)   caEl.textContent  = (parseInt(c.ca) || 10) + getMod('ac') || '10';
   if (spdEl)  spdEl.textContent = c.vitesse || '30';
   if (initEl) {
-    const dexMod = Math.floor((abilScore('dex') - 10) / 2);
-    const bonus  = parseInt(c.initiative) || 0;
-    const total  = dexMod + bonus + getMod('init');
+    /* c.initiative EST le bonus total (DEX en auto, saisie en manuel), et le MJ
+       le lit ainsi. Y rajouter la DEX faisait passer +3 a +6 des le second
+       rendu. En auto on relit la DEX courante : c.initiative peut dater d'avant
+       un changement de caracteristique. */
+    const total = bonusInitiative(c);
     initEl.textContent = (total >= 0 ? '+' : '') + total;
     initEl.className = 'vb-mini-stat-val roll-trigger';
     initEl.dataset.rollLabel = 'Initiative';
@@ -6401,7 +6623,10 @@ function renderHero() {
   if (hdEl) {
     const ndv = parseInt(c.nbDeVie) || 1;
     const dv  = c.deVie || '1d8';
-    hdEl.innerHTML = `<span style="font-size:15px;">${ndv}</span><span style="color:var(--text-label);font-size:11px;">/${ndv} ${dv}</span>`;
+    /* Les des RESTANTS sur le total : le bandeau affichait toujours N/N, sans
+       jamais lire les des depenses aux repos courts. */
+    const restants = Math.max(0, ndv - (parseInt(c.nbDeVieUtilises) || 0));
+    hdEl.innerHTML = `<span style="font-size:15px;">${restants}</span><span style="color:var(--text-label);font-size:11px;">/${ndv} ${esc(dv)}</span>`;
   }
 
   // Death save pips
@@ -6506,9 +6731,14 @@ const SAVES = [
   { key:'saveCha', attr:'cha', label:'Charisma' }
 ];
 /* ── Modificateurs actifs — helper ── */
+/** Somme des modificateurs actifs d'un personnage pour une cible donnee. */
+function modsDe(c, cible) {
+  return (c?.mods || []).filter(m => m.on && m.cible === cible)
+    .reduce((s, m) => s + (parseInt(m.val) || 0), 0);
+}
+
 function getMod(cible) {
-  const mods = C()?.mods || [];
-  return mods.filter(m => m.on && m.cible === cible).reduce((s, m) => s + (parseInt(m.val) || 0), 0);
+  return modsDe(C(), cible);
 }
 
 /* Bonus de dégâts actifs, sous forme d'expression à accoler à un jet.
@@ -6601,7 +6831,7 @@ function renderMods() {
 
 function renderSaves() {
   const col = document.getElementById('saves-col');
-  const c = C(); const bonus = pb(getTotalLevel(c));
+  const c = C();
   const frag = document.createDocumentFragment();
   const hdr = document.createElement('div');
   hdr.style.cssText = 'font-size:0.7rem;text-transform:uppercase;color:var(--text-label);letter-spacing:0.05em;margin-bottom:0.35rem;';
@@ -6609,8 +6839,7 @@ function renderSaves() {
   frag.appendChild(hdr);
   SAVES.forEach(sv => {
     const prof = !!c[sv.key];
-    const modBonus = getMod('all_sv') + getMod('sv_' + sv.attr) + getMod(sv.attr);
-    const val  = mod(abilScore(sv.attr)) + (prof ? bonus : 0) + modBonus;
+    const val  = bonusSauvegarde(c, sv.key, sv.attr);
     const row  = document.createElement('div');
     row.className = 'sv-row';
     row.innerHTML = `<div class="prof-dot ${prof ? 'on' : ''}" data-sv="${sv.key}" role="button" tabindex="0" title="Proficiency" aria-label="Proficiency ${sv.label}"></div><span class="sv-val roll-trigger" data-roll-label="${sv.label} Save" data-roll-bonus="${val}" title="Roll d20 + ${val}">${val >= 0 ? '+' : ''}${val}</span><span>${sv.label}</span>`;
@@ -6618,6 +6847,39 @@ function renderSaves() {
   });
   col.innerHTML = '';
   col.appendChild(frag);
+}
+
+/** Bonus total d'une competence, tel que la liste l'affiche : maitrise,
+    Expertise (double), Touche-a-tout sur les competences non maitrisees, mods.
+    Partage par la liste et par les passives — les passives en avaient une copie
+    sans l'Expertise ni les mods. */
+/* Ces calculs lisent le personnage QU'ON LEUR PASSE, pas le personnage
+   connecte : la vue partagee s'en sert pour un autre personnage. */
+function bonusCompetence(c, key, attr) {
+  const bonus = pb(getTotalLevel(c));
+  const niveau = Math.min(2, Math.max(0, parseInt(c[key]) || (c[key] === true ? 1 : 0)));
+  const jat = (c.jackOfAllTrades && niveau === 0) ? Math.floor(bonus / 2) : 0;
+  return mod(parseInt(c[attr]) || 10) + bonus * niveau + jat + modsDe(c, 'all_sk') + modsDe(c, attr);
+}
+
+/** Bonus total d'un jet de sauvegarde, tel que la liste l'affiche. */
+function bonusSauvegarde(c, key, attr) {
+  const bonus = pb(getTotalLevel(c));
+  return mod(parseInt(c[attr]) || 10) + (c[key] ? bonus : 0)
+       + modsDe(c, 'all_sv') + modsDe(c, 'sv_' + attr) + modsDe(c, attr);
+}
+
+/** Bonus total d'initiative. c.initiative est le total saisi en mode manuel ;
+    en automatique c'est la DEX courante. Plus les modificateurs. */
+function bonusInitiative(c) {
+  const base = c.initiativeManuelle ? (parseInt(c.initiative) || 0) : mod(parseInt(c.dex) || 10);
+  return base + modsDe(c, 'init');
+}
+
+/** DD du jet de concentration apres des degats (regle 2024) : 10 ou la moitie
+    des degats arrondie a l'inferieur, le plus eleve des deux, plafonne a 30. */
+function ddConcentration(degats) {
+  return Math.min(30, Math.max(10, Math.floor((parseInt(degats) || 0) / 2)));
 }
 
 /* ── Compétences ── */
@@ -6643,9 +6905,8 @@ const SKILLS = [
 ];
 function renderSkills() {
   const col = document.getElementById('skills-col');
-  const c = C(); const bonus = pb(getTotalLevel(c));
+  const c = C();
   const jat = !!c.jackOfAllTrades;
-  const halfBonus = Math.floor(bonus / 2);
   const filterQ = (document.getElementById('skill-filter')?.value || '').toLowerCase().trim();
   const jatCheck = document.getElementById('jat-check');
   const jatLabel = document.getElementById('jat-label');
@@ -6659,9 +6920,7 @@ function renderSkills() {
   [...SKILLS].sort((a,b) => a.label.localeCompare(b.label)).forEach(sk => {
     if (filterQ && !sk.label.toLowerCase().includes(filterQ) && !sk.attr.includes(filterQ)) return;
     const profLevel = Math.min(2, Math.max(0, parseInt(c[sk.key]) || (c[sk.key] === true ? 1 : 0)));
-    const jatBonus = (jat && profLevel === 0) ? halfBonus : 0;
-    const modBonus = getMod('all_sk') + getMod(sk.attr);
-    const val = mod(abilScore(sk.attr)) + (profLevel >= 1 ? bonus : 0) + (profLevel >= 2 ? bonus : 0) + jatBonus + modBonus;
+    const val = bonusCompetence(c, sk.key, sk.attr);
     const dotClass = profLevel === 2 ? 'on expert' : profLevel === 1 ? 'on' : '';
     const title = profLevel === 2 ? 'Expertise (double proficiency)' : profLevel === 1 ? 'Proficiency' : 'Not proficient';
     const row = document.createElement('div');
@@ -7282,7 +7541,7 @@ function initCanvasEvents() {
 function renderPassiveSkills() {
   const el = document.getElementById('passive-skills');
   if (!el) return;
-  const c = C(); const bonus = pb(getTotalLevel(c));
+  const c = C();
   const passives = [
     { label:'Passive Perception',      key:'perception',   attr:'sag' },
     { label:'Passive Investigation',   key:'investigation',attr:'int' },
@@ -7290,7 +7549,9 @@ function renderPassiveSkills() {
   ];
   const html = passives.map(p => {
     const prof = !!c[p.key];
-    const val  = 10 + mod(abilScore(p.attr)) + (prof ? bonus : 0);
+    /* 10 + le bonus de la competence, celui que la liste affiche : Expertise et
+       mods compris. La copie d'ici les oubliait. */
+    const val  = 10 + bonusCompetence(c, p.key, p.attr);
     return `<div class="passive-row"><span>${p.label}${prof ? ' ✦' : ''}</span><span class="passive-val">${val}</span></div>`;
   }).join('');
   el.innerHTML = html;
@@ -7298,10 +7559,7 @@ function renderPassiveSkills() {
   if (portraitEl) portraitEl.innerHTML = html;
   // Sync PP badge in hero
   const ppEl = document.getElementById('vb-hero-pp');
-  if (ppEl) {
-    const percProf = !!c.perception;
-    ppEl.textContent = 10 + mod(abilScore('sag')) + (percProf ? bonus : 0);
-  }
+  if (ppEl) ppEl.textContent = 10 + bonusCompetence(c, 'perception', 'sag');
 }
 
 /* ── Ressources ── */
@@ -7316,7 +7574,8 @@ function renderResources() {
     const usedVal = Math.min(parseInt(r.used) || 0, maxVal);
     const isDepleted = maxVal > 0 && usedVal >= maxVal;
     card.className = 'res-card' + (isDepleted ? ' depleted' : '');
-    const resetLabel = r.reset === 'short' ? 'Short Rest' : r.reset === 'long' ? 'Long Rest' : '';
+    const resetLabel = r.reset === 'short' ? 'Short Rest' : r.reset === 'short1' ? 'Short Rest: 1 · Long Rest: all'
+                     : r.reset === 'long' ? 'Long Rest' : '';
     const pips = maxVal > 0
       ? Array.from({length: maxVal}, (_, j) =>
           `<div class="res-pip${j < usedVal ? ' used' : ''}" data-ri="${i}" data-pidx="${j}" title="Case ${j+1}/${maxVal}"></div>`
@@ -7636,6 +7895,10 @@ function parseRoll20JSON(raw) {
     alignement: val('alignment'), xp: num('experience', 'xp'), inspiration: prof('inspiration'),
     ...stats, ...saveProfs, ...skillProfs,
     ca, initiative, vitesse,
+    /* Une initiative qui differe de la DEX (le don Alert ajoute le bonus de
+       maitrise) est gardee telle quelle : en mode automatique, le premier rendu
+       la ramenait a la seule DEX. */
+    initiativeManuelle: initiative !== mod(stats.dex),
     pvMax, pvActuel, pvTemp: num('hp_temp', 'temp_hp'),
     deVie: val('hitdietype') ? niveauTotal + String(val('hitdietype')).replace(/^1?d?/, 'd') : niveauTotal + 'd8',
     nbDeVie: niveauTotal, nbDeVieUtilises: 0,
@@ -7668,6 +7931,113 @@ function parseRoll20JSON(raw) {
   };
 }
 
+/** Modificateurs D&D Beyond reellement actifs, tries par origine.
+
+    Objets : les grantedModifiers de l'inventaire, seulement pour un objet
+    equipe (et harmonise s'il le demande) — ou qui agit sans etre ni equipe ni
+    harmonise. modifiers.item, lu jusqu'ici, les donne TOUS.
+    Classe : sans ceux des capacites d'un niveau pas encore atteint.
+    Meme filtre que ddb-importer (DDBModifiers.getActiveItemModifiers). */
+function ddbModsActifs(d) {
+  const objets = (d.inventory || []).filter(it => {
+    const def = it.definition || {};
+    return (!def.canEquip && !def.canAttune && !def.isConsumable)
+        || (it.isAttuned && it.equipped)
+        || (it.isAttuned && !def.canEquip)
+        || (!def.canAttune && it.equipped);
+  }).flatMap(it => it.definition?.grantedModifiers || []);
+  const nonAtteintes = new Set();
+  (d.classes || []).forEach(cl => {
+    const niv = cl.level || 1;
+    (cl.classFeatures || []).forEach(f => {
+      const req = f.definition?.requiredLevel;
+      if (req != null && req > niv && f.definition?.id != null) nonAtteintes.add(f.definition.id);
+    });
+  });
+  return {
+    classe:     (d.modifiers?.class || []).filter(m => !nonAtteintes.has(m.componentId)),
+    race:       d.modifiers?.race || [],
+    historique: d.modifiers?.background || [],
+    don:        d.modifiers?.feat || [],
+    objets,
+  };
+}
+
+/** Caracteristiques finales d'un personnage D&D Beyond.
+
+    Base + bonus « *-score » (classe, historique, objets actifs, dons — et
+    l'espece seulement si l'historique n'accorde pas lui-meme l'augmentation,
+    comme en 2024), plafonnes a 20 sauf mention ; puis bonusStats, qui passe
+    outre le plafond ; un « set » d'objet (Gantelets de puissance d'ogre) releve
+    la valeur si elle est plus basse ; overrideStats remplace tout.
+    Meme calcul que ddb-importer (abilities.ts). */
+function ddbCaracteristiques(d, mods) {
+  const STAT  = { 1:'for', 2:'dex', 3:'con', 4:'int', 5:'sag', 6:'cha' };
+  const LONG  = { 1:'strength', 2:'dexterity', 3:'constitution', 4:'intelligence', 5:'wisdom', 6:'charisma' };
+  const OK    = [null, undefined, '', '+2 to score maximum', '+4 to score maximum', '+2 to maximum score',
+                 '+4 to maximum score', "Can't be an Ability Score you already increased with this trait.",
+                 'That you do not have Saving Throw Proficiency in.'];
+  const PLAFOND = /^(?:Your maximum is now |Maximum of |maximum of )(\d*)/;
+  const histDonneAsi = (d.background?.definition?.grantedFeats || []).some(f => /Ability Score/.test(f.name || ''));
+  const sources = [...mods.classe, ...mods.historique, ...mods.objets, ...mods.don, ...(histDonneAsi ? [] : mods.race)];
+  const tous    = [...mods.classe, ...mods.race, ...mods.historique, ...mods.don, ...mods.objets];
+  const out = {};
+  Object.entries(STAT).forEach(([idTxt, cle]) => {
+    const id = +idTxt, sub = LONG[id] + '-score';
+    const base = (d.stats || []).find(x => x.id === id)?.value || 10;
+    const deType = type => sources.filter(m => m.type === type && m.subType === sub);
+    const bonus = deType('bonus')
+      .filter(m => m.entityId === id && Number.isInteger(m.value) && OK.includes(m.restriction))
+      .reduce((t, m) => t + m.value, 0);
+    const plafondMax = 20 + tous
+      .filter(m => m.type === 'bonus' && m.subType === 'ability-score-maximum' && m.statId === id && [null, undefined, ''].includes(m.restriction))
+      .reduce((t, m) => t + (parseInt(m.value) || 0), 0);
+    const plafonne = deType('bonus')
+      .filter(m => m.entityId === id && m.restriction && Number.isInteger(m.value) && PLAFOND.test(m.restriction))
+      .reduce((acc, m) => ({ value: acc.value + m.value, cap: Math.max(acc.cap, parseInt(PLAFOND.exec(m.restriction)[1]) || 20) }),
+              { value: 0, cap: plafondMax });
+    const fixe = Math.max(0, ...deType('set')
+      .filter(m => Number.isInteger(m.value) && [null, undefined, '', 'if not already higher'].includes(m.restriction))
+      .map(m => m.value));
+    const bonusStat = (d.bonusStats || []).find(x => x.id === id)?.value || 0;
+    const remplace  = (d.overrideStats || []).find(x => x.id === id)?.value || 0;
+    const ajuste = Math.min(plafonne.cap, base + bonus + plafonne.value) + bonusStat;
+    out[cle] = remplace || (ajuste > fixe ? ajuste : fixe);
+  });
+  return out;
+}
+
+/** PV d'un personnage D&D Beyond.
+
+    baseHitPoints n'inclut PAS la Constitution : max = base + mod CON x
+    niveaux + bonus par niveau (Robuste, Resilience draconique : niveau de la
+    classe si la capacite en vient, sinon niveau total) + bonus fixes ; ou
+    overrideHitPoints s'il est pose. Le modificateur de PV max saisi sur D&D
+    Beyond (bonusHitPoints) s'ajoute. Meme calcul que ddb-importer (hp.ts). */
+function ddbPointsDeVie(d, stats, niveauTotal, mods) {
+  const tous = [...mods.classe, ...mods.race, ...mods.historique, ...mods.don, ...mods.objets];
+  const sansRestriction = m => [null, undefined, ''].includes(m.restriction);
+  const niveauDe = id => {
+    const cl = (d.classes || []).find(c => (c.classFeatures || []).some(f => f.definition?.id === id));
+    return cl ? (cl.level || 1) : niveauTotal;
+  };
+  const parNiveau = tous
+    .filter(m => m.type === 'bonus' && m.subType === 'hit-points-per-level' && sansRestriction(m))
+    .reduce((t, m) => t + niveauDe(m.componentId) * (parseInt(m.value) || 0), 0);
+  /* Les « hit-points » sans valeur mais avec un de sont des soins en plus
+     (« regagnez 1d4 de plus »), pas un maximum. */
+  const fixes = tous
+    .filter(m => m.type === 'bonus' && m.subType === 'hit-points' && sansRestriction(m)
+              && !(m.dice && (m.value === null || m.value === undefined)))
+    .map(m => Number(m.value ?? m.fixedValue))
+    .filter(Number.isFinite)
+    .reduce((t, v) => t + v, 0);
+  const conMod = Math.floor(((stats.con || 10) - 10) / 2);
+  const calcule = (d.baseHitPoints || 0) + conMod * niveauTotal + parNiveau + fixes;
+  const pvMax = Math.max(1, (d.overrideHitPoints || calcule) + (d.bonusHitPoints || 0));
+  return { pvMax, pvActuel: Math.max(0, pvMax - (d.removedHitPoints || 0)) };
+}
+
 function parseDnDBeyondJSON(raw) {
   const d = raw.data || raw;
   if (!d.name && !d.classes) throw new Error("JSON format not recognized — make sure you use the /character/ID/json URL");
@@ -7697,11 +8067,10 @@ function parseDnDBeyondJSON(raw) {
   const stripHtml = s => (s||'').replace(/<[^>]*>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/\s+/g,' ').trim().substring(0,600);
 
   // ── Ability scores ──────────────────────────────────────────────
-  const stats = {};
-  Object.values(STAT_MAP).forEach(k => stats[k] = 10);
-  (d.stats||[]).forEach(s => { if (STAT_MAP[s.id]) stats[STAT_MAP[s.id]] = s.value||10; });
-  (d.bonusStats||[]).forEach(s => { if (STAT_MAP[s.id] && s.value) stats[STAT_MAP[s.id]] += s.value; });
-  (d.overrideStats||[]).forEach(s => { if (STAT_MAP[s.id] && s.value!=null) stats[STAT_MAP[s.id]] = s.value; });
+  /* Avec les bonus d'espece, d'historique, d'ASI, de dons et d'objets : lire
+     seulement stats/bonusStats/overrideStats les perdait tous. */
+  const modsDDB = ddbModsActifs(d);
+  const stats = ddbCaracteristiques(d, modsDDB);
 
   // ── Classes (multiclass support) ────────────────────────────────
   const classesArr = (d.classes||[]).map(cl => ({
@@ -7716,15 +8085,15 @@ function parseDnDBeyondJSON(raw) {
   const level     = classesArr.reduce((s,c) => s + c.niveau, 0) || 1;
 
   // ── HP ──────────────────────────────────────────────────────────
-  const baseHP    = d.baseHitPoints || 0;
-  const currentHP = Math.max(0, baseHP - (d.removedHitPoints||0));
+  /* baseHitPoints n'inclut pas la Constitution : les PV max importes etaient
+     ceux d'un personnage a CON 10. */
+  const { pvMax: maxHP, pvActuel: currentHP } = ddbPointsDeVie(d, stats, level, modsDDB);
   const tempHP    = d.temporaryHitPoints || 0;
 
   // ── All modifiers (class + race + background + feat + item) ─────
+  /* Les objets ACTIFS seulement, et pas les capacites de classe non atteintes. */
   const allMods = [
-    ...(d.modifiers?.class||[]), ...(d.modifiers?.race||[]),
-    ...(d.modifiers?.background||[]), ...(d.modifiers?.feat||[]),
-    ...(d.modifiers?.item||[]),
+    ...modsDDB.classe, ...modsDDB.race, ...modsDDB.historique, ...modsDDB.don, ...modsDDB.objets,
   ];
 
   // Skill & save proficiencies
@@ -7938,7 +8307,8 @@ function parseDnDBeyondJSON(raw) {
     alignement:'', xp: d.currentXp||0, inspiration:false,
     ...stats, ...saveProfs, ...skillProfs,
     ca: ac, initiative: initiative, vitesse: speed,
-    pvMax: baseHP, pvActuel: currentHP, pvTemp: tempHP,
+    initiativeManuelle: initiative !== dexMod, // Alert & co : ne pas ramener a la seule DEX
+    pvMax: maxHP, pvActuel: currentHP, pvTemp: tempHP,
     deVie: deVieStr, nbDeVie: level, nbDeVieUtilises:0,
     mortSucces:0, mortEchecs:0,
     attaques,
@@ -7955,7 +8325,7 @@ function parseDnDBeyondJSON(raw) {
 
   return { character, inventory, currency,
     _meta: { name:d.name, classe:className, subClass, level, ac, initiative, speed,
-             pvMax: baseHP, deVie: deVieStr,
+             pvMax: maxHP, deVie: deVieStr,
              spells:spells.length, items:inventory.length,
              skills:Object.keys(skillProfs).length, saves:Object.keys(saveProfs).length,
              attacks:attaques.length, features:customFeatures.length,
@@ -8134,9 +8504,10 @@ function openShortRestModal() {
 
   // Aperçu de ce que le repos va restaurer
   const isWarlock = getClasses(c).some(cl => cl.classe === 'Warlock');
-  const shortRes  = (c.resources || []).filter(r => r.reset === 'short' && (parseInt(r.used) || 0) > 0);
+  /* Apercu sur une copie : rien n'est touche avant « Appliquer ». */
+  const shortRes  = reposCourtRessources((c.resources || []).map(r => ({ ...r })));
   const restoreBits = [
-    ...shortRes.map(r => r.name || r.nom),
+    ...shortRes,
     isWarlock ? 'Emplacements de Pacte' : ''
   ].filter(Boolean);
   document.getElementById('sr-total').textContent = restoreBits.length
@@ -8168,7 +8539,7 @@ function openShortRestModal() {
     const c2 = C();
     c2.pvActuel = Math.min(parseInt(c2.pvMax)||0, (parseInt(c2.pvActuel)||0) + pendingHealing);
     c2.nbDeVieUtilises = (parseInt(c2.nbDeVieUtilises)||0) + diceRolled;
-    (c2.resources || []).forEach(r => { if (r.reset === 'short') r.used = 0; });
+    reposCourtRessources(c2.resources);
     // PHB 2024 : la Magie de Pacte du Warlock récupère ses emplacements sur un repos court
     if (getClasses(c2).some(cl => cl.classe === 'Warlock')) {
       const wLvl  = getClasses(c2).find(cl => cl.classe === 'Warlock')?.niveau || 1;
@@ -8195,11 +8566,12 @@ function doLongRest() {
   (c.resources || []).forEach(r => { r.used = 0; });
   // Reset sorts utilisés
   c.emplacementsUtilises = {1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0};
-  // Dés de vie : PHB 2024 — on récupère la moitié du total (arrondi bas, min 1), pas tous
+  /* Des de vie : TOUS reviennent. « Vous recuperez tous les points de vie
+     perdus et tous les des de vie depenses » (glossaire 2024, Repos long). La
+     moitie etait la regle de 2014. */
   const totalHd  = parseInt(c.nbDeVie) || getTotalLevel(c) || 1;
   const spentHd  = parseInt(c.nbDeVieUtilises) || 0;
-  const regained = Math.max(1, Math.floor(totalHd / 2));
-  c.nbDeVieUtilises = Math.max(0, spentHd - regained);
+  c.nbDeVieUtilises = 0;
   // PV max
   c.pvActuel = c.pvMax || 0;
   c.pvTemp = 0;
@@ -8212,8 +8584,8 @@ function doLongRest() {
   // Exhaustion -1 level
   if (c.exhaustion > 0) c.exhaustion = c.exhaustion - 1;
   renderAll(); triggerSave();
-  const hdLeft = totalHd - c.nbDeVieUtilises;
-  showToast(`Long Rest — full HP, spells and resources restored · hit dice ${hdLeft}/${totalHd} (+${Math.min(regained, spentHd)})`);
+  showToast(`Long Rest — full HP, spells, resources and hit dice restored · hit dice ${totalHd}/${totalHd}`
+            + (spentHd ? ` (+${spentHd})` : ''));
 }
 function showToast(msg, type) {
   let t = document.getElementById('rest-toast');
@@ -8412,8 +8784,10 @@ function renderLvlupTab() {
 
     // Body: ASI — sélecteur de feat (PHB 2024) + note libre
     if (d.isAsi) {
-      const featOpts = donsDisponibles(d.totalLv).map(fn =>
-        `<option value="${esc(fn)}"${titreUA(fn)}>${esc(fn)}</option>`).join('');
+      const opt = fn => `<option value="${esc(fn)}"${titreUA(fn)}>${esc(fn)}</option>`;
+      /* Les dons d'origine sont valides a un ASI, comme dans la montee. */
+      const featOpts = `<optgroup label="General feats">${donsDisponibles(d.totalLv).map(opt).join('')}</optgroup>`
+        + `<optgroup label="Origin feats">${Object.keys(typeof ORIGIN_FEATS !== 'undefined' ? ORIGIN_FEATS : {}).map(opt).join('')}</optgroup>`;
       bodyHtml += `<div class="lvlrow-section">
         <div class="lvlrow-sec-title">⬆ ASI / Feat Decision</div>
         <div class="lvlrow-feat-pick">
@@ -8513,7 +8887,9 @@ function renderLvlupTab() {
       let hp;
       if (i===0) { hp = Math.max(1, d.hitDieNum + d.conMod); }
       else { const r = rollDiceExpr(d.hitDie); hp = Math.max(1, r.total + d.conMod);
-             showDiceRoll(`Lv ${i+1} HP (${d.hitDie}+CON)`, d.conMod); }
+             /* Le de affiche est celui qui compte : showDiceRoll tirait un d20 a part. */
+             showDamageRoll(`Lv ${i+1} HP (${d.hitDie}+CON)`,
+               { total: hp, detail: `${r.total} ${d.conMod >= 0 ? '+' : '−'} ${Math.abs(d.conMod)} = ${hp}` }); }
       rows[i].hp = hp; triggerSave();
       setTimeout(() => renderLvlupTab(), i===0?0:380);
     })
@@ -8549,10 +8925,11 @@ function renderLvlupTab() {
     const desc = document.getElementById('featdesc-' + i);
     const ta   = rowsCont.querySelector(`[data-asi="${i}"]`);
     // Re-sélectionner le feat déjà noté (persistance à travers les re-renders)
-    const noted = Object.keys(GENERAL_FEATS).find(fn => (rows[i].asi || '').includes(fn));
+    const noted = [...Object.keys(GENERAL_FEATS), ...Object.keys(typeof ORIGIN_FEATS !== 'undefined' ? ORIGIN_FEATS : {})]
+      .find(fn => (rows[i].asi || '').includes(fn));
     if (noted) sel.value = noted;
     const paint = fn => {
-      const f = GENERAL_FEATS[fn];
+      const f = ficheDon(fn);
       if (!f) { desc.innerHTML = ''; return; }
       const tags = [
         f.asi ? `<span class="feat-tag">+1 ${f.abil}</span>` : '',
@@ -8924,6 +9301,40 @@ function languesDeClasse(className, niveau) {
   return out;
 }
 
+/* Capacites de classe qu'une sous-classe remplace, jusqu'a ce niveau de classe
+   (champ remplace d'une capacite de sous-classe). */
+function capacitesRemplacees(className, subclassName, niveau) {
+  const out = new Set();
+  const paliers = (typeof SUBCLASS_DATA !== 'undefined' && SUBCLASS_DATA[className]?.[subclassName]) || {};
+  Object.entries(paliers).forEach(([lv, liste]) => {
+    if (+lv > niveau) return;
+    liste.forEach(f => { if (f.remplace) out.add(f.remplace); });
+  });
+  return out;
+}
+
+/* Sous-classes dont une capacite est annoncee des le niveau 1 : le createur
+   doit pouvoir les proposer, le choix habituel n'arrivant qu'au niveau 3. */
+function sousClassesDuNiveau1(className) {
+  const subs = (typeof SUBCLASS_DATA !== 'undefined' && SUBCLASS_DATA[className]) || {};
+  return Object.keys(subs).filter(s => (subs[s][1] || []).length > 0);
+}
+
+/* Oath of the Ebon Blade : Death Coil prend la place de Lay on Hands dans le
+   suivi des ressources, et la lui rend si le joueur change de sous-classe.
+   Ne fait rien pour une fiche qui ne suit pas cette ressource. */
+function syncRessourceLameEbene(c) {
+  if (!Array.isArray(c?.resources) || typeof CLASS_RESOURCES === 'undefined') return false;
+  const pal = getClasses(c).find(x => x.classe === 'Paladin');
+  if (!pal) return false;
+  const frais = CLASS_RESOURCES.Paladin(parseInt(pal.niveau) || 1, c)[0];
+  const ancien = frais.name === 'Death Coil' ? 'Lay on Hands' : 'Death Coil';
+  const i = c.resources.findIndex(r => r.name === ancien);
+  if (i < 0) return false;
+  c.resources[i] = { ...frais };
+  return true;
+}
+
 /* Capacites a choix debloquees a un niveau de classe donne (classe + sous-classe). */
 function featureChoicesAt(className, subclassName, level) {
   const out = [];
@@ -9071,6 +9482,32 @@ function topSlotLevel(slots) {
   return n;
 }
 
+/** Le personnage a-t-il ce don parmi ses capacites ? */
+function aLeDon(c, nom) {
+  return (c?.customFeatures || []).some(f => f && f.name === nom);
+}
+
+/** PV gagnes en plus a chaque niveau, hors de, CON et espece (regles 2024) :
+    Robuste, +2 par niveau de personnage ; Resilience draconique, +1 par niveau
+    d'Ensorceleur une fois la sous-classe acquise. Le bonus d'espece est compte
+    a part, il l'etait deja. */
+function pvBonusParNiveau(c, classeMontee, sousClasse) {
+  let n = 0;
+  if (aLeDon(c, 'Tough')) n += 2;
+  if (classeMontee === 'Sorcerer' && /Draconic/.test(sousClasse || '')) n += 1;
+  return n;
+}
+
+/** PV d'un coup quand on ACQUIERT ces capacites (regles 2024) : Robuste donne
+    deux fois le niveau de personnage, la Resilience draconique 3 au niveau 3.
+    Choisie plus tard — une fiche importee sans sous-classe —, elle rattrape le
+    total d'un Ensorceleur qui l'aurait prise au 3 : son niveau d'Ensorceleur. */
+function pvBonusAcquisition(nom, niveauPerso, niveauClasse) {
+  if (nom === 'Tough') return 2 * (parseInt(niveauPerso) || 1);
+  if (/Draconic/.test(nom || '')) return Math.max(3, parseInt(niveauClasse) || 3);
+  return 0;
+}
+
 /* Décrit la montée d'un niveau dans `className` sans modifier le personnage. */
 function planLevelUp(c, className, opts) {
   /* Les entrees vides sont ignorees ici ET dans applyLevelUp : les deux
@@ -9098,6 +9535,10 @@ function planLevelUp(c, className, opts) {
   const speciesFx = (typeof SPECIES_DATA !== 'undefined' && SPECIES_DATA[c.species]) || null;
   const fx        = Object.assign({}, speciesFx?.effects, speciesFx?.lineages?.[c.lineage]?.effects || {});
   const speciesHp = parseInt(fx.hpPerLevel) || 0;
+  /* Robuste et Resilience draconique : ignores jusqu'ici. La sous-classe est
+     celle que le personnage A deja ; celle qu'il choisit a ce niveau-ci compte
+     d'un coup dans applyLevelUp. */
+  const featHp = pvBonusParNiveau(c, className, idx >= 0 ? (classes[idx].sousClasse || '') : '');
 
   // Sous-classe : choisie au niveau 3 pour toutes les classes (PHB 2024)
   const currentSub  = idx >= 0 ? (classes[idx].sousClasse || '') : '';
@@ -9123,7 +9564,8 @@ function planLevelUp(c, className, opts) {
   const isAsi  = featsIci.some(f => f.type === 'asi') || isEpic;
 
   // Capacités débloquées à ce niveau de classe (+ celles de la sous-classe)
-  const clsFeatures = featsIci.map(f => ({ ...f, source: className }));
+  const remplacees = capacitesRemplacees(className, subName, toLevel);
+  const clsFeatures = featsIci.filter(f => !remplacees.has(f.name)).map(f => ({ ...f, source: className }));
   const subFeatures = (subName && SUBCLASS_DATA?.[className]?.[subName]?.[toLevel] || [])
     .map(f => ({ ...f, source: subName }));
 
@@ -9145,9 +9587,10 @@ function planLevelUp(c, className, opts) {
     ok: true, className, classIdx: idx, isNewClass: idx < 0,
     fromLevel, toLevel, totalBefore, totalAfter,
     hitDie, hitDieNum, conMod, speciesHp,
-    avgHp:  Math.max(1, Math.floor(hitDieNum / 2) + 1 + conMod + speciesHp),
-    maxHp:  Math.max(1, hitDieNum + conMod + speciesHp),
-    minHp:  Math.max(1, 1 + conMod + speciesHp),
+    featHp,
+    avgHp:  Math.max(1, Math.floor(hitDieNum / 2) + 1 + conMod + speciesHp + featHp),
+    maxHp:  Math.max(1, hitDieNum + conMod + speciesHp + featHp),
+    minHp:  Math.max(1, 1 + conMod + speciesHp + featHp),
     needsSubclass, subOptions, subName, subFeatures, isAsi, isEpic,
     newFeatures: [...clsFeatures, ...subFeatures],
     pbBefore: pb(totalBefore), pbAfter: pb(totalAfter),
@@ -9206,8 +9649,9 @@ function applyLevelUp(c, plan, choices) {
   if (plan.needsSubclass && ch.subclass && !plan.subOptions.includes(ch.subclass)) {
     return { ok:false, error:`Unknown subclass for ${plan.className} : ${ch.subclass}` };
   }
+  /* ficheDon couvre aussi les dons d'origine, valides a un ASI en 2024. */
   if (plan.isAsi && ch.asiMode === 'feat' && ch.feat
-      && typeof GENERAL_FEATS !== 'undefined' && !GENERAL_FEATS[ch.feat]) {
+      && typeof ficheDon === 'function' && !ficheDon(ch.feat)) {
     return { ok:false, error:`Unknown feat: ${ch.feat}` };
   }
 
@@ -9249,6 +9693,14 @@ function applyLevelUp(c, plan, choices) {
   if (plan.needsSubclass && ch.subclass) {
     c.classes[idx].sousClasse = ch.subclass;
     log.push(`Subclass : ${ch.subclass}`);
+    /* Resilience draconique : +3 PV max a l'acquisition (niveau 3). */
+    if (plan.className === 'Sorcerer' && /Draconic/.test(ch.subclass)) {
+      const pv = pvBonusAcquisition(ch.subclass, plan.totalAfter, plan.toLevel);
+      c.pvMax = (parseInt(c.pvMax) || 0) + pv;
+      c.pvActuel = (parseInt(c.pvActuel) || 0) + pv;
+      log.push(`+${pv} PV max (Draconic Resilience)`);
+      if (poserCADraconique(c)) log.push('Unarmored AC : 10 + DEX + CHA (Draconic Resilience)');
+    }
   }
 
   // ── Choix de capacites (style de combat, ordre divin, metamagie…) ──
@@ -9261,21 +9713,28 @@ function applyLevelUp(c, plan, choices) {
 
   // ── Expertise ── uniquement sur des competences deja maitrisees
   if (plan.expertiseCount && Array.isArray(ch.expertise)) {
-    ch.expertise.slice(0, plan.expertiseCount).forEach(k => {
-      if ((parseInt(c[k]) || 0) >= 1) { c[k] = 2; log.push(`Expertise : ${k}`); }
-    });
+    appliquerExpertise(c, ch.expertise, plan.expertiseCount).forEach(k => log.push(`Expertise : ${k}`));
   }
 
   // ── ASI ou don ──
   if (plan.isAsi) {
     if (ch.asiMode === 'feat' && ch.feat) {
-      const f = (typeof GENERAL_FEATS !== 'undefined' && GENERAL_FEATS[ch.feat]) || null;
+      const f = (typeof ficheDon === 'function' && ficheDon(ch.feat)) || null;
+      /* Robuste : deux fois le niveau de personnage d'un coup — sauf s'il etait
+         deja la, auquel cas ses +2 de ce niveau sont deja dans featHp. */
+      const avaitTough = aLeDon(c, 'Tough');
       c.customFeatures = c.customFeatures || [];
       c.customFeatures.push({
         name: ch.feat, source: `Feat — ${plan.className} ${plan.toLevel}`,
         desc: f?.desc || '', _open:false
       });
       log.push(`Feat : ${ch.feat}`);
+      if (ch.feat === 'Tough' && !avaitTough) {
+        const pv = pvBonusAcquisition('Tough', plan.totalAfter);
+        c.pvMax = (parseInt(c.pvMax) || 0) + pv;
+        c.pvActuel = (parseInt(c.pvActuel) || 0) + pv;
+        log.push(`+${pv} PV max (Tough)`);
+      }
       /* Resilient donne la maitrise des jets de sauvegarde de la caracteristique
          choisie, en plus du +1. C'est ecrit dans sa description, affichee au
          joueur au moment ou il le prend — et ce n'etait jamais applique. */
@@ -9329,10 +9788,16 @@ function applyLevelUp(c, plan, choices) {
   // ── Ressources de classe ── on re-dérive en conservant la consommation
   if (typeof CLASS_RESOURCES !== 'undefined' && CLASS_RESOURCES[plan.className]) {
     const used = new Map((c.resources || []).map(r => [r.name, r.used]));
-    const fresh = CLASS_RESOURCES[plan.className](c.classes[idx].niveau).map(r => ({ ...r }));
+    const fresh = CLASS_RESOURCES[plan.className](c.classes[idx].niveau, c).map(r => ({ ...r }));
     // On ne remplace que les ressources de cette classe, les autres (multiclasse) restent
     const keep = (c.resources || []).filter(r => !fresh.some(f => f.name === r.name));
-    c.resources = [...keep, ...fresh.map(r => ({ ...r, used: used.get(r.name) ?? 0 }))];
+    c.resources = [...keep, ...fresh.map(r => ({ ...r,
+      used: Math.min(used.get(r.name) ?? 0, r.max ?? Infinity) }))];
+    /* Death Coil et Lay on Hands s'excluent : garder l'autre ferait deux reserves. */
+    const exclue = fresh.some(f => f.name === 'Death Coil') ? 'Lay on Hands'
+                 : fresh.some(f => f.name === 'Lay on Hands') ? 'Death Coil' : '';
+    if (exclue) c.resources = c.resources.filter(r => r.name !== exclue);
+    c.ressources2024 = true;
   }
 
   // ── Journal : on alimente le Level Plan existant plutôt que d'ouvrir un second registre ──
@@ -9349,6 +9814,11 @@ function applyLevelUp(c, plan, choices) {
           ? `+1 ${ch.asiA.toUpperCase()} / +1 ${ch.asiB.toUpperCase()}`
           : `+2 ${(ch.asiA || '').toUpperCase()}`);
   }
+
+  // ── CA : un +1 DEX a l'ASI, ou la Resilience draconique, la changent. Elle
+  //    n'etait recalculee qu'a l'ouverture de l'onglet Inventaire. Meme garde
+  //    qu'a la saisie d'une caracteristique : une CA « Custom » ne bouge pas. ──
+  if (c.armorConfig?.mode && c.armorConfig.mode !== 'custom') c.ca = calculerCA(c).ca;
 
   if (plan.pbAfter > plan.pbBefore) log.push(`Proficiency bonus +${plan.pbBefore} → +${plan.pbAfter}`);
   const prepAfter = preparedTotal(c);
@@ -9432,13 +9902,17 @@ function applyStartingGear(c, className, items) {
   if (atks.length) c.attaques = atks;
 }
 
-function calcAndSetAC() {
-  if (!playerData) return;
-  const cfg = C().armorConfig || {};
+/* CA d'un personnage d'apres sa configuration d'armure. Fonction pure sur `c`
+   (testable hors navigateur) : calcAndSetAC() l'affiche ; la montee de niveau
+   s'en sert pour garder c.ca a jour sans passer par l'onglet Inventaire. */
+function calculerCA(c) {
+  const cfg = c?.armorConfig || {};
   const mode = cfg.mode || 'unarmored';
-  const dex  = mod(abilScore('dex'));
-  const con  = mod(abilScore('con'));
-  const wis  = mod(abilScore('sag'));
+  const m = k => Math.floor(((parseInt(c?.[k]) || 10) - 10) / 2);
+  const dex  = m('dex');
+  const con  = m('con');
+  const wis  = m('sag');
+  const cha  = m('cha');
 
   let base = 10, formula = '';
   switch (mode) {
@@ -9471,6 +9945,10 @@ function calcAndSetAC() {
       base = 10 + dex + wis;
       formula = `10 + ${dex>=0?'+':''}${dex} DEX + ${wis>=0?'+':''}${wis} SAG`;
       break;
+    case 'unarmoredDraco': // Resilience draconique (Ensorceleur, 2024)
+      base = 10 + dex + cha;
+      formula = `10 + ${dex>=0?'+':''}${dex} DEX + ${cha>=0?'+':''}${cha} CHA`;
+      break;
     case 'natural':
       base = cfg.baseAC || 10;
       formula = `${base} (Armure naturelle)`;
@@ -9489,7 +9967,12 @@ function calcAndSetAC() {
   if (shield) formula += ` + 2 (Bouclier)`;
   if (other)  formula += ` + ${other>=0?'+':''}${other} (Bonus)`;
   base += shield + other;
+  return { ca: base, formula };
+}
 
+function calcAndSetAC() {
+  if (!playerData) return;
+  const { ca: base, formula } = calculerCA(C());
   C().ca = base;
   const inpCA = document.getElementById('inp-ca');
   if (inpCA) inpCA.value = base;
@@ -9543,12 +10026,73 @@ function armorFromItem(item) {
 
 /* Le personnage maitrise-t-il cette categorie d'arme ?
    weaponProf est du texte libre par classe (« Simple and Martial weapons »). */
+/* Equipement de l'historique : 'A' (objets + or), 'B' (50 po), '' (rien).
+   outil : l'outil choisi a l'etape 4, qui remplace « (same as above) ». */
+function equipementHistorique(bg, choix, outil) {
+  const e = typeof BACKGROUND_EQUIP !== 'undefined' && BACKGROUND_EQUIP[bg];
+  if (!e || !choix) return null;
+  if (choix === 'B') return { gold: 50, items: [] };
+  return { gold: e.gold, items: e.items.map(it => ({ qty: it.qty, name: it.outil && outil ? outil : it.name })) };
+}
+
+/* Ajoute des objets a un inventaire : un nom deja present voit sa quantite
+   augmenter (la dague de la classe et celle de l'historique font 2 dagues). */
+function fusionnerObjets(items, ajout) {
+  const out = (items || []).map(it => ({ ...it }));
+  (ajout || []).forEach(a => {
+    const x = out.find(it => it.name === a.name);
+    if (x) x.qty = (parseInt(x.qty) || 0) + (parseInt(a.qty) || 0);
+    else out.push({ name: a.name, qty: a.qty, notes: '', cat: '' });
+  });
+  return out;
+}
+
+/* Bonus de caracteristiques de l'historique (PHB 2024) : « Increase one of
+   these scores by 2 and a different one by 1, or increase all three by 1. »
+   mode '21' ou '111'. Rend { cle: bonus }, ou null quand le +2 et le +1
+   visent la meme caracteristique (ou manquent). */
+function bonusHistorique(abilities, mode, b2, b1) {
+  if (mode === '111') return Object.fromEntries((abilities || []).map(a => [a, 1]));
+  if (!b2 || !b1 || b2 === b1) return null;
+  return { [b2]: 2, [b1]: 1 };
+}
+
+/* Expertise : seulement sur des competences deja maitrisees (regle 2024), et
+   pas plus que le nombre accorde. Rend les cles passees en Expertise. Sert au
+   monteur de niveau et au createur (Roublard 1). */
+function appliquerExpertise(c, cles, n) {
+  const faites = [];
+  (cles || []).slice(0, n).forEach(k => {
+    if ((parseInt(c[k]) || 0) >= 1) { c[k] = 2; faites.push(k); }
+  });
+  return faites;
+}
+
+/** Maitrises qu'apporte un choix de capacite (regles 2024) : l'Ordre divin
+    Protecteur (Clerc) et l'Ordre primordial Gardien (Druide) ajoutent les armes
+    de guerre et une armure. Lu dans le choix enregistre, quel que soit le chemin
+    qui l'a pose — creation ou multiclassage. null si rien. */
+function maitrisesDeChoix(c, classe) {
+  const ORDRES = {
+    Cleric: { feature: 'Divine Order', option: 'Protector', armes: 'Martial weapons', armure: 'Heavy armor' },
+    Druid:  { feature: 'Primal Order', option: 'Warden',    armes: 'Martial weapons', armure: 'Medium armor' },
+  };
+  const o = ORDRES[classe];
+  if (!o || typeof getFeatureChoice !== 'function') return null;
+  return getFeatureChoice(c, o.feature, classe).includes(o.option) ? o : null;
+}
+
 function isProficientWith(c, weaponCat, props) {
   /* Une liste par classe, pas un texte concatene : deux classes multiclassees
      cumulent leurs maitrises, et une forme conditionnelle lue dans la bouillie
      des deux ne veut plus rien dire. */
   const listes = getClasses(c)
-    .map(cl => (typeof CLASS_DATA !== 'undefined' && CLASS_DATA[cl.classe]?.weaponProf) || '')
+    .map(cl => {
+      const base = (typeof CLASS_DATA !== 'undefined' && CLASS_DATA[cl.classe]?.weaponProf) || '';
+      /* Protecteur et Gardien ajoutent les armes de guerre, sans condition. */
+      const ordre = maitrisesDeChoix(c, cl.classe);
+      return ordre ? [base, ordre.armes].filter(Boolean).join(' and ') : base;
+    })
     .filter(Boolean)
     .map(t => t.toLowerCase());
   if (!listes.length) return true;              // classe inconnue : on n'invente pas un malus
@@ -9673,8 +10217,26 @@ function defaultArmorConfig(c) {
   const classes = getClasses(c).map(x => x.classe);
   const mode = classes.includes('Barbarian') ? 'unarmoredBarb'
              : classes.includes('Monk')      ? 'unarmoredMonk'
+             : aResilienceDraconique(c)      ? 'unarmoredDraco'
              : 'unarmored';
   return { mode, baseAC: 10, armorName: '', shield: !!c.armorConfig?.shield, otherBonus: c.armorConfig?.otherBonus || 0 };
+}
+
+/* Resilience draconique (Ensorceleur draconique, niveau 3) : sans armure, la
+   CA de base vaut 10 + DEX + CHA. */
+function aResilienceDraconique(c) {
+  return getClasses(c).some(x => x.classe === 'Sorcerer' && /Draconic/.test(x.sousClasse || ''));
+}
+
+/* Pose ce mode quand la Resilience arrive. Seulement si le personnage etait
+   simplement « sans armure » : une armure portee, l'Armure du mage ou un mode
+   choisi par le joueur restent tels quels. true si quelque chose a change. */
+function poserCADraconique(c) {
+  const cfg = c.armorConfig || {};
+  if ((cfg.mode || 'unarmored') !== 'unarmored') return false;
+  c.armorConfig = Object.assign({ baseAC: 10, armorName: '', shield: false, otherBonus: 0 }, cfg, { mode: 'unarmoredDraco' });
+  c.ca = calculerCA(c).ca;
+  return true;
 }
 
 /* L'armure configuree correspond-elle a un objet reellement equipe ?
@@ -9790,6 +10352,7 @@ function renderWornArmor() {
     { v:'mageArmor',     l:'Mage Armor' },
     { v:'unarmoredBarb', l:'Unarmored Defense — Barbarian' },
     { v:'unarmoredMonk', l:'Unarmored Defense — Monk' },
+    { v:'unarmoredDraco', l:'Draconic Resilience — Sorcerer' },
     { v:'natural',       l:'Armure naturelle' },
     { v:'custom',        l:'Custom' },
   ];
@@ -9798,11 +10361,13 @@ function renderWornArmor() {
   const dex = mod(abilScore('dex'));
   const con = mod(abilScore('con'));
   const wis = mod(abilScore('sag'));
+  const cha = mod(abilScore('cha'));
   let hint = '';
   if (mode==='unarmored')     hint = `10 + DEX (${dex>=0?'+':''}${dex})`;
   else if (mode==='mageArmor') hint = `13 + DEX (${dex>=0?'+':''}${dex})`;
   else if (mode==='unarmoredBarb') hint = `10 + DEX (${dex>=0?'+':''}${dex}) + CON (${con>=0?'+':''}${con})`;
   else if (mode==='unarmoredMonk') hint = `10 + DEX (${dex>=0?'+':''}${dex}) + WIS (${wis>=0?'+':''}${wis})`;
+  else if (mode==='unarmoredDraco') hint = `10 + DEX (${dex>=0?'+':''}${dex}) + CHA (${cha>=0?'+':''}${cha})`;
 
   container.innerHTML = `
   <div class="worn-armor-card">
@@ -9846,7 +10411,7 @@ function renderWornArmor() {
     if (modeEl.value === 'light')   { cfg.baseAC = 11; cfg.armorName = ''; }
     if (modeEl.value === 'medium')  { cfg.baseAC = 12; cfg.armorName = ''; }
     if (modeEl.value === 'heavy')   { cfg.baseAC = 14; cfg.armorName = ''; }
-    if (modeEl.value === 'mageArmor' || modeEl.value === 'unarmored' || modeEl.value === 'unarmoredBarb' || modeEl.value === 'unarmoredMonk') {
+    if (modeEl.value === 'mageArmor' || modeEl.value === 'unarmored' || modeEl.value === 'unarmoredBarb' || modeEl.value === 'unarmoredMonk' || modeEl.value === 'unarmoredDraco') {
       cfg.baseAC = 10; cfg.armorName = '';
     }
     renderWornArmor(); // full re-render for show/hide logic
@@ -9921,7 +10486,9 @@ function itemsValue(items) {
   (items || []).forEach(it => {
     const c = parseFloat(it.cost);
     if (isNaN(c)) { sansPrix++; return; }
-    total += c * (parseInt(it.qty) || 1);
+    /* Comme le poids : une quantite 0 (objet epuise) vaut 0, pas 1. */
+    const q = parseInt(it.qty);
+    total += c * (isNaN(q) ? 1 : q);
   });
   return { total: Math.round(total * 100) / 100, sansPrix };
 }
@@ -9995,7 +10562,7 @@ function renderInventory() {
     const tr = document.createElement('tr');
     tr.className = (item.equipped ? 'inv-row-equipped ' : '') + (item.attuned ? 'inv-row-attuned' : '');
     tr.innerHTML = `
-      <td><input class="inv-inp" style="width:50px;text-align:center;" data-item="${i}" data-ik="qty"   type="number" value="${item.qty||1}" min="0"></td>
+      <td><input class="inv-inp" style="width:50px;text-align:center;" data-item="${i}" data-ik="qty"   type="number" value="${item.qty ?? 1}" min="0"></td>
       <td><input class="inv-inp" data-item="${i}" data-ik="name"  value="${esc(item.name||'')}"  placeholder="Item name"></td>
       <td><input class="inv-inp" data-item="${i}" data-ik="notes" value="${esc(item.notes||'')}" placeholder="Description"></td>
       <td><input class="inv-inp" style="width:52px;text-align:center;" data-item="${i}" data-ik="weight" type="number" step="0.1" min="0" value="${item.weight ?? ''}" placeholder="—" title="Unit weight (lb)"></td>
@@ -10563,13 +11130,13 @@ function renderAdminModalTab() {
       <!-- Ressources -->
       <div class="sheet-section">
         <div class="sheet-section-title">Class Resources</div>
-        <div style="font-size:0.8rem;color:var(--text-dim);font-style:italic;margin-bottom:0.5rem;">Current values (maximums are automatically calculated based on class and level)</div>
+        <div style="font-size:0.8rem;color:var(--text-dim);font-style:italic;margin-bottom:0.5rem;">Uses spent (maximums are automatically calculated based on class and level)</div>
         <div id="ae-resources-wrap" style="display:flex;flex-wrap:wrap;gap:0.75rem;">
           ${(c.resources||[]).map((r,i) => `
             <div style="background:var(--j-panel,#140f08);border:1px solid var(--j-border-col,#4a3510);border-radius:6px;padding:0.5rem 0.75rem;min-width:120px;">
               <div style="font-size:0.75rem;color:var(--gold);font-family:'Cinzel',serif;margin-bottom:0.3rem;">${esc(r.name)}</div>
               <div style="display:flex;align-items:center;gap:0.4rem;">
-                <input type="number" class="field-input ae-resource-cur" data-ri="${i}" value="${r.current||0}" min="0" max="${r.max||99}" style="width:55px;text-align:center;">
+                <input type="number" class="field-input ae-resource-cur" data-ri="${i}" value="${r.used||0}" min="0" max="${r.max||99}" style="width:55px;text-align:center;">
                 <span style="color:var(--text-label);">/</span>
                 <span style="color:var(--text-dim);font-size:0.82rem;">${r.max||0}</span>
               </div>
@@ -10687,7 +11254,7 @@ function renderAdminModalTab() {
   } else if (adminActiveTab === 'inventaire') {
     const itemRows = items.map((item, i) => `
       <tr>
-        <td><input class="inv-inp ae-item" style="width:55px;text-align:center;" data-item="${i}" data-ik="qty" type="number" value="${item.qty||1}" min="0"></td>
+        <td><input class="inv-inp ae-item" style="width:55px;text-align:center;" data-item="${i}" data-ik="qty" type="number" value="${item.qty ?? 1}" min="0"></td>
         <td><input class="inv-inp ae-item" data-item="${i}" data-ik="name" value="${esc(item.name)}" placeholder="Name"></td>
         <td><input class="inv-inp ae-item" data-item="${i}" data-ik="notes" value="${esc(item.notes)}" placeholder="Description"></td>
         <td><button class="atk-del ae-del-item" data-del-item="${i}" title="Delete">✕</button></td>
@@ -11458,7 +12025,7 @@ function renderViewSheet(el, pd, c, slot, username) {
      niveau TOTAL apres un import : lui faire confiance donnait +3 a un
      Guerrier 5 / Magicien 5. On additionne les classes. */
   const niveau = getTotalLevel(c);
-  const profBonus = Math.ceil(niveau/4) + 1;
+  const profBonus = pb(niveau);
   // ── HP
   const pvCur = parseInt(c.pvActuel)||0; const pvMax = parseInt(c.pvMax)||1;
   const hpPct = Math.round((pvCur/pvMax)*100);
@@ -11487,9 +12054,11 @@ function renderViewSheet(el, pd, c, slot, username) {
     {key:'saveCon',attr:'con',label:'CON'},{key:'saveInt',attr:'int',label:'INT'},
     {key:'saveSag',attr:'sag',label:'WIS'},{key:'saveCha',attr:'cha',label:'CHA'},
   ];
+  /* Les memes calculs que la fiche, modificateurs compris : la vue en avait une
+     copie qui les ignorait. */
   const savesHtml = SAVES_V.map(sv => {
     const prof = !!c[sv.key];
-    const val = mod(abilScore(sv.attr)) + (prof ? profBonus : 0);
+    const val = bonusSauvegarde(c, sv.key, sv.attr);
     return `<div class="view-skill"><span class="view-skill-dot ${prof?'prof':''}"></span>${esc(sv.label)} <strong style="color:var(--j-text,#e8e0d0);margin-left:auto">${fmtMod(val)}</strong></div>`;
   }).join('');
   // ── Skills — stored as c[sk.key] = 0|1|2 (or bool true=1, false=0)
@@ -11504,11 +12073,9 @@ function renderViewSheet(el, pd, c, slot, username) {
     {key:'prestidig',attr:'dex',label:'Sleight of Hand'},{key:'religion',attr:'int',label:'Religion'},
     {key:'survie',attr:'sag',label:'Survival'},{key:'perspicacite',attr:'sag',label:'Insight'},
   ];
-  const jat = !!c.jackOfAllTrades; const halfBonus = Math.floor(profBonus/2);
   const skillsHtml = [...SKILLS_V].sort((a,b)=>a.label.localeCompare(b.label)).map(sk => {
     const profLevel = Math.min(2, Math.max(0, parseInt(c[sk.key]) || (c[sk.key]===true?1:0)));
-    const jatBonus = (jat && profLevel===0) ? halfBonus : 0;
-    const val = mod(abilScore(sk.attr)) + (profLevel>=1?profBonus:0) + (profLevel>=2?profBonus:0) + jatBonus;
+    const val = bonusCompetence(c, sk.key, sk.attr);
     const dotCls = profLevel===2?'expert':profLevel===1?'prof':'';
     return `<div class="view-skill"><span class="view-skill-dot ${dotCls}"></span>${esc(sk.label)} <strong style="color:var(--j-text,#e8e0d0);margin-left:auto">${fmtMod(val)}</strong></div>`;
   }).join('');
@@ -11519,7 +12086,7 @@ function renderViewSheet(el, pd, c, slot, username) {
     <div class="view-header">
       ${avatarBloc}
       <div>
-        <div class="view-char-name">${esc(c.characterName||'Unnamed')}</div>
+        <div class="view-char-name">${esc(c.characterName || slot?.name || 'Unnamed')}</div>
         <div class="view-char-sub">${esc(classes)}${c.species?' · '+esc(c.species):''}</div>
         <div class="view-char-sub" style="margin-top:0.15rem;">${esc(pd.username||username||'')}</div>
       </div>
@@ -11537,8 +12104,8 @@ function renderViewSheet(el, pd, c, slot, username) {
     <div class="view-section">
       <div class="view-section-title">Combat</div>
       <div class="view-combat-grid">
-        <div class="view-combat-item"><div class="view-combat-label">AC</div><div class="view-combat-val">${parseInt(c.ca)||10}</div></div>
-        <div class="view-combat-item"><div class="view-combat-label">Initiative</div><div class="view-combat-val">${fmtMod(parseInt(c.initiative)||mod(abilScore('dex')))}</div></div>
+        <div class="view-combat-item"><div class="view-combat-label">AC</div><div class="view-combat-val">${(parseInt(c.ca)||10) + modsDe(c, 'ac')}</div></div>
+        <div class="view-combat-item"><div class="view-combat-label">Initiative</div><div class="view-combat-val">${fmtMod(bonusInitiative(c))}</div></div>
         <div class="view-combat-item"><div class="view-combat-label">Speed</div><div class="view-combat-val">${esc(c.vitesse||'30 ft')}</div></div>
         <div class="view-combat-item"><div class="view-combat-label">Prof.</div><div class="view-combat-val">+${profBonus}</div></div>
       </div>
@@ -11555,7 +12122,7 @@ function renderViewSheet(el, pd, c, slot, username) {
       <div class="view-section-title">Skills</div>
       <div class="view-skills-grid">${skillsHtml}</div>
     </div>
-    <div class="view-refresh-note">Auto-refresh every 30s · ${now}</div>`;
+    <div class="view-refresh-note">Updated ${now}</div>`;
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -12133,14 +12700,25 @@ const SEC_LABELS = {
   features: 'Features', sorts: 'Spells', mods: 'Mods'
 };
 
+/* Signature des sections visibles lors de la derniere construction : renderAll
+   rappelle buildSecTabBar souvent, on ne reconstruit que si elle change. */
+let _secTabSignature = null;
+
 function buildSecTabBar() {
   const bar = document.getElementById('sec-tab-bar');
   if (!bar) return;
-  bar.innerHTML = '';
   const sections = Array.from(document.querySelectorAll(
     '#layout-wrapper .sheet-section[data-sec]:not(.sec-hidden), ' +
     '#layout-bottom .sheet-section[data-sec]:not(.sec-hidden)'
   )).filter(s => s.style.display !== 'none');
+  const signature = sections.map(s => s.dataset.sec).join('|');
+  if (signature === _secTabSignature && bar.children.length) return;
+  _secTabSignature = signature;
+  /* L'onglet actif reste actif s'il existe encore : un rendu ne doit pas
+     renvoyer le joueur au premier onglet. */
+  const actif = bar.querySelector('.sec-tab-btn.active')?.dataset.sec;
+  const premiereFois = !bar.children.length;
+  bar.innerHTML = '';
   if (!sections.length) return;
   sections.forEach(sec => {
     const secId = sec.dataset.sec;
@@ -12156,10 +12734,13 @@ function buildSecTabBar() {
     btn.addEventListener('click', () => activateSecTab(secId));
     bar.appendChild(btn);
   });
-  activateSecTab(sections[0].dataset.sec, false);
+  const garde = sections.some(s => s.dataset.sec === actif) ? actif : sections[0].dataset.sec;
+  /* A l'ouverture, on centre le bouton actif dans la barre ; lors d'une
+     reconstruction, rien ne bouge — renderAll ne doit pas faire sauter la page. */
+  activateSecTab(garde, false, premiereFois);
 }
 
-function activateSecTab(secId, autoScroll = true) {
+function activateSecTab(secId, autoScroll = true, centrerBouton = true) {
   document.querySelectorAll('.sec-tab-btn').forEach(b =>
     b.classList.toggle('active', b.dataset.sec === secId)
   );
@@ -12168,7 +12749,7 @@ function activateSecTab(secId, autoScroll = true) {
   ).forEach(s => s.classList.toggle('sec-tab-active', s.dataset.sec === secId));
   // Faire défiler le bouton actif dans la barre
   const activeBtn = document.querySelector(`.sec-tab-btn[data-sec="${secId}"]`);
-  activeBtn?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  if (centrerBouton) activeBtn?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
   // Scroller vers la section pour passer le vb-hero
   if (autoScroll) {
     const sec = document.querySelector(`.sheet-section[data-sec="${secId}"]`);
@@ -12208,6 +12789,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   /* ── Déconnexion ── */
   document.getElementById('btn-logout').addEventListener('click', () => {
+    /* Une modification faite dans les 900 ms precedentes attendait encore son
+       envoi : vider playerData avant la perdait. */
+    flushPendingSave();
     clearSession(); currentUser = null; playerData = null;
     showScreen('screen-auth');
   });
@@ -12322,6 +12906,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       else C()[el.dataset.f] = el.value;
 
       if (el.dataset.f === 'characterName') { activeSlot().name = el.value || 'Unnamed'; renderCharCards(); }
+      if (el.dataset.f === 'inspiration') renderInspiration();
       if (el.dataset.f === 'niveau') { syncClassesToLegacy(C()); updateProfBonus(); renderSaves(); renderSkills(); renderPassiveSkills(); renderClassFeatures(); renderMulticlasses(); }
       if (el.dataset.f === 'classe') { autoFillClass(el.value); updateCharSummary(); renderCharCards(); }
       if (['for','dex','con','int','sag','cha'].includes(el.dataset.f)) { updateModifier(el.dataset.f); debouncedStats(() => { renderSaves(); renderSkills(); renderPassiveSkills(); updateSpellCalcs(); renderAttacks(); if (C().armorConfig?.mode && C().armorConfig.mode !== 'custom') calcAndSetAC(); }); }
@@ -13020,32 +13605,18 @@ ${car} characters of notes.
 
   /* ── Restauration de session ── */
   const savedUser = loadSession();
-  if (savedUser) {
-    sbGetPlayer(savedUser).then(row => {
-      if (row) {
-        currentUser = savedUser; playerData = row.data;
-        saveLocal(savedUser, row.data); // met à jour le cache local
-        openDashboard();
-      } else clearSession();
-    }).catch(() => {
-      // Supabase indisponible — tenter le cache local
-      const cached = localStorage.getItem(localKey(savedUser));
-      if (cached) {
-        try {
-          const { data } = JSON.parse(cached);
-          currentUser = savedUser; playerData = data;
-          openDashboard();
-          updateConnIndicator('offline');
-        } catch(e) { clearSession(); }
-      } else clearSession();
-    });
-  }
+  if (savedUser) demarrerSession(savedUser);
 
   /* ── Synchronisation en ligne / hors ligne ── */
-  window.addEventListener('online', async () => {
+  window.addEventListener('online', () => {
     updateConnIndicator('online');
     if (!currentUser || !playerData) return;
-    try { await sbUpdateData(currentUser, playerData); } catch(e) {}
+    /* Ce qui est reste local pendant la coupure part par le chemin normal : il
+       sait le poser sur la revision ou le cloud etait reste, et bascule sur la
+       banniere de conflit si quelqu'un d'autre a ecrit entre-temps. L'ancien
+       envoi forcait l'ecriture sans garde : il ecrasait ce que le MJ avait pu
+       modifier pendant la coupure. */
+    if (lireAttente(currentUser)) triggerSave();
   });
   window.addEventListener('offline', () => updateConnIndicator('offline'));
   updateConnIndicator(navigator.onLine ? 'online' : 'offline');
@@ -13333,10 +13904,10 @@ ${car} characters of notes.
   /* ── Inspiration ── */
   document.getElementById('btn-inspiration')?.addEventListener('click', () => {
     if (!playerData) return;
-    playerData.inspiration = !playerData.inspiration;
+    C().inspiration = !C().inspiration;
     renderInspiration();
     triggerSave();
-    showToast(playerData.inspiration ? '✦ Inspiration gained!' : '✦ Inspiration used.');
+    showToast(C().inspiration ? '✦ Heroic Inspiration gained!' : '✦ Heroic Inspiration removed.');
   });
 
   /* ── Épuisement (pips) ── */
@@ -13547,30 +14118,42 @@ ${car} characters of notes.
       if (!d) { box.innerHTML = ''; return; }
       const opts = sel => d.abilities.map(a =>
         `<option value="${a}"${sel === a ? ' selected' : ''}>${ABIL_LABEL[a]}</option>`).join('');
+      const curMode = box.querySelector('[data-bgb="mode"]')?.value || '21';
       const cur2 = box.querySelector('[data-bgb="2"]')?.value || d.abilities[0];
       const cur1 = box.querySelector('[data-bgb="1"]')?.value || d.abilities[1];
       box.innerHTML = `<div class="wiz-bgb-row">
           <span class="field-label">${esc(selBg.value)} :</span>
-          <strong>+2</strong> <select class="wiz-bgb-sel" data-bgb="2">${opts(cur2)}</select>
-          <strong>+1</strong> <select class="wiz-bgb-sel" data-bgb="1">${opts(cur1)}</select>
+          <select class="wiz-bgb-sel" data-bgb="mode" title="PHB 2024 : +2 and +1, or +1 to all three">
+            <option value="21"${curMode === '21' ? ' selected' : ''}>+2 / +1</option>
+            <option value="111"${curMode === '111' ? ' selected' : ''}>+1 / +1 / +1</option>
+          </select>
+          <span class="wiz-bgb-21">
+            <strong>+2</strong> <select class="wiz-bgb-sel" data-bgb="2">${opts(cur2)}</select>
+            <strong>+1</strong> <select class="wiz-bgb-sel" data-bgb="1">${opts(cur1)}</select>
+          </span>
+          <span class="wiz-bgb-111"><strong>+1</strong> ${d.abilities.map(a => ABIL_LABEL[a]).join(' · ')}</span>
         </div>
         <div class="wiz-bgb-warn" id="wiz-bgb-warn"></div>`;
+      const sm = box.querySelector('[data-bgb="mode"]');
       const s2 = box.querySelector('[data-bgb="2"]'), s1 = box.querySelector('[data-bgb="1"]');
       const sync = () => {
-        const same = s2.value === s1.value;
-        wizBgOk = !same;   // bloque « Suivant » : sinon les +2/+1 sont perdus en silence
-        document.getElementById('wiz-bgb-warn').textContent =
-          same ? ic('warn') + ' Pick two different abilities (or set +1/+1/+1 by hand on the sheet).' : '';
+        box.querySelector('.wiz-bgb-21').hidden  = sm.value === '111';
+        box.querySelector('.wiz-bgb-111').hidden = sm.value !== '111';
+        const bonus = bonusHistorique(d.abilities, sm.value, s2.value, s1.value);
+        wizBgOk = !!bonus;   // bloque « Suivant » : sinon les bonus sont perdus en silence
+        /* innerHTML : ic() rend du SVG, textContent l'affichait en balisage brut. */
+        document.getElementById('wiz-bgb-warn').innerHTML =
+          bonus ? '' : ic('warn') + ' Pick two different abilities, or take +1 / +1 / +1.';
         // Aperçu du total dans les cellules
         abilBox.querySelectorAll('.wiz-abil-cell').forEach(cell => {
           const k = cell.querySelector('.wiz-abil-sel').dataset.abil;
           const base = parseInt(cell.querySelector('.wiz-abil-sel').value) || 0;
-          const bonus = (!same && k === s2.value ? 2 : 0) + (!same && k === s1.value ? 1 : 0);
+          const plus = (bonus || {})[k] || 0;
           const tot = cell.querySelector('.wiz-abil-total');
-          if (tot) tot.textContent = base && bonus ? `→ ${base + bonus}` : '';
+          if (tot) tot.textContent = base && plus ? `→ ${base + plus}` : '';
         });
       };
-      s2.addEventListener('change', sync); s1.addEventListener('change', sync);
+      [sm, s2, s1].forEach(x => x.addEventListener('change', sync));
       sync();
     }
 
@@ -13626,6 +14209,7 @@ ${car} characters of notes.
     /* ── Compétences de classe : chips à quota, comme dans la fiche ── */
     let wizSkills = new Set();
     let wizFc = {};                 // choix de capacites de niveau 1
+    let wizExp = new Set();         // Expertise de niveau 1 (Roublard)
     function renderWizSkills() {
       const box = document.getElementById('wiz-class-skills');
       const d = CLASS_DATA[selClass.value];
@@ -13650,6 +14234,36 @@ ${car} characters of notes.
       });
     }
 
+
+    /* Expertise de niveau 1 (Roublard : deux competences). Proposee a l'etape
+       4, quand les competences de classe et d'historique sont toutes connues :
+       la regle 2024 la pose sur des competences deja maitrisees. */
+    function renderWizExpertise() {
+      const box = document.getElementById('wiz-expertise');
+      if (!box) return;
+      const n = selClass.value ? expertiseAt(selClass.value, 1) : 0;
+      if (!n) { box.innerHTML = ''; wizExp = new Set(); return; }
+      const maitrisees = [...new Set([...wizSkills, ...(BACKGROUND_DATA[selBg.value]?.skillKeys || [])])];
+      wizExp.forEach(k => { if (!maitrisees.includes(k)) wizExp.delete(k); });
+      const plein = wizExp.size >= n;
+      box.innerHTML = `<div class="wiz-skills-head">
+          <span class="field-label">Expertise — choose ${n} of your proficient skills</span>
+          <span class="cf-skill-count${plein ? ' done' : ''}">${wizExp.size}/${n}</span>
+        </div>`
+        + (maitrisees.length
+          ? `<div class="cf-skill-chips">${maitrisees.map(k => {
+              const sk = SKILLS.find(x => x.key === k);
+              const on = wizExp.has(k);
+              return `<button type="button" class="cf-skill-chip${on ? ' on' : ''}${!on && plein ? ' muted' : ''}" data-wiz-exp="${k}">${sk ? sk.label : k}</button>`;
+            }).join('')}</div>`
+          : `<div class="wiz-fc-note">Pick your class skills (step 3) and a background first.</div>`);
+      box.querySelectorAll('[data-wiz-exp]').forEach(chip => chip.addEventListener('click', () => {
+        const k = chip.dataset.wizExp;
+        if (wizExp.has(k)) wizExp.delete(k);
+        else if (wizExp.size < n) wizExp.add(k);
+        renderWizExpertise();
+      }));
+    }
 
     /* Choix de capacites disponibles des le niveau 1 (style de combat du
        Guerrier, ordre divin du Clerc, ordre primordial du Druide). Les autres
@@ -13689,8 +14303,27 @@ ${car} characters of notes.
       }));
     }
 
+    /* Sous-classes dont une capacite arrive des le niveau 1 (Oath of the Ebon
+       Blade, Demon Hunter) : facultatif, on peut toujours choisir au niveau 3. */
+    const selSub1 = document.getElementById('wiz-sub1');
+    function refreshSub1() {
+      const liste = selClass.value ? sousClassesDuNiveau1(selClass.value) : [];
+      selSub1.innerHTML = '<option value="">— Choose at level 3 —</option>'
+        + liste.map(s => `<option value="${esc(s)}"${titreUA(s)}>${esc(nomUA(s))}</option>`).join('');
+      document.getElementById('wiz-sub1-wrap').style.display = liste.length ? 'block' : 'none';
+      previewSub1();
+    }
+    function previewSub1() {
+      const box = document.getElementById('wiz-sub1-preview');
+      const niv1 = selSub1.value ? (SUBCLASS_DATA[selClass.value]?.[selSub1.value]?.[1] || []) : [];
+      box.innerHTML = niv1.map(f => `<div class="wiz-trait"><span class="wiz-trait-name">${esc(f.name)}</span> — ${f.desc}</div>`).join('');
+    }
+    selSub1.addEventListener('change', previewSub1);
+
     function previewClass() {
+      refreshSub1();
       wizSkills = new Set();   // la classe change → on repart de zéro
+      wizExp = new Set();
       renderWizSkills();
       wizFc = {};
       renderWizFeatureChoices();
@@ -13733,6 +14366,34 @@ ${car} characters of notes.
     }
     selEquip.addEventListener('change', previewEquip);
 
+    /* Equipement de l'historique (PHB 2024) : A, ou 50 po — en plus de celui
+       de la classe. */
+    const selBgEquip = document.getElementById('wiz-bg-equip');
+    const outilHistorique = () => {
+      const bd = BACKGROUND_DATA[selBg.value];
+      return bd && TOOL_CHOICES[bd.tool] ? selTool.value : '';
+    };
+    function refreshBgEquip() {
+      const e = BACKGROUND_EQUIP[selBg.value];
+      const wrap = document.getElementById('wiz-bg-equip-wrap');
+      if (!e) { wrap.style.display = 'none'; selBgEquip.innerHTML = ''; previewBgEquip(); return; }
+      wrap.style.display = '';
+      const cur = selBgEquip.value;
+      selBgEquip.innerHTML = '<option value="">— Passer —</option>'
+        + `<option value="A">Option A — items + ${e.gold} GP</option>`
+        + '<option value="B">Option B — 50 GP</option>';
+      selBgEquip.value = cur;   // garde le choix quand on revient sur l'etape
+      previewBgEquip();
+    }
+    function previewBgEquip() {
+      const box = document.getElementById('wiz-bg-equip-preview');
+      const eq = equipementHistorique(selBg.value, selBgEquip.value, outilHistorique());
+      if (!eq) { box.innerHTML = ''; return; }
+      box.innerHTML = eq.items.map(it => `<div>• ${it.qty} × ${esc(it.name)}</div>`).join('')
+        + `<div style="margin-top:0.35rem;">Bourse : <strong>+${eq.gold} po</strong></div>`;
+    }
+    selBgEquip.addEventListener('change', previewBgEquip);
+
     function previewBg() {
       const box = document.getElementById('wiz-bg-preview');
       const d = BACKGROUND_DATA[selBg.value];
@@ -13745,6 +14406,7 @@ ${car} characters of notes.
         + `<div class="wiz-trait"><span class="wiz-trait-name">${d.feat}</span> — ${ORIGIN_FEATS[d.feat] || ''}</div>`;
     }
     selBg.addEventListener('change', previewBg);
+    selBg.addEventListener('change', () => renderWizExpertise());
 
     /* Outil « (choice) » : on fait choisir plutôt que d'écrire « (choice) » sur la fiche */
     function refreshTool() {
@@ -13818,9 +14480,9 @@ ${car} characters of notes.
       btnOk.style.display   = step === TOTAL_STEPS ? '' : 'none';
       btnBlank.style.display = step === 1 ? '' : 'none';
       if (step === 1) setTimeout(() => nameInp.focus(), 50);
-      if (step === 4) majLanguesClasse();  // depend de la classe choisie a l'etape 3
+      if (step === 4) { majLanguesClasse(); renderWizExpertise(); }  // dependent de l'etape 3
       if (step === 5) renderBgBonus();  // dépend du background choisi à l'étape 4
-      if (step === 6) { refreshEquip(); renderWizSummary(); }
+      if (step === 6) { refreshEquip(); refreshBgEquip(); renderWizSummary(); }
     }
 
     /* Récapitulatif de la dernière étape : signale ce qui restera vide. */
@@ -13852,14 +14514,15 @@ ${car} characters of notes.
     function closeModal() {
       overlay.classList.remove('open');
       nameInp.value = '';
-      [selSpecies, selLineage, selClass, selBg, selEquip, selLang1, selLang2].forEach(s => s.value = '');
+      [selSpecies, selLineage, selClass, selBg, selEquip, selBgEquip, selSub1, selLang1, selLang2].forEach(s => s.value = '');
       document.getElementById('wiz-lang-warn')?.remove();
       refreshTool();
       abilBox.querySelectorAll('.wiz-abil-sel').forEach(s => s.value = '');
       wizSkills = new Set();
       wizFc = {};
+      wizExp = new Set();
       wizBgOk = true;
-      ['wiz-species-preview','wiz-class-preview','wiz-bg-preview','wiz-class-skills','wiz-bg-bonus','wiz-summary'].forEach(id =>
+      ['wiz-species-preview','wiz-class-preview','wiz-bg-preview','wiz-class-skills','wiz-expertise','wiz-bg-bonus','wiz-bg-equip-preview','wiz-sub1-preview','wiz-summary'].forEach(id =>
         document.getElementById(id).innerHTML = '');
       refreshAbils();
       showStep(1);
@@ -13881,16 +14544,18 @@ ${car} characters of notes.
 
       // Caractéristiques du tableau standard + bonus du background (+2/+1, PHB 2024)
       const bgBox = document.getElementById('wiz-bg-bonus');
-      const b2 = bgBox.querySelector('[data-bgb="2"]')?.value;
-      const b1 = bgBox.querySelector('[data-bgb="1"]')?.value;
-      const bgOk = b2 && b1 && b2 !== b1;   // ignoré si les deux pointent la même caractéristique
+      /* +2/+1 ou +1/+1/+1 ; rien si le +2 et le +1 pointent la meme caracteristique. */
+      const bgBonus = bonusHistorique(BACKGROUND_DATA[selBg.value]?.abilities,
+        bgBox.querySelector('[data-bgb="mode"]')?.value || '21',
+        bgBox.querySelector('[data-bgb="2"]')?.value,
+        bgBox.querySelector('[data-bgb="1"]')?.value) || {};
       /* Le bonus d'historique s'applique meme sans valeur choisie dans le
          tableau : la boucle sautait ces caracteristiques, et le +2/+1 partait
          avec elles sans que rien ne le dise. A defaut de choix, on part de ce
          que la fiche porte deja. */
       abilBox.querySelectorAll('.wiz-abil-sel').forEach(s => {
         const k = s.dataset.abil;
-        const bonus = (bgOk && k === b2 ? 2 : 0) + (bgOk && k === b1 ? 1 : 0);
+        const bonus = bgBonus[k] || 0;
         if (!s.value && !bonus) return;
         const base = s.value ? parseInt(s.value) : (parseInt(c[k]) || 10);
         c[k] = base + bonus;
@@ -13910,7 +14575,8 @@ ${car} characters of notes.
       if (selClass.value) {
         c.classe  = selClass.value;
         c.niveau  = 1;
-        c.classes = [{ classe: selClass.value, sousClasse: '', niveau: 1, customSousClasse: '' }];
+        c.classes = [{ classe: selClass.value, sousClasse: selSub1.value || '', niveau: 1, customSousClasse: '' }];
+        c.sousClasse = selSub1.value || '';
         const cd = CLASS_DATA[selClass.value];
         const saveMap = { for:'saveFor', dex:'saveDex', con:'saveCon', int:'saveInt', sag:'saveSag', cha:'saveCha' };
         Object.entries(saveMap).forEach(([a, k]) => { c[k] = cd.saves.includes(a); });
@@ -13925,7 +14591,8 @@ ${car} characters of notes.
         c.pvActuel = c.pvMax;
         // Ressources de départ de la classe
         if (typeof CLASS_RESOURCES !== 'undefined' && CLASS_RESOURCES[selClass.value]) {
-          c.resources = CLASS_RESOURCES[selClass.value](1).map(r => ({ ...r }));
+          c.resources = CLASS_RESOURCES[selClass.value](1, c).map(r => ({ ...r }));
+          c.ressources2024 = true;
         }
       }
 
@@ -13947,9 +14614,17 @@ ${car} characters of notes.
               desc: (typeof ORIGIN_FEATS !== 'undefined' && ORIGIN_FEATS[bg.feat]) || '',
               _open: false,
             });
+            /* Robuste comme don d'origine : +2 au niveau 1. Les PV etaient deja
+               calcules plus haut, sans lui. */
+            const pv = pvBonusAcquisition(bg.feat, 1);
+            if (pv) { c.pvMax = (parseInt(c.pvMax) || 0) + pv; c.pvActuel = c.pvMax; }
           }
         }
       }
+
+      /* Expertise de niveau 1 (Roublard), choisie a l'etape 4 : apres les
+         competences de classe et d'historique, sur lesquelles elle se pose. */
+      if (selClass.value && wizExp.size) appliquerExpertise(c, [...wizExp], expertiseAt(selClass.value, 1));
 
       // Équipement de départ → inventaire + bourse, puis CA et attaques dérivées
       const eqOpts = STARTING_EQUIP[selClass.value];
@@ -13963,6 +14638,15 @@ ${car} characters of notes.
             { pp:0, gp:0, ep:0, sp:0, cp:0 }, slot.inventory.currency, { gp: eq.gold }
           );
         }
+      }
+      /* Equipement d'historique : s'ajoute a celui de la classe (objets
+         fusionnes, or additionne) ; ses armes deviennent des attaques. */
+      const bgEq = equipementHistorique(selBg.value, selBgEquip.value, outilHistorique());
+      if (bgEq) {
+        slot.inventory.items = fusionnerObjets(slot.inventory.items, bgEq.items);
+        slot.inventory.currency = Object.assign({ pp:0, gp:0, ep:0, sp:0, cp:0 }, slot.inventory.currency);
+        slot.inventory.currency.gp = (parseInt(slot.inventory.currency.gp) || 0) + bgEq.gold;
+        eqItems = eqItems.concat(bgEq.items);
       }
       applyStartingGear(c, selClass.value, eqItems);
 
@@ -13980,9 +14664,11 @@ ${car} characters of notes.
            choisir a la place du joueur. */
         const outils = [cd?.toolProf, tool].filter(Boolean);
         const memeOutil = cd?.toolProf && tool && cd.toolProf === tool;
+        /* L'Ordre choisi a l'etape 3 (Protecteur, Gardien) ajoute ses maitrises. */
+        const ordre = maitrisesDeChoix(c, selClass.value);
         const list = [
-          cd?.armorProf  && `Armor: ${cd.armorProf}`,
-          cd?.weaponProf && `Weapons: ${cd.weaponProf}`,
+          cd?.armorProf  && `Armor: ${cd.armorProf}${ordre ? ', ' + ordre.armure : ''}`,
+          cd?.weaponProf && `Weapons: ${cd.weaponProf}${ordre ? ', ' + ordre.armes : ''}`,
           outils.length  && `Tools: ${[...new Set(outils)].join(', ')}`
                             + (memeOutil ? ' — already granted twice, pick another of the same kind' : ''),
         ].filter(Boolean);
@@ -14178,6 +14864,7 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
     const detailHp = () => {
       const base = `${plan.hitDie} ${plan.conMod < 0 ? '−' : '+'} <strong>${Math.abs(plan.conMod)}</strong> CON`
         + (plan.speciesHp ? ` + <strong>${plan.speciesHp}</strong> species` : '')
+        + (plan.featHp ? ` + <strong>${plan.featHp}</strong> feats & features` : '')
         + ` — between ${plan.minHp} and ${plan.maxHp} HP.`;
       /* Hors bornes : on le signale, on ne l'interdit pas. Un MJ qui accorde un
          forfait a le droit, et le refuser obligerait a corriger la fiche apres
@@ -14252,9 +14939,13 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
       /* titreUA : la liste des dons epiques melange le PHB et Arcana Unleashed,
          l'infobulle dit lequel. Sans elle, rien ne distingue un don du livre de
          base d'un don d'un supplement que la table n'utilise peut-etre pas. */
+      /* Les dons d'origine aussi : « another feat of your choice for which you
+         qualify », et ils n'ont pas de prerequis. */
+      const generaux = donsDisponibles(plan.totalAfter).filter(f => f !== 'Ability Score Improvement');
+      const origines = Object.keys(typeof ORIGIN_FEATS !== 'undefined' ? ORIGIN_FEATS : {});
       $('lvlup-feat').innerHTML = '<option value="">— Choose a feat —</option>'
-        + donsDisponibles(plan.totalAfter).filter(f => f !== 'Ability Score Improvement')
-            .map(f => `<option${titreUA(f)}>${esc(f)}</option>`).join('');
+        + `<optgroup label="General feats">${generaux.map(f => `<option${titreUA(f)}>${esc(f)}</option>`).join('')}</optgroup>`
+        + `<optgroup label="Origin feats">${origines.map(f => `<option${titreUA(f)}>${esc(f)}</option>`).join('')}</optgroup>`;
       syncAsiNote();
     }
 
@@ -14311,7 +15002,7 @@ document.addEventListener('DOMContentLoaded', function initLevelUpModal() {
 
   // Description du don + caractéristique associée
   $('lvlup-feat').addEventListener('change', () => {
-    const f = GENERAL_FEATS[$('lvlup-feat').value];
+    const f = ficheDon($('lvlup-feat').value);
     const wrap = $('lvlup-feat-abil-wrap');
     if (!f) { $('lvlup-feat-desc').innerHTML = ''; wrap.style.display = 'none'; return; }
     $('lvlup-feat-desc').innerHTML =
@@ -14484,6 +15175,7 @@ function _handleIdentiteField(el) {
   else C()[f] = el.value;
   if (f === 'characterName') { activeSlot().name = el.value || 'Unnamed'; renderCharCards(); renderHero(); }
   if (f === 'species' || f === 'xp') renderHero();
+  if (f === 'inspiration') renderInspiration();
   updateCharSummary();
   triggerSave();
 }
@@ -14508,7 +15200,11 @@ let _hpUndo = null;
 (function () {
   const _orig = applyHpChange;
   applyHpChange = function (delta) {
-    if (playerData) _hpUndo = { pvActuel: C().pvActuel, pvTemp: C().pvTemp || 0 };
+    /* Le personnage et le compte sont memorises avec les PV : sans eux, Ctrl+Z
+       apres un changement de personnage ecrivait les PV de l'ancien sur le
+       nouveau. */
+    if (playerData) _hpUndo = { user: currentUser, charId: playerData.activeCharId,
+                                pvActuel: C().pvActuel, pvTemp: C().pvTemp || 0 };
     _orig.apply(this, arguments);
   };
 })();
@@ -14521,8 +15217,12 @@ document.addEventListener('keydown', e => {
   /* Ctrl+Z → undo HP si pas en train d'écrire */
   if (e.ctrlKey && e.key === 'z' && !e.shiftKey && !typing && _hpUndo && playerData) {
     e.preventDefault();
-    Object.assign(C(), _hpUndo);
+    const { user, charId, ...pv } = _hpUndo;
     _hpUndo = null;
+    /* Un autre personnage (ou un autre compte) est actif depuis : l'annulation
+       ne le concerne pas, on l'oublie plutot que d'ecraser ses PV. */
+    if (user !== currentUser || charId !== playerData.activeCharId) return;
+    Object.assign(C(), pv);
     fillFields(); updateHpBar(); renderHero(); renderCharCards(); triggerSave();
     showSaveFlash();
     return;
@@ -14688,13 +15388,39 @@ document.addEventListener('keydown', e => {
   // Inject toast DOM
   const t = document.createElement('div');
   t.id = 'dice-toast';
-  t.innerHTML = '<button id="dice-share-btn" title="Share to chat" aria-label="Share to chat">' + ic('export') + '</button><div class="dice-toast-d20" id="dice-d20">—</div><div class="dice-toast-label" id="dice-label"></div><div class="dice-toast-total" id="dice-total"></div>';
-  t.style.position = 'relative';
+  t.innerHTML = '<button id="dice-share-btn" title="Share to chat" aria-label="Share to chat">' + ic('export') + '</button><div class="dice-toast-d20" id="dice-d20">—</div><div class="dice-toast-label" id="dice-label"></div><div class="dice-toast-total" id="dice-total"></div>'
+    + '<button id="dice-reroll-btn" type="button" hidden title="Spend Heroic Inspiration to reroll this d20 — the new roll stands">✦ Reroll</button>';
+  /* Pas de position en ligne : #dice-toast est en position: fixed, ce qui sert
+     deja de repere au bouton de partage. Un « relative » ici l'ecrasait, et le
+     toast tombait au bas du document, hors de l'ecran. */
   document.body.appendChild(t);
 
   let _diceTimer;
-  window.showDiceRoll = function(label, bonus) {
-    const roll = Math.floor(Math.random() * 20) + 1;
+  /* Le dernier d20 affiche, pour la relance de l'Inspiration heroique. */
+  window._dernierD20 = null;
+  window.majRelance = function () {
+    const b = document.getElementById('dice-reroll-btn');
+    if (!b) return;
+    const d = window._dernierD20;
+    b.hidden = !(d && !d.relance && playerData && C().inspiration);
+  };
+  /* Tant que la relance est possible, le toast reste plus longtemps. */
+  window._dureeToast = base => (window._dernierD20 && !window._dernierD20.relance && playerData && C().inspiration) ? 7000 : base;
+  document.getElementById('dice-reroll-btn').addEventListener('click', e => {
+    e.stopPropagation();
+    const d = window._dernierD20;
+    if (!d || d.relance || !playerData || !C().inspiration) return;
+    C().inspiration = false;
+    const des = relancerD20(d.mode, d.des, Math.floor(Math.random() * 20) + 1);
+    window.showDiceRoll('✦ ' + d.label, d.bonus, d.mode, des);
+    if (window._dernierD20) window._dernierD20.relance = true;
+    renderInspiration();
+    triggerSave();
+  });
+
+  window.showDiceRoll = function(label, bonus, _mode, force) {
+    const roll = force || Math.floor(Math.random() * 20) + 1;
+    window._dernierD20 = { label, bonus, mode: 'normal', des: [roll] };
     const total = roll + (parseInt(bonus) || 0);
     const d20El = document.getElementById('dice-d20');
     const lblEl = document.getElementById('dice-label');
@@ -14705,8 +15431,10 @@ document.addEventListener('keydown', e => {
     totEl.textContent = bonus !== 0 ? `${roll} ${bonus >= 0 ? '+' : ''}${bonus} = ${total}` : '';
     _lastShareText = 'd20 · ' + label + (bonus !== 0 ? ` (${bonus >= 0 ? '+' : ''}${bonus})` : '') + ' → **' + total + '**' + (roll === 20 ? ' — crit!' : roll === 1 ? ' — fumble!' : '');
     t.classList.add('visible');
+    window.majRelance();
     clearTimeout(_diceTimer);
-    _diceTimer = setTimeout(() => t.classList.remove('visible'), 2800);
+    clearTimeout(window._diceTimerAdv);
+    _diceTimer = setTimeout(() => t.classList.remove('visible'), window._dureeToast(2800));
     window._logRoll?.(label + (bonus !== 0 ? ` (${bonus >= 0 ? '+' : ''}${bonus})` : ''), total, roll === 20 ? 'nat20' : roll === 1 ? 'nat1' : '');
   };
 
@@ -14714,6 +15442,8 @@ document.addEventListener('keydown', e => {
      "showDiceRoll puis override du DOM" qui faussait le partage 📤 et consommait
      l'inspiration sur de simples jets de dégâts. */
   window.showDamageRoll = function(label, res, cls = '') {
+    window._dernierD20 = null;
+    window.majRelance();
     const d20El = document.getElementById('dice-d20');
     document.getElementById('dice-label').textContent = label;
     d20El.textContent = res.total;
@@ -14876,22 +15606,15 @@ document.addEventListener('dblclick', e => {
   showDamageRoll(name + ' · ' + expr, res);
 });
 
-/* ── 15. ADV / DIS roll mode + inspiration auto-advantage ── */
+/* ── 15. ADV / DIS roll mode ──
+   L'Inspiration ne donne plus d'avantage automatique (regle de 2014) : en
+   2024, on la depense APRES le jet, pour relancer (bouton du toast). */
 window._rollMode = 'normal';
 
 (function () {
   const _orig = window.showDiceRoll;
-  window.showDiceRoll = function (label, bonus, modeOverride) {
+  window.showDiceRoll = function (label, bonus, modeOverride, des) {
     let mode = modeOverride || window._rollMode || 'normal';
-
-    // Inspiration → gratuitous advantage (consumes it)
-    if (mode === 'normal' && playerData?.inspiration) {
-      playerData.inspiration = false;
-      renderInspiration();
-      triggerSave();
-      mode = 'adv';
-      label = '✦ ' + label;
-    }
 
     // Reset mode UI
     window._rollMode = 'normal';
@@ -14899,8 +15622,10 @@ window._rollMode = 'normal';
       b.classList.toggle('active', b.id === 'drm-norm'));
 
     if (mode === 'adv' || mode === 'dis') {
-      const r1 = Math.floor(Math.random() * 20) + 1;
-      const r2 = Math.floor(Math.random() * 20) + 1;
+      /* des : impose par une relance d'Inspiration ; sinon on tire. */
+      const r1 = (des && des[0]) || Math.floor(Math.random() * 20) + 1;
+      const r2 = (des && des[1]) || Math.floor(Math.random() * 20) + 1;
+      window._dernierD20 = { label, bonus, mode, des: [r1, r2] };
       const roll = mode === 'adv' ? Math.max(r1, r2) : Math.min(r1, r2);
       const bonusNum = parseInt(bonus) || 0;
       const total = roll + bonusNum;
@@ -14914,11 +15639,12 @@ window._rollMode = 'normal';
       totEl.textContent = `(${r1}, ${r2})` + (bonusNum !== 0 ? ` ${bonusNum >= 0 ? '+' : ''}${bonusNum} = ${total}` : '');
       _lastShareText = 'd20 · ' + (mode === 'adv' ? '⬆ ' : '⬇ ') + label + (bonusNum !== 0 ? ` (${bonusNum >= 0 ? '+' : ''}${bonusNum})` : '') + ` (${r1},${r2}) → **${total}**` + (roll === 20 ? ' — crit!' : roll === 1 ? ' — fumble!' : '');
       t.classList.add('visible');
+      window.majRelance?.();
       clearTimeout(window._diceTimerAdv);
-      window._diceTimerAdv = setTimeout(() => t.classList.remove('visible'), 3200);
+      window._diceTimerAdv = setTimeout(() => t.classList.remove('visible'), window._dureeToast ? window._dureeToast(3200) : 3200);
       window._logRoll?.((mode === 'adv' ? '⬆ ' : '⬇ ') + label + ` (${r1},${r2})` + (bonusNum !== 0 ? ` ${bonusNum >= 0 ? '+' : ''}${bonusNum}` : ''), total, roll === 20 ? 'nat20' : roll === 1 ? 'nat1' : '');
     } else {
-      _orig(label, bonus);
+      _orig(label, bonus, 'normal', des && des[0]);
     }
   };
 })();
@@ -14940,7 +15666,10 @@ document.getElementById('death-save-roll-btn')?.addEventListener('click', e => {
   const c = C();
   let succ = parseInt(c.mortSucces) || 0;
   let fail = parseInt(c.mortEchecs) || 0;
-  if      (roll === 20) { succ = Math.min(3, succ + 2); }
+  /* Regle 2024 : un 20 naturel rend 1 point de vie, et le personnage n'est plus
+     mourant. La fiche ajoutait deux succes et le laissait a 0 PV. applyHpChange
+     remet aussi les jets de mort a zero, comme tout soin recu a 0 PV. */
+  if      (roll === 20) { if ((parseInt(c.pvActuel) || 0) <= 0) applyHpChange(1); succ = 0; fail = 0; }
   else if (roll === 1)  { fail = Math.min(3, fail + 2); }
   else if (roll >= 10)  { succ = Math.min(3, succ + 1); }
   else                  { fail = Math.min(3, fail + 1); }
@@ -14953,11 +15682,13 @@ document.getElementById('death-save-roll-btn')?.addEventListener('click', e => {
     });
   });
   renderHero(); triggerSave();
-  const msg = roll === 20 ? '✦ Critical! +2 successes'
-            : roll === 1  ? '✕ Disaster! +2 failures'
+  const msg = roll === 20 ? '✦ Natural 20 — you regain 1 HP'
+            : roll === 1  ? '✕ Natural 1 — two failures'
             : roll >= 10  ? '✓ Success' : '✗ Failure';
-  showDiceRoll('Jet de Mort', 0, 'normal');
-  document.getElementById('dice-total').textContent = msg;
+  /* Le de affiche est celui qui compte. showDiceRoll tirait un SECOND d20,
+     independant de celui-ci — on pouvait voir « 1 » avec « ✓ Success », et le
+     partage publiait ce faux nombre — et consommait l'Inspiration au passage. */
+  showDamageRoll('Death Save', { total: roll, detail: msg }, roll === 20 ? ' nat20' : roll === 1 ? ' nat1' : '');
 });
 
 /* Une modal ouverte doit absorber les raccourcis. Le test du focus ne suffit
@@ -15024,15 +15755,21 @@ document.addEventListener('keydown', e => {
       const conditions = c.conditions || [];
       if (conditions.includes('Concentrating')) {
         const dmg = Math.abs(delta);
-        const dc = Math.max(10, Math.ceil(dmg / 2));
-        const conMod = mod(abilScore('con'));
-        const profBonus = c.saveCon ? pb(getTotalLevel(c)) : 0;
-        const saveBonus = conMod + profBonus;
-        showDiceRoll(`Conc. Save — DD ${dc}`, saveBonus, 'normal');
-        const roll = parseInt(document.getElementById('dice-d20')?.textContent) || 0;
-        const succeeded = (roll + saveBonus) >= dc;
-        document.getElementById('dice-total').textContent =
-          succeeded ? `✓ Concentration maintenue (DD ${dc})` : `✗ Concentration broken (DC ${dc})`;
+        /* Arrondi a l'inferieur et plafond a 30 : le site arrondissait au
+           superieur (25 degats → 13 au lieu de 12). */
+        const dc = ddConcentration(dmg);
+        /* Le meme bonus que la liste des sauvegardes, mods compris. */
+        const saveBonus = bonusSauvegarde(c, 'saveCon', 'con');
+        /* Le jet est tire ici et affiche tel quel. Il etait relu dans
+           l'affichage apres showDiceRoll, qui consommait au passage
+           l'Inspiration du joueur sur ce jet qu'il n'a pas demande. */
+        const roll = Math.floor(Math.random() * 20) + 1;
+        const total = roll + saveBonus;
+        const succeeded = total >= dc;
+        showDamageRoll(`Concentration save — DC ${dc}`,
+          { total, detail: `${roll} ${saveBonus >= 0 ? '+' : '−'} ${Math.abs(saveBonus)} = ${total} · `
+                         + (succeeded ? '✓ Concentration kept' : '✗ Concentration broken') },
+          roll === 20 ? ' nat20' : roll === 1 ? ' nat1' : '');
       }
     }
   };
@@ -15077,6 +15814,11 @@ document.addEventListener('keydown', e => {
           </div>
           <div class="wiz-skills" id="wiz-class-skills"></div>
           <div class="wiz-skills" id="wiz-class-fc"></div>
+          <div class="auth-field" id="wiz-sub1-wrap" style="display:none;">
+            <label class="auth-label" for="wiz-sub1">Subclass with level 1 features (optional)</label>
+            <select class="auth-input" id="wiz-sub1"></select>
+          </div>
+          <div class="wiz-preview" id="wiz-sub1-preview"></div>
           <div class="wiz-preview" id="wiz-class-preview"></div>
         </div>
 
@@ -15102,6 +15844,7 @@ document.addEventListener('keydown', e => {
           </div>
           <div class="wiz-lang-note">You speak <strong>Commun</strong> by default, plus two languages from your origin — drawn from the Standard table. Rare languages come from class features, not from your origin.</div>
           <div id="wiz-lang-classe" style="display:none;"></div>
+          <div class="wiz-skills" id="wiz-expertise"></div>
           <div class="wiz-preview" id="wiz-bg-preview"></div>
         </div>
 
@@ -15123,6 +15866,11 @@ document.addEventListener('keydown', e => {
             <select class="auth-input" id="wiz-equip"></select>
           </div>
           <div class="wiz-preview" id="wiz-equip-preview"></div>
+          <div class="auth-field" id="wiz-bg-equip-wrap" style="display:none;">
+            <label class="auth-label" for="wiz-bg-equip">Background equipment</label>
+            <select class="auth-input" id="wiz-bg-equip"></select>
+          </div>
+          <div class="wiz-preview" id="wiz-bg-equip-preview"></div>
           <div class="wiz-summary" id="wiz-summary"></div>
         </div>
 

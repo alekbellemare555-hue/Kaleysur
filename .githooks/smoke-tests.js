@@ -52,6 +52,15 @@ function ok(cond, label) {
     extract(J, 'function getClasses(c)'),
     extract(J, 'function getTotalLevel(c)'),
     extract(J, 'function classesReelles(c)'),
+    extract(R, 'const BACKGROUND_EQUIP'),
+    extract(J, 'function equipementHistorique(bg, choix, outil)'),
+    extract(J, 'function fusionnerObjets(items, ajout)'),
+    extract(J, 'function migrerInspiration(pd, c)'),
+    extract(J, 'function relancerD20(mode, des, nouveau)'),
+    extract(J, 'const RESSOURCES_2014'),
+    extract(J, 'const RESSOURCES_RENOMMEES'),
+    extract(J, 'function migrerRessources2024(c)'),
+    extract(J, 'function reposCourtRessources(resources)'),
     extract(R, 'const MULTICLASS_SLOTS'),
     extract(R, 'const FULL_CASTER_SLOTS'),
     extract(R, 'const HALF_CASTER_SLOTS'),
@@ -86,17 +95,34 @@ function ok(cond, label) {
     extract(J, 'function featureOptions(featureName, className)'),
     extract(J, 'function classeOffreCapacite(className, featureName)'),
     extract(J, 'function languesDeClasse(className, niveau)'),
+    extract(J, 'function capacitesRemplacees(className, subclassName, niveau)'),
+    extract(J, 'function sousClassesDuNiveau1(className)'),
+    extract(J, 'function syncRessourceLameEbene(c)'),
     extract(J, 'function featureChoicesAt(className, subclassName, level)'),
     extract(J, 'function cleChoix(className, featureName)'),
     extract(J, 'function getFeatureChoice(c, featureName, className)'),
     extract(J, 'function migrerChoixCapacites(c)'),
     extract(J, 'function deDeVie(c)'),
+    extract(J, 'function attenteKey(u)'),
+    extract(J, 'function lireAttente(u)'),
+    extract(J, 'function marquerAttente(u, revCloud)'),
+    extract(J, 'function effacerAttente(u)'),
+    extract(J, 'function choisirAuDemarrage(local, distant, attente)'),
+    extract(J, 'function ddConcentration(degats)'),
+    extract(J, 'function ddbModsActifs(d)'),
+    extract(J, 'function ddbCaracteristiques(d, mods)'),
+    extract(J, 'function ddbPointsDeVie(d, stats, niveauTotal, mods)'),
     extract(J, 'function migrerNomsAttaques(c)'),
     extract(J, 'function setFeatureChoice(c, featureName, className, selection)'),
     extract(J, 'function pendingFeatureChoices(c)'),
     extract(J, 'function cantripsAt(className, level)'),
     extract(J, 'function expertiseAt(className, level)'),
+    extract(J, 'function bonusHistorique(abilities, mode, b2, b1)'),
+    extract(J, 'function appliquerExpertise(c, cles, n)'),
     extract(J, 'function topSlotLevel(slots)'),
+    extract(J, 'function aLeDon(c, nom)'),
+    extract(J, 'function pvBonusParNiveau(c, classeMontee, sousClasse)'),
+    extract(J, 'function pvBonusAcquisition(nom, niveauPerso, niveauClasse)'),
     extract(J, 'function planLevelUp(c, className, opts)'),
     extract(J, 'function applyLevelUp(c, plan, choices)'),
     extract(J, 'function applyStartingGear(c, className, items)'),
@@ -111,11 +137,15 @@ function ok(cond, label) {
     extract(J, 'function armorFromItem(item)'),
     extract(J, 'function isEquippable(item)'),
     extract(J, 'function defaultArmorConfig(c)'),
+    extract(J, 'function aResilienceDraconique(c)'),
+    extract(J, 'function poserCADraconique(c)'),
+    extract(J, 'function calculerCA(c)'),
     extract(J, 'function equippedArmorMismatch(c, inv)'),
     extract(J, 'const ATTUNE_MAX'),
     extract(J, 'function isAttunable(item)'),
     extract(J, 'function attunedItems(inv)'),
     extract(J, 'function migrateAttunement(inv)'),
+    extract(J, 'function maitrisesDeChoix(c, classe)'),
     extract(J, 'function isProficientWith(c, weaponCat, props)'),
     extract(J, 'function attackFromItem(item, c)'),
     extract(J, 'function syncAttackForItem(c, item, equipped)'),
@@ -272,7 +302,7 @@ function ok(cond, label) {
           STARTING_SPELLS, LANGUAGES, TOOL_CHOICES, MULTICLASS_PREREQ, STARTING_ARMOR,
           FEATURE_CHOICES, estUA, nomUA, sourceUA, titreUA, STARTING_WEAPONS,
           CANTRIPS_KNOWN, CLASS_RESOURCES, infoUA, UA_SUBCLASSES,
-          SUBCLASS_RENOMMEES, SOURCE_LIVRE, livreSource, donsDisponibles,
+          SUBCLASS_RENOMMEES, SOURCE_LIVRE, livreSource, donsDisponibles, ficheDon,
           /* typeLanceur n'est pas repris ici : les declarations de fonction
              d'un eval direct fuient deja dans cette portee, et le redeclarer en
              const provoquerait un conflit de nom au chargement. */
@@ -282,7 +312,7 @@ function ok(cond, label) {
       + ' STARTING_SPELLS, LANGUAGES, TOOL_CHOICES, MULTICLASS_PREREQ, STARTING_ARMOR,'
       + ' FEATURE_CHOICES, estUA, nomUA, sourceUA, titreUA, STARTING_WEAPONS,'
       + ' CANTRIPS_KNOWN, CLASS_RESOURCES, infoUA, UA_SUBCLASSES,'
-      + ' SUBCLASS_RENOMMEES, SOURCE_LIVRE, livreSource, donsDisponibles,'
+      + ' SUBCLASS_RENOMMEES, SOURCE_LIVRE, livreSource, donsDisponibles, ficheDon,'
       + ' LANCEURS,'
       + ' SPELL_PREP_STYLE };')();
   /* L'invariant qui empeche la divergence de revenir : une classe ne peut pas
@@ -735,7 +765,7 @@ function ok(cond, label) {
     /* Trois endroits appellent abilBox.querySelectorAll — on visait par erreur
        celui qui VIDE les cases. On ancre donc sur la ligne qui calcule le
        bonus, qui n'existe que dans le bloc voulu. */
-    const debutAbil = J.indexOf("const bonus = (bgOk && k === b2 ? 2 : 0)");
+    const debutAbil = J.indexOf("const bonus = bgBonus[k] || 0;");
     const bloc = J.slice(Math.max(0, debutAbil - 400), debutAbil + 400);
     ok(/if \(!s\.value && !bonus\) return/.test(bloc),
        'bonus d\'historique : une case vide ne le fait plus disparaitre');
@@ -1265,6 +1295,796 @@ function ok(cond, label) {
          'Roublard : les armes qu il maitrise');
       ok(/3 kinds/.test(wm('Fighter').desc), 'Guerrier : trois au niveau 1');
     }
+  }
+
+
+  /* ── Les modifications faites hors ligne survivent a la reouverture ── */
+  {
+    /* La restauration de session chargeait toujours le cloud et ecrasait la
+       copie locale : tout ce qui avait ete fait hors ligne disparaissait, sans
+       message. Scenario rejoue dans la page reelle avant et apres correction. */
+    const f = (rev) => ({ _rev: rev });
+    eq(choisirAuDemarrage(f(7), f(5), { base: 5 }), 'local',
+       'hors ligne puis reouverture, cloud inchange : on reprend la copie locale');
+    eq(choisirAuDemarrage(f(7), f(7), { base: 5 }), 'distant',
+       'le cloud a deja recu nos modifs (envoi a la fermeture abouti) : on charge le cloud');
+    eq(choisirAuDemarrage(f(7), f(6), { base: 5 }), 'conflit',
+       'quelqu un d autre a ecrit entre-temps : conflit, notre version mise de cote');
+    eq(choisirAuDemarrage(f(7), f(9), { base: 5 }), 'conflit',
+       'le cloud est passe devant : conflit aussi');
+    eq(choisirAuDemarrage(f(4), f(5), null), 'distant',
+       'rien en attente : le cloud gagne, comme avant');
+    eq(choisirAuDemarrage(null, f(5), { base: 5 }), 'distant',
+       'pas de copie locale : le cloud');
+    /* Premiere sauvegarde d un compte : pas de _rev du tout. */
+    eq(choisirAuDemarrage({}, {}, { base: null }), 'distant', 'aucune revision des deux cotes : identiques');
+    eq(choisirAuDemarrage(f(1), {}, { base: null }), 'local', 'premiere sauvegarde jamais arrivee : on la reprend');
+
+    /* La base n'est posee qu'au debut d'une serie de sauvegardes restees
+       locales : les suivantes gardent la revision ou le cloud etait reste. */
+    const memoire = {};
+    const precedent = globalThis.localStorage;
+    globalThis.localStorage = {
+      getItem: k => (k in memoire ? memoire[k] : null),
+      setItem: (k, v) => { memoire[k] = String(v); },
+      removeItem: k => { delete memoire[k]; },
+    };
+    try {
+      eq(lireAttente('u1'), null, 'au depart, rien en attente');
+      eq(marquerAttente('u1', 5), { base: 5 }, 'premiere sauvegarde locale : base 5');
+      eq(marquerAttente('u1', 6), { base: 5 }, 'la suivante garde la base 5');
+      eq(marquerAttente('u1', 7), { base: 5 }, 'et la suivante aussi');
+      eq(lireAttente('u2'), null, 'un autre compte n est pas touche');
+      effacerAttente('u1');
+      eq(lireAttente('u1'), null, 'effacee une fois le cloud a jour');
+      eq(marquerAttente('u1', 8), { base: 8 }, 'une nouvelle serie repart de la revision courante');
+      eq(marquerAttente('u3', undefined), { base: null }, 'sans revision : base nulle');
+      /* Une cle illisible ne doit pas faire planter la sauvegarde. */
+      memoire[attenteKey('u4')] = '{pas du json';
+      eq(lireAttente('u4'), null, 'cle illisible : traitee comme absente');
+    } finally { globalThis.localStorage = precedent; }
+
+    /* Les chemins de sauvegarde utilisent la base, pas la revision locale. */
+    const ts = J.slice(J.indexOf('function triggerSave()'), J.indexOf('function flushPendingSave()'));
+    ok(/const attente = marquerAttente\(currentUser, prevRev\);/.test(ts), 'triggerSave marque l attente');
+    ok(/sbUpdateDataGuarded\(currentUser, _json, attente\.base\)/.test(ts),
+       'triggerSave attend la revision ou le cloud etait reste');
+    ok(/_lastSaveAt = Date\.now\(\);\s*\n\s*effacerAttente\(currentUser\);/.test(ts), 'succes : l attente est effacee');
+    ok(/saveConflictSnapshot\(currentUser, _json\);\s*\n\s*effacerAttente\(currentUser\);/.test(ts),
+       'conflit : la copie de conflit prend le relais');
+    const fl = J.slice(J.indexOf('function flushPendingSave()'), J.indexOf('function flushPendingSave()') + 2600);
+    ok(/marquerAttente\(u, prevRev\)/.test(fl), 'fermeture : l attente est marquee');
+    /* keepalive est refuse au-dela de 64 Ko : le compte se fait en OCTETS. Une
+       chaine de 40 000 « é » fait 80 000 octets — le nombre de caracteres
+       l aurait laissee passer. */
+    ok(/new TextEncoder\(\)\.encode\(body\)\.length < 64000/.test(fl), 'fermeture : la taille se compte en octets');
+    ok(/keepalive: petit/.test(fl), 'fermeture : keepalive seulement sous 64 Ko');
+    ok(/rows\.length\) effacerAttente\(u\)/.test(fl), 'fermeture : l attente n est effacee que si le cloud a accepte');
+
+    /* Retour du reseau : plus d ecriture forcee. */
+    const on = J.slice(J.indexOf("window.addEventListener('online'"), J.indexOf("window.addEventListener('online'") + 900);
+    ok(/if \(lireAttente\(currentUser\)\) triggerSave\(\);/.test(on), 'retour du reseau : par le chemin garde');
+    ok(!/sbUpdateData\(currentUser, playerData\)/.test(on), 'retour du reseau : plus d ecriture sans garde');
+
+    /* Deconnexion : la derniere modification part d abord. */
+    const lo = J.slice(J.indexOf("getElementById('btn-logout').addEventListener"), J.indexOf("getElementById('btn-logout').addEventListener") + 600);
+    const iFlush = lo.indexOf('flushPendingSave();'), iVide = lo.indexOf('playerData = null');
+    ok(iFlush !== -1 && iVide !== -1 && iFlush < iVide, 'deconnexion : la sauvegarde en attente part avant de vider la fiche');
+
+    /* Le demarrage passe par la decision. */
+    ok(/if \(savedUser\) demarrerSession\(savedUser\);/.test(J), 'la restauration passe par demarrerSession');
+    const ds = J.slice(J.indexOf('function demarrerSession(savedUser)'), J.indexOf('function demarrerSession(savedUser)') + 1800);
+    ok(/choisirAuDemarrage\(local, row\.data, lireAttente\(savedUser\)\)/.test(ds), 'demarrerSession consulte la copie locale');
+    ok(/if \(choix === 'conflit'\) showConflictBanner\(savedUser\);/.test(ds), 'conflit : la banniere s affiche');
+  }
+
+  /* ── Ctrl+Z n ecrit plus les PV d un personnage sur un autre ── */
+  {
+    /* _hpUndo ne savait pas a qui appartenaient les PV memorises : apres un
+       changement de personnage, Ctrl+Z ecrivait ceux de l ancien sur le
+       nouveau. Rejoue dans la page reelle : Bram reste a 40 PV. */
+    const mem = J.slice(J.indexOf('let _hpUndo = null;'), J.indexOf('let _hpUndo = null;') + 700);
+    ok(/_hpUndo = \{ user: currentUser, charId: playerData\.activeCharId,/.test(mem),
+       'les PV memorises portent leur personnage et leur compte');
+    const z = J.slice(J.indexOf("if (e.ctrlKey && e.key === 'z'"), J.indexOf("if (e.ctrlKey && e.key === 'z'") + 700);
+    ok(/if \(user !== currentUser \|\| charId !== playerData\.activeCharId\) return;/.test(z),
+       'Ctrl+Z ne s applique qu au personnage qui a subi le changement');
+    ok(z.indexOf('_hpUndo = null;') < z.indexOf('Object.assign(C(), pv)'), 'l annulation est consommee avant d etre appliquee');
+  }
+
+  /* ── L initiative du bandeau ne compte plus deux fois la DEX ── */
+  {
+    /* c.initiative est le bonus TOTAL ; le bandeau y rajoutait la DEX, et +3
+       devenait +6 des le second rendu. Rejoue dans la page : +3 sur trois
+       rendus, +5 en manuel. */
+    /* La formule vit dans bonusInitiative, partagee par le bandeau et la vue
+       partagee : on la teste par ses valeurs. */
+    const h = J.slice(J.indexOf('if (initEl) {'), J.indexOf('if (initEl) {') + 900);
+    ok(/const total = bonusInitiative\(c\);/.test(h), 'bandeau : passe par bonusInitiative');
+    eval(extract(J, 'function modsDe(c, cible)'));
+    eval(extract(J, 'function bonusInitiative(c)'));
+    eq(bonusInitiative({ dex:16 }), 3, 'auto : la DEX, une seule fois');
+    eq(bonusInitiative({ dex:16, initiative:3 }), 3, 'auto : c.initiative deja ecrit n est pas ajoute a la DEX');
+    eq(bonusInitiative({ dex:16, initiative:5, initiativeManuelle:true }), 5, 'manuel : la saisie seule (Alert)');
+    eq(bonusInitiative({ dex:8 }), -1, 'auto : DEX negative');
+    eq(bonusInitiative({ dex:14, mods:[{ on:true, cible:'init', val:'2' }, { on:false, cible:'init', val:'5' }] }), 4,
+       'les mods actifs s ajoutent, les inactifs non');
+    eq(bonusInitiative({}), 0, 'fiche vide : +0');
+    /* Les imports gardent une initiative qui differe de la DEX (Alert). */
+    ok(/initiativeManuelle: initiative !== mod\(stats\.dex\)/.test(J), 'import Roll20 : l initiative importee est gardee');
+    ok(/initiativeManuelle: initiative !== dexMod/.test(J), 'import D&D Beyond : l initiative importee est gardee');
+  }
+
+  /* ── Jet contre la mort et repos long : les regles 2024 ── */
+  {
+    /* « Si vous obtenez un 20 sur le d20, vous recuperez 1 point de vie. » La
+       fiche ajoutait deux succes et laissait le personnage a 0 PV. Rejoue dans
+       la page, des forces : 20 → 1 PV ; 1 → deux echecs ; 12 → un succes. */
+    const m = J.slice(J.indexOf("getElementById('death-save-roll-btn')"), J.indexOf("getElementById('death-save-roll-btn')") + 2400);
+    ok(/if\s+\(roll === 20\) \{ if \(\(parseInt\(c\.pvActuel\) \|\| 0\) <= 0\) applyHpChange\(1\); succ = 0; fail = 0; \}/.test(m),
+       'jet contre la mort : un 20 rend 1 PV');
+    ok(!/succ \+ 2/.test(m), 'jet contre la mort : plus de « +2 succes »');
+    /* Le de affiche est celui qui compte : plus de second d20 tire a part. */
+    ok(/showDamageRoll\('Death Save', \{ total: roll, detail: msg \}/.test(m), 'jet contre la mort : le de affiche est celui qui compte');
+    ok(!/showDiceRoll\(/.test(m), 'jet contre la mort : plus de second de, ni d Inspiration consommee');
+
+    /* « Vous recuperez ... tous les des de vie depenses. » La moitie est 2014. */
+    const r = J.slice(J.indexOf('function doLongRest()'), J.indexOf('function showToast('));
+    ok(/c\.nbDeVieUtilises = 0;/.test(r), 'repos long : tous les des de vie reviennent');
+    ok(!/Math\.floor\(totalHd \/ 2\)/.test(r), 'repos long : plus de moitie (regle 2014)');
+    /* Le bandeau montre les des restants, plus N/N en permanence. */
+    const b = J.slice(J.indexOf("getElementById('vb-hero-hd')"), J.indexOf("getElementById('vb-hero-hd')") + 700);
+    ok(/const restants = Math\.max\(0, ndv - \(parseInt\(c\.nbDeVieUtilises\) \|\| 0\)\);/.test(b), 'bandeau : les des restants sur le total');
+  }
+
+  /* ── Perception passive et jet de concentration ── */
+  {
+    /* « Le DD est egal a 10 ou a la moitie des degats subis (arrondir a
+       l inferieur) ... jusqu a un DD maximal de 30. » Le site arrondissait au
+       superieur et ne plafonnait pas. */
+    [[1,10],[19,10],[20,10],[21,10],[22,11],[25,12],[59,29],[60,30],[61,30],[200,30],[0,10]]
+      .forEach(([d, dd]) => eq(ddConcentration(d), dd, 'DD de concentration pour ' + d + ' degats'));
+
+    /* Les passives lisent le meme bonus que la liste : Expertise et mods
+       compris. Rejoue dans la page : Perception +6 en liste, 16 en passive. */
+    const pas = J.slice(J.indexOf('function renderPassiveSkills()'), J.indexOf('function renderPassiveSkills()') + 1400);
+    ok(/10 \+ bonusCompetence\(c, p\.key, p\.attr\)/.test(pas), 'passives : 10 + le bonus de la competence');
+    ok(/ppEl\.textContent = 10 \+ bonusCompetence\(c, 'perception', 'sag'\)/.test(pas), 'badge PP : meme calcul');
+    ok(/const val = bonusCompetence\(c, sk\.key, sk\.attr\);/.test(J), 'la liste des competences lit la meme fonction');
+    ok(/const val  = bonusSauvegarde\(c, sv\.key, sv\.attr\);/.test(J), 'la liste des sauvegardes aussi');
+    const bc = J.slice(J.indexOf('function bonusCompetence(c, key, attr)'), J.indexOf('function bonusCompetence(c, key, attr)') + 500);
+    ok(/bonus \* niveau/.test(bc), 'l Expertise double le bonus de maitrise');
+
+    /* Le jet de concentration : DD partage, bonus de la liste, de affiche tel
+       quel, et plus d Inspiration consommee en douce. */
+    const cc = J.slice(J.indexOf('Jet de concentration auto'), J.indexOf('Jet de concentration auto') + 2200);
+    ok(/const dc = ddConcentration\(dmg\);/.test(cc), 'concentration : le DD de la regle');
+    ok(/bonusSauvegarde\(c, 'saveCon', 'con'\)/.test(cc), 'concentration : le bonus de sauvegarde, mods compris');
+    ok(!/showDiceRoll\(/.test(cc), 'concentration : plus de showDiceRoll, qui consommait l Inspiration');
+    ok(!/maintenue/.test(cc), 'concentration : plus de message en francais');
+  }
+
+  /* ── Sur telephone, les sections qui apparaissent ont leur onglet ── */
+  {
+    /* La barre de sections n etait construite qu a l ouverture : Classe, Espece
+       et Historique, masquees pour un personnage vierge, restaient sans onglet
+       apres la creation. Rejoue dans la page a 400 px : les trois onglets
+       apparaissent apres la creation, disparaissent au retour sur un vierge. */
+    const ra = J.slice(J.indexOf('function renderAll()'), J.indexOf('function renderAll()') + 900);
+    ok(/_renderTab\(activeTab\);[\s\S]*buildSecTabBar\(\);\s*\n\}/.test(ra), 'renderAll reconstruit la barre de sections, apres le rendu');
+    const bs = J.slice(J.indexOf('function buildSecTabBar()'), J.indexOf('function activateSecTab('));
+    ok(/if \(signature === _secTabSignature && bar\.children\.length\) return;/.test(bs),
+       'reconstruction seulement si les sections visibles ont change');
+    ok(/sections\.some\(s => s\.dataset\.sec === actif\) \? actif/.test(bs), 'l onglet actif reste actif s il existe encore');
+    ok(/activateSecTab\(garde, false, premiereFois\)/.test(bs), 'une reconstruction ne fait pas defiler la page');
+    /* Une section de classe masquee est videe : l onglet actif forcait son
+       affichage avec les capacites du personnage precedent. */
+    ok(/section\.style\.display = 'none'; if \(body\) body\.innerHTML = ''; return;/.test(J), 'la section Classe masquee est videe');
+  }
+
+  /* ── La vue partagee lit les memes calculs que la fiche ── */
+  {
+    /* Elle recalculait tout dans son coin, sans les modificateurs : un anneau
+       de protection n y changeait ni la CA ni les sauvegardes. Rejoue dans la
+       page : CA 16, DEX +7, CON +3, Perception +8, identiques a la fiche. */
+    const v = J.slice(J.indexOf('function renderViewSheet('), J.indexOf('function renderViewSheet(') + 9000);
+    ok(/const val = bonusSauvegarde\(c, sv\.key, sv\.attr\);/.test(v), 'vue : les sauvegardes de la fiche');
+    ok(/const val = bonusCompetence\(c, sk\.key, sk\.attr\);/.test(v), 'vue : les competences de la fiche');
+    ok(/\(parseInt\(c\.ca\)\|\|10\) \+ modsDe\(c, 'ac'\)/.test(v), 'vue : la CA avec ses modificateurs');
+    ok(/fmtMod\(bonusInitiative\(c\)\)/.test(v), 'vue : l initiative de la fiche');
+    ok(/const profBonus = pb\(niveau\);/.test(v), 'vue : le bonus de maitrise de pb()');
+    ok(/c\.characterName \|\| slot\?\.name \|\| 'Unnamed'/.test(v), 'vue : le nom du personnage, pas « Unnamed »');
+    ok(!/every 30s/.test(v), 'vue : plus de rafraichissement de 30 s annonce a tort');
+    /* Les calculs partages lisent le personnage qu on leur passe, pas celui
+       qui est connecte : sinon la vue afficherait les mods du visiteur. */
+    const bc = J.slice(J.indexOf('function bonusCompetence(c, key, attr)'), J.indexOf('function bonusInitiative(c)'));
+    ok(!/abilScore\(|getMod\(/.test(bc), 'les calculs partages ne lisent pas le personnage connecte');
+  }
+
+
+  /* ── Import D&D Beyond : caracteristiques et PV max ── */
+  {
+    /* Le parseur ne lisait que stats / bonusStats / overrideStats, et prenait
+       baseHitPoints — qui n inclut pas la CON — comme PV max. Le calcul suit
+       maintenant ddb-importer (Foundry VTT). Ces echantillons sont construits
+       d apres sa structure : aucun vrai export n etait disponible. */
+    const bonus = (sub, id, value, extra) => Object.assign({ type:'bonus', subType: sub, entityId: id, value, restriction:'' }, extra || {});
+
+    /* 1. Guerrier 5, regles 2024 : l historique accorde l augmentation (don
+          « Ability Scores ») ; l espece, ancienne, ne doit donc pas compter. */
+    const guerrier = {
+      stats: [{id:1,value:15},{id:2,value:12},{id:3,value:14},{id:4,value:8},{id:5,value:10},{id:6,value:13}],
+      bonusStats: [], overrideStats: [],
+      background: { definition: { grantedFeats: [{ name: 'Ability Scores', featIds: [7001] }] } },
+      modifiers: {
+        feat: [bonus('strength-score', 1, 2), bonus('constitution-score', 3, 1), bonus('strength-score', 1, 1)],
+        race: [bonus('charisma-score', 6, 2)],
+        class: [
+          bonus('strength-score', 1, 4, { componentId: 120 }),   // capacite du niveau 20 : pas atteinte
+        ],
+        background: [], item: [{ type:'bonus', subType:'speed', value: 30 }],
+      },
+      classes: [{ definition: { name: 'Fighter' }, level: 5,
+                  classFeatures: [{ definition: { id: 101, requiredLevel: 1 } }, { definition: { id: 120, requiredLevel: 20 } }] }],
+      inventory: [
+        /* Bottes de vitesse au fond du sac : ne doivent rien donner. */
+        { equipped: false, isAttuned: false, definition: { canEquip: true, canAttune: true,
+          grantedModifiers: [{ type:'bonus', subType:'speed', value: 30 }] } },
+      ],
+      baseHitPoints: 34, bonusHitPoints: 0, overrideHitPoints: null, removedHitPoints: 6,
+    };
+    const mG = ddbModsActifs(guerrier);
+    const cG = ddbCaracteristiques(guerrier, mG);
+    eq(cG.for, 18, 'D&D Beyond : FOR 15 + 2 (historique) + 1 (ASI) = 18');
+    eq(cG.con, 15, 'D&D Beyond : CON 14 + 1 = 15');
+    eq(cG.cha, 13, 'D&D Beyond : l espece ancienne ne double pas l augmentation de l historique 2024');
+    eq(mG.classe.length, 0, 'D&D Beyond : capacite de classe pas encore atteinte ecartee');
+    eq(mG.objets.length, 0, 'D&D Beyond : objet ni equipe ni harmonise sans effet');
+    const pG = ddbPointsDeVie(guerrier, cG, 5, mG);
+    eq(pG.pvMax, 44, 'D&D Beyond : PV max 34 + CON +2 x 5 = 44');
+    eq(pG.pvActuel, 38, 'D&D Beyond : PV actuels = max - degats subis');
+
+    /* 2. Personnage 2014 : l espece donne l augmentation ; don Robuste (+2 par
+          niveau total) ; Resilience draconique (+1 par niveau d Ensorceleur). */
+    const multi = {
+      stats: [{id:1,value:8},{id:2,value:15},{id:3,value:14},{id:4,value:10},{id:5,value:10},{id:6,value:16}],
+      bonusStats: [], overrideStats: [],
+      background: { definition: { grantedFeats: [] } },
+      modifiers: {
+        race: [bonus('dexterity-score', 2, 2)],
+        feat: [{ type:'bonus', subType:'hit-points-per-level', value: 2, restriction:'', componentId: 999 }],
+        class: [{ type:'bonus', subType:'hit-points-per-level', value: 1, restriction:'', componentId: 301 }],
+        background: [],
+      },
+      classes: [
+        { definition: { name: 'Rogue' }, level: 2, classFeatures: [{ definition: { id: 201, requiredLevel: 1 } }] },
+        { definition: { name: 'Sorcerer' }, level: 3, classFeatures: [{ definition: { id: 301, requiredLevel: 3 } }] },
+      ],
+      inventory: [], baseHitPoints: 28, removedHitPoints: 0,
+    };
+    const mM = ddbModsActifs(multi);
+    const cM = ddbCaracteristiques(multi, mM);
+    eq(cM.dex, 17, 'D&D Beyond 2014 : l espece donne bien +2 DEX');
+    const pM = ddbPointsDeVie(multi, cM, 5, mM);
+    /* 28 + CON +2 x 5 + Robuste 2 x 5 + Resilience 1 x 3 (niveau d Ensorceleur) */
+    eq(pM.pvMax, 51, 'D&D Beyond : Robuste par niveau total, Resilience par niveau de sa classe');
+
+    /* 3. Valeurs forcees sur D&D Beyond. */
+    const force = { ...guerrier, overrideStats: [{ id: 1, value: 12 }], overrideHitPoints: 50, bonusHitPoints: 5, removedHitPoints: 10 };
+    const mF = ddbModsActifs(force);
+    const cF = ddbCaracteristiques(force, mF);
+    eq(cF.for, 12, 'D&D Beyond : une valeur forcee remplace tout');
+    const pF = ddbPointsDeVie(force, cF, 5, mF);
+    eq(pF.pvMax, 55, 'D&D Beyond : PV forces + modificateur de PV max');
+    eq(pF.pvActuel, 45, 'D&D Beyond : PV actuels sur le max force');
+
+    /* 4. Gantelets de puissance d ogre : FOR 19 s ils sont harmonises ET portes. */
+    const gantelets = (harmonise) => ({
+      stats: [{id:1,value:12},{id:2,value:10},{id:3,value:10},{id:4,value:10},{id:5,value:10},{id:6,value:10}],
+      modifiers: {}, classes: [], baseHitPoints: 10,
+      inventory: [{ equipped: true, isAttuned: harmonise, definition: { canEquip: true, canAttune: true,
+        grantedModifiers: [{ type:'set', subType:'strength-score', value: 19, restriction:'' }] } }],
+    });
+    eq(ddbCaracteristiques(gantelets(true),  ddbModsActifs(gantelets(true))).for, 19, 'D&D Beyond : gantelets harmonises, FOR 19');
+    eq(ddbCaracteristiques(gantelets(false), ddbModsActifs(gantelets(false))).for, 12, 'D&D Beyond : gantelets non harmonises, sans effet');
+
+    /* 5. Plafond de 20, et bonusStats qui passe outre. */
+    const haut = {
+      stats: [{id:1,value:19},{id:2,value:10},{id:3,value:10},{id:4,value:10},{id:5,value:10},{id:6,value:10}],
+      bonusStats: [{ id: 2, value: 1 }],
+      modifiers: { feat: [bonus('strength-score', 1, 2), bonus('dexterity-score', 2, 10)] },
+      classes: [], inventory: [], baseHitPoints: 10,
+    };
+    const cH = ddbCaracteristiques(haut, ddbModsActifs(haut));
+    eq(cH.for, 20, 'D&D Beyond : 19 + 2 plafonne a 20');
+    eq(cH.dex, 21, 'D&D Beyond : bonusStats s ajoute au-dela du plafond (20 + 1)');
+
+    /* 6. Fiche quasi vide : rien ne plante, tout vaut 10. */
+    const vide = ddbCaracteristiques({}, ddbModsActifs({}));
+    eq(vide, { for:10, dex:10, con:10, int:10, sag:10, cha:10 }, 'D&D Beyond : fiche vide, caracteristiques a 10');
+    eq(ddbPointsDeVie({}, vide, 1, ddbModsActifs({})).pvMax, 1, 'D&D Beyond : fiche vide, au moins 1 PV');
+
+    /* Le parseur s en sert, et ne lit plus modifiers.item. */
+    const p = J.slice(J.indexOf('function parseDnDBeyondJSON(raw)'), J.indexOf('function parseDnDBeyondJSON(raw)') + 8000);
+    ok(/const stats = ddbCaracteristiques\(d, modsDDB\);/.test(p), 'parseur : les caracteristiques passent par ddbCaracteristiques');
+    ok(/ddbPointsDeVie\(d, stats, level, modsDDB\)/.test(p), 'parseur : les PV passent par ddbPointsDeVie');
+    ok(!/d\.modifiers\?\.item/.test(p), 'parseur : plus de modifiers.item, qui donne tous les objets');
+    ok(/pvMax: maxHP, pvActuel: currentHP/.test(p), 'parseur : la fiche recoit les PV calcules');
+  }
+
+
+  /* ── Dons d'origine a l'ASI, Robuste et Resilience draconique ── */
+  {
+    /* « You gain the Ability Score Improvement feat or another feat of your
+       choice for which you qualify. » Les dons d origine n ont pas de
+       prerequis : ils sont valides a chaque ASI. Le site les refusait. */
+    eq(ficheDon('Lucky').origine, true, 'ficheDon : Lucky est un don d origine');
+    eq(ficheDon('Lucky').asi, false, 'ficheDon : un don d origine ne donne pas de +1');
+    ok(/Luck Points/.test(ficheDon('Lucky').desc), 'ficheDon : la description d un don d origine');
+    eq(ficheDon('Resilient').origine, false, 'ficheDon : Resilient est un don general');
+    eq(ficheDon('Resilient').asi, true, 'ficheDon : un don general garde son +1');
+    eq(ficheDon('Boon of Truesight').epic, true, 'ficheDon : un don epique garde son drapeau');
+    eq(ficheDon('Don imaginaire'), null, 'ficheDon : un nom inconnu');
+    eq(ficheDon(''), null, 'ficheDon : un nom vide');
+
+    /* Robuste : +2 par niveau ; Resilience draconique : +1 par niveau
+       d Ensorceleur, une fois acquise. Regles relues sur dnd2024.wikidot.com. */
+    const DRACO = Object.keys(SUBCLASS_DATA.Sorcerer).find(k => /Draconic/.test(k));
+    const dur = { customFeatures: [{ name: 'Tough' }] };
+    eq(pvBonusParNiveau(dur, 'Fighter', ''), 2, 'Robuste : +2 par niveau');
+    eq(pvBonusParNiveau({}, 'Sorcerer', DRACO), 1, 'Resilience draconique : +1 par niveau d Ensorceleur');
+    eq(pvBonusParNiveau({}, 'Rogue', DRACO), 0, 'Resilience draconique : rien quand on monte une autre classe');
+    eq(pvBonusParNiveau(dur, 'Sorcerer', DRACO), 3, 'les deux se cumulent');
+    eq(pvBonusParNiveau({}, 'Fighter', ''), 0, 'sans rien : 0');
+    eq(pvBonusAcquisition('Tough', 4), 8, 'Robuste pris au niveau 4 : deux fois le niveau');
+    eq(pvBonusAcquisition('Tough', 1), 2, 'Robuste a la creation : +2');
+    eq(pvBonusAcquisition(DRACO, 3, 3), 3, 'Resilience draconique acquise au niveau 3 : +3');
+    eq(pvBonusAcquisition(DRACO, 7, 5), 5, 'acquise en retard au niveau 5 : rattrape a +5');
+    eq(pvBonusAcquisition('Lucky', 4), 0, 'un autre don : rien');
+
+    /* La montee : Robuste deja la, les PV proposes l incluent. */
+    const guerrier = (extra) => hero(Object.assign({ classes:[{classe:'Fighter',sousClasse:'Champion',niveau:3,customSousClasse:''}], con:14 }, extra || {}));
+    const sansDon = planLevelUp(guerrier(), 'Fighter');
+    const avecDon = planLevelUp(guerrier({ customFeatures:[{ name:'Tough' }] }), 'Fighter');
+    eq(avecDon.featHp, 2, 'montee : Robuste compte dans le plan');
+    eq(avecDon.avgHp - sansDon.avgHp, 2, 'montee : la moyenne proposee inclut les +2');
+    eq(avecDon.maxHp - sansDon.maxHp, 2, 'montee : le maximum aussi');
+
+    /* Prendre Robuste a l ASI du niveau 4 : +8 d un coup, en plus du niveau. */
+    const g = guerrier();
+    const avant = g.pvMax;
+    const r = applyLevelUp(g, planLevelUp(g, 'Fighter'), { hp: 7, asiMode:'feat', feat:'Tough' });
+    ok(r.ok, 'Robuste a l ASI : accepte');
+    eq(g.pvMax - avant, 7 + 8, 'Robuste a l ASI : PV du niveau + deux fois le niveau 4');
+    /* (r.log || []) : un refus ne renvoie pas de journal, et le test planterait. */
+    ok((r.log || []).some(x => /\+8 PV max \(Tough\)/.test(x)), 'Robuste : le journal le dit');
+
+    /* Un don d origine sans effet chiffre : accepte, inscrit, sans +1. */
+    const l = guerrier();
+    const forAvant = l.for;
+    const rl = applyLevelUp(l, planLevelUp(l, 'Fighter'), { hp: 7, asiMode:'feat', feat:'Lucky', featAbil:'for' });
+    ok(rl.ok, 'Lucky a l ASI : accepte (« Unknown feat » avant)');
+    ok((l.customFeatures || []).some(f => f.name === 'Lucky' && /Luck Points/.test(f.desc)), 'Lucky : inscrit avec sa description');
+    eq(l.for, forAvant, 'Lucky : pas de +1, meme si une caracteristique est transmise');
+
+    /* La Resilience draconique acquise au niveau 3 : +3 d un coup. */
+    const e = hero({ classes:[{classe:'Sorcerer',sousClasse:'',niveau:2,customSousClasse:''}], con:12 });
+    const eAvant = e.pvMax;
+    const re = applyLevelUp(e, planLevelUp(e, 'Sorcerer', { subclass: DRACO }), { hp: 5, subclass: DRACO });
+    ok(re.ok, 'Ensorceleur 3 draconique : accepte');
+    eq(e.pvMax - eAvant, 5 + 3, 'Resilience draconique : +3 a l acquisition');
+    /* Puis +1 a chaque niveau d Ensorceleur. */
+    eq(planLevelUp(e, 'Sorcerer').featHp, 1, 'Ensorceleur 4 draconique : +1 dans le plan');
+
+    /* Les selecteurs proposent les dons d origine. */
+    ok(/<optgroup label="Origin feats">/.test(J.slice(J.indexOf("$('lvlup-feat').innerHTML"), J.indexOf("$('lvlup-feat').innerHTML") + 600)),
+       'montee : un groupe « Origin feats »');
+    ok(/Origin feats/.test(J.slice(J.indexOf('const featOpts ='), J.indexOf('const featOpts =') + 500)), 'onglet plan : aussi');
+    /* Robuste comme don d origine a la creation : +2. */
+    ok(/const pv = pvBonusAcquisition\(bg\.feat, 1\);/.test(J), 'creation : Robuste d historique donne +2');
+  }
+
+  /* ── Les ordres Protecteur et Gardien accordent leurs maitrises ── */
+  {
+    /* « Protector ... proficiency with Martial weapons and training with Heavy
+       armor. » « Warden ... Martial weapons and training with Medium armor. »
+       Le choix s enregistrait et rien ne suivait. */
+    const clerc = (ordre) => { const c = hero({ classes:[{ classe:'Cleric', sousClasse:'', niveau:1, customSousClasse:'' }] });
+      if (ordre) setFeatureChoice(c, 'Divine Order', 'Cleric', [ordre]); return c; };
+    const druide = (ordre) => { const c = hero({ classes:[{ classe:'Druid', sousClasse:'', niveau:1, customSousClasse:'' }] });
+      if (ordre) setFeatureChoice(c, 'Primal Order', 'Druid', [ordre]); return c; };
+    const hache = { finesse:false, light:false };
+    ok(!isProficientWith(clerc(), 'martial', hache), 'Clerc sans ordre : pas d arme de guerre');
+    ok(!isProficientWith(clerc('Thaumaturge'), 'martial', hache), 'Clerc Thaumaturge : pas d arme de guerre');
+    ok(isProficientWith(clerc('Protector'), 'martial', hache), 'Clerc Protecteur : armes de guerre');
+    ok(isProficientWith(druide('Warden'), 'martial', hache), 'Druide Gardien : armes de guerre');
+    ok(!isProficientWith(druide('Magician'), 'martial', hache), 'Druide Magicien : pas d arme de guerre');
+    eq(maitrisesDeChoix(clerc('Protector'), 'Cleric')?.armure, 'Heavy armor', 'Protecteur : armure lourde');
+    eq(maitrisesDeChoix(druide('Warden'), 'Druid')?.armure, 'Medium armor', 'Gardien : armure intermediaire');
+    eq(maitrisesDeChoix(clerc('Protector'), 'Druid'), null, 'l ordre d une classe ne vaut pas pour une autre');
+    eq(maitrisesDeChoix(hero({}), 'Wizard'), null, 'une classe sans ordre : rien');
+    /* Multiclasse : le Protecteur vaut quelle que soit la classe principale. */
+    const mc = hero({ classes:[{ classe:'Wizard', sousClasse:'', niveau:3, customSousClasse:'' }, { classe:'Cleric', sousClasse:'', niveau:1, customSousClasse:'' }] });
+    setFeatureChoice(mc, 'Divine Order', 'Cleric', ['Protector']);
+    ok(isProficientWith(mc, 'martial', hache), 'Magicien / Clerc Protecteur : armes de guerre');
+    /* Le panneau de classe et le createur l affichent. */
+    ok(/const ordre = maitrisesDeChoix\(c, classe\);/.test(J), 'panneau de classe : lit l ordre');
+    ok(/const ordre = maitrisesDeChoix\(c, selClass\.value\);/.test(J), 'createur : lit l ordre');
+  }
+
+  /* ── Sous-classes d Ensorceleur et d Occultiste : contenu 2024 ── */
+  {
+    /* Relu sur dnd2024.wikidot.com. Ces sous-classes portaient leurs noms de
+       2014, et une partie de leur contenu aussi. Une ligne par ecart releve. */
+    const cap = (cl, sc, lvl) => (SUBCLASS_DATA[cl]?.[sc]?.[lvl] || []);
+    const nom = (cl, sc, lvl) => cap(cl, sc, lvl).map(f => f.name);
+    const txt = (cl, sc, lvl, n) => (cap(cl, sc, lvl).find(f => f.name === n) || {}).desc || '';
+    ok(/10 \+ your DEX and CHA/.test(txt('Sorcerer','Draconic Sorcery',3,'Draconic Resilience')), 'Draconic : CA 10 + DEX + CHA (2014 : 13 + DEX)');
+    ok(/increases by 3/.test(txt('Sorcerer','Draconic Sorcery',3,'Draconic Resilience')), 'Draconic : +3 PV au niveau 3');
+    ok(nom('Sorcerer','Draconic Sorcery',6).includes('Elemental Affinity'), 'Draconic : Elemental Affinity au niveau 6');
+    ok(nom('Sorcerer','Draconic Sorcery',18).includes('Dragon Companion'), 'Draconic : Dragon Companion au 18 (2014 : Draconic Presence)');
+    ok(/on a 20/.test(txt('Sorcerer','Wild Magic Sorcery',3,'Wild Magic Surge')), 'Wild Magic : le Surge sur un 20 (2014 : sur un 1)');
+    ok(/spend 1 Sorcery Point/.test(txt('Sorcerer','Wild Magic Sorcery',6,'Bend Luck')), 'Wild Magic : Bend Luck a 1 point (2014 : 2)');
+    ok(nom('Sorcerer','Wild Magic Sorcery',18).includes('Tamed Surge'), 'Wild Magic : Tamed Surge au 18 (2014 : Spell Bombardment)');
+    ok(nom('Sorcerer','Aberrant Sorcery',6).includes('Psychic Defenses'), 'Aberrant : Psychic Defenses au niveau 6');
+    ok(/CHA modifier/.test(txt('Sorcerer','Clockwork Sorcery',3,'Restore Balance')), 'Clockwork : Restore Balance au mod. de CHA');
+    ok(/d8s/.test(txt('Sorcerer','Clockwork Sorcery',6,'Bastion of Law')), 'Clockwork : Bastion of Law en d8');
+    ok(!/Force/.test(txt('Sorcerer','Clockwork Sorcery',18,'Clockwork Cavalcade')), 'Clockwork : Cavalcade n inflige pas de degats');
+    ok(/Reaction when you take damage/.test(txt('Warlock','Archfey Patron',6,'Misty Escape')), 'Archfey : Misty Escape est un Misty Step en reaction');
+    ok(/about to make a Death Saving Throw/.test(txt('Warlock','Celestial Patron',14,'Searing Vengeance')), 'Celestial : Searing Vengeance se declenche sur un jet contre la mort');
+    ok(/CHA modifier \(min 1\) per Long Rest/.test(txt('Warlock','Fiend Patron',6,"Dark One's Own Luck")), 'Fiend : Dark One s Own Luck au mod. de CHA par repos long');
+    ok(nom('Warlock','Great Old One Patron',3).includes('Psychic Spells'), 'Grand Ancien : Psychic Spells au niveau 3');
+    ok(nom('Warlock','Great Old One Patron',6).includes('Clairvoyant Combatant'), 'Grand Ancien : Clairvoyant Combatant au 6 (2014 : Entropic Ward)');
+    ok(nom('Warlock','Great Old One Patron',10).includes('Eldritch Hex'), 'Grand Ancien : Eldritch Hex au niveau 10');
+    ok(/Summon Aberration/.test(txt('Warlock','Great Old One Patron',14,'Create Thrall')), 'Grand Ancien : Create Thrall passe par Summon Aberration');
+    /* Plus aucune capacite propre a 2014 dans ces sous-classes. */
+    const tous = ['Draconic Sorcery','Wild Magic Sorcery','Aberrant Sorcery','Clockwork Sorcery'].flatMap(sc => Object.values(SUBCLASS_DATA.Sorcerer[sc] || {}).flat())
+      .concat(['Archfey Patron','Celestial Patron','Fiend Patron','Great Old One Patron'].flatMap(sc => Object.values(SUBCLASS_DATA.Warlock[sc] || {}).flat()));
+    ['Spell Bombardment','Draconic Presence','Entropic Ward','Elemental Affinity (Resistance)'].forEach(n =>
+      ok(!tous.some(f => f.name === n), n + ' : capacite de 2014, retiree'));
+  }
+
+
+  /* ── CA : Resilience draconique, et recalcul a la montee ── */
+  {
+    /* « While you aren't wearing armor, your base Armor Class equals 10 plus
+       your Dexterity and Charisma modifiers. » La fiche n avait pas ce mode. */
+    const DRACO = Object.keys(SUBCLASS_DATA.Sorcerer).find(k => /Draconic/.test(k));
+    const sorc = (sc, extra) => hero(Object.assign({ classes:[{ classe:'Sorcerer', sousClasse:sc, niveau:3, customSousClasse:'' }], dex:14, cha:16 }, extra || {}));
+
+    /* Le calcul, mode par mode : la sortie de calcAndSetAC n a pas change. */
+    eq(calculerCA(sorc(DRACO, { armorConfig:{ mode:'unarmoredDraco' } })).ca, 15, 'Draconique : 10 + 2 DEX + 3 CHA');
+    eq(calculerCA(sorc(DRACO, { armorConfig:{ mode:'unarmoredDraco', shield:true } })).ca, 17, 'Draconique : le bouclier s ajoute');
+    ok(/CHA/.test(calculerCA(sorc(DRACO, { armorConfig:{ mode:'unarmoredDraco' } })).formula), 'Draconique : la formule nomme le CHA');
+    eq(calculerCA(sorc(DRACO, { armorConfig:{ mode:'unarmored' } })).ca, 12, 'sans armure : 10 + DEX');
+    eq(calculerCA(hero({ dex:14, con:16, armorConfig:{ mode:'unarmoredBarb' } })).ca, 15, 'Barbare : 10 + DEX + CON');
+    eq(calculerCA(hero({ dex:14, sag:16, armorConfig:{ mode:'unarmoredMonk' } })).ca, 15, 'Moine : 10 + DEX + SAG');
+    eq(calculerCA(hero({ dex:18, armorConfig:{ mode:'medium', baseAC:14 } })).ca, 16, 'armure intermediaire : DEX plafonnee a +2');
+    eq(calculerCA(hero({ dex:18, armorConfig:{ mode:'heavy', baseAC:18, otherBonus:1 } })).ca, 19, 'armure lourde : sans DEX, bonus compris');
+    eq(calculerCA({}).ca, 10, 'fiche vide : 10');
+
+    /* Retrait d armure : on rend la Resilience. */
+    eq(defaultArmorConfig(sorc(DRACO)).mode, 'unarmoredDraco', 'retrait d armure : Ensorceleur draconique');
+    eq(defaultArmorConfig(sorc('Wild Magic Sorcery')).mode, 'unarmored', 'retrait d armure : autre Ensorceleur');
+
+    /* Pose du mode : seulement depuis « sans armure ». */
+    const nu = sorc(DRACO, { armorConfig:{ mode:'unarmored', shield:false, otherBonus:0 } });
+    eq(poserCADraconique(nu), true, 'pose : depuis sans armure');
+    eq(nu.armorConfig.mode, 'unarmoredDraco', 'pose : le mode');
+    eq(nu.ca, 15, 'pose : c.ca suit');
+    const mage = sorc(DRACO, { armorConfig:{ mode:'mageArmor' }, ca:15 });
+    eq(poserCADraconique(mage), false, 'pose : l Armure du mage reste');
+    eq(mage.armorConfig.mode, 'mageArmor', 'pose : mode inchange');
+    eq(poserCADraconique(sorc(DRACO, { armorConfig:{ mode:'light', baseAC:11 } })), false, 'pose : une armure portee reste');
+
+    /* Migration d une fiche 2014 : le renommage pose le mode, une fois. */
+    const vieux = hero({ classes:[{ classe:'Sorcerer', sousClasse:'Draconic Bloodline', niveau:5, customSousClasse:'' }], dex:14, cha:18, ca:12 });
+    eq(migrerNomsSousClasse(vieux), true, 'migration draconique : signalee');
+    eq(vieux.classes[0].sousClasse, DRACO, 'migration draconique : nouveau nom');
+    eq((vieux.armorConfig || {}).mode, 'unarmoredDraco', 'migration draconique : CA 10 + DEX + CHA');
+    eq(vieux.ca, 16, 'migration draconique : c.ca recalculee');
+    (vieux.armorConfig = vieux.armorConfig || {}).mode = 'unarmored';
+    eq(migrerNomsSousClasse(vieux), false, 'migration draconique : un choix du joueur n est pas repris');
+    eq(vieux.armorConfig.mode, 'unarmored', 'migration draconique : le mode choisi reste');
+    const vieuxMage = hero({ classes:[{ classe:'Sorcerer', sousClasse:'Draconic Bloodline', niveau:5, customSousClasse:'' }], armorConfig:{ mode:'mageArmor' } });
+    migrerNomsSousClasse(vieuxMage);
+    eq(vieuxMage.armorConfig.mode, 'mageArmor', 'migration draconique : l Armure du mage reste');
+
+    /* Montee au niveau 3 draconique : le mode est pose et c.ca suit. */
+    const e = hero({ classes:[{ classe:'Sorcerer', sousClasse:'', niveau:2, customSousClasse:'' }], dex:14, cha:16, ca:12,
+                     armorConfig:{ mode:'unarmored', baseAC:10, armorName:'', shield:false, otherBonus:0 } });
+    const re = applyLevelUp(e, planLevelUp(e, 'Sorcerer', { subclass: DRACO }), { hp: 5, subclass: DRACO });
+    ok(re.ok, 'Ensorceleur 3 draconique : accepte');
+    eq(e.armorConfig.mode, 'unarmoredDraco', 'montee draconique : mode pose');
+    eq(e.ca, 15, 'montee draconique : CA 10 + DEX + CHA');
+    ok((re.log || []).some(x => /10 \+ DEX \+ CHA/.test(x)), 'montee draconique : le journal le dit');
+
+    /* Un +2 DEX a l ASI : la CA suit tout de suite (elle attendait l onglet Inventaire). */
+    const g = hero({ classes:[{ classe:'Fighter', sousClasse:'Champion', niveau:3, customSousClasse:'' }], dex:14, ca:13,
+                     armorConfig:{ mode:'light', baseAC:11, armorName:'Leather', shield:false, otherBonus:0 } });
+    const rg = applyLevelUp(g, planLevelUp(g, 'Fighter'), { hp: 7, asiMode:'abil', asiA:'dex', asiB:'' });
+    ok(rg.ok, 'ASI DEX : accepte');
+    eq(g.dex, 16, 'ASI DEX : +2');
+    eq(g.ca, 14, 'ASI DEX : la CA suit (11 + 3)');
+    /* Une CA « Custom » ne bouge pas. */
+    const k = hero({ classes:[{ classe:'Fighter', sousClasse:'Champion', niveau:3, customSousClasse:'' }], dex:14, ca:21,
+                     armorConfig:{ mode:'custom', baseAC:21, armorName:'', shield:false, otherBonus:0 } });
+    applyLevelUp(k, planLevelUp(k, 'Fighter'), { hp: 7, asiMode:'abil', asiA:'dex', asiB:'' });
+    eq(k.ca, 21, 'CA Custom : inchangee');
+    /* Sans configuration d armure (vieille fiche, CA saisie a la main) : on n y touche pas. */
+    const m = hero({ classes:[{ classe:'Fighter', sousClasse:'Champion', niveau:3, customSousClasse:'' }], dex:14, ca:18 });
+    applyLevelUp(m, planLevelUp(m, 'Fighter'), { hp: 7, asiMode:'abil', asiA:'dex', asiB:'' });
+    eq(m.ca, 18, 'CA saisie a la main : inchangee');
+
+    /* La carte d armure propose le mode. */
+    ok(/v:'unarmoredDraco'/.test(J), 'carte d armure : le mode Draconic Resilience');
+  }
+
+
+  /* ── Createur : +1/+1/+1 d historique, Expertise du Roublard au niveau 1 ── */
+  {
+    /* « Increase one of these scores by 2 and a different one by 1, or
+       increase all three by 1. » Le createur n offrait que +2/+1. */
+    eq(bonusHistorique(['for','dex','con'], '21', 'for', 'dex'), { for:2, dex:1 }, 'historique : +2 / +1');
+    eq(bonusHistorique(['for','dex','con'], '111'), { for:1, dex:1, con:1 }, 'historique : +1 / +1 / +1 sur les trois');
+    eq(bonusHistorique(['for','dex','con'], '111', 'for', 'for'), { for:1, dex:1, con:1 }, 'historique : en +1/+1/+1 les selecteurs +2/+1 ne comptent pas');
+    eq(bonusHistorique(['for','dex','con'], '21', 'for', 'for'), null, 'historique : +2 et +1 sur la meme, refuse');
+    eq(bonusHistorique(undefined, '21', undefined, undefined), null, 'historique : rien de choisi');
+    /* Chaque historique a bien trois caracteristiques a proposer. */
+    Object.entries(BACKGROUND_DATA).forEach(([n, d]) =>
+      eq(Object.keys(bonusHistorique(d.abilities, '111') || {}).length, 3, n + ' : trois caracteristiques pour le +1/+1/+1'));
+
+    /* Le createur s en sert pour l apercu, la validation et l application. */
+    const wiz = J.slice(J.indexOf('function renderBgBonus()'), J.indexOf('function renderBgBonus()') + 4000);
+    ok(/data-bgb="mode"/.test(wiz) && /value="111"/.test(wiz), 'createur : le choix +1/+1/+1');
+    ok(/bonusHistorique\(d\.abilities, sm\.value/.test(wiz), 'createur : l apercu passe par bonusHistorique');
+    ok(/wizBgOk = !!bonus/.test(wiz), 'createur : la validation aussi');
+    ok(!/wiz-bgb-warn'\)\.textContent\s*=\s*\n?\s*\S*\s*\?\s*ic\(/.test(wiz) && /wiz-bgb-warn'\)\.innerHTML/.test(wiz), 'createur : l avertissement rend l icone (innerHTML)');
+    ok(/const bgBonus = bonusHistorique\(BACKGROUND_DATA\[selBg\.value\]\?\.abilities/.test(J), 'creation : le bonus applique passe par bonusHistorique');
+
+    /* Expertise : sur des competences maitrisees, pas plus que le nombre accorde. */
+    eq(expertiseAt('Rogue', 1), 2, 'Roublard 1 : deux Expertises');
+    eq(expertiseAt('Fighter', 1), 0, 'Guerrier 1 : aucune');
+    const r = { disc:1, acro:1, athl:0, perc:1 };
+    eq(appliquerExpertise(r, ['disc','athl','acro'], 2), ['disc'], 'Expertise : une competence non maitrisee est ignoree, et le quota compte les choix');
+    eq(r.disc, 2, 'Expertise : posee');
+    eq(r.athl, 0, 'Expertise : pas sur une competence non maitrisee');
+    eq(r.acro, 1, 'Expertise : au-dela du nombre accorde, rien');
+    eq(appliquerExpertise({ disc:1 }, null, 2), [], 'Expertise : aucun choix');
+
+    /* Au createur : proposee a l etape 4, appliquee apres les competences de
+       classe ET d historique (sinon une competence d historique serait refusee). */
+    ok(/<div class="wiz-skills" id="wiz-expertise"><\/div>/.test(J), 'createur : le bloc Expertise a l etape 4');
+    ok(/if \(step === 4\) \{[^}]*renderWizExpertise\(\)/.test(J), 'createur : rendu a l arrivee a l etape 4');
+    const iBg = J.indexOf("(bg.skillKeys || []).forEach(k => { c[k] = 1; });");
+    const iExp = J.indexOf('appliquerExpertise(c, [...wizExp], expertiseAt(selClass.value, 1))');
+    ok(iBg > 0 && iExp > iBg, 'creation : l Expertise s applique apres les competences d historique');
+    /* Le monteur de niveau passe par la meme fonction. */
+    ok(/appliquerExpertise\(c, ch\.expertise, plan\.expertiseCount\)/.test(J), 'montee : meme fonction');
+  }
+
+
+  /* ── Ressources de classe : tables 2024 ── */
+  {
+    /* Colonnes relues sur dnd2024.wikidot.com, niveau 1 a 20. */
+    const col = (classe, nom, c) => Array.from({ length: 20 }, (_, i) =>
+      ((CLASS_RESOURCES[classe](i + 1, c) || []).find(r => r.name === nom) || {}).max ?? '-');
+    const T = s => s.split(' ').map(x => x === '-' ? '-' : +x);
+    eq(col('Barbarian', 'Rages'), T('2 2 3 3 3 4 4 4 4 4 4 5 5 5 5 5 6 6 6 6'), 'Rages (2024 : 3 au niveau 5, 6 au 20)');
+    eq(col('Cleric', 'Channel Divinity'), T('- 2 2 2 2 3 3 3 3 3 3 3 3 3 3 3 3 4 4 4'), 'Conduit divin du Clerc');
+    eq(col('Paladin', 'Channel Divinity'), T('- - 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 3 3'), 'Conduit divin du Paladin');
+    eq(col('Druid', 'Wild Shape'), T('- 2 2 2 2 3 3 3 3 3 3 3 3 3 3 3 4 4 4 4'), 'Forme sauvage');
+    eq(col('Fighter', 'Second Wind'), T('2 2 2 3 3 3 3 3 3 4 4 4 4 4 4 4 4 4 4 4'), 'Second souffle');
+    eq(col('Fighter', 'Action Surge'), T('- 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2'), 'Fougue');
+    eq(col('Fighter', 'Indomitable'), T('- - - - - - - - 1 1 1 1 2 2 2 2 3 3 3 3'), 'Inflexible');
+    eq(col('Monk', 'Focus Points'), T('- 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20'), 'points de Focus (des le niveau 2)');
+    eq(col('Ranger', "Hunter's Mark"), T('2 2 2 2 3 3 3 3 4 4 4 4 5 5 5 5 6 6 6 6'), 'Marque du chasseur gratuite');
+    eq(col('Sorcerer', 'Sorcery Points'), T('- 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20'), 'points de sorcellerie (des le niveau 2)');
+    eq(col('Warlock', 'Spell Slots'), T('1 2 2 2 2 2 2 2 2 2 3 3 3 3 3 3 4 4 4 4'), 'emplacements de pacte');
+    eq(col('Warlock', 'Mystic Arcanum'), T('- - - - - - - - - - 1 1 2 2 3 3 4 4 4 4'), 'Arcanum mystique (plus d entree a 0)');
+    eq(col('Sorcerer', 'Innate Sorcery')[0], 2, 'Innate Sorcery : deux fois par repos long');
+    eq(col('Rogue', 'Stroke of Luck')[19], 1, 'Roublard 20 : Stroke of Luck');
+    /* Ce qui n est pas une ressource. */
+    const tousNoms = Object.keys(CLASS_RESOURCES).flatMap(k => Array.from({ length: 20 }, (_, i) => CLASS_RESOURCES[k](i + 1, {})).flat().map(r => r.name));
+    ['Uncanny Dodge', 'Evasion', 'Font of Inspiration', 'Beast Spells', 'Discipline Points'].forEach(n =>
+      ok(!tousNoms.includes(n), n + ' : pas une ressource en 2024'));
+    /* Recharges. */
+    const rech = (k, n, l) => (CLASS_RESOURCES[k](l, {}).find(r => r.name === n) || {}).reset;
+    ['Barbarian:Rages:5', 'Cleric:Channel Divinity:5', 'Paladin:Channel Divinity:5', 'Druid:Wild Shape:5', 'Fighter:Second Wind:5'].forEach(x => {
+      const [k, n, l] = x.split(':');
+      eq(rech(k, n, +l), 'short1', n + ' (' + k + ') : une utilisation au repos court');
+    });
+    eq(rech('Monk', 'Focus Points', 5), 'short', 'Focus : tout au repos court');
+    eq(rech('Fighter', 'Action Surge', 5), 'short', 'Fougue : repos court');
+    /* Inspiration bardique : mod. de CHA (min 1), repos court des le niveau 5. */
+    eq(CLASS_RESOURCES.Bard(4, { cha: 16 })[0].max, 3, 'Inspiration bardique : mod. de CHA');
+    eq(CLASS_RESOURCES.Bard(4, { cha: 8 })[0].max, 1, 'Inspiration bardique : minimum 1');
+    eq(CLASS_RESOURCES.Bard(4)[0].max, null, 'Inspiration bardique : sans fiche, a saisir');
+    eq(CLASS_RESOURCES.Bard(4, {})[0].reset, 'long', 'Inspiration bardique : repos long avant le niveau 5');
+    eq(CLASS_RESOURCES.Bard(5, {})[0].reset, 'short', 'Inspiration bardique : Font of Inspiration au niveau 5');
+
+    /* Repos court : 'short' en entier, 'short1' une seule, 'long' rien. */
+    const res = [{ name:'Rages', used:2, max:3, reset:'short1' }, { name:'Action Surge', used:1, max:1, reset:'short' },
+                 { name:'Indomitable', used:1, max:1, reset:'long' }, { name:'Wild Shape', used:0, max:2, reset:'short1' }];
+    eq(reposCourtRessources(res), ['Rages (+1)', 'Action Surge'], 'repos court : ce qui revient');
+    eq(res.map(r => r.used), [1, 0, 1, 0], 'repos court : une rage, toute la Fougue, rien d Inflexible');
+    ok(/reposCourtRessources\(c2\.resources\)/.test(J), 'fiche : le repos court applique la regle');
+    ok(/reposCourtRessources\(\(c\.resources \|\| \[\]\)\.map\(r => \(\{ \.\.\.r \}\)\)\)/.test(J), 'fiche : l apercu travaille sur une copie');
+    const D = staged('dm.html');
+    ok(/else if \(recharge === 'short1' && \(parseInt\(r\.used\) \|\| 0\) > 0\) \{ r\.used = \(parseInt\(r\.used\) \|\| 0\) - 1; n\+\+; \}/.test(D), 'MJ : le repos court de groupe rend une utilisation');
+
+    /* Migration d une fiche de 2014 : une fois. */
+    const bar = { classes:[{ classe:'Barbarian', niveau:5 }], resources:[{ name:'Rages', used:4, max:4, reset:'long' }, { name:'Torche', used:1, max:3, reset:'long' }] };
+    eq(migrerRessources2024(bar), true, 'migration : signalee');
+    eq(bar.resources[0], { name:'Rages', used:3, max:3, reset:'short1' }, 'migration : Rages 4 → 3 au niveau 5, utilisation plafonnee');
+    eq(bar.resources[1], { name:'Torche', used:1, max:3, reset:'long' }, 'migration : une ressource maison reste');
+    bar.resources[0].max = 5;
+    eq(migrerRessources2024(bar), false, 'migration : une seule fois');
+    eq(bar.resources[0].max, 5, 'migration : un maximum retouche ensuite reste');
+
+    const moine = { classes:[{ classe:'Monk', niveau:5 }], resources:[{ name:'Discipline Points', used:2, max:5, reset:'short' }] };
+    migrerRessources2024(moine);
+    eq(moine.resources.map(r => r.name), ['Focus Points', 'Uncanny Metabolism'], 'migration : Discipline → Focus, Uncanny Metabolism ajoute');
+    eq(moine.resources[0].used, 2, 'migration : l utilisation suit le renommage');
+    const moine1 = { classes:[{ classe:'Monk', niveau:1 }], resources:[{ name:'Discipline Points', used:0, max:1, reset:'short' }] };
+    migrerRessources2024(moine1);
+    eq(moine1.resources, [], 'migration : pas de Focus au niveau 1');
+    const roub = { classes:[{ classe:'Rogue', niveau:7 }], resources:[{ name:'Uncanny Dodge', used:0, max:1, reset:'short' }, { name:'Evasion', used:0, max:1, reset:'short' }] };
+    migrerRessources2024(roub);
+    eq(roub.resources, [], 'migration : Esquive instinctive et Derobade retirees');
+    const barde = { classes:[{ classe:'Bard', niveau:6 }], cha:18, resources:[{ name:'Bardic Inspiration', used:1, max:null, reset:'short' }, { name:'Font of Inspiration', used:0, max:1, reset:'short' }] };
+    migrerRessources2024(barde);
+    eq(barde.resources, [{ name:'Bardic Inspiration', used:1, max:4, reset:'short' }], 'migration : Inspiration au mod. de CHA, Font retiree');
+    const ens = { classes:[{ classe:'Sorcerer', niveau:5 }], resources:[{ name:'Sorcery Points', used:1, max:5, reset:'long' }] };
+    migrerRessources2024(ens);
+    eq(ens.resources.map(r => r.name + ':' + r.max), ['Sorcery Points:5', 'Innate Sorcery:2', 'Sorcerous Restoration:1'], 'migration : les ressources 2024 manquantes ajoutees');
+    const clerc1 = { classes:[{ classe:'Cleric', niveau:1 }], resources:[{ name:'Channel Divinity', used:0, max:1, reset:'short' }] };
+    migrerRessources2024(clerc1);
+    eq(clerc1.resources, [], 'migration : pas de Conduit divin au niveau 1');
+    /* Multiclasse : la ressource commune reste si une classe la donne encore. */
+    const multi = { classes:[{ classe:'Cleric', niveau:1 }, { classe:'Paladin', niveau:3 }], resources:[{ name:'Channel Divinity', used:0, max:1, reset:'short' }] };
+    migrerRessources2024(multi);
+    eq(multi.resources.map(r => r.name + ':' + r.max), ['Channel Divinity:2', 'Lay on Hands:15'], 'migration multiclasse : Conduit du Paladin 3');
+    eq(migrerRessources2024({ classes:[{ classe:'Fighter', niveau:3 }] }), false, 'migration : sans ressources, rien');
+    eq(migrerRessources2024(null), false, 'migration : fiche absente');
+
+    /* Les fiches neuves portent le drapeau : la migration ne les touchera pas. */
+    ok(/c\.resources = CLASS_RESOURCES\[selClass\.value\]\(1, c\)[^\n]*\n\s*c\.ressources2024 = true;/.test(J), 'creation : drapeau pose');
+    /* L editeur admin lit used : il remettait tout a zero en enregistrant. */
+    ok(/ae-resource-cur" data-ri="\$\{i\}" value="\$\{r\.used\|\|0\}"/.test(J), 'admin : affiche r.used');
+    ok(!/r\.current\|\|0/.test(J), 'admin : plus de r.current');
+  }
+
+
+  /* ── Inspiration heroique (2024) : une relance apres le jet, un seul etat ── */
+  {
+    /* « Reroll any die immediately after rolling it, and you must use the new roll. » */
+    eq(relancerD20('normal', [4], 17), [17], 'relance : le d20 est remplace');
+    eq(relancerD20('adv', [3, 15], 9), [9, 15], 'relance en avantage : le plus bas');
+    eq(relancerD20('adv', [15, 3], 9), [15, 9], 'relance en avantage : le plus bas, a droite');
+    eq(relancerD20('dis', [3, 15], 18), [18, 15], 'relance en desavantage : le plus bas (celui qui compte)');
+    eq(relancerD20('dis', [7, 7], 2), [2, 7], 'relance : egalite, un seul de');
+    eq(relancerD20('normal', undefined, 5), [5], 'relance : sans des connus');
+
+    /* Un seul etat : c.inspiration. L ancien etat du compte passe au personnage. */
+    const c1 = {}, pd1 = { inspiration: true };
+    eq(migrerInspiration(pd1, c1), true, 'migration : signalee');
+    eq(c1.inspiration, true, 'migration : le personnage actif la recoit');
+    eq('inspiration' in pd1, false, 'migration : plus d etat sur le compte');
+    const c2 = { inspiration: true }, pd2 = { inspiration: false };
+    migrerInspiration(pd2, c2);
+    eq(c2.inspiration, true, 'migration : un false du compte n efface pas celle du personnage');
+    eq(migrerInspiration({}, {}), false, 'migration : rien a faire');
+    eq(migrerInspiration(null, {}), false, 'migration : pas de compte');
+
+    const Jc = J.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+    eq((Jc.match(/playerData\??\.inspiration/g) || []).length, 0, 'plus aucune lecture de playerData.inspiration');
+    ok(/const active = !!C\(\)\.inspiration;/.test(Jc), 'le bouton lit le personnage');
+    ok(/C\(\)\.inspiration = !C\(\)\.inspiration;/.test(Jc), 'le bouton ecrit le personnage');
+    ok(!/mode = 'adv';\s*\n\s*label = '✦ '/.test(Jc), 'plus d avantage automatique');
+    ok(/id="dice-reroll-btn"/.test(J), 'le toast propose la relance');
+    ok(/relancerD20\(d\.mode, d\.des, /.test(Jc), 'la relance passe par relancerD20');
+    ok(/window\._dernierD20 = null;\s*\n\s*window\.majRelance\(\);/.test(Jc), 'un jet de degats ne propose pas de relance');
+    ok(/#dice-toast\.visible #dice-share-btn, #dice-toast\.visible #dice-reroll-btn \{ pointer-events: auto; \}/.test(J), 'les boutons du toast recoivent les clics');
+    ok(/if \(migrerInspiration\(playerData, C\(\)\)\) triggerSave\(\);/.test(Jc), 'la migration passe au rendu');
+    /* Le toast de des est en position: fixed ; un style en ligne « relative »
+       le jetait au bas du document, hors de l ecran. */
+    ok(!/t\.style\.position\s*=/.test(Jc), 'toast de des : pas de position en ligne');
+    /* Equipement d historique (PHB 2024) : A ou 50 po. */
+    eq(equipementHistorique('Acolyte', 'B', ''), { gold:50, items:[] }, 'historique B : 50 po');
+    eq(equipementHistorique('Acolyte', 'A', '').gold, 8, 'Acolyte A : 8 po');
+    eq(equipementHistorique('Artisan', 'A', "Smith's Tools").items[0].name, "Smith's Tools", 'same as above : l outil choisi');
+    eq(equipementHistorique('Criminal', 'A', '').items[0], { qty:2, name:'Dagger' }, 'Criminal : 2 dagues');
+    eq(equipementHistorique('Acolyte', '', ''), null, 'historique : passer');
+    eq(fusionnerObjets([{ name:'Dagger', qty:1 }], [{ name:'Dagger', qty:2 }, { name:'Rope', qty:1 }]).map(i => i.name + ':' + i.qty), ['Dagger:3', 'Rope:1'], 'fusion des objets');
+    ok(/const bgEq = equipementHistorique\(selBg\.value, selBgEquip\.value, outilHistorique\(\)\);/.test(Jc), 'creation : equipement d historique applique');
+    ok(/#dice-toast \{\s*\n\s*position: fixed;/.test(J), 'toast de des : position fixe');
+    /* Le jet de PV du plan : le de de vie, pas un d20 a cote. */
+    ok(!/showDiceRoll\(\x60Lv \$\{i\+1\} HP/.test(Jc), 'plan de niveau : plus de d20 fantome');
+    ok(/showDamageRoll\(\x60Lv \$\{i\+1\} HP/.test(Jc), 'plan de niveau : le de de vie affiche');
+  }
+
+
+  /* ── Sous-classes parues en 2026 : World of Warcraft, Ravenloft, Drops ── */
+  {
+    const cap = (cl, sc, lvl) => (SUBCLASS_DATA[cl]?.[sc]?.[lvl] || []);
+    const nom = (cl, sc, lvl) => cap(cl, sc, lvl).map(f => f.name);
+    const txt = (cl, sc, lvl, n) => (cap(cl, sc, lvl).find(f => f.name === n) || {}).desc || '';
+    /* Les huit nouvelles existent dans la bonne classe, avec leur livre. */
+    const NEUVES = [['Barbarian','Path of the Elements'],['Cleric','Discipline Domain'],['Cleric','Shadow Domain'],['Monk','Warrior of Mystic Brews'],
+      ['Paladin','Oath of the Ebon Blade'],['Paladin','Oath of the Holy'],['Ranger','Demon Hunter'],['Fighter','Sorrow Knight']];
+    NEUVES.forEach(([cl, sc]) => {
+      ok(!!SUBCLASS_DATA[cl]?.[sc], cl + '/' + sc + ' : presente');
+      ok(!estUA(sc), sc + ' : pas du playtest');
+      ok(livreSource(sc) !== '', sc + ' : le livre est indique');
+      ok(titreUA(sc).includes(livreSource(sc)), sc + ' : le livre passe dans l infobulle');
+    });
+    /* Les huit sorties du playtest, relues sur le texte publie. */
+    ['Path of the Spiritual Guardian','Swashbuckler','College of Spirits','Grave Domain','Hollow Warden','Phantom','Shadow Sorcery','Undead Patron','Reanimator'].forEach(sc => {
+      ok(!UA_SUBCLASSES[sc], sc + ' : sortie de la table de playtest');
+      ok(/World of Warcraft|Ravenloft/.test(livreSource(sc)), sc + ' : livre indique');
+    });
+    /* Quelques faits du texte publie, un par sous-classe. */
+    ok(nom('Barbarian','Path of the Spiritual Guardian',14).includes("Spirits' Fury"), 'Gardien spirituel : Spirits Fury au 14 (ex Vengeful Spirits)');
+    ok(nom('Rogue','Swashbuckler',13).includes('Dashing Strikes'), 'Swashbuckler : Dashing Strikes au 13 (ex Elegant Maneuver)');
+    ok(/Death Ward/.test(txt('Cleric','Grave Domain',3,'Grave Domain Spells')), 'Grave Domain : Death Ward dans la liste publiee');
+    ok(nom('Ranger','Hollow Warden',15).includes('Ancient Might'), 'Hollow Warden : Ancient Might au 15');
+    ok(nom('Sorcerer','Shadow Sorcery',3).includes('Power of Shadow'), 'Shadow Sorcery : Power of Shadow au 3');
+    ok(nom('Warlock','Undead Patron',6).includes('Grave Touched'), 'Undead Patron : Grave Touched au 6');
+    ok(nom('Artificer','Reanimator',9).includes('Macabre Modifications'), 'Reanimator : Macabre Modifications au 9');
+    ok(/Shadow Word: Pain/.test(txt('Cleric','Shadow Domain',3,'Shadow Spells')), 'Shadow Domain : Shadow Word: Pain');
+    ok(/Elementalism/.test(txt('Barbarian','Path of the Elements',6,'Echo of the Elements')), 'Path of the Elements : Elementalism');
+    ok(nom('Fighter','Sorrow Knight',18).includes('Grieving Mantle'), 'Sorrow Knight : Grieving Mantle au 18');
+
+    /* Remplacements : une capacite de sous-classe peut retirer une capacite de classe. */
+    eq(cap('Paladin','Oath of the Ebon Blade',1)[0].remplace, 'Lay on Hands', 'Death Coil remplace Lay on Hands');
+    eq(cap('Paladin','Oath of the Ebon Blade',2)[0].remplace, "Paladin's Smite", 'Runic Smite remplace Paladin s Smite');
+    ok(cap('Paladin','Oath of the Ebon Blade',11).some(f => f.remplace === 'Radiant Strikes'), 'Runic Strikes remplace Radiant Strikes');
+    ok(cap('Paladin','Oath of the Ebon Blade',14).some(f => f.remplace === 'Restoring Touch'), 'Improved Death Coil remplace Restoring Touch');
+    ok(cap('Ranger','Demon Hunter',18).some(f => f.remplace === 'Feral Senses'), 'Improved Spectral Sight remplace Feral Senses');
+    /* Chaque remplace vise une capacite que la classe a vraiment. */
+    Object.entries(SUBCLASS_DATA).forEach(([cl, subs]) => Object.entries(subs).forEach(([sc, byLv]) =>
+      Object.values(byLv).flat().forEach(f => { if (f.remplace) ok(classeOffreCapacite(cl, f.remplace), cl + '/' + sc + ' : remplace « ' + f.remplace + ' » qui n existe pas'); })));
+    eq([...capacitesRemplacees('Paladin', 'Oath of the Ebon Blade', 3)].sort(), ['Lay on Hands', "Paladin's Smite"], 'remplacees au niveau 3');
+    eq([...capacitesRemplacees('Paladin', 'Oath of the Ebon Blade', 20)].length, 4, 'remplacees au niveau 20');
+    eq([...capacitesRemplacees('Paladin', 'Oath of Devotion', 20)].length, 0, 'un serment ordinaire ne remplace rien');
+    eq([...capacitesRemplacees('Paladin', '', 20)].length, 0, 'sans sous-classe : rien');
+    ok(/const baseFeats = \(clData\.features\[lvl\] \|\| \[\]\)\.filter\(f => !remplacees\.has\(f\.name\)\)/.test(J), 'fiche : la capacite remplacee disparait');
+    /* Montee de niveau : Lay on Hands n est pas annonce a un Paladin de la Lame d ebene. */
+    const pal = hero({ classes:[{ classe:'Paladin', sousClasse:'Oath of the Ebon Blade', niveau:10, customSousClasse:'' }], cha:16 });
+    const p11 = planLevelUp(pal, 'Paladin');
+    ok(p11.ok && !p11.newFeatures.some(f => f.name === 'Radiant Strikes'), 'montee 11 : Radiant Strikes retire');
+    ok(p11.ok && p11.newFeatures.some(f => f.name === 'Runic Strikes'), 'montee 11 : Runic Strikes annonce');
+    const dev = hero({ classes:[{ classe:'Paladin', sousClasse:'Oath of Devotion', niveau:10, customSousClasse:'' }] });
+    ok(planLevelUp(dev, 'Paladin').newFeatures.some(f => f.name === 'Radiant Strikes'), 'montee 11 Devotion : Radiant Strikes garde');
+
+    /* Choix de sous-classe au niveau 1, seulement celles qui y ont une capacite. */
+    eq(sousClassesDuNiveau1('Paladin'), ['Oath of the Ebon Blade'], 'niveau 1 : la Lame d ebene');
+    eq(sousClassesDuNiveau1('Ranger'), ['Demon Hunter'], 'niveau 1 : le Demon Hunter');
+    eq(sousClassesDuNiveau1('Fighter'), [], 'niveau 1 : aucun Guerrier');
+    eq(sousClassesDuNiveau1('Classe inconnue'), [], 'niveau 1 : classe inconnue');
+    ok(/sousClasse: selSub1\.value \|\| ''/.test(J), 'creation : la sous-classe du niveau 1 est posee');
+
+    /* Death Coil prend la place de Lay on Hands dans les ressources. */
+    const ebene = { classes:[{ classe:'Paladin', sousClasse:'Oath of the Ebon Blade', niveau:3 }], cha:16 };
+    eq(CLASS_RESOURCES.Paladin(3, ebene)[0], { name:'Death Coil', used:0, max:4, reset:'long', note:'d8s = 1 + CHA mod (min 1)' }, 'ressources : Death Coil 1 + CHA');
+    eq(CLASS_RESOURCES.Paladin(3, { classes:[{ classe:'Paladin', sousClasse:'Oath of the Ebon Blade', niveau:3 }], cha:6 })[0].max, 1, 'ressources : Death Coil minimum 1');
+    eq(CLASS_RESOURCES.Paladin(3, { classes:[{ classe:'Paladin', sousClasse:'Oath of Devotion', niveau:3 }] })[0].name, 'Lay on Hands', 'ressources : Lay on Hands sinon');
+    eq(CLASS_RESOURCES.Paladin(3)[0].name, 'Lay on Hands', 'ressources : sans fiche, Lay on Hands');
+    const c1 = { classes:[{ classe:'Paladin', sousClasse:'Oath of the Ebon Blade', niveau:3 }], cha:16, resources:[{ name:'Lay on Hands', used:5, max:15, reset:'long' }] };
+    eq(syncRessourceLameEbene(c1), true, 'sync : bascule');
+    eq(c1.resources[0].name, 'Death Coil', 'sync : Death Coil en place');
+    c1.classes[0].sousClasse = 'Oath of Devotion';
+    eq(syncRessourceLameEbene(c1), true, 'sync : retour');
+    eq(c1.resources[0], { name:'Lay on Hands', used:0, max:15, reset:'long' }, 'sync : Lay on Hands rendu');
+    eq(syncRessourceLameEbene({ classes:[{ classe:'Fighter', niveau:3 }], resources:[{ name:'Second Wind', used:0, max:2, reset:'short1' }] }), false, 'sync : pas de Paladin');
+    eq(syncRessourceLameEbene({ classes:[{ classe:'Paladin', niveau:3 }] }), false, 'sync : sans ressources');
+    /* La montee de niveau ne garde pas les deux reserves. */
+    const e2 = hero({ classes:[{ classe:'Paladin', sousClasse:'', niveau:2, customSousClasse:'' }], cha:16, con:14, resources:[{ name:'Lay on Hands', used:0, max:10, reset:'long' }] });
+    const r2 = applyLevelUp(e2, planLevelUp(e2, 'Paladin', { subclass:'Oath of the Ebon Blade' }), { hp:7, subclass:'Oath of the Ebon Blade' });
+    ok(r2.ok, 'Paladin 3 Lame d ebene : accepte');
+    eq(e2.resources.filter(r => /Lay on Hands|Death Coil/.test(r.name)).map(r => r.name), ['Death Coil'], 'montee : une seule reserve, Death Coil');
+    ok(/syncRessourceLameEbene\(c\)\) renderResources\(\);/.test(J), 'fiche : changer de sous-classe bascule la ressource');
   }
 
   /* ── PV saisis a la main a la montee de niveau ── */
@@ -1850,6 +2670,15 @@ function ok(cond, label) {
   eq(purseValue({ pp:1, gp:1, ep:1, sp:1, cp:1 }), 11.61, 'toutes les denominations');
   eq(purseValue({}), 0, 'bourse vide');
   eq(itemsValue([{ name:'A', cost:15, qty:2 }]), { total:30, sansPrix:0 }, 'prix multiplie par la quantite');
+  /* Une quantite 0 (objet epuise) vaut 0, comme dans le poids : la valeur la
+     comptait pour 1, et la fiche l affichait « 1 ». */
+  eq(itemsValue([{ name:'A', cost:15, qty:0 }]), { total:0, sansPrix:0 }, 'quantite 0 : ne vaut rien');
+  eq(itemsValue([{ name:'A', cost:15 }]), { total:15, sansPrix:0 }, 'quantite absente : 1 par defaut');
+  eq(itemsValue([{ name:'A', cost:15, qty:'' }]), { total:15, sansPrix:0 }, 'quantite vide : 1 par defaut');
+  /* Recherche litterale : une regex mal echappee ($ non protege) laissait
+     passer le defaut au controle negatif. */
+  eq(J.split('value="${item.qty||1}"').length - 1, 0, 'plus aucun champ de quantite n affiche 1 pour 0');
+  eq(J.split('value="${item.qty ?? 1}"').length - 1, 2, 'les deux champs de quantite affichent 0 tel quel');
   eq(itemsValue([{ name:'A', cost:15 }, { name:'B' }]), { total:15, sansPrix:1 },
      'objet sans prix signale, pas compte a zero');
   eq(itemsValue([{ name:'A', cost:2.5 }]), { total:2.5, sansPrix:0 }, 'quantite absente = 1');
@@ -2195,10 +3024,17 @@ function ok(cond, label) {
   // La premiere capacite d'une sous-classe tombe au niveau 3 (PHB 2024).
   // Un reliquat 2014 (niveau 2 pour Druide/Magicien) laisserait le joueur sans
   // aucune capacite entre le niveau 3 et le niveau 6.
+  /* Deux sous-classes de D&D: World of Warcraft (2026) derogent de source :
+     leurs premieres capacites remplacent ou ajustent des capacites de classe
+     des les niveaux 1 et 2 (Death Coil remplace Lay on Hands ; Spellcasting,
+     Deft Explorer et Fighting Style du Demon Hunter). Exception nommee, pas
+     une regle : toute autre sous-classe doit toujours commencer au niveau 3. */
+  const HORS_NORME = { 'Oath of the Ebon Blade': [1, 2, 3, 5, 7, 11, 14, 15, 20], 'Demon Hunter': [1, 2, 3, 7, 11, 15, 18] };
   Object.entries(SUBCLASS_DATA).forEach(([cls, subs]) => {
     Object.entries(subs).forEach(([sub, byLevel]) => {
       const levels = Object.keys(byLevel).map(Number).filter(n => !isNaN(n)).sort((a, b) => a - b);
       if (!levels.length) return;
+      if (HORS_NORME[sub]) { eq(levels, HORS_NORME[sub], `${cls}/${sub} : paliers de la source`); return; }
       eq(levels[0], 3, `${cls}/${sub} : premiere capacite au niveau ${levels[0]} au lieu de 3`);
     });
   });
@@ -2259,7 +3095,7 @@ function ok(cond, label) {
       if (!permis) return;
       Object.entries(subs).forEach(([sub, byLevel]) =>
         Object.keys(byLevel).map(Number).forEach(lvl =>
-          ok(permis.includes(lvl), `${cls}/${sub} : palier ${lvl} hors de ${permis.join('/')}`)));
+          ok(permis.includes(lvl) || (HORS_NORME[sub] || []).includes(lvl), `${cls}/${sub} : palier ${lvl} hors de ${permis.join('/')}`)));
     });
 
     /* ── Barde ──
@@ -2354,7 +3190,9 @@ function ok(cond, label) {
        'Freedom Domain : Unencumbered Grace au niveau 3');
     ok(SUBCLASS_DATA.Wizard.Imaskarcanist[14].some(f => f.name === 'Doom of Unlight'),
        'Imaskarcanist : Doom of Unlight au niveau 14');
-    eq(Object.keys(UA_SUBCLASSES).length, 34, '34 sous-classes encore en playtest');
+    /* 34 moins les huit parues en livre en 2026 (Ravenloft : The Horrors
+       Within ; D&D: World of Warcraft pour le Gardien spirituel). */
+    eq(Object.keys(UA_SUBCLASSES).length, 26, '26 sous-classes encore en playtest');
 
     /* ── Magicien ──
        Les huit « School of … » venaient de 2014. Quatre ont une version 2024
@@ -2414,7 +3252,20 @@ function ok(cond, label) {
         ok(!parNomTout.has(ancien), `renommage : « ${ancien} » existe encore comme sous-classe`);
         ok(parNomTout.has(neuf), `renommage : « ${neuf} » n'existe pas`);
       });
-      eq(Object.keys(SUBCLASS_RENOMMEES).length, 8, 'huit écoles de magie renommées');
+      /* Huit écoles de magie, puis onze sous-classes restées sous leur nom de
+         2014 : Ensorceleur, Occultiste, et trois noms approchants. */
+      eq(Object.keys(SUBCLASS_RENOMMEES).length, 19, 'dix-neuf sous-classes renommées');
+      [['Draconic Bloodline','Draconic Sorcery'],['Wild Magic','Wild Magic Sorcery'],
+       ['Aberrant Mind','Aberrant Sorcery'],['Clockwork Soul','Clockwork Sorcery'],
+       ['The Archfey','Archfey Patron'],['The Celestial','Celestial Patron'],
+       ['The Fiend','Fiend Patron'],['The Great Old One','Great Old One Patron'],
+       ['Circle of Stars','Circle of the Stars'],['Warrior of the Four Elements','Warrior of the Elements'],
+       ['Oath of Ancients','Oath of the Ancients']]
+        .forEach(([a, b]) => eq(SUBCLASS_RENOMMEES[a], b, 'renommage 2024 : ' + a + ' → ' + b));
+      /* Une fiche d Occultiste 2014 suit au premier rendu. */
+      const occ = { classes: [{ classe: 'Warlock', sousClasse: 'The Fiend', niveau: 5 }] };
+      eq(migrerNomsSousClasse(occ), true, 'migration : un Occultiste de 2014 change de nom');
+      eq(occ.classes[0].sousClasse, 'Fiend Patron', 'migration : The Fiend → Fiend Patron');
 
       // La migration réécrit les deux endroits où le nom est stocké
       const fiche = {
@@ -2479,6 +3330,174 @@ function ok(cond, label) {
   eq(stealth && stealth.val, 6, 'dmCalc Stealth +6');
   const perc = dc.profSkills.find(x => x.sk.key === 'perception');
   eq(perc && perc.prof, 2, 'dmCalc Perception expertise');
+
+
+  /* ── Le pointeur de tour survit au retrait d'un combattant ── */
+  {
+    eval(extract(D, 'function indiceApresRetrait(avant, apres, currentIdx)'));
+    const A = { id:'A' }, B = { id:'B' }, Cc = { id:'C' }, Dd = { id:'D' };
+    const ordre = [A, B, Cc, Dd];
+    const sans = (x) => ordre.filter(c => c !== x);
+
+    /* Supprimer une creature deja passee : le tour reste a C. L'ancien code
+       gardait l'indice 2, qui designait alors D — C perdait son tour. */
+    eq(indiceApresRetrait(ordre, sans(A), 2), 1, 'retrait de A pendant le tour de C : C garde la main');
+    /* Supprimer une creature qui n'a pas encore joue : le tour ne bouge pas. */
+    eq(indiceApresRetrait(ordre, sans(Dd), 2), 2, 'retrait de D pendant le tour de C : C garde la main');
+    /* Supprimer l'actif lui-meme : la main passe a celui qui le suivait. */
+    eq(indiceApresRetrait(ordre, sans(B), 1), 1, 'retrait de B pendant son tour : la main passe a C');
+    /* L'actif etait le dernier : on se place sur le nouveau dernier, et
+       « Tour suivant » bouclera en comptant le round. */
+    eq(indiceApresRetrait(ordre, sans(Dd), 3), 2, 'retrait du dernier pendant son tour : on reste en fin de round');
+    /* Plus personne. */
+    eq(indiceApresRetrait([A], [], 0), -1, 'liste videe : aucun tour');
+    /* Combat pas encore commence. */
+    eq(indiceApresRetrait(ordre, sans(A), -1), -1, 'avant le premier tour : toujours aucun tour');
+
+    /* Le rechargement retire les joueurs : meme calcul. Aria > B > Bram > C > D,
+       tour de C (indice 3). L'ancien code sauvegardait 3, hors de la liste
+       restante B > C > D. */
+    const Aria = { id:'Aria', type:'player' }, Bram = { id:'Bram', type:'player' };
+    const B2 = { id:'B', type:'monster' }, C2 = { id:'C', type:'monster' }, D2 = { id:'D', type:'monster' };
+    const avant = [Aria, B2, Bram, C2, D2];
+    const restants = avant.filter(c => c.type !== 'player');
+    eq(indiceApresRetrait(avant, restants, 3), 1, 'rechargement pendant le tour de C : C garde la main');
+    /* Pendant le tour d'un joueur : la main passe au monstre qui le suivait. */
+    eq(indiceApresRetrait(avant, restants, 2), 1, 'rechargement pendant le tour de Bram : la main passe a C');
+
+    /* Les deux chemins passent bien par la fonction. */
+    const rm = D.slice(D.indexOf('function removeInitCombatant(key)'), D.indexOf('function removeInitCombatant(key)') + 400);
+    ok(/indiceApresRetrait\(/.test(rm), 'la suppression recalcule le tour');
+    ok(/saveDmState\(\)/.test(rm), 'la suppression est sauvegardee');
+    const sv = D.slice(D.indexOf('function saveDmState'), D.indexOf('function restoreDmState'));
+    ok(/indiceApresRetrait\(initState\.combatants, restants/.test(sv), 'la sauvegarde recalcule le tour');
+    ok(/type !== 'player'/.test(sv), 'les joueurs restent hors de la sauvegarde (choix du 20 mai)');
+
+    /* Corriger une initiative ne deplace pas le tour sur le combattant corrige. */
+    const ch = D.slice(D.indexOf(".init-chip-inp').addEventListener('change'"),
+                       D.indexOf(".init-chip-inp').addEventListener('change'") + 900);
+    ok(/const curId = initState\.combatants\[initState\.currentIdx\]\?\.id;/.test(ch),
+       'saisie d initiative : l actif est memorise avant le tri');
+    ok(!/findIndex\(x => x\.id === ct\.id\)/.test(ch),
+       'saisie d initiative : le tour ne saute plus sur le combattant corrige');
+  }
+
+  /* ── Espace n'avance que d'un tour ── */
+  {
+    /* Deux ecouteurs traitaient Espace : un appui faisait sauter un combattant.
+       Seul celui de l'initiative, qui a ses garde-fous, doit le traiter. */
+    const ecouteurs = D.split("document.addEventListener('keydown'").slice(1)
+      .map(b => b.slice(0, 900))
+      .filter(b => /e\.key === ' '/.test(b) && /init-next/.test(b));
+    eq(ecouteurs.length, 1, 'un seul ecouteur fait avancer le tour sur Espace');
+    ok(/initState\.open/.test(ecouteurs[0] || ''), 'et c est celui qui verifie que l initiative est ouverte');
+  }
+
+  /* ── Les conditions du MJ ── */
+  {
+    /* Un const declare dans un eval direct ne fuit pas : on le fait renvoyer. */
+    const ALL_CONDITIONS = new Function(extract(D, 'const ALL_CONDITIONS') + ' return ALL_CONDITIONS;')();
+    const desc = D.slice(D.indexOf('const CONDITION_DESC'), D.indexOf('};', D.indexOf('const CONDITION_DESC')));
+    const decrites = (desc.match(/'([A-Z][a-zA-Z]+)'\s*:/g) || []).map(x => x.replace(/[':\s]/g, ''));
+    ok(decrites.length >= 15, 'CONDITION_DESC lue : ' + decrites.length + ' conditions');
+    /* Toute condition decrite est dans le menu, sauf Exhaustion qui va par
+       niveaux. Paralyzed et Petrified manquaient : Hold Person et Flesh to
+       Stone ne pouvaient pas se noter sur un monstre. */
+    decrites.filter(c => c !== 'Exhaustion').forEach(c =>
+      ok(ALL_CONDITIONS.includes(c), 'menu des conditions du MJ : ' + c));
+    ALL_CONDITIONS.forEach(c => ok(decrites.includes(c), c + ' : a une description'));
+    eq(new Set(ALL_CONDITIONS).size, ALL_CONDITIONS.length, 'aucune condition en double');
+  }
+
+  /* ── Les ressources de classe sur le panneau joueur ── */
+  {
+    /* Le panneau lisait c.ressources et r.actuel, que la fiche n'ecrit jamais.
+       Le repos long testait r.recharge === 'long', une cle qui n'existe pas. */
+    /* Sur le code seul : les commentaires citent les anciens noms pour
+       expliquer le correctif, ils ne doivent pas faire echouer le test. */
+    const code = D.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
+    ok(!/c\.ressources/.test(code), 'plus aucune lecture de c.ressources');
+    ok(!/\.actuel\b/.test(code), 'plus aucune lecture de r.actuel');
+    ok(!/r\.recharge === 'long'/.test(code), 'le repos long ne teste plus une cle inexistante');
+    ok(/c\.resources\.map\(\(r,ri\)/.test(D), 'le panneau parcourt c.resources');
+    const pips = D.slice(D.indexOf(".res-pip').forEach"), D.indexOf(".res-pip').forEach") + 700);
+    ok(/res\.used = \(pi < cur\) \? pi : pi \+ 1;/.test(pips), 'clic sur une case : meme geste que la fiche');
+  }
+
+
+  /* ── Le tiroir « Fiches » n'ecrase plus la fiche avec des valeurs perimees ── */
+  {
+    /* La sauvegarde relisait TOUS les champs du formulaire. Le temps reel
+       remplace l'objet du joueur sans redessiner le tiroir : corriger un seul
+       champ renvoyait les PV de l'ouverture et effacait les degats subis
+       depuis. Le scenario a ete rejoue dans la page reelle avant correction.
+       Ces assertions portent sur la forme du code, le DOM n'etant pas
+       disponible ici. */
+    const debut = D.indexOf('async function commitDrawerSave()');
+    const cds = D.slice(debut, D.indexOf('\n}\n', debut));
+    ok(debut !== -1, 'commitDrawerSave existe');
+    ok(/\[data-field\]\[data-modifie\]/.test(cds), 'fiche : seuls les champs modifies sont ecrits');
+    ok(/\[data-inv-currency\]\[data-modifie\]/.test(cds), 'bourse : seules les pieces modifiees sont ecrites');
+    ok(/\[data-inv-k\]\[data-modifie\]/.test(cds), 'inventaire : seuls les champs modifies sont ecrits');
+    ok(!/querySelectorAll\('\[data-field\]'\)\.forEach/.test(cds),
+       'fiche : plus de relecture de tous les champs');
+    /* Chaque ligne d'inventaire verifie que l'objet est toujours celui affiche :
+       sinon une suppression faite par le joueur decalait toutes les lignes. */
+    ok(/row\.dataset\.invNom/.test(cds), 'inventaire : la ligne verifie l identite de son objet');
+    ok(/decale = true/.test(cds), 'inventaire : une ligne decalee est refusee, pas ecrite');
+    ok(/delete el\.dataset\.modifie/.test(cds), 'apres ecriture, les champs redeviennent neutres');
+    /* L'avertissement doit rester visible : place avant le statut, il etait
+       recouvert aussitot par « Sauvegarde ✓ ». */
+    const iStatut = cds.indexOf("dot.className = 'save-dot saved'");
+    const iNote = cds.indexOf('showDrawerNote(');
+    ok(iStatut !== -1 && iNote > iStatut, 'l avertissement de ligne refusee vient apres le statut');
+
+    /* Les lignes portent le nom de leur objet. */
+    ok(/<tr data-inv-row="\$\{i\}" data-inv-nom="\$\{esc\(it\.name\|\|''\)\}">/.test(D),
+       'chaque ligne d inventaire porte l identite de son objet');
+    /* Une quantite 0 reste 0. */
+    ok(/data-inv-k="qty" value="\$\{it\.qty \?\? 1\}"/.test(D), 'une quantite 0 s affiche 0, pas 1');
+
+    /* Ajouter / Supprimer agissent sur l'objet relu, et la suppression verifie
+       la ligne. */
+    const del = D.slice(D.indexOf("body.querySelectorAll('[data-del-inv]')"), D.indexOf("body.querySelectorAll('[data-del-inv]')") + 900);
+    ok(/drawerSlotFrais\(\)/.test(del), 'supprimer : sur l objet relu');
+    ok(/dataset\.invNom/.test(del), 'supprimer : la ligne doit toujours designer le meme objet');
+    const add = D.slice(D.indexOf("getElementById('ds-btn-add-item')"), D.indexOf("getElementById('ds-btn-add-item')") + 500);
+    ok(/drawerSlotFrais\(\)/.test(add), 'ajouter : sur l objet relu');
+
+    /* Les trois saisies marquent ce qu'elles touchent. */
+    eq((D.match(/el\.dataset\.modifie = '1'; scheduleDrawerSave\(\);/g) || []).length, 5,
+       'les cinq ecouteurs de saisie marquent le champ touche');
+
+    /* Le temps reel redessine le tiroir ouvert sur ce joueur, sauf saisie en cours. */
+    const rt = D.slice(D.indexOf("event: 'UPDATE'"), D.indexOf("event: 'UPDATE'") + 2600);
+    /* La condition exacte, suivie du redessin : chercher la seule sous-chaine
+       laissait passer un « false && » glisse devant (controle negatif). */
+    ok(/if \(row\.username === _drawerPlayer\s*\n\s*&& document\.getElementById\('player-drawer'\)[\s\S]{0,500}if \(!enCours\) renderDrawerBody\(\);/.test(rt),
+       'temps reel : le tiroir ouvert sur ce joueur suit sa fiche');
+    ok(/querySelector\('\[data-modifie\]'\)/.test(rt), 'temps reel : pas de redessin pendant une saisie du MJ');
+  }
+
+  /* ── Sur telephone, la barre du MJ tient dans l ecran ── */
+  {
+    /* Sur une seule ligne, la moitie des boutons etaient hors de l ecran a
+       400 px (Groupe, Butin, Fiches, ↺, Deco.). Mesure dans la page avant et
+       apres, a 320, 360, 400 et 1024 px. */
+    const i = D.indexOf('@media(max-width:600px){\n  :root{--nav-h:104px;}');
+    ok(i !== -1, 'telephone : un bloc ≤600px reserve deux lignes a la barre');
+    const m = D.slice(i, i + 400);
+    ok(/#dm-nav\{height:auto;[^}]*flex-wrap:wrap/.test(m), 'telephone : la barre passe a la ligne');
+    /* Apres le bloc ≤768px, qui reimposerait sinon son remplissage. */
+    ok(i > D.indexOf('Petite tablette / phablet'), 'le bloc telephone vient apres le bloc ≤768px');
+    const js = D.slice(D.indexOf('(function suivreHauteurNav()'), D.indexOf('(function suivreHauteurNav()') + 1400);
+    ok(/matchMedia\('\(max-width:600px\)'\)/.test(js), '--nav-h ne suit la barre que sur telephone');
+    /* Sur ordinateur la barre est dimensionnee par --nav-h : la faire suivre sa
+       propre hauteur bouclerait. Et a 0 px la barre est cachee avant la
+       connexion : on ne l ecrit pas. */
+    ok(/telephone\.matches && nav\.offsetHeight > 0/.test(js), 'une barre cachee (0 px) n impose pas sa hauteur');
+    ok(/removeProperty\('--nav-h'\)/.test(js), 'hors telephone, la valeur du CSS revient');
+  }
 
   /* -- Actions de groupe : degats avec PV temporaires, soins, sauvegardes -- */
   eval([

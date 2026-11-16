@@ -1347,6 +1347,17 @@ body.sidebar-open #sidebar-backdrop{display:block;}
   .cond-badge{padding:0.28rem 0.6rem;font-size:0.7rem;}
   .resource-pip{width:18px;height:18px;}
 }
+
+/* ─── Telephone (≤600px) : la barre du MJ passe sur plusieurs lignes ───
+   Sur une seule ligne, la moitie des boutons etaient dessines hors de l'ecran
+   (Groupe, Butin, Fiches, ↺, Deco.). Apres le bloc ≤768px, qui sinon
+   reimposerait son remplissage. --nav-h suit la hauteur reelle de la barre,
+   mesuree par suivreHauteurNav ; 104px n'est que la valeur du premier rendu. */
+@media(max-width:600px){
+  :root{--nav-h:104px;}
+  #dm-nav{height:auto;min-height:54px;flex-wrap:wrap;align-content:center;row-gap:0.3rem;padding:0.3rem 0.5rem;}
+  .brand{display:none;}
+}
 </style>
 </head>
 <body>
@@ -1739,9 +1750,12 @@ const SB_KEY  = 'sb_publishable_TDTCogCSFP-Lvus2x3rAAg_60l036tq';
 const SB_HDR  = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' };
 const ADMIN_USER = 'dm';
 const POLL_MS = 10000;
+/* Toutes les conditions decrites dans CONDITION_DESC, sauf Exhaustion qui va
+   par niveaux et ne se resume pas a une etiquette. Paralyzed et Petrified
+   manquaient : Hold Person et Flesh to Stone ne pouvaient pas se noter. */
 const ALL_CONDITIONS = [
   'Blinded','Charmed','Deafened','Frightened','Grappled',
-  'Incapacitated','Invisible','Poisoned','Prone',
+  'Incapacitated','Invisible','Paralyzed','Petrified','Poisoned','Prone',
   'Restrained','Stunned','Unconscious','Concentrating'
 ];
 
@@ -1817,11 +1831,15 @@ function saveDmState() {
       panelNotes: _panelNotes,
       encounters,
       monsterStats,
-      initState: {
-        ...initState,
-        // Ne pas persister les joueurs dans l'initiative — seulement monstres et NPCs
-        combatants: initState.combatants.filter(c => c.type !== 'player')
-      }
+      initState: (() => {
+        /* Ne pas persister les joueurs dans l'initiative — seulement monstres et
+           NPCs (choix du 2026-05-20). Mais l'indice du tour doit suivre la liste
+           raccourcie : sauvegarde tel quel, il ne designait plus personne au
+           retour, et « Tour suivant » faisait rejouer un monstre. */
+        const restants = initState.combatants.filter(c => c.type !== 'player');
+        return { ...initState, combatants: restants,
+                 currentIdx: indiceApresRetrait(initState.combatants, restants, initState.currentIdx) };
+      })()
     }));
   } catch(e) {}
 }
@@ -1993,6 +2011,15 @@ function startRealtime(_retry = 0) {
         updateSidebarPlayerHp(row.username);
         Object.keys(openPanels).filter(k => k.startsWith('p::' + row.username + '::')).forEach(k => updatePanel(k));
         renderInitChips();
+        /* Le tiroir ouvert sur ce joueur suit sa fiche — sauf si le MJ y a une
+           saisie en cours : la redessiner lui arracherait ce qu'il tape. La
+           sauvegarde, elle, n'ecrit de toute facon que ce qu'il a modifie. */
+        if (row.username === _drawerPlayer
+            && document.getElementById('player-drawer')?.classList.contains('open')) {
+          const corps = document.getElementById('drawer-body');
+          const enCours = corps?.querySelector('[data-modifie]') || corps?.contains(document.activeElement);
+          if (!enCours) renderDrawerBody();
+        }
         document.getElementById('poll-indicator').textContent =
           new Date().toLocaleTimeString('fr', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
       })
@@ -2863,10 +2890,13 @@ function renderPlayerPanel(panel, key) {
         </div>` : ''}
       </div>
 
-      ${(Array.isArray(c.ressources) && c.ressources.length) ? `<div class="panel-res">
-        ${c.ressources.map((r,ri) => {
+      ${(Array.isArray(c.resources) && c.resources.length) ? `<div class="panel-res">
+        ${c.resources.map((r,ri) => {
+          /* c.resources et r.used : la forme que la fiche ecrit. Le panneau
+             lisait c.ressources et r.actuel, que rien n'ecrit — le bloc ne
+             s'affichait donc jamais. */
           const max = parseInt(r.max)||0;
-          const act = parseInt(r.actuel)||0;
+          const act = Math.min(parseInt(r.used)||0, max);
           return `<div class="res-row">
             <span class="res-name">${esc(r.name||r.nom||'Resource')}</span>
             <span class="res-pips">${Array.from({length:max},(_,pi)=>`<span class="res-pip${pi<act?' used':''}" data-res-key="${esc(key)}" data-res-i="${ri}" data-res-pip="${pi}"></span>`).join('')}</span>
@@ -2948,13 +2978,15 @@ function attachPlayerPanelEvents(panel, key, username, charId) {
       const data = getPlayerData(username);
       if (!data) return;
       const c = data.characters?.[charId]?.character;
-      if (!c || !Array.isArray(c.ressources)) return;
+      if (!c || !Array.isArray(c.resources)) return;
       const ri  = parseInt(pip.dataset.resI);
       const pi  = parseInt(pip.dataset.resPip);
-      const res = c.ressources[ri];
+      const res = c.resources[ri];
       if (!res) return;
-      const cur = parseInt(res.actuel) || 0;
-      res.actuel = (pi < cur) ? pi : pi + 1;
+      /* Meme geste que sur la fiche : une case deja depensee vide jusqu'a
+         elle, sinon on remplit jusqu'a elle. */
+      const cur = parseInt(res.used) || 0;
+      res.used = (pi < cur) ? pi : pi + 1;
       updatePanel(key);
       schedulePlayerSave(username, data);
     });
@@ -3295,9 +3327,12 @@ function longRest(username, charId, key) {
   const max = c.emplacementsSort || {};
   c.emplacementsUtilises = {};
   for (let i = 1; i <= 9; i++) c.emplacementsUtilises[i] = 0;
-  // Reset resources
+  /* Toutes les ressources reviennent : un repos long rend aussi ce qu'un repos
+     court rendrait, comme le fait le Repos long de « Groupe ». L'ancien test,
+     r.recharge === 'long', portait sur une cle qui n'existe pas (la fiche ecrit
+     reset) : il ne rendait jamais rien. */
   if (Array.isArray(c.resources)) {
-    c.resources.forEach(r => { if (r.recharge === 'long') r.used = 0; });
+    c.resources.forEach(r => { r.used = 0; });
   }
   updatePanel(key);
   renderInitChips();
@@ -3543,7 +3578,11 @@ function restCombatant(key, type) {
     let n = 0;
     if (Array.isArray(c.resources)) {
       c.resources.forEach(r => {
-        if ((r.reset || r.recharge) === 'short') { r.used = 0; n++; }
+        const recharge = r.reset || r.recharge;
+        if (recharge === 'short') { r.used = 0; n++; }
+        /* Regles 2024 : Rage, Conduit divin, Forme sauvage, Second souffle
+           ne rendent qu'une utilisation au repos court. */
+        else if (recharge === 'short1' && (parseInt(r.used) || 0) > 0) { r.used = (parseInt(r.used) || 0) - 1; n++; }
       });
     }
     // Occultiste : les emplacements de pacte reviennent au repos court
@@ -3886,9 +3925,13 @@ function renderInitChips() {
       renderInitChips();
     });
     chip.querySelector('.init-chip-inp').addEventListener('change', e => {
+      /* Le tour reste au combattant qui l'avait, comme dans addNewCombatants :
+         le placer sur celui qu'on corrige faisait commencer le round sur le
+         dernier joueur saisi. */
+      const curId = initState.combatants[initState.currentIdx]?.id;
       ct.initVal = parseInt(e.target.value) || 0;
       initState.combatants.sort((a,b) => b.initVal - a.initVal);
-      initState.currentIdx = initState.combatants.findIndex(x => x.id === ct.id);
+      if (curId) initState.currentIdx = initState.combatants.findIndex(x => x.id === curId);
       renderInitChips();
       saveDmState();
     });
@@ -3913,10 +3956,35 @@ function syncActivePanelHighlight() {
   if (ct) document.getElementById('panel-' + ct.id)?.classList.add('panel-active-turn');
 }
 
+/** Indice du tour apres avoir retire des combattants de l'ordre.
+
+    Le combattant actif garde la main s'il reste. S'il est sorti, la main passe
+    au premier survivant qui le suivait, sans changer de round. S'il ne restait
+    personne apres lui, on se place sur le dernier : « Tour suivant » bouclera
+    alors et comptera le nouveau round lui-meme.
+
+    Sans ce calcul l'indice restait le meme alors que la liste avait raccourci :
+    il designait le combattant d'apres, ou personne. Sert a la suppression d'une
+    creature et a la sauvegarde, qui retire les joueurs. */
+function indiceApresRetrait(avant, apres, currentIdx) {
+  if (!apres.length) return -1;
+  const actif = avant[currentIdx];
+  if (!actif) return currentIdx < 0 ? -1 : Math.min(currentIdx, apres.length - 1);
+  const ici = apres.indexOf(actif);
+  if (ici >= 0) return ici;
+  for (let k = currentIdx + 1; k < avant.length; k++) {
+    const j = apres.indexOf(avant[k]);
+    if (j >= 0) return j;
+  }
+  return apres.length - 1;
+}
+
 function removeInitCombatant(key) {
-  initState.combatants = initState.combatants.filter(c => c.id !== key);
-  if (initState.currentIdx >= initState.combatants.length) initState.currentIdx = Math.max(0, initState.combatants.length - 1);
+  const avant = initState.combatants;
+  initState.combatants = avant.filter(c => c.id !== key);
+  initState.currentIdx = indiceApresRetrait(avant, initState.combatants, initState.currentIdx);
   renderInitChips();
+  saveDmState();
 }
 
 /* ══════════════════════════════════════════
@@ -4290,6 +4358,27 @@ async function appliquerButin() {
   });
 })();
 
+/* ── Sur telephone, --nav-h suit la hauteur reelle de la barre du MJ ──
+   Sous 600 px la barre passe sur deux ou trois lignes selon la largeur, et tous
+   les decalages de la page dependent de --nav-h. Ailleurs on laisse la valeur
+   du CSS : la barre y est dimensionnee PAR --nav-h, et la faire suivre sa
+   propre hauteur bouclerait. */
+(function suivreHauteurNav() {
+  const nav = document.getElementById('dm-nav');
+  if (!nav || !window.ResizeObserver || !window.matchMedia) return;
+  const telephone = window.matchMedia('(max-width:600px)');
+  const suivre = () => {
+    /* 0 px : la barre est cachee avec l'ecran du MJ, avant la connexion. La
+       mesurer a ce moment ecrivait --nav-h: 0px ; on garde alors la valeur du
+       CSS, et la connexion redeclenche la mesure en affichant la barre. */
+    if (telephone.matches && nav.offsetHeight > 0) document.documentElement.style.setProperty('--nav-h', nav.offsetHeight + 'px');
+    else if (!telephone.matches) document.documentElement.style.removeProperty('--nav-h');
+  };
+  new ResizeObserver(suivre).observe(nav);
+  telephone.addEventListener('change', suivre);
+  suivre();
+})();
+
 /* ══════════════════════════════════════════
    Close menus on outside click
 ══════════════════════════════════════════ */
@@ -4305,10 +4394,10 @@ document.addEventListener('click', closeAllMenus);
 document.addEventListener('keydown', e => {
   const tag = e.target.tagName;
   if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-  if (e.key === ' ') {
-    e.preventDefault();
-    document.getElementById('init-next').click();
-  } else if (e.key === '/') {
+  /* Espace n'est PAS traite ici : l'ecouteur de l'initiative s'en charge deja,
+     avec ses garde-fous. Le traiter deux fois faisait sauter un combattant a
+     chaque appui, et avancer le tour quand on activait une puce au clavier. */
+  if (e.key === '/') {
     e.preventDefault();
     document.getElementById('player-search')?.focus();
   } else if (e.key === 'Escape') {
@@ -4687,6 +4776,17 @@ function renderDrawerTabs() {
   renderDrawerBody();
 }
 
+/** Le personnage du tiroir, relu dans allPlayers au moment ou on en a besoin.
+
+    Le temps reel REMPLACE l'objet du joueur a chaque modification : une
+    reference prise a l'ouverture du tiroir peut donc designer une copie
+    perimee, et tout ce qu'on y ecrit est perdu — ou pire, ecrase le neuf. */
+function drawerSlotFrais() {
+  const player = allPlayers.find(p => p.username === _drawerPlayer);
+  const slot = player?.data?.characters?.[_drawerChar];
+  return slot ? { player, slot } : null;
+}
+
 function renderDrawerBody() {
   const body = document.getElementById('drawer-body');
   if (!_drawerPlayer) { body.innerHTML = '<div class="loading">Aucun joueur.</div>'; return; }
@@ -4898,8 +4998,8 @@ function renderDrawerBody() {
           <th style="width:28px;"></th>
         </tr></thead>
         <tbody id="ds-inv-tbody">
-          ${items.map((it,i) => `<tr data-inv-row="${i}">
-            <td><input class="ds-inv-inp center" type="number" min="0" data-inv-i="${i}" data-inv-k="qty" value="${it.qty||1}"></td>
+          ${items.map((it,i) => `<tr data-inv-row="${i}" data-inv-nom="${esc(it.name||'')}">
+            <td><input class="ds-inv-inp center" type="number" min="0" data-inv-i="${i}" data-inv-k="qty" value="${it.qty ?? 1}"></td>
             <td><input class="ds-inv-inp" data-inv-i="${i}" data-inv-k="name" value="${esc(it.name||'')}" placeholder="Nom"></td>
             <td><input class="ds-inv-inp" data-inv-i="${i}" data-inv-k="notes" value="${esc(it.notes||'')}" placeholder="Description"></td>
             <td><select class="ds-inv-select" data-inv-i="${i}" data-inv-k="cat">
@@ -4930,9 +5030,10 @@ function renderDrawerBody() {
         inp.closest('.ds-score-cell')?.querySelector('.ds-score-mod')?.textContent && (inp.closest('.ds-score-cell').querySelector('.ds-score-mod').textContent = modStr(inp.value));
       });
     });
+    /* data-modifie : seuls les champs que le MJ touche seront ecrits. */
     body.querySelectorAll('[data-field]').forEach(el => {
-      el.addEventListener('input',  () => scheduleDrawerSave());
-      el.addEventListener('change', () => scheduleDrawerSave());
+      el.addEventListener('input',  () => { el.dataset.modifie = '1'; scheduleDrawerSave(); });
+      el.addEventListener('change', () => { el.dataset.modifie = '1'; scheduleDrawerSave(); });
     });
   } else if (_drawerSection === 'sorts') {
     // Sorts search filter (read-only tab, no save)
@@ -4950,31 +5051,54 @@ function renderDrawerBody() {
   } else {
     // Currency inputs
     body.querySelectorAll('[data-inv-currency]').forEach(el => {
-      el.addEventListener('input', () => scheduleDrawerSave());
+      el.addEventListener('input', () => { el.dataset.modifie = '1'; scheduleDrawerSave(); });
     });
     // Item inputs
     body.querySelectorAll('[data-inv-i]').forEach(el => {
-      el.addEventListener('input',  () => scheduleDrawerSave());
-      el.addEventListener('change', () => scheduleDrawerSave());
+      el.addEventListener('input',  () => { el.dataset.modifie = '1'; scheduleDrawerSave(); });
+      el.addEventListener('change', () => { el.dataset.modifie = '1'; scheduleDrawerSave(); });
     });
     // Delete item
+    /* Sur l'objet relu, pas sur celui capture a l'affichage : le temps reel a
+       pu le remplacer depuis. Et on verifie que la ligne designe toujours le
+       meme objet — sinon on supprimerait son voisin. */
     body.querySelectorAll('[data-del-inv]').forEach(btn => {
       btn.addEventListener('click', () => {
         const i = parseInt(btn.dataset.delInv);
-        inv.items.splice(i, 1);
-        if (!slot.inventory) slot.inventory = inv;
+        const frais = drawerSlotFrais();
+        if (!frais) return;
+        const items = frais.slot.inventory?.items || [];
+        const attendu = btn.closest('[data-inv-row]')?.dataset.invNom ?? '';
+        if (!items[i] || (items[i].name || '') !== attendu) {
+          showDrawerNote('Inventory changed meanwhile — refreshed, nothing deleted.');
+          renderDrawerBody();
+          return;
+        }
+        items.splice(i, 1);
         scheduleDrawerSave();
         renderDrawerBody();
       });
     });
     // Add item
     document.getElementById('ds-btn-add-item')?.addEventListener('click', () => {
-      if (!slot.inventory) slot.inventory = { items: [], currency: {} };
-      slot.inventory.items.push({ name: '', qty: 1, notes: '', cat: '' });
+      const frais = drawerSlotFrais();
+      if (!frais) return;
+      if (!frais.slot.inventory) frais.slot.inventory = { items: [], currency: {} };
+      if (!Array.isArray(frais.slot.inventory.items)) frais.slot.inventory.items = [];
+      frais.slot.inventory.items.push({ name: '', qty: 1, notes: '', cat: '' });
       scheduleDrawerSave();
       renderDrawerBody();
     });
   }
+}
+
+/* Un mot au MJ dans la barre de sauvegarde du tiroir, quand une ecriture a ete
+   refusee parce que l'inventaire avait change sous ses yeux. */
+function showDrawerNote(msg) {
+  const txt = document.getElementById('drawer-save-text');
+  if (!txt) return;
+  txt.textContent = msg;
+  setTimeout(() => { if (txt.textContent === msg) txt.textContent = '—'; }, 6000);
 }
 
 function scheduleDrawerSave() {
@@ -4998,31 +5122,42 @@ async function commitDrawerSave() {
   if (!slot) return;
   if (!slot.character)  slot.character  = {};
   if (!slot.inventory)  slot.inventory  = { items: [], currency: {} };
+  if (!slot.inventory.currency) slot.inventory.currency = {};
+  if (!Array.isArray(slot.inventory.items)) slot.inventory.items = [];
   const c   = slot.character;
   const inv = slot.inventory;
 
   const body = document.getElementById('drawer-body');
+  /* Seuls les champs que le MJ a touches. Tout relire renvoyait les valeurs de
+     l'ouverture du tiroir — et effacait ce que le joueur avait fait depuis. */
+  const ecrits = [];
+  let decale = false;
 
   if (_drawerSection === 'perso') {
-    body.querySelectorAll('[data-field]').forEach(el => {
+    body.querySelectorAll('[data-field][data-modifie]').forEach(el => {
       const f = el.dataset.field;
       const v = el.value;
       if (f === 'name_slot') slot.name = v;
       else c[f] = el.type === 'number' ? (parseFloat(v) || 0) : v;
+      ecrits.push(el);
     });
   } else {
     // Currency
-    body.querySelectorAll('[data-inv-currency]').forEach(el => {
+    body.querySelectorAll('[data-inv-currency][data-modifie]').forEach(el => {
       inv.currency[el.dataset.invCurrency] = parseInt(el.value) || 0;
+      ecrits.push(el);
     });
-    // Items
-    const rows = body.querySelectorAll('[data-inv-row]');
-    rows.forEach(row => {
+    // Items — par indice, mais seulement si l'objet est toujours celui affiche
+    body.querySelectorAll('[data-inv-row]').forEach(row => {
+      const champs = row.querySelectorAll('[data-inv-k][data-modifie]');
+      if (!champs.length) return;
       const i = parseInt(row.dataset.invRow);
-      if (!inv.items[i]) return;
-      row.querySelectorAll('[data-inv-k]').forEach(el => {
+      const it = inv.items[i];
+      if (!it || (it.name || '') !== (row.dataset.invNom ?? '')) { decale = true; return; }
+      champs.forEach(el => {
         const k = el.dataset.invK;
-        inv.items[i][k] = k === 'qty' ? (parseInt(el.value) || 0) : el.value;
+        it[k] = k === 'qty' ? (parseInt(el.value) || 0) : el.value;
+        ecrits.push(el);
       });
     });
   }
@@ -5033,10 +5168,26 @@ async function commitDrawerSave() {
     await sbUpdateData(_drawerPlayer, pdata);
     const idx = allPlayers.findIndex(p => p.username === _drawerPlayer);
     if (idx !== -1) allPlayers[idx].data = pdata;
+    /* Ecrit : ces champs redeviennent neutres, et chaque ligne reprend le nom
+       de son objet comme identite pour la prochaine fois. */
+    ecrits.forEach(el => delete el.dataset.modifie);
+    body.querySelectorAll('[data-inv-row]').forEach(row => {
+      const it = inv.items[parseInt(row.dataset.invRow)];
+      if (it) row.dataset.invNom = it.name || '';
+    });
     refreshOpenPanels();
     dot.className = 'save-dot saved';
-    txt.textContent = 'Sauvegardé ✓';
-    setTimeout(() => { dot.className = 'save-dot'; txt.textContent = '—'; }, 2500);
+    if (decale) {
+      /* L'avertissement APRES le statut, et sans la remise a zero des 2,5 s :
+         sinon « Sauvegarde ✓ » le recouvrait aussitot et le MJ ne voyait
+         jamais qu'une ligne avait ete refusee. */
+      showDrawerNote('Inventory changed meanwhile — refreshed. Re-enter what was not saved.');
+      renderDrawerBody();
+      setTimeout(() => { dot.className = 'save-dot'; }, 2500);
+    } else {
+      txt.textContent = 'Sauvegardé ✓';
+      setTimeout(() => { dot.className = 'save-dot'; txt.textContent = '—'; }, 2500);
+    }
   } catch(e) {
     dot.className = 'save-dot';
     txt.textContent = 'Erreur de sauvegarde';
