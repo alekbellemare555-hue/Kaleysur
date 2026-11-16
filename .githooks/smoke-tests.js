@@ -140,6 +140,7 @@ function ok(cond, label) {
     extract(J, 'function aResilienceDraconique(c)'),
     extract(J, 'function poserCADraconique(c)'),
     extract(J, 'function calculerCA(c)'),
+    extract(J, 'function poserCAManuelle(c, valeur)'),
     extract(J, 'function equippedArmorMismatch(c, inv)'),
     extract(J, 'const ATTUNE_MAX'),
     extract(J, 'function isAttunable(item)'),
@@ -2085,6 +2086,28 @@ function ok(cond, label) {
     ok(r2.ok, 'Paladin 3 Lame d ebene : accepte');
     eq(e2.resources.filter(r => /Lay on Hands|Death Coil/.test(r.name)).map(r => r.name), ['Death Coil'], 'montee : une seule reserve, Death Coil');
     ok(/syncRessourceLameEbene\(c\)\) renderResources\(\);/.test(J), 'fiche : changer de sous-classe bascule la ressource');
+  }
+
+
+  /* ── CA saisie a la main : la saisie fait foi ── */
+  {
+    const base = () => ({ dex:14, armorConfig:{ mode:'unarmored', baseAC:10, armorName:'', shield:false, otherBonus:0 }, ca:12 });
+    const c = base();
+    eq(poserCAManuelle(c, 17), true, 'CA 17 tapee sur un sans-armure : la configuration bascule');
+    eq(c.armorConfig.mode, 'custom', 'CA manuelle : mode Custom');
+    eq(c.ca, 17, 'CA manuelle : c.ca');
+    eq(calculerCA(c).ca, 17, 'CA manuelle : le calcul la rend telle quelle');
+    c.dex = 18;
+    eq(calculerCA(c).ca, 17, 'CA manuelle : un +DEX ne l ecrase plus');
+    eq(poserCAManuelle(base(), 12), false, 'CA egale au calcul : rien a changer');
+    eq(poserCAManuelle(base(), 'abc'), false, 'CA illisible : rien');
+    eq(poserCAManuelle({ dex:14, ca:15 }, 15), false, 'sans configuration d armure : rien');
+    const b = { dex:14, armorConfig:{ mode:'light', baseAC:11, armorName:'Leather', shield:true, otherBonus:0 }, ca:15 };
+    eq(poserCAManuelle(b, 18), true, 'CA tapee par-dessus une armure legere : bascule');
+    eq(calculerCA(b).ca, 18, 'CA tapee : 18, sans que le bouclier s ajoute encore');
+    ok(/if \(el\.dataset\.f === 'ca'\) poserCAManuelle\(C\(\), C\(\)\.ca\);/.test(J), 'fiche : le champ CA passe par poserCAManuelle');
+    ok(/el\.dataset\.f === 'ca'\) poserCAManuelle\(C\(\), C\(\)\.ca\);\n\s*if \(el\.dataset\.f === 'ca' \|\| el\.dataset\.f === 'vitesse'\) renderHero\(\);/.test(J), 'bandeau : aussi');
+    ok(/\n\s*poserCAManuelle\(c, c\.ca\);/.test(J), 'admin : aussi');
   }
 
   /* ── PV saisis a la main a la montee de niveau ── */

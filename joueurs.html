@@ -9970,6 +9970,21 @@ function calculerCA(c) {
   return { ca: base, formula };
 }
 
+/* CA saisie a la main (champ de la fiche, bandeau, admin) : si elle ne
+   correspond pas a la configuration d'armure, celle-ci passe en « Custom »
+   avec cette valeur. Sinon le prochain calcul ecrasait la saisie par
+   10 + DEX. true si la configuration a change. */
+function poserCAManuelle(c, valeur) {
+  const v = parseInt(valeur);
+  if (!c || isNaN(v)) return false;
+  const cfg = c.armorConfig;
+  if (!cfg || !cfg.mode) return false;
+  if (calculerCA(c).ca === v) return false;
+  c.armorConfig = { ...cfg, mode: 'custom', baseAC: v, shield: false, otherBonus: 0 };
+  c.ca = v;
+  return true;
+}
+
 function calcAndSetAC() {
   if (!playerData) return;
   const { ca: base, formula } = calculerCA(C());
@@ -11352,6 +11367,7 @@ async function adminSaveEdit() {
       const el = document.getElementById('ae-' + f);
       if (el) c[f] = parseFloat(el.value) || 0;
     });
+    poserCAManuelle(c, c.ca);
     ['for','dex','con','int','sag','cha'].forEach(a => {
       const el = document.getElementById('ae-' + a);
       if (el) c[a] = parseInt(el.value) || 10;
@@ -12907,6 +12923,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       if (el.dataset.f === 'characterName') { activeSlot().name = el.value || 'Unnamed'; renderCharCards(); }
       if (el.dataset.f === 'inspiration') renderInspiration();
+      if (el.dataset.f === 'ca') poserCAManuelle(C(), C().ca);
       if (el.dataset.f === 'niveau') { syncClassesToLegacy(C()); updateProfBonus(); renderSaves(); renderSkills(); renderPassiveSkills(); renderClassFeatures(); renderMulticlasses(); }
       if (el.dataset.f === 'classe') { autoFillClass(el.value); updateCharSummary(); renderCharCards(); }
       if (['for','dex','con','int','sag','cha'].includes(el.dataset.f)) { updateModifier(el.dataset.f); debouncedStats(() => { renderSaves(); renderSkills(); renderPassiveSkills(); updateSpellCalcs(); renderAttacks(); if (C().armorConfig?.mode && C().armorConfig.mode !== 'custom') calcAndSetAC(); }); }
@@ -15190,6 +15207,7 @@ document.getElementById('vb-hero')?.addEventListener('input', e => {
   if (el.type === 'number') C()[el.dataset.f] = parseFloat(el.value) || 0;
   else C()[el.dataset.f] = el.value;
   if (el.dataset.f === 'pvMax' || el.dataset.f === 'pvActuel') { updateHpBar(); renderCharCards(); }
+  if (el.dataset.f === 'ca') poserCAManuelle(C(), C().ca);
   if (el.dataset.f === 'ca' || el.dataset.f === 'vitesse') renderHero();
   if (['for','dex','con','int','sag','cha'].includes(el.dataset.f)) { updateModifier(el.dataset.f); debouncedStats(() => { renderSaves(); renderSkills(); renderPassiveSkills(); updateSpellCalcs(); renderAttacks(); if (C().armorConfig?.mode && C().armorConfig.mode !== 'custom') calcAndSetAC(); }); }
   triggerSave();
