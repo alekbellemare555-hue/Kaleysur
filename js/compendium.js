@@ -172,6 +172,16 @@
     return item.source ? ` · ${item.source}` : '';
   }
 
+  /* Qui peut lancer le sort : les classes, avec la sous-classe quand le livre
+     le reserve a l'une d'elles (« Paladin [Death Knight] »), puis les especes
+     qui y ont acces. */
+  function _lanceurs(item) {
+    const classes = (item.classes || []).join(', ');
+    const sous = item.sousClasse ? ` (${item.sousClasse} only)` : '';
+    const especes = (item.especes || []).length ? (classes ? ', ' : '') + item.especes.join(', ') : '';
+    return classes + sous + especes;
+  }
+
   function _render() {
     const query       = (document.getElementById('comp-search')?.value || '').toLowerCase().trim();
     const levelFilter = document.getElementById('comp-filter-level')?.value;
@@ -222,7 +232,7 @@
         const range    = item.range || '';
         const conc     = item.concentration ? ' · Conc.' : '';
         const ritual   = item.ritual ? ' · Ritual' : '';
-        const classes  = (item.classes || []).join(', ');
+        const classes  = _lanceurs(item);
         const mat      = item.material ? ` (${item.material})` : '';
         // Première phrase de la desc pour l'aperçu
         const preview  = (item.desc || '').split('\n')[0];
@@ -296,7 +306,7 @@
       item.school ? `School: ${item.school}` : '',
       item.components ? `Components: ${item.components}${item.material ? ` (${item.material})` : ''}` : '',
       item.duration ? `Duration: ${item.duration}` : '',
-      item.classes?.length ? `Classes: ${item.classes.join(', ')}` : '',
+      (item.classes?.length || item.especes?.length) ? `Classes: ${_lanceurs(item)}` : '',
     ].filter(Boolean).join('\n');
 
     const fullDesc = statBlock ? `${statBlock}\n\n${desc}` : desc;

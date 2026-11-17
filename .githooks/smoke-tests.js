@@ -140,6 +140,7 @@ function ok(cond, label) {
     extract(J, 'function aResilienceDraconique(c)'),
     extract(J, 'function poserCADraconique(c)'),
     extract(J, 'function calculerCA(c)'),
+    extract(J, 'function poserCAManuelle(c, valeur)'),
     extract(J, 'function equippedArmorMismatch(c, inv)'),
     extract(J, 'const ATTUNE_MAX'),
     extract(J, 'function isAttunable(item)'),
@@ -2085,6 +2086,28 @@ function ok(cond, label) {
     ok(r2.ok, 'Paladin 3 Lame d ebene : accepte');
     eq(e2.resources.filter(r => /Lay on Hands|Death Coil/.test(r.name)).map(r => r.name), ['Death Coil'], 'montee : une seule reserve, Death Coil');
     ok(/syncRessourceLameEbene\(c\)\) renderResources\(\);/.test(J), 'fiche : changer de sous-classe bascule la ressource');
+  }
+
+
+  /* ── CA saisie a la main : la saisie fait foi ── */
+  {
+    const base = () => ({ dex:14, armorConfig:{ mode:'unarmored', baseAC:10, armorName:'', shield:false, otherBonus:0 }, ca:12 });
+    const c = base();
+    eq(poserCAManuelle(c, 17), true, 'CA 17 tapee sur un sans-armure : la configuration bascule');
+    eq(c.armorConfig.mode, 'custom', 'CA manuelle : mode Custom');
+    eq(c.ca, 17, 'CA manuelle : c.ca');
+    eq(calculerCA(c).ca, 17, 'CA manuelle : le calcul la rend telle quelle');
+    c.dex = 18;
+    eq(calculerCA(c).ca, 17, 'CA manuelle : un +DEX ne l ecrase plus');
+    eq(poserCAManuelle(base(), 12), false, 'CA egale au calcul : rien a changer');
+    eq(poserCAManuelle(base(), 'abc'), false, 'CA illisible : rien');
+    eq(poserCAManuelle({ dex:14, ca:15 }, 15), false, 'sans configuration d armure : rien');
+    const b = { dex:14, armorConfig:{ mode:'light', baseAC:11, armorName:'Leather', shield:true, otherBonus:0 }, ca:15 };
+    eq(poserCAManuelle(b, 18), true, 'CA tapee par-dessus une armure legere : bascule');
+    eq(calculerCA(b).ca, 18, 'CA tapee : 18, sans que le bouclier s ajoute encore');
+    ok(/if \(el\.dataset\.f === 'ca'\) poserCAManuelle\(C\(\), C\(\)\.ca\);/.test(J), 'fiche : le champ CA passe par poserCAManuelle');
+    ok(/el\.dataset\.f === 'ca'\) poserCAManuelle\(C\(\), C\(\)\.ca\);\n\s*if \(el\.dataset\.f === 'ca' \|\| el\.dataset\.f === 'vitesse'\) renderHero\(\);/.test(J), 'bandeau : aussi');
+    ok(/\n\s*poserCAManuelle\(c, c\.ca\);/.test(J), 'admin : aussi');
   }
 
   /* ── PV saisis a la main a la montee de niveau ── */
@@ -4281,6 +4304,37 @@ function ok(cond, label) {
       const sp = sorts.find(x => x.name === n);
       eq(sp && sp.level, lvl, `${n} : niveau ${lvl}`);
     });
+
+
+    /* ── Sorts parus en 2026 : World of Warcraft et D&D Beyond Drops ──
+       Champs releves sur dnd2024.wikidot.com ; descriptions condensees. */
+    {
+      const wow = sorts.filter(sp => sp.source === 'World of Warcraft');
+      eq(wow.length, 69, 'World of Warcraft : 69 sorts');
+      eq(sorts.filter(sp => /^D&D Beyond Drops/.test(sp.source || '')).length, 7, 'Drops de juin et septembre 2026 : 7 sorts');
+      /* Les sorts que citent les nouvelles sous-classes existent. */
+      ['Rune Strike', 'Death Grip', 'Chains of Ice', 'Throw Glaive', 'Sigil of Flame', 'Metamorphosis',
+       'Shadow Word: Pain', 'Void Eruption', 'Prayer of Mending', 'Guardian of Faith', 'Psychic Horror']
+        .forEach(n => ok(sorts.some(sp => sp.name === n), n + ' : present'));
+      /* Reserves a une sous-classe : la classe reste, la sous-classe existe. */
+      const reserves = sorts.filter(sp => sp.sousClasse);
+      eq(reserves.length, 23, '23 sorts reserves a une sous-classe (13 Demon Hunter, 10 Lame d ebene)');
+      reserves.forEach(sp => ok(['Oath of the Ebon Blade', 'Demon Hunter'].includes(sp.sousClasse), sp.name + ' : sous-classe connue'));
+      eq(sorts.find(sp => sp.name === 'Rune Strike')?.classes, ['Paladin'], 'Rune Strike : Paladin');
+      eq(sorts.find(sp => sp.name === 'Throw Glaive')?.sousClasse, 'Demon Hunter', 'Throw Glaive : Demon Hunter');
+      eq(sorts.filter(sp => sp.especes).map(sp => sp.name).sort(), ['Arcane Pulse', 'Entropic Embrace'], 'sorts ouverts a une espece');
+      /* La concentration se lit des deux cotes. */
+      [...wow, ...sorts.filter(sp => /^D&D Beyond Drops/.test(sp.source || ''))].forEach(sp => {
+        eq(sp.concentration, /^C, /.test(sp.duration), sp.name + ' : concentration coherente avec la duree');
+        ok(!/Concentration/.test(sp.duration), sp.name + ' : duree au format du fichier');
+        ok(!/^\s*$/.test(sp.desc) && sp.desc.length < 1600, sp.name + ' : description condensee');
+      });
+      /* Le fichier reste trie par niveau puis par nom. */
+      ok(sorts.every((sp, i) => !i || sorts[i - 1].level < sp.level || (sorts[i - 1].level === sp.level && sorts[i - 1].name.localeCompare(sp.name) <= 0)), 'spells-2024.json : trie par niveau puis nom');
+      /* Le compendium affiche la reserve de sous-classe et les especes. */
+      const Cp = staged('js/compendium.js');
+      ok(/function _lanceurs\(item\)/.test(Cp) && /const classes  = _lanceurs\(item\);/.test(Cp), 'compendium : sous-classe et especes affichees');
+    }
 
     // Le filtre du compendium doit proposer le Psion, avec la valeur que porte la donnée
     const J = staged('joueurs.html');
