@@ -4305,6 +4305,37 @@ function ok(cond, label) {
       eq(sp && sp.level, lvl, `${n} : niveau ${lvl}`);
     });
 
+
+    /* ── Sorts parus en 2026 : World of Warcraft et D&D Beyond Drops ──
+       Champs releves sur dnd2024.wikidot.com ; descriptions condensees. */
+    {
+      const wow = sorts.filter(sp => sp.source === 'World of Warcraft');
+      eq(wow.length, 69, 'World of Warcraft : 69 sorts');
+      eq(sorts.filter(sp => /^D&D Beyond Drops/.test(sp.source || '')).length, 7, 'Drops de juin et septembre 2026 : 7 sorts');
+      /* Les sorts que citent les nouvelles sous-classes existent. */
+      ['Rune Strike', 'Death Grip', 'Chains of Ice', 'Throw Glaive', 'Sigil of Flame', 'Metamorphosis',
+       'Shadow Word: Pain', 'Void Eruption', 'Prayer of Mending', 'Guardian of Faith', 'Psychic Horror']
+        .forEach(n => ok(sorts.some(sp => sp.name === n), n + ' : present'));
+      /* Reserves a une sous-classe : la classe reste, la sous-classe existe. */
+      const reserves = sorts.filter(sp => sp.sousClasse);
+      eq(reserves.length, 23, '23 sorts reserves a une sous-classe (13 Demon Hunter, 10 Lame d ebene)');
+      reserves.forEach(sp => ok(['Oath of the Ebon Blade', 'Demon Hunter'].includes(sp.sousClasse), sp.name + ' : sous-classe connue'));
+      eq(sorts.find(sp => sp.name === 'Rune Strike')?.classes, ['Paladin'], 'Rune Strike : Paladin');
+      eq(sorts.find(sp => sp.name === 'Throw Glaive')?.sousClasse, 'Demon Hunter', 'Throw Glaive : Demon Hunter');
+      eq(sorts.filter(sp => sp.especes).map(sp => sp.name).sort(), ['Arcane Pulse', 'Entropic Embrace'], 'sorts ouverts a une espece');
+      /* La concentration se lit des deux cotes. */
+      [...wow, ...sorts.filter(sp => /^D&D Beyond Drops/.test(sp.source || ''))].forEach(sp => {
+        eq(sp.concentration, /^C, /.test(sp.duration), sp.name + ' : concentration coherente avec la duree');
+        ok(!/Concentration/.test(sp.duration), sp.name + ' : duree au format du fichier');
+        ok(!/^\s*$/.test(sp.desc) && sp.desc.length < 1600, sp.name + ' : description condensee');
+      });
+      /* Le fichier reste trie par niveau puis par nom. */
+      ok(sorts.every((sp, i) => !i || sorts[i - 1].level < sp.level || (sorts[i - 1].level === sp.level && sorts[i - 1].name.localeCompare(sp.name) <= 0)), 'spells-2024.json : trie par niveau puis nom');
+      /* Le compendium affiche la reserve de sous-classe et les especes. */
+      const Cp = staged('js/compendium.js');
+      ok(/function _lanceurs\(item\)/.test(Cp) && /const classes  = _lanceurs\(item\);/.test(Cp), 'compendium : sous-classe et especes affichees');
+    }
+
     // Le filtre du compendium doit proposer le Psion, avec la valeur que porte la donnée
     const J = staged('joueurs.html');
     const filtre = J.slice(J.indexOf('id="comp-filter-class"'), J.indexOf('id="comp-filter-class"') + 900);
