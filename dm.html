@@ -169,21 +169,8 @@ input,select{font-family:inherit;color-scheme:dark;}
 .char-entry.open .char-dot{background:var(--gold);box-shadow:0 0 6px rgba(232,201,106,0.5);}
 
 /* Monster section */
-#monster-section{
-  border-top:1px solid var(--border-bright);
-  padding:0.65rem 1rem 0.75rem;
-}
-#monster-section-title{
-  font-family:'Cinzel',serif;color:var(--danger);font-size:0.65rem;
-  letter-spacing:0.12em;text-transform:uppercase;
-  display:flex;justify-content:space-between;align-items:center;
-  margin-bottom:0.5rem;padding-bottom:0.35rem;border-bottom:1px solid var(--border);
-}
-#btn-add-monster{
-  background:rgba(217,64,64,0.08);border:1px solid var(--danger-bright);
-  color:var(--danger);font-size:0.65rem;padding:0.15rem 0.5rem;border-radius:4px;transition:all 0.1s;
-}
-#btn-add-monster:hover{background:var(--danger-dim);box-shadow:0 0 8px rgba(217,64,64,0.15);}
+#monster-section{padding:0.65rem 0.9rem 0.75rem;}
+#monster-section-title{color:var(--danger);}
 #monster-list{display:flex;flex-direction:column;gap:0.2rem;margin-bottom:0.4rem;}
 .monster-sidebar-entry{
   display:flex;align-items:center;gap:0.5rem;font-size:0.77rem;color:var(--text-dim);
@@ -225,18 +212,7 @@ input,select{font-family:inherit;color-scheme:dark;}
 
 /* ── Friendly NPC sidebar ── */
 /* ── Bibliothèque de rencontres ── */
-#encounter-section{border-top:1px solid var(--border-bright);padding:0.6rem 0.8rem 0.55rem;}
-#encounter-section-title{
-  font-family:'Cinzel',serif;color:var(--gold);font-size:0.65rem;
-  letter-spacing:0.12em;text-transform:uppercase;
-  display:flex;justify-content:space-between;align-items:center;
-  margin-bottom:0.5rem;padding-bottom:0.35rem;border-bottom:1px solid var(--border);
-}
-#btn-save-encounter{
-  background:var(--gold-glow);border:1px solid var(--border-gold);
-  color:var(--gold);font-size:0.65rem;padding:0.15rem 0.5rem;border-radius:4px;transition:all 0.1s;
-}
-#btn-save-encounter:hover{background:rgba(232,201,106,0.18);box-shadow:0 0 8px rgba(232,201,106,0.15);}
+#encounter-section{padding:0.65rem 0.9rem 0.75rem;}
 #encounter-list{display:flex;flex-direction:column;gap:0.2rem;}
 .enc-entry{
   display:flex;align-items:center;gap:0.4rem;padding:0.3rem 0.45rem;
@@ -251,18 +227,8 @@ input,select{font-family:inherit;color-scheme:dark;}
 .enc-btn.del:hover{color:var(--danger);border-color:var(--danger-bright);background:var(--danger-dim);}
 .enc-empty{font-size:0.7rem;color:var(--text-dim);font-style:italic;}
 
-#friendly-section{border-top:1px solid var(--border-bright);padding:0.6rem 0.8rem 0.55rem;}
-#friendly-section-title{
-  display:flex;align-items:center;justify-content:space-between;
-  font-size:0.7rem;letter-spacing:0.09em;text-transform:uppercase;
-  color:var(--text-dim);margin-bottom:0.45rem;cursor:default;
-}
-#btn-add-friendly{
-  background:rgba(50,130,200,0.15);border:1px solid rgba(70,150,220,0.3);
-  color:#5aaddd;font-size:0.65rem;border-radius:4px;padding:0.18rem 0.5rem;
-  cursor:pointer;transition:all 0.15s;
-}
-#btn-add-friendly:hover{background:rgba(50,130,200,0.28);border-color:#5aaddd;}
+#friendly-section{padding:0.65rem 0.9rem 0.75rem;border-top:1px solid var(--border);}
+#friendly-section-title{color:#5aaddd;}
 #friendly-list{display:flex;flex-direction:column;gap:0.2rem;margin-bottom:0.4rem;}
 .friendly-sidebar-entry{
   display:flex;align-items:center;gap:0.5rem;font-size:0.77rem;color:var(--text-dim);
@@ -476,7 +442,7 @@ input,select{font-family:inherit;color-scheme:dark;}
 .but-dest{display:flex;flex-wrap:wrap;gap:0.3rem;margin-top:0.4rem;}
 
 /* ── References sidebar section ── */
-#ref-section{border-top:1px solid var(--border-bright);padding:0.6rem 0.8rem 0.55rem;}
+#ref-section{padding:0.65rem 0.9rem 0.75rem;}
 #ref-section-header{
   display:flex;align-items:center;justify-content:space-between;
   font-size:0.7rem;letter-spacing:0.09em;text-transform:uppercase;
@@ -800,24 +766,84 @@ body.wiki-sidebar-hidden #screen-dm{margin-left:0;transition:margin-left 0.3s ea
 }
 .ds-spell-dmg{color:var(--danger);background:rgba(200,80,80,0.1);border-color:rgba(200,80,80,0.25);}
 
+/* ── Barre du MJ : onglets ──
+   Chaque partie prend toute la hauteur et defile seule ; avant, tout
+   s'empilait et la liste des joueurs etait ecrasee. */
+#dm-side-tabs{
+  /* Largeur selon le libelle : en colonnes egales, « Rencontres » etait coupe. */
+  display:flex;flex-shrink:0;
+  border-bottom:1px solid var(--border-bright);background:rgba(0,0,0,0.18);
+}
+.dm-side-tab{
+  position:relative;flex:1 1 auto;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:0.55rem 0.2rem 0.45rem;background:none;border:none;border-bottom:2px solid transparent;
+  color:var(--text-dim);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0;
+  cursor:pointer;transition:color 0.15s,border-color 0.15s,background 0.15s;min-width:0;
+}
+.dm-side-tab .ic{width:17px;height:17px;}
+.dm-side-tab > span:not(.side-badge):not(.side-count){max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dm-side-tab:hover{color:var(--text);background:rgba(232,201,106,0.04);}
+.dm-side-tab.active{color:var(--gold);border-bottom-color:var(--gold);background:rgba(232,201,106,0.06);}
+.dm-side-tab:focus-visible{outline:1px solid var(--gold-dim);outline-offset:-2px;}
+.side-badge,.side-count{
+  position:absolute;top:4px;right:calc(50% - 20px);min-width:15px;height:15px;padding:0 4px;
+  border-radius:8px;font-family:system-ui,sans-serif;font-size:0.58rem;line-height:15px;letter-spacing:0;text-align:center;
+}
+.side-badge{background:var(--danger);color:#fff;display:none;}
+.side-badge.visible{display:block;}
+.side-count{background:rgba(217,64,64,0.18);color:#e08070;}
+.side-count:empty{display:none;}
+.dm-side-panel{display:none;flex:1;min-height:0;flex-direction:column;overflow-y:auto;}
+.dm-side-panel.active{display:flex;}
+.dm-side-panel::-webkit-scrollbar{width:3px;}
+.dm-side-panel::-webkit-scrollbar-thumb{background:var(--border-bright);border-radius:2px;}
+.dm-side-panel > div{flex-shrink:0;}
+/* Hauteur minimale : sur un ecran bas, c'est le panneau qui defile, pas la
+   liste qui s'ecrase a une ligne. */
+.dm-side-panel #player-list{flex:1;min-height:160px;}
+
+/* Titres et boutons communs aux sections de la barre */
+.side-title{
+  font-family:'Cinzel',serif;color:var(--gold);font-size:0.65rem;
+  letter-spacing:0.12em;text-transform:uppercase;
+  display:flex;justify-content:space-between;align-items:center;gap:0.4rem;flex-wrap:wrap;
+  margin-bottom:0.55rem;padding-bottom:0.4rem;border-bottom:1px solid var(--border);
+}
+.side-actions{display:flex;gap:0.3rem;}
+.side-hint{font-family:inherit;font-size:0.6rem;letter-spacing:0;text-transform:none;color:var(--text-dim);font-style:italic;}
+.side-btn{
+  display:inline-flex;align-items:center;gap:0.25rem;
+  background:var(--gold-glow);border:1px solid var(--border-gold);color:var(--gold);
+  font-family:inherit;font-size:0.64rem;letter-spacing:0.02em;text-transform:none;
+  padding:0.22rem 0.55rem;border-radius:4px;cursor:pointer;transition:all 0.12s;
+}
+.side-btn .ic{width:12px;height:12px;}
+.side-btn:hover{background:rgba(232,201,106,0.18);box-shadow:0 0 8px rgba(232,201,106,0.12);}
+.side-btn-danger{background:rgba(217,64,64,0.08);border-color:var(--danger-bright);color:var(--danger);}
+.side-btn-danger:hover{background:var(--danger-dim);box-shadow:0 0 8px rgba(217,64,64,0.15);}
+.side-btn-ally{background:rgba(50,130,200,0.12);border-color:rgba(70,150,220,0.35);color:#5aaddd;}
+.side-btn-ally:hover{background:rgba(50,130,200,0.25);box-shadow:none;}
+
 /* ── Chat sidebar section ── */
 #chat-section{
-  border-top:1px solid var(--border-bright);
-  display:flex;flex-direction:column;max-height:320px;flex-shrink:0;
+  display:flex;flex-direction:column;flex:1;min-height:0;padding:0.65rem 0 0;
 }
+#chat-section > .side-title{margin:0 0.9rem 0.4rem;}
 #chat-room-tabs{
-  display:flex;gap:0;overflow-x:auto;flex-shrink:0;
-  border-bottom:1px solid var(--border);scrollbar-width:none;
+  display:flex;flex-wrap:wrap;gap:0.25rem;flex-shrink:0;padding:0 0.75rem 0.5rem;
+  border-bottom:1px solid var(--border);
+  /* Deux lignes de salons au plus : au-dela elles defilent, et la saisie reste a l'ecran. */
+  max-height:4.4rem;overflow-y:auto;
 }
 #chat-room-tabs::-webkit-scrollbar{display:none;}
 .chat-room-tab{
-  padding:0.3rem 0.7rem;background:none;border:none;
-  border-bottom:2px solid transparent;color:var(--text-dim);
-  font-size:0.7rem;font-family:'Cinzel',serif;letter-spacing:0.04em;
-  cursor:pointer;white-space:nowrap;transition:all 0.15s;flex-shrink:0;
+  padding:0.2rem 0.55rem;background:rgba(0,0,0,0.25);border:1px solid var(--border);
+  border-radius:12px;color:var(--text-dim);
+  font-size:0.68rem;font-family:'Cinzel',serif;letter-spacing:0.03em;
+  cursor:pointer;white-space:nowrap;transition:all 0.15s;max-width:100%;overflow:hidden;text-overflow:ellipsis;
 }
-.chat-room-tab:hover{color:var(--gold);}
-.chat-room-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.chat-room-tab:hover{color:var(--gold);border-color:var(--border-gold);}
+.chat-room-tab.active{color:var(--gold);border-color:var(--gold-dim);background:var(--gold-glow);}
 .chat-room-tab .tab-unread{
   background:var(--danger);color:#fff;border-radius:8px;
   font-size:0.58rem;padding:0.02rem 0.32rem;margin-left:0.2rem;display:none;
@@ -852,7 +878,7 @@ body.wiki-sidebar-hidden #screen-dm{margin-left:0;transition:margin-left 0.3s ea
   font-size:0.6rem;padding:0.05rem 0.4rem;display:none;
 }
 #chat-section-header .chat-unread.visible{display:inline;}
-#chat-msgs-list{flex:1;overflow-y:auto;padding:0.35rem 0.75rem;display:flex;flex-direction:column;gap:0.3rem;}
+#chat-msgs-list{flex:1;min-height:60px;overflow-y:auto;padding:0.5rem 0.9rem;display:flex;flex-direction:column;gap:0.45rem;}
 #chat-msgs-list::-webkit-scrollbar{width:2px;}
 #chat-msgs-list::-webkit-scrollbar-thumb{background:var(--border-bright);}
 .dm-chat-msg{font-size:0.78rem;line-height:1.4;color:var(--text-mid);}
@@ -1576,6 +1602,16 @@ body.sidebar-open #sidebar-backdrop{display:block;}
     <div id="sidebar-backdrop"></div>
     <!-- Sidebar -->
     <div id="dm-sidebar">
+      <!-- Onglets : chaque partie prend toute la hauteur et defile seule -->
+      <div id="dm-side-tabs" role="tablist" aria-label="Barre du MJ">
+        <button class="dm-side-tab" role="tab" data-side="joueurs" aria-label="Joueurs" title="Joueurs et personnages"><svg class="ic" aria-hidden="true"><use href="#i-people"></use></svg><span>Joueurs</span></button>
+        <button class="dm-side-tab" role="tab" data-side="chat" aria-label="Chat" title="Chat des joueurs"><svg class="ic" aria-hidden="true"><use href="#i-chat"></use></svg><span>Chat</span><span class="chat-unread side-badge" id="chat-unread-badge">0</span></button>
+        <button class="dm-side-tab" role="tab" data-side="creatures" aria-label="Créatures" title="Monstres et PNJ alliés"><svg class="ic" aria-hidden="true"><use href="#i-skull"></use></svg><span>Créatures</span><span class="side-count" id="side-count-creatures"></span></button>
+        <button class="dm-side-tab" role="tab" data-side="rencontres" aria-label="Rencontres" title="Rencontres préparées"><svg class="ic" aria-hidden="true"><use href="#i-scroll"></use></svg><span>Rencontres</span></button>
+        <button class="dm-side-tab" role="tab" data-side="ref" aria-label="Réf." title="Références : états"><svg class="ic" aria-hidden="true"><use href="#i-book"></use></svg><span>Réf.</span></button>
+      </div>
+
+      <div class="dm-side-panel" data-side="joueurs" role="tabpanel">
       <div id="sidebar-top">
         <h2>Joueurs</h2>
         <div id="camp-row">
@@ -1585,14 +1621,12 @@ body.sidebar-open #sidebar-backdrop{display:block;}
         <input type="text" id="player-search" placeholder="Rechercher…">
       </div>
       <div id="player-list"><div class="loading">Chargement…</div></div>
+      </div>
 
       <!-- Chat -->
+      <div class="dm-side-panel" data-side="chat" role="tabpanel">
       <div id="chat-section">
-        <div id="chat-section-header">
-          <span><svg class="ic" aria-hidden="true"><use href="#i-chat"></use></svg> Chat joueurs</span>
-          <span class="chat-unread" id="chat-unread-badge">0</span>
-          <span id="chat-section-chevron">▼</span>
-        </div>
+        <div class="side-title"><span>Chat joueurs</span></div>
         <div id="chat-room-tabs"></div>
         <div id="chat-msgs-list"><div class="loading">Chargement…</div></div>
         <div id="chat-send-row">
@@ -1600,13 +1634,17 @@ body.sidebar-open #sidebar-backdrop{display:block;}
           <button id="dm-chat-send" title="Envoyer">↵</button>
         </div>
       </div>
+      </div>
 
-      <!-- Monsters -->
+      <!-- Creatures : monstres et PNJ allies -->
+      <div class="dm-side-panel" data-side="creatures" role="tabpanel">
       <div id="monster-section">
-        <div id="monster-section-title">
-          <span>NPCs / Monsters</span>
-          <button id="btn-bestiaire" title="Chercher un monstre dans le bestiaire">Bestiaire</button>
-          <button id="btn-add-monster">+ New</button>
+        <div id="monster-section-title" class="side-title">
+          <span>Monstres &amp; PNJ hostiles</span>
+          <span class="side-actions">
+            <button id="btn-bestiaire" class="side-btn" title="Chercher un monstre dans le bestiaire"><svg class="ic" aria-hidden="true"><use href="#i-search"></use></svg> Bestiaire</button>
+            <button id="btn-add-monster" class="side-btn side-btn-danger" aria-label="Nouveau monstre" title="Créer un monstre à la main">+ Nouveau</button>
+          </span>
         </div>
         <div id="monster-list"></div>
         <div id="monster-form">
@@ -1626,9 +1664,11 @@ body.sidebar-open #sidebar-backdrop{display:block;}
 
       <!-- Friendly NPCs -->
       <div id="friendly-section">
-        <div id="friendly-section-title">
-          <span><svg class="ic" aria-hidden="true"><use href="#i-people"></use></svg> Friendly NPCs</span>
-          <button id="btn-add-friendly">+ New</button>
+        <div id="friendly-section-title" class="side-title">
+          <span>PNJ alliés</span>
+          <span class="side-actions">
+            <button id="btn-add-friendly" class="side-btn side-btn-ally" aria-label="Nouveau PNJ allié" title="Créer un PNJ allié">+ Nouveau</button>
+          </span>
         </div>
         <div id="friendly-list"></div>
         <div id="friendly-form">
@@ -1645,25 +1685,29 @@ body.sidebar-open #sidebar-backdrop{display:block;}
           <button id="btn-create-friendly">Create</button>
         </div>
       </div>
+      </div>
 
-      <!-- Encounters (bibliothèque de rencontres préparées) -->
+      <!-- Rencontres preparees -->
+      <div class="dm-side-panel" data-side="rencontres" role="tabpanel">
       <div id="encounter-section">
-        <div id="encounter-section-title">
-          <span><svg class="ic" aria-hidden="true"><use href="#i-scroll"></use></svg> Rencontres</span>
-          <button id="btn-save-encounter" title="Sauvegarder les monstres/PNJ dont le panneau est ouvert comme rencontre réutilisable"><svg class="ic" aria-hidden="true"><use href="#i-save"></use></svg> Sauver</button>
+        <div id="encounter-section-title" class="side-title">
+          <span>Rencontres</span>
+          <span class="side-actions">
+            <button id="btn-save-encounter" class="side-btn" title="Sauvegarder les monstres/PNJ dont le panneau est ouvert comme rencontre réutilisable"><svg class="ic" aria-hidden="true"><use href="#i-save"></use></svg> Sauver</button>
+          </span>
         </div>
         <div id="encounter-list"></div>
       </div>
+      </div>
 
       <!-- References -->
-      <div id="ref-section" class="collapsed">
-        <div id="ref-section-header">
-          <span><svg class="ic" aria-hidden="true"><use href="#i-book"></use></svg> References</span>
-          <span id="ref-chevron">▼</span>
-        </div>
+      <div class="dm-side-panel" data-side="ref" role="tabpanel">
+      <div id="ref-section">
+        <div class="side-title"><span>États</span><span class="side-hint">clic pour le détail</span></div>
         <div id="ref-body">
           <div class="ref-cond-grid" id="ref-cond-grid"></div>
         </div>
+      </div>
       </div>
     </div>
 
@@ -2598,10 +2642,6 @@ renderEncounters();
 
 /* ── References section ── */
 (function initReferences() {
-  const header = document.getElementById('ref-section-header');
-  const section = document.getElementById('ref-section');
-  header?.addEventListener('click', () => section.classList.toggle('collapsed'));
-
   const grid = document.getElementById('ref-cond-grid');
   if (!grid) return;
   grid.innerHTML = ALL_CONDITIONS.map(cond => `
@@ -3472,6 +3512,8 @@ document.addEventListener('keydown', e => {
   const el = document.activeElement;
   if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable
       || el.getAttribute('role') === 'button')) return; // pips/dots focusés : Espace les active, pas le tour
+  /* Un onglet focuse : les fleches changent d'onglet, Espace l'active — pas le tour. */
+  if (el && el.getAttribute('role') === 'tab') return;
   if (e.key === 'ArrowRight' || e.key === ' ') {
     e.preventDefault();
     document.getElementById('init-next').click();
@@ -4399,6 +4441,10 @@ document.addEventListener('keydown', e => {
      chaque appui, et avancer le tour quand on activait une puce au clavier. */
   if (e.key === '/') {
     e.preventDefault();
+    /* La recherche vit dans l'onglet Joueurs : l'ouvrir d'abord, sinon le
+       focus vise un champ cache et rien ne se passe. */
+    activerOngletLateral('joueurs');
+    if (window.innerWidth <= 900) openSidebar();
     document.getElementById('player-search')?.focus();
   } else if (e.key === 'Escape') {
     closeDrawer();
@@ -4475,15 +4521,92 @@ let _chatUnread  = 0;
 let _chatRoom    = 'general';   // room active
 let _chatRooms   = ['general']; // toutes les rooms connues
 
-document.getElementById('chat-section-header').addEventListener('click', () => {
-  document.getElementById('chat-section').classList.toggle('collapsed');
-  if (!document.getElementById('chat-section').classList.contains('collapsed')) {
-    _chatUnread = 0;
-    const badge = document.getElementById('chat-unread-badge');
-    badge.textContent = '0';
-    badge.classList.remove('visible');
+/* Le chat n'est visible que sur son onglet : hors de lui, un message compte
+   comme non lu, et le compte s'affiche sur l'onglet. */
+function chatHorsVue() {
+  return !document.querySelector('.dm-side-panel[data-side="chat"]')?.classList.contains('active');
+}
+/* Non-lus par salon : un message d'un autre salon que celui ouvert compte
+   pour ce salon (pastille sur son bouton), et le total s'affiche sur l'onglet
+   Chat. Ouvrir un salon efface le sien ; ouvrir l'onglet efface le salon
+   affiche. */
+const _nonLusParSalon = new Map();
+function majBadgeChat() {
+  let total = 0;
+  _nonLusParSalon.forEach(n => { total += n; });
+  _chatUnread = total;
+  const badge = document.getElementById('chat-unread-badge');
+  badge.textContent = String(total);
+  badge.classList.toggle('visible', total > 0);
+  const onglet = document.querySelector('.dm-side-tab[data-side="chat"]');
+  if (onglet) onglet.setAttribute('aria-label', total ? `Chat, ${total} non lu${total > 1 ? 's' : ''}` : 'Chat');
+}
+function compterNonLu(salon) {
+  _nonLusParSalon.set(salon, (_nonLusParSalon.get(salon) || 0) + 1);
+  majBadgeChat();
+  if (typeof renderChatRoomTabs === 'function') renderChatRoomTabs();
+}
+function viderNonLus(salon = _chatRoom) {
+  _nonLusParSalon.delete(salon);
+  majBadgeChat();
+}
+
+/* Initialise ici, apres les variables du chat : avec l onglet Chat retenu,
+   activerOngletLateral les lit des le chargement (zone morte de let sinon). */
+/* ── Onglets de la barre du MJ ── */
+const SIDE_TAB_KEY = 'kaleysur_dm_sidetab';
+function activerOngletLateral(nom) {
+  const onglets = [...document.querySelectorAll('.dm-side-tab')];
+  if (!onglets.some(b => b.dataset.side === nom)) nom = 'joueurs';
+  onglets.forEach(b => {
+    const on = b.dataset.side === nom;
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-selected', on ? 'true' : 'false');
+    b.tabIndex = on ? 0 : -1;
+  });
+  document.querySelectorAll('.dm-side-panel').forEach(p => p.classList.toggle('active', p.dataset.side === nom));
+  try { localStorage.setItem(SIDE_TAB_KEY, nom); } catch (e) {}
+  if (nom === 'chat') {
+    viderNonLus();
+    const list = document.getElementById('chat-msgs-list');
+    if (list) list.scrollTop = list.scrollHeight;
   }
-});
+}
+(function initOngletsLateraux() {
+  const barre = document.getElementById('dm-side-tabs');
+  if (!barre) return;
+  barre.addEventListener('click', e => {
+    const b = e.target.closest('.dm-side-tab');
+    if (b) activerOngletLateral(b.dataset.side);
+  });
+  /* Fleches gauche/droite entre onglets, comme une vraie barre d'onglets. */
+  barre.addEventListener('keydown', e => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    const onglets = [...barre.querySelectorAll('.dm-side-tab')];
+    const i = onglets.findIndex(b => b.classList.contains('active'));
+    const j = (i + (e.key === 'ArrowRight' ? 1 : -1) + onglets.length) % onglets.length;
+    activerOngletLateral(onglets[j].dataset.side);
+    onglets[j].focus();
+    e.preventDefault();
+    e.stopPropagation();
+  });
+  let garde = 'joueurs';
+  try { garde = localStorage.getItem(SIDE_TAB_KEY) || 'joueurs'; } catch (e) {}
+  activerOngletLateral(garde);
+  /* Nombre de creatures sur l'onglet, quel que soit le code qui remplit les listes. */
+  const compte = () => {
+    const n = document.querySelectorAll('#monster-list .monster-sidebar-entry, #friendly-list .friendly-sidebar-entry').length;
+    const el = document.getElementById('side-count-creatures');
+    if (el) el.textContent = n ? String(n) : '';
+    document.querySelector('.dm-side-tab[data-side="creatures"]')?.setAttribute('aria-label', n ? `Créatures, ${n}` : 'Créatures');
+  };
+  ['monster-list', 'friendly-list'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) new MutationObserver(compte).observe(el, { childList: true });
+  });
+  compte();
+})();
+
 
 /* Identifiant de salon privé — trié, donc identique des deux côtés. */
 function roomPrivee(joueur) {
@@ -4518,11 +4641,14 @@ function renderChatRoomTabs() {
       const p = allPlayers.find(x => roomPrivee(x.username) === r);
       return p?.data?.characters?.[p.data.activeCharId]?.name || p?.username || r;
     })();
-    return `<button class="chat-room-tab${r === _chatRoom ? ' active' : ''}" data-room="${esc(r)}">${esc(label)}</button>`;
+    const n = _nonLusParSalon.get(r) || 0;
+    return `<button class="chat-room-tab${r === _chatRoom ? ' active' : ''}" data-room="${esc(r)}">${esc(label)}`
+         + `<span class="tab-unread${n ? ' visible' : ''}">${n}</span></button>`;
   }).join('');
   container.querySelectorAll('.chat-room-tab').forEach(btn => {
     btn.addEventListener('click', () => {
       _chatRoom = btn.dataset.room;
+      viderNonLus(_chatRoom);
       renderChatRoomTabs();
       loadDmChat();
     });
@@ -4568,12 +4694,7 @@ function _appendChatMsg(m) {
   list.appendChild(div);
   list.scrollTop = list.scrollHeight;
 
-  if (document.getElementById('chat-section').classList.contains('collapsed')) {
-    _chatUnread++;
-    const badge = document.getElementById('chat-unread-badge');
-    badge.textContent = _chatUnread;
-    badge.classList.add('visible');
-  }
+  if (chatHorsVue()) compterNonLu(m.room || _chatRoom);
 }
 
 /* ── Envoi d'un message ── */
@@ -4620,13 +4741,8 @@ function startDmChatRealtime(_retry = 0) {
         // Afficher seulement si on est dans la bonne room
         if (m.room === _chatRoom) _appendChatMsg(m);
         else {
-          // Incrémenter le badge de la section si la room est différente
-          if (document.getElementById('chat-section').classList.contains('collapsed') || m.room !== _chatRoom) {
-            _chatUnread++;
-            const badge = document.getElementById('chat-unread-badge');
-            badge.textContent = _chatUnread;
-            badge.classList.add('visible');
-          }
+          // Autre salon que celui ouvert : non-lu pour ce salon
+          compterNonLu(m.room);
         }
       })
       .subscribe();

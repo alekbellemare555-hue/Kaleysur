@@ -4347,6 +4347,37 @@ function ok(cond, label) {
   }
 }
 
+/* ══════════ Barre du MJ : onglets ══════════ */
+{
+  const D = staged('dm.html');
+  /* Cinq onglets, chacun avec son panneau, et chaque section dans le bon. */
+  const onglets = [...D.matchAll(/class="dm-side-tab" role="tab" data-side="([a-z]+)"/g)].map(m => m[1]);
+  eq(onglets, ['joueurs', 'chat', 'creatures', 'rencontres', 'ref'], 'barre MJ : cinq onglets');
+  onglets.forEach(o => ok(D.includes('<div class="dm-side-panel" data-side="' + o + '" role="tabpanel">'), 'barre MJ : panneau ' + o));
+  const panneau = o => { const i = D.indexOf('<div class="dm-side-panel" data-side="' + o + '"'); const j = D.indexOf('<div class="dm-side-panel"', i + 10); return D.slice(i, j < 0 ? D.indexOf('<!-- Main -->', i) : j); };
+  ok(/id="player-list"/.test(panneau('joueurs')), 'barre MJ : la liste des joueurs est sous Joueurs');
+  ok(/id="chat-section"/.test(panneau('chat')) && /id="dm-chat-input"/.test(panneau('chat')), 'barre MJ : le chat est sous Chat');
+  ok(/id="monster-section"/.test(panneau('creatures')) && /id="friendly-section"/.test(panneau('creatures')), 'barre MJ : monstres et PNJ allies sous Creatures');
+  ok(/id="encounter-section"/.test(panneau('rencontres')), 'barre MJ : rencontres');
+  ok(/id="ref-cond-grid"/.test(panneau('ref')), 'barre MJ : references');
+  /* Les panneaux defilent seuls : c'est ce qui ecrasait la liste des joueurs. */
+  ok(/\.dm-side-panel\{display:none;flex:1;min-height:0;flex-direction:column;overflow-y:auto;\}/.test(D), 'barre MJ : chaque panneau defile');
+  /* Le badge de non-lus vit sur l'onglet, et plus aucun code ne vise l'ancien en-tete repliable. */
+  ok(/data-side="chat"[^>]*>[\s\S]{0,200}id="chat-unread-badge"/.test(D), 'barre MJ : non-lus sur l onglet Chat');
+  ok(!/getElementById\('chat-section-header'\)|getElementById\('ref-section-header'\)/.test(D), 'barre MJ : plus de reference aux en-tetes supprimes');
+  ok(!/getElementById\('chat-section'\)\.classList\.contains\('collapsed'\)/.test(D), 'barre MJ : le chat hors vue se lit par l onglet');
+  /* Ordre : l'initialisation lit les variables du chat ; placee avant leur
+     declaration, l'onglet Chat retenu faisait planter tout le script. */
+  ok(D.indexOf('let _chatUnread') > 0 && D.indexOf('let _chatUnread') < D.indexOf('(function initOngletsLateraux'), 'barre MJ : initialisation apres les variables du chat');
+  /* Relecture : les fleches sur un onglet n'avancent plus le tour, « / » ouvre
+     l'onglet Joueurs, les non-lus se comptent par salon. */
+  ok(/if \(el && el\.getAttribute\('role'\) === 'tab'\) return;/.test(D), 'barre MJ : fleches sur un onglet hors du tour d initiative');
+  ok(/activerOngletLateral\('joueurs'\);\s*\n\s*if \(window\.innerWidth <= 900\) openSidebar\(\);\s*\n\s*document\.getElementById\('player-search'\)\?\.focus\(\);/.test(D), 'barre MJ : « / » ouvre l onglet Joueurs avant le focus');
+  ok(/\.dm-side-panel #player-list\{flex:1;min-height:160px;\}/.test(D), 'barre MJ : la liste des joueurs garde une hauteur minimale');
+  ok(/compterNonLu\(m\.room\);/.test(D) && /viderNonLus\(_chatRoom\);/.test(D), 'barre MJ : non-lus par salon');
+  ok(/class="tab-unread\$\{n \? ' visible' : ''\}"/.test(D), 'barre MJ : pastille de non-lus sur le salon');
+}
+
 /* ══════════ Campagnes (dm.html) ══════════ */
 {
   const D = staged('dm.html');
